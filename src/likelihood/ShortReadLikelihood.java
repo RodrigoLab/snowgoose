@@ -23,12 +23,11 @@ public class ShortReadLikelihood {
 
 		double logLikelihood = 0;
 		LikelihoodScaler liS = new LikelihoodScaler(LOG_C);
-		
+
 		for (String reads : shortRead) {
 			int srLength = reads.length();
 			double plambda = srLength * ERROR_RATE;
 			double logPlambda = Math.log(plambda);
-			double prob = 0;
 
 			for (String h : haplotypes) {
 				int hLength = h.length();
@@ -50,7 +49,20 @@ public class ShortReadLikelihood {
 	    return(logLikelihood);
 	}
 	
+	/**
+	 * @param shortRead the shortRead to set
+	 */
+	public void setShortRead(ArrayList<String> shortRead) {
+		this.shortRead = shortRead;
+	}
 
+	/**
+	 * @param haplotypes the haplotypes to set
+	 */
+	public void setHaplotypes(ArrayList<String> haplotypes) {
+		this.haplotypes = haplotypes;
+	}
+	
 }
 /*
  * 
