@@ -2,11 +2,25 @@ package likelihood;
 
 import java.util.ArrayList;
 import org.apache.commons.math3.util.ArithmeticUtils;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+import dr.evolution.alignment.SimpleAlignment;
+import dr.evolution.sequence.Sequence;
+import dr.evolution.sequence.Sequences;
+import dr.evolution.tree.Tree;
+import dr.inference.model.AbstractModelLikelihood;
+import dr.inference.model.Model;
+import dr.inference.model.Parameter;
+import dr.inference.model.Variable;
+import dr.inference.model.Variable.ChangeType;
 
 
 
-public class ShortReadLikelihood {
-	
+public class ShortReadLikelihood extends AbstractModelLikelihood {
+
+    public static final String SHORT_READ_LIKELIHOOD = "ShortReadLikelihood";
+	public static final String NAME = SHORT_READ_LIKELIHOOD;
 	public static final double ERROR_RATE = 0.0107;
 	public static final double C = 1e-200;
 	public static final double LOG_C = Math.log(C);
@@ -14,16 +28,51 @@ public class ShortReadLikelihood {
 	ArrayList<String> shortRead = new ArrayList<>();
 	ArrayList<String> haplotypes = new ArrayList<>();
 	
+
+    @Override
+	public Element createElement(Document d) {
+        throw new RuntimeException("Not implemented yet!");
+    }
+
+    public ShortReadLikelihood() {
+
+        super(SHORT_READ_LIKELIHOOD);
+//
+//        this.trialsParameter = trialsParameter;
+//        this.proportionParameter = proportionParameter;
+//        addVariable(trialsParameter);
+//        addVariable(proportionParameter);
+//        this.counts = counts;
+
+    }
+
+//	public ShortReadLikelihood(String name){
+//		
+//	}
+
+	public ShortReadLikelihood(Sequences reads, SimpleAlignment alignment){
+		super(SHORT_READ_LIKELIHOOD);
+		for (int i = 0; i < alignment.getSequenceCount(); i++) {
+			this.haplotypes.add(alignment.getAlignedSequenceString(i));
+		}
+		for (int i = 0; i < reads.getSequenceCount(); i++) {
+			this.shortRead.add(reads.getSequence(i).getSequenceString());
+		}
+
+	}
+
+	
 	public ShortReadLikelihood(ArrayList<String> shortRead, ArrayList<String> haplotypes){
+		super(SHORT_READ_LIKELIHOOD);
 		this.shortRead = shortRead;
 		this.haplotypes = haplotypes;
 	}
 
-	public double calculateLikelihood(){
+	@Override
+	public double getLogLikelihood(){
 
 		double logLikelihood = 0;
 		LikelihoodScaler liS = new LikelihoodScaler(LOG_C);
-
 		for (String reads : shortRead) {
 			int srLength = reads.length();
 			double plambda = srLength * ERROR_RATE;
@@ -61,6 +110,51 @@ public class ShortReadLikelihood {
 	 */
 	public void setHaplotypes(ArrayList<String> haplotypes) {
 		this.haplotypes = haplotypes;
+	}
+
+	@Override
+	public Model getModel() {
+		return this;
+		
+	}
+
+
+
+	@Override
+	public void makeDirty() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void handleModelChangedEvent(Model model, Object object, int index) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void handleVariableChangedEvent(Variable variable, int index,
+			ChangeType type) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void storeState() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void restoreState() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void acceptState() {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }
