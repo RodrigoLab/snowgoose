@@ -365,7 +365,10 @@ logL
     	DataImporter dataImporter = new DataImporter("/home/sw167/workspace/ABI/jar/");
 		String shortReadFile = "121101_short_reads_1.fasta";
 		Sequences shortReads = dataImporter.importSequence(shortReadFile);
-    	ShortReadLikelihood shortReadLikelihood = new ShortReadLikelihood(shortReads, alignment);
+		
+    	Parameter ShortRead = new Parameter.Default("SHORTREAD", 1.0, 0, 100.0);
+//    	ShortReadLikelihood shortReadLikelihood = new ShortReadLikelihood(shortReads, alignment);
+    	ShortReadLikelihood shortReadLikelihood = new ShortReadLikelihood(shortReads, alignment, ShortRead);
     	
     	// Operators
     	OperatorSchedule schedule = new SimpleOperatorSchedule();
@@ -380,7 +383,7 @@ logL
     	Parameter allInternalHeights = treeModel.createNodeHeightsParameter(true, true, false);
     	operator = new UpDownOperator(new Scalable[]{new Scalable.Default(rateParameter)},
     			new Scalable[] {new Scalable.Default(allInternalHeights)}, 0.75, 3.0, CoercionMode.COERCION_ON);
-    	schedule.addOperator(operator);
+//    	schedule.addOperator(operator);
 
     	operator = new ScaleOperator(popSize, 0.75);
     	operator.setWeight(3.0);
@@ -391,30 +394,34 @@ logL
     	rootHeight.setId(TREE_HEIGHT);
     	operator = new ScaleOperator(rootHeight, 0.75);
     	operator.setWeight(3.0);
-    	schedule.addOperator(operator);
+//    	schedule.addOperator(operator);
 
     	Parameter internalHeights = treeModel.createNodeHeightsParameter(false, true, false);
     	operator = new UniformOperator(internalHeights, 30.0);
-    	schedule.addOperator(operator);
+//    	schedule.addOperator(operator);
 
     	operator = new SubtreeSlideOperator(treeModel, 15.0, 1.0, true, false, false, false, CoercionMode.COERCION_ON);
-    	schedule.addOperator(operator);
+//    	schedule.addOperator(operator);
 
     	operator = new ExchangeOperator(ExchangeOperator.NARROW, treeModel, 15.0);
     	//         operator.doOperation();
-    	schedule.addOperator(operator);
+//    	schedule.addOperator(operator);
 
     	operator = new ExchangeOperator(ExchangeOperator.WIDE, treeModel, 3.0);
     	//         operator.doOperation();
-    	schedule.addOperator(operator);
+//    	schedule.addOperator(operator);
 
     	operator = new WilsonBalding(treeModel, 3.0);
     	//         operator.doOperation();
-    	schedule.addOperator(operator);
+//    	schedule.addOperator(operator);
 
     	
+    	
     	//test new operator
-//    	operator = new AlignmentOperator(alignment);
+    	operator = new AlignmentOperator(ShortRead, alignment, 1);
+    	operator.setWeight(10);
+    	schedule.addOperator(operator);
+
     	
     	
     	//CompoundLikelihood
@@ -435,7 +442,7 @@ logL
     	likelihoods.clear();
     	likelihoods.add(prior);
     	likelihoods.add(likelihood);
-//    	likelihoods.add(shortReadLikelihood);
+    	likelihoods.add(shortReadLikelihood);
     	Likelihood posterior = new CompoundLikelihood(0, likelihoods);
     	posterior.setId(CompoundLikelihoodParser.POSTERIOR);
 
@@ -454,9 +461,10 @@ logL
     	//         System.out.println();
 
     	ArrayLogFormatter formatter = new ArrayLogFormatter(false);
-
+    	
+    	int lengthScaler = 1;
     	MCLogger[] loggers = new MCLogger[2];
-    	loggers[0] = new MCLogger(formatter, 500, false);
+    	loggers[0] = new MCLogger(formatter, lengthScaler*1, false);
     	loggers[0].add(posterior);
     	loggers[0].add(treeLikelihood);
     	loggers[0].add(rootHeight);
@@ -465,7 +473,7 @@ logL
     	loggers[0].add(kappa);
     	loggers[0].add(coalescent);
 
-    	loggers[1] = new MCLogger(new TabDelimitedFormatter(System.out), 1000, false);
+    	loggers[1] = new MCLogger(new TabDelimitedFormatter(System.out), lengthScaler*1, false);
     	loggers[1].add(posterior);
     	loggers[1].add(treeLikelihood);
 //    	loggers[1].add(coalescent);
@@ -483,11 +491,11 @@ logL
     	MCMC mcmc = new MCMC("mcmc1");
     	MCMCOptions options = new MCMCOptions();
     	options.setChainLength(1000000);
-    	options.setChainLength(10000);
-    	options.setUseCoercion(true); // autoOptimize = true
-    	options.setCoercionDelay(100);
-    	options.setTemperature(1.0);
-    	options.setFullEvaluationCount(2000);
+    	options.setChainLength(lengthScaler*10);
+//    	options.setUseCoercion(true); // autoOptimize = true
+//    	options.setCoercionDelay(lengthScaler*5);
+//    	options.setTemperature(1.0);
+//    	options.setFullEvaluationCount(lengthScaler*2);
 
     	mcmc.setShowOperatorAnalysis(true);
     	mcmc.init(options, posterior, schedule, loggers);

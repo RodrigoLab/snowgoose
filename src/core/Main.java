@@ -42,7 +42,7 @@ public class Main {
 		String trueAlignmentFile = "121101_true_seqs.fasta";
 //		String trueAlignmentFile = "zz.fasta";
 		String truePhylogenyFile = "121101_true_tree.newick";
-		String shortReadFile = "121101_short_reads_10.fasta";
+		String shortReadFile = "121101_short_reads_100.fasta";
 		String refSeqFile = "121101_ref.fasta";
 		
 		DataImporter dataImporter = new DataImporter(dataDir);
