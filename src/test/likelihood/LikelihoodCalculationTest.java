@@ -13,22 +13,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+
+
 import likelihood.LikelihoodCalculation;
 import likelihood.ShortReadLikelihood;
-
 import operator.AlignmentOperator;
 
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
-//import test.dr.integration.PathSampling;
-
 import core.DataImporter;
-
+import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.SimpleAlignment;
 import dr.evolution.alignment.SitePatterns;
 import dr.evolution.coalescent.ConstantPopulation;
@@ -36,7 +34,6 @@ import dr.evolution.datatype.DataType;
 import dr.evolution.datatype.Nucleotides;
 import dr.evolution.sequence.Sequence;
 import dr.evolution.sequence.Sequences;
-import dr.evolution.tree.NodeRef;
 import dr.evolution.tree.SimpleNode;
 import dr.evolution.tree.SimpleTree;
 import dr.evolution.tree.Tree;
@@ -80,6 +77,7 @@ import dr.inference.trace.ArrayTraceList;
 import dr.inference.trace.Trace;
 import dr.inference.trace.TraceCorrelation;
 import dr.inferencexml.model.CompoundLikelihoodParser;
+//import test.dr.integration.PathSampling;
 
 public class LikelihoodCalculationTest {
 
@@ -131,7 +129,7 @@ public class LikelihoodCalculationTest {
 //			String refSeqFile = "121101_ref.fasta";
 			
 			DataImporter dataImporter = new DataImporter(dataDir);
-			SimpleAlignment trueAlignment = dataImporter.importAlignment(trueAlignmentFile);
+			Alignment trueAlignment = dataImporter.importAlignment(trueAlignmentFile);
 			Tree truePhylogeny = dataImporter.importTree(truePhylogenyFile);
 //			Sequences shortReads = dataImporter.importSequence(shortReadFile);
 //			Sequence refSeq = dataImporter.importRefSeq(refSeqFile);
@@ -161,7 +159,7 @@ public class LikelihoodCalculationTest {
 			String refSeqFile = "121101_ref.fasta";
 			
 			DataImporter dataImporter = new DataImporter(dataDir);
-			SimpleAlignment trueAlignment = dataImporter.importAlignment(trueAlignmentFile);
+			Alignment trueAlignment = dataImporter.importAlignment(trueAlignmentFile);
 			Tree truePhylogeny = dataImporter.importTree(truePhylogenyFile);
 //			Sequences shortReads = dataImporter.importSequence(shortReadFile);
 //			Sequence refSeq = dataImporter.importRefSeq(refSeqFile);
@@ -192,7 +190,7 @@ public class LikelihoodCalculationTest {
 //			String refSeqFile = "121101_ref.fasta";
 			
 			DataImporter dataImporter = new DataImporter(dataDir);
-			SimpleAlignment trueAlignment = dataImporter.importAlignment(trueAlignmentFile);
+			Alignment trueAlignment = dataImporter.importAlignment(trueAlignmentFile);
 			Tree truePhylogeny = dataImporter.importTree(truePhylogenyFile);
 			Sequences shortReads = dataImporter.importSequence(shortReadFile);
 //			Sequence refSeq = dataImporter.importRefSeq(refSeqFile);
@@ -330,7 +328,7 @@ logL
     public void testStrictClock2() throws Exception {
     	SimpleAlignment alignment = createAlignment(PRIMATES_TAXON_SEQUENCE, Nucleotides.INSTANCE);
     	TreeModel treeModel = createPrimateTreeModel (alignment);
-    	Sequences reads = new Sequences();
+//    	Sequences reads = new Sequences();
 
     	Parameter popSize = new Parameter.Default(ConstantPopulationModelParser.POPULATION_SIZE, 3000,0,10000);
     	ConstantPopulationModel constantModel = new ConstantPopulationModel(popSize, Units.Type.DAYS);//createRandomInitialTree(popSize);
@@ -366,9 +364,18 @@ logL
 		String shortReadFile = "121101_short_reads_1.fasta";
 		Sequences shortReads = dataImporter.importSequence(shortReadFile);
 		
-    	Parameter ShortRead = new Parameter.Default("SHORTREAD", 1.0, 0, 100.0);
+    	Parameter ShortReadValue = new Parameter.Default("SHORTREAD", 1.0, 0, 100.0);
 //    	ShortReadLikelihood shortReadLikelihood = new ShortReadLikelihood(shortReads, alignment);
-    	ShortReadLikelihood shortReadLikelihood = new ShortReadLikelihood(shortReads, alignment, ShortRead);
+		ArrayList<String> haplotypes = new ArrayList<>();
+		ArrayList<String> shortRead = new ArrayList<>();
+		for (int i = 0; i < alignment.getSequenceCount(); i++) {
+			haplotypes.add(alignment.getAlignedSequenceString(i));
+		}
+		for (int i = 0; i < shortReads.getSequenceCount(); i++) {
+			shortRead.add(shortReads.getSequence(i).getSequenceString());
+		}
+
+    	ShortReadLikelihood shortReadLikelihood = new ShortReadLikelihood(shortRead, haplotypes);//, ShortReadValue);
     	
     	// Operators
     	OperatorSchedule schedule = new SimpleOperatorSchedule();
@@ -418,8 +425,8 @@ logL
     	
     	
     	//test new operator
-    	operator = new AlignmentOperator(ShortRead, alignment, 1);
-    	operator.setWeight(10);
+    	operator = new AlignmentOperator(ShortReadValue, haplotypes, 1);
+    	operator.setWeight(3);
     	schedule.addOperator(operator);
 
     	
@@ -622,7 +629,7 @@ logL
 	        return alignment;
 	    }
 
-	private static TreeModel createPrimateTreeModel (SimpleAlignment alignment) {
+	private static TreeModel createPrimateTreeModel (Alignment alignment) {
 	    	
 	    	Taxon[] taxa = alignment.asList().toArray(new Taxon[0]);
 	    	

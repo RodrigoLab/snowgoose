@@ -1,13 +1,13 @@
 package test.likelihood;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import likelihood.LikelihoodCalculation;
 import likelihood.ShortReadLikelihood;
 
 import org.junit.After;
@@ -17,14 +17,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import core.DataImporter;
-
-import dr.evolution.alignment.SimpleAlignment;
+import dr.evolution.alignment.Alignment;
 import dr.evolution.sequence.Sequences;
-import dr.evolution.tree.Tree;
-import dr.evomodel.tree.TreeModel;
 import dr.inference.model.CompoundLikelihood;
 import dr.inference.model.Likelihood;
-import dr.inferencexml.model.CompoundLikelihoodParser;
 
 public class ShortReadLikelihoodTest {
 
@@ -200,7 +196,7 @@ public class ShortReadLikelihoodTest {
 			String shortReadFile = "121101_short_reads_100.fasta";
 			
 			DataImporter dataImporter = new DataImporter(dataDir);
-			SimpleAlignment trueAlignment = dataImporter.importAlignment(trueAlignmentFile);
+			Alignment trueAlignment = dataImporter.importAlignment(trueAlignmentFile);
 			Sequences shortReads = dataImporter.importSequence(shortReadFile);
 			
 			ShortReadLikelihood srl = new ShortReadLikelihood(shortReads, trueAlignment);
@@ -236,7 +232,7 @@ public class ShortReadLikelihoodTest {
 			String shortReadFile = "121101_short_reads_10.fasta";
 			
 			DataImporter dataImporter = new DataImporter(dataDir);
-			SimpleAlignment trueAlignment = dataImporter.importAlignment(trueAlignmentFile);
+			Alignment trueAlignment = dataImporter.importAlignment(trueAlignmentFile);
 			Sequences shortReads = dataImporter.importSequence(shortReadFile);
 			
 			ShortReadLikelihood srl = new ShortReadLikelihood(shortReads, trueAlignment);

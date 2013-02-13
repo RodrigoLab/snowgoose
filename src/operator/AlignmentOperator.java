@@ -1,5 +1,11 @@
 package operator;
 
+import java.util.ArrayList;
+
+import org.apache.commons.lang3.StringUtils;
+
+import com.google.common.base.Strings;
+
 import dr.evolution.alignment.SimpleAlignment;
 import dr.inference.model.Parameter;
 import dr.inference.model.Variable;
@@ -14,7 +20,7 @@ public class AlignmentOperator extends AbstractCoercableOperator {
 
 	private double scale;
 	private Parameter variable;
-	private SimpleAlignment alignment;
+	private ArrayList<String> alignment;
 
 	public AlignmentOperator(Parameter variable, double scale, CoercionMode coercionOn, double d) {
 		super(coercionOn);
@@ -28,9 +34,9 @@ public class AlignmentOperator extends AbstractCoercableOperator {
         this(variable, scale, CoercionMode.COERCION_ON, 1.0);
     }
 
-	public AlignmentOperator(Parameter shortRead, SimpleAlignment alignment, int d) {
+	public AlignmentOperator(Parameter shortRead, ArrayList<String> haplotypes, int d) {
 		this(shortRead, d);
-		this.alignment = alignment;
+		this.alignment = haplotypes;
 	}
 
 
@@ -80,8 +86,36 @@ public class AlignmentOperator extends AbstractCoercableOperator {
 		
 		variable.setValue(0, d+1);
 		System.out.println(d +"\t"+ variable.getValue(0));
+		
+		
+		String t0 = alignment.get(0);
+		StringBuilder sb = new StringBuilder(t0);
+		
+		String[] ACTG = new String[]{"A","C","G","T"};
+		
+		int l = (int) (Math.random()*100+500);
+		t0 = StringUtils.repeat( ACTG[(int) (Math.random()*4)], l);
+		
+		String t1 = alignment.get(1);
+		sb = new StringBuilder(t1);
+		sb.setCharAt((int) d, 'P');
+		l = (int) (Math.random()*100+500);
+		t1 = StringUtils.repeat( ACTG[(int) (Math.random()*4)], l);
+		
+		System.out.println(d +"\t"+ t0.charAt(5) +"\t"+ t0.length() +"\t"+ t0);
+		System.out.println(d +"\t"+ t1.charAt(5) +"\t"+ t1.length() +"\t"+ t1);
+		
+		alignment.set(0, t0);
+		alignment.set(1, t1);
+		
+		
+		
+		
 		return 0;
+		
 	}
 
+	
+	
 
 }

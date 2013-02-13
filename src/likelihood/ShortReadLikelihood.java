@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
+import model.AlignmentModel;
+
 import org.apache.commons.math3.util.ArithmeticUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import dr.evolution.alignment.SimpleAlignment;
+import dr.evolution.alignment.Alignment;
 import dr.evolution.sequence.Sequences;
 import dr.inference.model.AbstractModelLikelihood;
 import dr.inference.model.Model;
@@ -32,6 +34,11 @@ public class ShortReadLikelihood extends AbstractModelLikelihood {
 	public static final int POISSON = 0;
 	public static final int BINOMIAL = 2;
 	
+	private double logLikelihood;
+    private double storedLogLikelihood;
+    protected boolean likelihoodKnown = false;
+	
+	
 	
 	private ArrayList<String> shortRead;// = new ArrayList<>();
 	private ArrayList<String> haplotypes;// = new ArrayList<>();
@@ -44,15 +51,20 @@ public class ShortReadLikelihood extends AbstractModelLikelihood {
 	private HashMap<Integer, double[]> logPoissonDesnity;
 	private HashMap<Integer, double[]> logBinomialDesnity;
 	private Parameter tempValue;
-
+	private AlignmentModel alignmentModel;
+	private int hapLength;
+	
+	
+	
     @Override
 	public Element createElement(Document d) {
         throw new RuntimeException("Not implemented yet!");
     }
 
-    public ShortReadLikelihood() {
+    public ShortReadLikelihood(String name) {
 
         super(SHORT_READ_LIKELIHOOD);
+        likelihoodKnown = false;
 //
 //        this.trialsParameter = trialsParameter;
 //        this.proportionParameter = proportionParameter;
@@ -62,12 +74,10 @@ public class ShortReadLikelihood extends AbstractModelLikelihood {
 
     }
 
-//	public ShortReadLikelihood(String name){
-//		
-//	}
+//	public ShortReadLikelihood(Sequences reads, SimpleAlignment alignment){
+    public ShortReadLikelihood(Sequences reads, Alignment alignment){
+		this(SHORT_READ_LIKELIHOOD);
 
-	public ShortReadLikelihood(Sequences reads, SimpleAlignment alignment){
-		super(SHORT_READ_LIKELIHOOD);
 		ArrayList<String> haplotypes = new ArrayList<>();
 		ArrayList<String> shortRead = new ArrayList<>();
 		for (int i = 0; i < alignment.getSequenceCount(); i++) {
@@ -76,6 +86,7 @@ public class ShortReadLikelihood extends AbstractModelLikelihood {
 		for (int i = 0; i < reads.getSequenceCount(); i++) {
 			shortRead.add(reads.getSequence(i).getSequenceString());
 		}
+
 		setHaplotypes(haplotypes);
 		setShortRead(shortRead);
 	}
@@ -90,24 +101,36 @@ public class ShortReadLikelihood extends AbstractModelLikelihood {
 	}
 
 	public ShortReadLikelihood(ArrayList<String> shortRead, ArrayList<String> haplotypes){
-		super(SHORT_READ_LIKELIHOOD);
-		setShortRead(shortRead);
+		this(SHORT_READ_LIKELIHOOD);
 		setHaplotypes(haplotypes);
+		
+		setShortRead(shortRead);
+		
 //		preprocessHaplotypes();
 //		preprocessLikelihood();
 	}
 
-	public ShortReadLikelihood(Sequences shortReads, SimpleAlignment alignment,
+	public ShortReadLikelihood(ArrayList<String> shortRead, ArrayList<String> haplotypes,
 			Parameter value) {
-		this(shortReads, alignment);
+		this(shortRead, haplotypes);
 		this.tempValue = value;
 	}
 
+	public ShortReadLikelihood(ArrayList<String> shortRead, AlignmentModel alignmentModel,
+			Parameter value) {
+		//TODO FIXME
+		this(SHORT_READ_LIKELIHOOD);
+		setShortRead(shortRead);
+        this.alignmentModel = alignmentModel;
+		addModel(alignmentModel);
+		this.tempValue = value;
+	}
+	
 	private void preprocessLikelihood() {//~4ms
 		
 		shortReadChars = new ArrayList<>();
 
-		allFactorialLog = new double[1000];
+		allFactorialLog = new double[hapLength+1];
 		for (int i = 0; i < allFactorialLog.length; i++) {
 			allFactorialLog[i] = ArithmeticUtils.factorialLog(i);
 		}
@@ -134,6 +157,7 @@ public class ShortReadLikelihood extends AbstractModelLikelihood {
 			logPoissonDesnity.put(srLength, logPoisD);
 			logBinomialDesnity.put(srLength, logBinomD);
 		}
+		System.out.println(maxDist);
 
 //		int dist = LikelihoodUtils.hamDist(reads, subH);
 //		double logProb = -plambda + dist * logPlambda - allFactorialLog[dist];
@@ -144,20 +168,30 @@ public class ShortReadLikelihood extends AbstractModelLikelihood {
 	@Override
 	public double getLogLikelihood(){
 
-	    double logLikelihood = calculateShoreReadLikelihood4();
+        if (!likelihoodKnown) {
+            logLikelihood = calculateLogLikelihood();
+            likelihoodKnown = true;
+        }
+        return logLikelihood;
+        
+	    
 //	    double logLikelihood = calculateShoreReadLikelihoodBinomialModel2();
 	    
 //	    timeTrial();
-		return logLikelihood;
+//		return logLikelihood;
 	}
 
+	protected double calculateLogLikelihood() {
+		double logLikelihood = calculateShoreReadLikelihood5();
+		return logLikelihood;
+	}
 
 	public double getLogLikelihoodSelect(int index){
 
 		double logLikelihood = Double.NEGATIVE_INFINITY;
 		switch (index) {
 		case 0:
-			logLikelihood = calculateShoreReadLikelihood4();
+			logLikelihood = calculateShoreReadLikelihood5();
 			break;
 		case 1:
 			logLikelihood = calculateShoreReadLikelihood2();
@@ -175,6 +209,54 @@ public class ShortReadLikelihood extends AbstractModelLikelihood {
 		return logLikelihood;
 	}
 
+
+	private double calculateShoreReadLikelihood5(){
+
+		double logLikelihood = 0;
+		LikelihoodScaler liS = new LikelihoodScaler(LOG_C);
+		
+		int[] counter = new int[maxDist];
+	
+		for (char[] srCharArray : shortReadChars){
+			Arrays.fill(counter, 0);
+			
+//			double plambda = srLength * ERROR_RATE;
+//			double logPlambda = Math.log(plambda);
+			
+			for (String hapString : haplotypes) {
+System.out.print(hapString.length() +"\t" );
+				int[] dists = LikelihoodUtils.hamDistAll(srCharArray, hapString);
+				int noComb = hapString.length() - srCharArray.length + 1;
+
+				for (int j = 0; j < noComb; j++) {
+					
+					counter[dists[j]]++;
+					
+//					int d = dists[j];1
+//					double logProb = -plambda +  logPD[d] - allFactorialLog[d];
+//					double logProb = logPD[d];
+
+//					liS.scaleLogProb(logProb);
+	
+				}
+			}	
+//			System.out.println(Arrays.toString(counter));
+			double[] logPD = logPoissonDesnity.get(srCharArray.length);
+			for (int i = 0; i < counter.length; i++) {
+				if(counter[i]!=0){
+//					double logProb = -plambda +  logPD[i] - allFactorialLog[i];
+					liS.scaleLogProb(logPD[i], counter[i]);
+					
+				}
+			}
+
+			logLikelihood += liS.getLogLikelihood();
+			liS.reset(LOG_C);
+		}	
+		System.out.println("Calculate shoreRdeaLikelihood out" +"\t"+ logLikelihood);
+		return logLikelihood;
+	}
+	
 	
 
 	private double calculateShoreReadLikelihood4(){
@@ -399,6 +481,7 @@ public class ShortReadLikelihood extends AbstractModelLikelihood {
 	 */
 	public void setHaplotypes(ArrayList<String> haplotypes) {
 		this.haplotypes = haplotypes;
+		this.hapLength = this.haplotypes.get(0).length();
 		preprocessHaplotypes();
 	}
 
@@ -412,13 +495,18 @@ public class ShortReadLikelihood extends AbstractModelLikelihood {
 
 	@Override
 	public void makeDirty() {
-		// TODO Auto-generated method stub
+        likelihoodKnown = false;
 		
 	}
 
 	@Override
 	protected void handleModelChangedEvent(Model model, Object object, int index) {
-		// TODO Auto-generated method stub
+        if (model == alignmentModel) {
+            // treeModel has changed so recalculate the intervals
+//            eventsKnown = false;
+        }
+
+        likelihoodKnown = false;
 		
 	}
 

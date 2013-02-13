@@ -92,6 +92,7 @@ public class LikelihoodUtils {
 	static char[] hapCharArray;
 	static int a, noComb;
 	static char cc;
+	private static String hapString;
 	public static int[] hamDistAll(char[] srCharArray2, char[] hapCharArray2) {
 		srCharArray = srCharArray2;
 		hapCharArray = hapCharArray2;
@@ -138,5 +139,56 @@ public class LikelihoodUtils {
 		}
 
 		return counts;
+	}
+
+
+
+	public static int[] hamDistAll(char[] srCharArray2, String hap) {
+		srCharArray = srCharArray2;
+		hapString = hap;
+		
+		int noComb = hapString.length() - srCharArray.length + 1; 		
+//				int noComb = hLength - srLength + 1;
+//System.out.println(noComb);
+//		Arrays.fill(counts, 0);
+//		int x = noComb*100;
+//		int counts[] = new int[550];
+//		if (noComb>counts.length) {
+//			Arrays.fill(counts, 1);
+//			c2++;
+//			return counts;
+//		counts = new int[noComb];
+//			Arrays.fill(counts, 0);
+//		int[] counts = Arrays.copyOfRange(counts2, 0, noComb);
+//		int[] counts = Arrays.copyOf(counts2, noComb);
+//		Arrays.fill(counts, 0, noComb, 0);
+//		int[] counts = ArrayUtils.clone(counts2);
+//		Ints.
+		
+//			int[] x = ArrayUtils.EMPTY_INT_ARRAY;
+//			Ints.ensureCapacity(array, minLength, padding)
+//			System.out.println(x.length);
+//			System.out.println(noComb);
+//		}
+//		else {
+//			c2++;
+//		int a;
+//		char cc;
+			for (int i = 0; i < noComb; i++) {
+				counts[i]=0;
+			}
+//		}
+
+		
+		for (int j = 0; j < srCharArray.length; j++) {
+			cc = srCharArray[j];
+			for (int i = 0; i < noComb; i++) {
+				int a = (cc - hapString.charAt(j+i));
+				counts[i] += (a==ZERO)? ZERO:ONE;
+			}
+		}
+
+		return counts;
+
 	}
 }

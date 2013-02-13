@@ -15,6 +15,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import core.DataImporter;
+import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.SimpleAlignment;
 import dr.evolution.sequence.Sequences;
 import dr.evolution.tree.Tree;
@@ -59,7 +60,7 @@ public class benchmark {
 			String shortReadFile = "_short_reads.fasta";
 
 			DataImporter dataImporter = new DataImporter(prefix);
-			SimpleAlignment trueAlignment = dataImporter.importAlignment(trueAlignmentFile);
+			Alignment trueAlignment = dataImporter.importAlignment(trueAlignmentFile);
 			Tree truePhylogeny = dataImporter.importTree(truePhylogenyFile);
 //			Sequences shortReads = dataImporter.importSequence(shortReadFile);
 //			Sequence refSeq = dataImporter.importRefSeq(refSeqFile);

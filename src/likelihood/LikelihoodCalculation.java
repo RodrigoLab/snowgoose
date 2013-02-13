@@ -2,7 +2,7 @@ package likelihood;
 
 import java.util.ArrayList;
 
-import dr.evolution.alignment.SimpleAlignment;
+import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.SitePatterns;
 import dr.evolution.datatype.Nucleotides;
 import dr.evolution.sequence.Sequences;
@@ -29,7 +29,7 @@ public class LikelihoodCalculation {//extends TraceCorrelationAssert {
 	
 //	protected static final String TREE_HEIGHT = TreeModel.TREE_MODEL + "." + TreeModelParser.ROOT_HEIGHT;
     protected TreeModel treeModel;
-    protected SimpleAlignment alignment;
+    protected Alignment alignment;
     protected BranchRateModel branchRateModel;
     protected Sequences shortReads;
 
@@ -41,7 +41,7 @@ public class LikelihoodCalculation {//extends TraceCorrelationAssert {
 	public LikelihoodCalculation() {
 	}
 
-	// public LikelihoodCalculation(FlexibleTree tree, SimpleAlignment
+	// public LikelihoodCalculation(FlexibleTree tree, Alignment
 	// alignment) {
 	// setTreeAndAlignment(tree, alignment);
 	//
@@ -52,25 +52,25 @@ public class LikelihoodCalculation {//extends TraceCorrelationAssert {
 		setPopSize(popSize);
 	}
 
-	public LikelihoodCalculation(TreeModel treeModel, SimpleAlignment alignment) {
+	public LikelihoodCalculation(TreeModel treeModel, Alignment alignment) {
 		setTreeAndAlignment(treeModel, alignment);
 	}
 
 	public LikelihoodCalculation(TreeModel treeModel,
-			SimpleAlignment alignment, Parameter popSize) {
+			Alignment alignment, Parameter popSize) {
 		this(treeModel, alignment);
 		setPopSize(popSize);
 	}
 
 	public LikelihoodCalculation(TreeModel treeModel,
-			SimpleAlignment alignment, Parameter popSize, Parameter mutationRate) {
+			Alignment alignment, Parameter popSize, Parameter mutationRate) {
 		this(treeModel, alignment);
 		setPopSize(popSize);
 		setMutationRate(mutationRate);
 	}
 
 	public LikelihoodCalculation(TreeModel treeModel,
-			SimpleAlignment alignment, Sequences shortReads) {
+			Alignment alignment, Sequences shortReads) {
 		this(treeModel, alignment);
 		setShortReads(shortReads);
 	}
@@ -103,12 +103,12 @@ public class LikelihoodCalculation {//extends TraceCorrelationAssert {
     	setupJCTreeLikelihood();
 	}
 	
-	public void setTreeAndAlignment(FlexibleTree tree, SimpleAlignment alignment) {
+	public void setTreeAndAlignment(FlexibleTree tree, Alignment alignment) {
     	TreeModel treeModel = new TreeModel(TreeModel.TREE_MODEL, tree, false, false);
 		setTreeAndAlignment(treeModel, alignment);
 	}
 	
-    public void setTreeAndAlignment(TreeModel treeModel, SimpleAlignment alignment) {
+    public void setTreeAndAlignment(TreeModel treeModel, Alignment alignment) {
 		this.treeModel = treeModel;
 		this.alignment = alignment;
 		setupJCTreeLikelihood();

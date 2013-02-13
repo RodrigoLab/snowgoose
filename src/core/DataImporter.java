@@ -36,9 +36,9 @@ public class DataImporter {
 		this.dataDir = "";
 	}
 
-	public SimpleAlignment importAlignment(String fileName){
+	public Alignment importAlignment(String fileName){
 		
-		SimpleAlignment alignment = (SimpleAlignment) importAlignment(dataDir, fileName);
+		Alignment alignment = importAlignment(dataDir, fileName);
 		return alignment;
 	}
 	

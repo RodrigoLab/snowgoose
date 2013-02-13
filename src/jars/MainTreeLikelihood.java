@@ -5,6 +5,7 @@ import java.io.PrintStream;
 
 import likelihood.LikelihoodCalculation;
 import core.DataImporter;
+import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.SimpleAlignment;
 import dr.evolution.tree.Tree;
 import dr.evomodel.tree.TreeModel;
@@ -31,7 +32,7 @@ public class MainTreeLikelihood {
 		}));
 
 		DataImporter dataImporter = new DataImporter();
-		SimpleAlignment trueAlignment = dataImporter.importAlignment(trueAlignmentFile);
+		Alignment trueAlignment = dataImporter.importAlignment(trueAlignmentFile);
 		Tree truePhylogeny = dataImporter.importTree(truePhylogenyFile);
 
 		TreeModel treeModel = new TreeModel(TreeModel.TREE_MODEL, truePhylogeny, false, false);

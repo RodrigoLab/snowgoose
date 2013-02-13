@@ -5,6 +5,7 @@ import java.io.PrintStream;
 
 import likelihood.LikelihoodCalculation;
 import core.DataImporter;
+import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.SimpleAlignment;
 import dr.evolution.sequence.Sequences;
 import dr.evomodel.tree.TreeModel;
@@ -28,7 +29,7 @@ public class MainShortReadLikelihood {
 		String shortReadFile = args[1];
 
 		DataImporter dataImporter = new DataImporter();
-		SimpleAlignment trueAlignment = dataImporter.importAlignment(trueAlignmentFile);
+		Alignment trueAlignment = dataImporter.importAlignment(trueAlignmentFile);
 		Sequences shortReads = dataImporter.importSequence(shortReadFile);
 
 		TreeModel treeModel = new TreeModel(TreeModel.TREE_MODEL);
