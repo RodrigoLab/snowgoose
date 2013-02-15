@@ -1,7 +1,9 @@
 package likelihood;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.StringTokenizer;
 
@@ -16,6 +18,7 @@ import org.apache.commons.math3.util.MathUtils;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.Iterables;
 import com.google.common.primitives.Booleans;
 import com.google.common.primitives.Bytes;
@@ -93,6 +96,9 @@ public class LikelihoodUtils {
 	static int a, noComb;
 	static char cc;
 	private static String hapString;
+	
+	static int match;
+	
 	public static int[] hamDistAll(char[] srCharArray2, char[] hapCharArray2) {
 		srCharArray = srCharArray2;
 		hapCharArray = hapCharArray2;
@@ -190,5 +196,27 @@ public class LikelihoodUtils {
 
 		return counts;
 
+	}
+
+
+
+	public static int Dist(int start, int end, char[] srp, char[] hapChar) {
+		hapCharArray = hapChar;
+		srCharArray = srp;
+		
+		int count = 0;
+		int dist = 0;
+//		System.out.println(Arrays.toString(srCharArray));
+		char[] c = 		ArrayUtils.subarray(hapCharArray, start, end);
+//		System.out.println(Arrays.toString(c));
+		for (int i = start; i < end; i++) {
+			match = (srCharArray[count] - hapCharArray[i]);
+			dist += (match==ZERO)? 0:1;
+//				System.out.println(count +"\t"+ i+"\t"+ match +"\t"+ (srCharArray[count] - hapCharArray[i]) +"\t");
+			count++;
+		}
+//		System.out.println(dist);
+//		System.out.println("===============");
+		return dist;
 	}
 }

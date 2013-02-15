@@ -14,6 +14,7 @@ import alignment.AlignmentMapping;
 import alignment.AlignmentMatrix;
 
 import likelihood.LikelihoodCalculation;
+import likelihood.ShortReadLikelihood;
 
 import io.ShortReadImporter;
 import dr.evolution.alignment.Alignment;
@@ -27,6 +28,7 @@ import dr.evolution.tree.FlexibleTree;
 import dr.evolution.tree.Tree;
 import dr.evolution.util.Taxon;
 import dr.evomodel.tree.TreeModel;
+import dr.inference.mcmc.MCMCCriterion;
 
 
 public class Main {
@@ -45,7 +47,7 @@ public class Main {
 		
 		testAlignmentMapping();
 		
-//		testAlignmentMappingLikelihood();
+		testAlignmentMappingLikelihood();
 		
 //		
 //		
@@ -76,26 +78,74 @@ public class Main {
 		String trueAlignmentFile = "1110_10_org.phyml";
 //		String trueAlignmentFile = "zz.fasta";
 		String phylogenyFile = "1110_10_org.phyml_phyml_tree.txt";
-		String shortReadFile = "1110_10_align_2.fasta";
+		String shortReadFile = "1110_10_align_100.fasta";//"1110_10_align_2.fasta";
 		String refSeqFile = "1110_10.ref";
 		
 		DataImporter dataImporter = new DataImporter(dataDir);
 		Alignment trueAlignment = dataImporter.importAlignment(trueAlignmentFile);
 		Tree truePhylogeny = dataImporter.importTree(phylogenyFile);
-		Sequences shortReads = dataImporter.importSequence(shortReadFile);
+//		Sequences shortReads = dataImporter.importSequence(shortReadFile);
 		Sequence refSeq = dataImporter.importRefSeq(refSeqFile);
 		
-		TreeModel treeModel = new TreeModel(TreeModel.TREE_MODEL, truePhylogeny, false, false);
+		Alignment shortReads = dataImporter.importAlignment(shortReadFile);
+		AlignmentMapping aMap = new AlignmentMapping(shortReads);
+	
 		
+//		AlignmentMatrix haplotypes = new AlignmentMatrix(aMap, 10);
+		AlignmentMatrix haplotypes = new AlignmentMatrix(aMap, trueAlignment);
+		ShortReadLikelihood srpLikelihood = new ShortReadLikelihood(aMap, haplotypes);
+		System.out.println("likelihood\t:"+srpLikelihood.getLogLikelihood());
+//		TreeModel treeModel = new TreeModel(TreeModel.TREE_MODEL, truePhylogeny, false, false);
+//		LikelihoodCalculation li = new LikelihoodCalculation(treeModel, trueAlignment, shortReads);
+//		li.setPopSize(3000,0,30000);
+////		li.setTreeAndAlignment(treeModel, trueAlignment);
+//		System.out.println(li.getTreeLikelihood());
+//		System.out.println(li.getCoalescentLikelhood());
+//
+//		System.out.println(li.getShortReadLikelihood());
 		
-		LikelihoodCalculation li = new LikelihoodCalculation(treeModel, trueAlignment, shortReads);
-		li.setPopSize(3000,0,30000);
-//		li.setTreeAndAlignment(treeModel, trueAlignment);
-		System.out.println(li.getTreeLikelihood());
-		System.out.println(li.getCoalescentLikelhood());
 
-		System.out.println(li.getShortReadLikelihood());
+		haplotypes = new AlignmentMatrix(aMap, trueAlignment.getSequenceCount());
+		for (int i = 0; i < haplotypes.getNoHap(); i++) {
+			haplotypes.randomSeq(i);
+			System.out.println(haplotypes.getHaplotype(i) );
+		}
+
+		srpLikelihood = new ShortReadLikelihood(aMap, haplotypes);
+		System.out.println("Likelihood:\t"+srpLikelihood.getLogLikelihood()+"\n");
 		
+		double likelihood = srpLikelihood.getLogLikelihood(); 
+		
+		MCMCCriterion criterion = new MCMCCriterion();
+        double hastingsRatio = 0.0;
+        double[] logr = {-Double.MAX_VALUE};
+        
+		for (int i = 0; i < 1e5; i++) {
+
+			haplotypes.swapBase();
+
+			srpLikelihood.updatehaplotypesChars(haplotypes);
+			
+//			ShortReadLikelihood srL_temp = new ShortReadLikelihood(aMap, haplotypes);
+			double newL = srpLikelihood.getLogLikelihood();
+			
+			boolean accept = criterion.accept(likelihood, newL, hastingsRatio, logr);
+//			System.out.println(likelihood +"\t"+newL +"\t"+ logr[0] +"\t"+  accept);
+			if(accept){
+				likelihood = newL;
+			}
+			else{
+				haplotypes.reject();
+				
+			}
+			
+				
+		}
+		for (int i = 0; i < haplotypes.getNoHap(); i++) {
+			System.out.println(haplotypes.getHaplotype(i) );
+		}
+		srpLikelihood = new ShortReadLikelihood(aMap, haplotypes);
+		System.out.println("Likelihood:\t"+srpLikelihood.getLogLikelihood()+"\n");
 		
 		
 	}

@@ -41,5 +41,19 @@ public class LikelihoodUtilsTest {
 		assertEquals(8, actual);
 		
 	}
-
+	@Test
+	public void testHamDistChar() {
+		String s1 = "CATGTGCAGCAGCAGGCGCGACTCTGCAGTCGTACTGCTGACTCTGACTCATCTACTACTACG";
+		char[] c1 = s1.toCharArray();
+		String s2 = "CATGTGCAGCAGCAGGCGCGACTCTGCAGTCGTACTGCTGACTCTGACTCATCTACTACCTAC";
+		char[] c2 = s2.toCharArray();
+		int actual = LikelihoodUtils.Dist(0, c1.length, c1, c2);
+		assertEquals(4, actual);
+		
+		c2 = "CATGTGCAGCAGCAGGCGCGACTCTGCAGTCGTACTGCTGACTCTGACTCATCTAGGGGCTAC".toCharArray();
+		actual = LikelihoodUtils.Dist(0, c1.length, c1, c2);
+		assertEquals(8, actual);
+		
+	}
 }
+
