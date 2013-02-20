@@ -207,7 +207,7 @@ public class LikelihoodUtils {
 		int count = 0;
 		int dist = 0;
 //		System.out.println(Arrays.toString(srCharArray));
-		char[] c = 		ArrayUtils.subarray(hapCharArray, start, end);
+//		char[] c = 		ArrayUtils.subarray(hapCharArray, start, end);
 //		System.out.println(Arrays.toString(c));
 		for (int i = start; i < end; i++) {
 			match = (srCharArray[count] - hapCharArray[i]);

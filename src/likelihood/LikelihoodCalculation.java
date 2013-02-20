@@ -2,6 +2,9 @@ package likelihood;
 
 import java.util.ArrayList;
 
+import alignment.AlignmentMapping;
+import alignment.Haplotypes;
+
 import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.SitePatterns;
 import dr.evolution.datatype.Nucleotides;
@@ -22,6 +25,7 @@ import dr.evomodel.treelikelihood.TreeLikelihood;
 import dr.evomodelxml.coalescent.ConstantPopulationModelParser;
 import dr.evomodelxml.sitemodel.GammaSiteModelParser;
 import dr.evomodelxml.substmodel.HKYParser;
+import dr.inference.distribution.LogLinearModel;
 import dr.inference.model.Parameter;
 
 public class LikelihoodCalculation {//extends TraceCorrelationAssert {
@@ -31,12 +35,20 @@ public class LikelihoodCalculation {//extends TraceCorrelationAssert {
     protected TreeModel treeModel;
     protected Alignment alignment;
     protected BranchRateModel branchRateModel;
+    
+    protected AlignmentMapping aMap;
+    protected Haplotypes haplotypes;
+    
+    @Deprecated
     protected Sequences shortReads;
 
+    private static GammaSiteModel siteModel;
     
     private CoalescentLikelihood coalescent;
     private TreeLikelihood treeLikelihood;
+	
     private ShortReadLikelihood shortReadLikelihood;
+	private int LogLikelihood;
 	
 	public LikelihoodCalculation() {
 	}
@@ -69,10 +81,37 @@ public class LikelihoodCalculation {//extends TraceCorrelationAssert {
 		setMutationRate(mutationRate);
 	}
 
+	@Deprecated
 	public LikelihoodCalculation(TreeModel treeModel,
 			Alignment alignment, Sequences shortReads) {
 		this(treeModel, alignment);
 		setShortReads(shortReads);
+	}
+	
+	
+	public LikelihoodCalculation(TreeModel treeModel, AlignmentMapping aMap){
+		//TODO implement later, auot g
+	}
+	
+	public LikelihoodCalculation(TreeModel treeModel, Haplotypes haplotypes){
+//		Alignment alignment, Alignment shortReads) {
+	
+		alignment = haplotypes.getAlignment();
+		setTreeAndAlignment(treeModel, alignment);
+	}
+	public LikelihoodCalculation(TreeModel treeModel, AlignmentMapping aMap, Haplotypes haplotypes){
+//			Alignment alignment, Alignment shortReads) {
+		
+		alignment = haplotypes.getAlignment();
+		setTreeAndAlignment(treeModel, alignment);
+		setShortReads(aMap, haplotypes);
+	}
+	
+	private void setShortReads(AlignmentMapping aMap, Haplotypes haplotypes) {
+		this.aMap = aMap;
+		this.haplotypes =haplotypes;
+		shortReadLikelihood = new ShortReadLikelihood(this.aMap, this.haplotypes);
+		
 	}
 
 	public void setPopSize(double p, double lower, double upper) {
@@ -126,6 +165,7 @@ public class LikelihoodCalculation {//extends TraceCorrelationAssert {
 //		
 //	}
 	
+    @Deprecated
 	public void setShortReads(Sequences shortReads) {
 		this.shortReads = shortReads;
 		shortReadLikelihood = new ShortReadLikelihood(shortReads, alignment);
@@ -135,11 +175,14 @@ public class LikelihoodCalculation {//extends TraceCorrelationAssert {
 	private void setupJCTreeLikelihood() {
 		
     	SitePatterns patterns = new SitePatterns(alignment, null, 0, -1, 1, true);
-
+    	
 		GammaSiteModel siteModel = setupDefaultJC69SiteModel();
+		
 		treeLikelihood = new TreeLikelihood(patterns, treeModel, siteModel,
 				branchRateModel, null, false, false, true, false, false);
-//		treeLikelihood.modelChangedEvent(model, object, index)
+
+		
+		//		treeLikelihood.modelChangedEvent(model, object, index)
 //		System.out.println(treeLikelihood.getModelCount());
 //		for (int i = 0; i < treeLikelihood.getModelCount(); i++) {
 //			System.out.println("z"+treeLikelihood.getModel(i).getModelName());
@@ -159,6 +202,15 @@ public class LikelihoodCalculation {//extends TraceCorrelationAssert {
 	public double getCoalescentLikelhood() {
 		return coalescent.getLogLikelihood();
 		
+	}
+	
+	public double getLoglikelihood(){
+		LogLikelihood = 0;
+//		LogLikelihood += getTreeLikelihood();
+		LogLikelihood += getShortReadLikelihood();
+//		LogLikelihood += getCoalescentLikelhood();
+		
+		return LogLikelihood;
 	}
 //
 //	public double calPopLikelihood() {
@@ -209,12 +261,44 @@ public class LikelihoodCalculation {//extends TraceCorrelationAssert {
         HKY hky = new HKY(kappa, f);
 
         //siteModel
-        GammaSiteModel siteModel = new GammaSiteModel(hky);
+        siteModel = new GammaSiteModel(hky);
         Parameter mu = new Parameter.Default(GammaSiteModelParser.MUTATION_RATE, 1.0, 0, Double.POSITIVE_INFINITY);
         siteModel.setMutationRateParameter(mu);
     	
         return siteModel;
     }
 
+	public void updateHaplotypes(Haplotypes haplotypes) {
+		this.haplotypes = haplotypes;
+//		alignment = this.haplotypes.getAlignment();
+		shortReadLikelihood.updateHaplotypes(this.haplotypes);
+		
+//		patterns = new SitePatterns(alignment, null, 0, -1, 1, true);
+//		setTreeAndAlignment(treeModel, alignment);
+		
+//		SitePatterns patterns = new SitePatterns(alignment, null, 0, -1, 1, true);
+//    	
+//		GammaSiteModel siteModel = setupDefaultJC69SiteModel();
+//		
+//		treeLikelihood = new TreeLikelihood(patterns, treeModel, siteModel,
+//				branchRateModel, null, false, false, true, false, false);
 
+		
+	}
+
+	public void storeState(){
+		shortReadLikelihood.storeState();
+		
+	}
+	
+	public void restorreState(){
+		shortReadLikelihood.restoreState();
+		
+	}
+
+	public void calculateShortReadLikelihoodFull() {
+		shortReadLikelihood.calculateLogLikelihoodSelect(0);
+		
+	}
+	
 }

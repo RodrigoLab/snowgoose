@@ -22,6 +22,7 @@ import dr.evolution.sequence.Sequences;
 import dr.inference.model.CompoundLikelihood;
 import dr.inference.model.Likelihood;
 
+@Deprecated
 public class ZOLD_ShortReadLikelihoodTest {
 
 	private static final int BINOMIAL = ZOLD_ShortReadLikelihood.BINOMIAL;

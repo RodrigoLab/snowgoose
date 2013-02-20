@@ -1,5 +1,6 @@
 package alignment;
 
+import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.SimpleAlignment;
 import dr.evolution.datatype.DataType;
 import dr.evolution.datatype.Nucleotides;
@@ -49,12 +50,23 @@ public class AlignmentUtils {
 
             alignment.addSequence(sequence);
         }
+        
         return alignment;
+        
     }
 	
 	public static AlignmentMapping createAlignmentMapping(String[] taxa_sequence){
 		SimpleAlignment alignment = createAlignment(taxa_sequence);
 		AlignmentMapping aMap = new AlignmentMapping(alignment);
 		return aMap;
+	}
+	
+	public static Haplotypes createHaplotypes(String[] taxa_sequence){
+		
+		Alignment alignment = AlignmentUtils.createAlignment(taxa_sequence);
+		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(taxa_sequence);
+		Haplotypes haplotype = new Haplotypes(aMap, alignment);
+		return haplotype;
+		
 	}
 }

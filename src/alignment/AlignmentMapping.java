@@ -73,45 +73,7 @@ public class AlignmentMapping {
 		
 	}
 
-//
-//	private void addSeq(String seqName, String seq) {
-//
-//		
-////		System.out.println(seqName +"\t"+ srpCount);
-//		
-//		Matcher m = p.matcher(seq);
-//
-//		if (m.matches() == true){
-//		
-//			seqNameToSeqID.put(seqName, srpCount);
-//			int start = m.start(2);
-//			int length = m.end(2) - start;
-//			for (int i = m.start(2); i < m.end(2); i++) {
-//				mapToSrp[i].add(srpCount);
-//			}
-//			
-//			fullSrp.put(srpCount, seq);
-//			srpCount++;
-////			System.out.println(start +"\t"+  end + seq.charAt(start) +"\t"+ seq.charAt(end));			
-////			System.out.println(m.start(2) +"\t"+  m.end(2));
-////			String srp2 = seq.substring(m.start(2), m.end(2));
-////			System.out.println(srp.equalsIgnoreCase(srp2));
-////			System.out.println(m.group(3));
-////			System.out.println(m.toMatchResult());
-//
-//		}
-//
-//	}
-	public ShortRead getShortRead(int i){
-		return shortReads.get(i);
-	}
-	
-	
-	public char getShortReadCharAt(int index, int c){
-		return shortReads.get(index).getFullSrpCharAt(c);
-	}
-	
-	public String toString() {
+public String toString() {
 		String s = "";
 		for (int i = 0; i < mapToSrp.length; i++) {
 			s +=mapToSrp[i].toString();
@@ -120,6 +82,45 @@ public class AlignmentMapping {
 		}
 		return s;
 		
+	}
+
+
+		//
+	//	private void addSeq(String seqName, String seq) {
+	//
+	//		
+	////		System.out.println(seqName +"\t"+ srpCount);
+	//		
+	//		Matcher m = p.matcher(seq);
+	//
+	//		if (m.matches() == true){
+	//		
+	//			seqNameToSeqID.put(seqName, srpCount);
+	//			int start = m.start(2);
+	//			int length = m.end(2) - start;
+	//			for (int i = m.start(2); i < m.end(2); i++) {
+	//				mapToSrp[i].add(srpCount);
+	//			}
+	//			
+	//			fullSrp.put(srpCount, seq);
+	//			srpCount++;
+	////			System.out.println(start +"\t"+  end + seq.charAt(start) +"\t"+ seq.charAt(end));			
+	////			System.out.println(m.start(2) +"\t"+  m.end(2));
+	////			String srp2 = seq.substring(m.start(2), m.end(2));
+	////			System.out.println(srp.equalsIgnoreCase(srp2));
+	////			System.out.println(m.group(3));
+	////			System.out.println(m.toMatchResult());
+	//
+	//		}
+	//
+	//	}
+	public ShortRead getShortRead(int i){
+		return shortReads.get(i);
+	}
+
+
+	public char getShortReadCharAt(int index, int c){
+		return shortReads.get(index).getFullSrpCharAt(c);
 	}
 
 
@@ -157,4 +158,10 @@ public class AlignmentMapping {
 	public int getLength(){
 		return length;
 	}
+	
+	public ArrayList<Integer> getMapToSrp(int pos){
+		return mapToSrp[pos];
+	}
+	
+	
 }
