@@ -1,30 +1,5 @@
 package likelihood;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.StringTokenizer;
-
-import javax.print.attribute.IntegerSyntax;
-
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.CharSetUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.math3.stat.StatUtils;
-import org.apache.commons.math3.util.MathUtils;
-
-import com.google.common.base.CharMatcher;
-import com.google.common.base.Charsets;
-import com.google.common.base.Strings;
-import com.google.common.collect.Collections2;
-import com.google.common.collect.Iterables;
-import com.google.common.primitives.Booleans;
-import com.google.common.primitives.Bytes;
-import com.google.common.primitives.Chars;
-import com.google.common.primitives.Ints;
-import com.google.common.primitives.Primitives;
 
 public class LikelihoodUtils {
 

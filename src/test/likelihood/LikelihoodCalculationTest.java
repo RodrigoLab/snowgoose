@@ -94,11 +94,11 @@ public class LikelihoodCalculationTest {
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		
-		System.setErr(new PrintStream(new OutputStream() {
-		    @Override
-			public void write(int b) {
-		    }
-		}));
+//		System.setErr(new PrintStream(new OutputStream() {
+//		    @Override
+//			public void write(int b) {
+//		    }
+//		}));
 	}
 
 	@AfterClass
@@ -366,8 +366,8 @@ logL
 		
     	Parameter ShortReadValue = new Parameter.Default("SHORTREAD", 1.0, 0, 100.0);
 //    	ShortReadLikelihood shortReadLikelihood = new ShortReadLikelihood(shortReads, alignment);
-		ArrayList<String> haplotypes = new ArrayList<>();
-		ArrayList<String> shortRead = new ArrayList<>();
+		ArrayList<String> haplotypes = new ArrayList<String>();
+		ArrayList<String> shortRead = new ArrayList<String>();
 		for (int i = 0; i < alignment.getSequenceCount(); i++) {
 			haplotypes.add(alignment.getAlignedSequenceString(i));
 		}

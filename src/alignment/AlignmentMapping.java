@@ -32,11 +32,11 @@ public class AlignmentMapping {
 		
 		mapToSrp = new ArrayList[this.length];
 		for (int i = 0; i < mapToSrp.length; i++) {
-			mapToSrp[i] = new ArrayList<>(); 
+			mapToSrp[i] = new ArrayList<Integer>(); 
 		}
 
-		seqNameToSeqID = new HashMap<>();
-		shortReads = new ArrayList<>();
+		seqNameToSeqID = new HashMap<String, Integer>();
+		shortReads = new ArrayList<ShortRead>();
 //		fullSrp = new HashMap<>();
 		srpCount = 0;
 		

@@ -1,6 +1,6 @@
 package test.alignment;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -8,27 +8,25 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import core.DataImporter;
-import dr.evolution.alignment.Alignment;
-
 import alignment.AlignmentMapping;
 import alignment.AlignmentUtils;
 import alignment.Haplotypes;
+import core.DataImporter;
+import dr.evolution.alignment.Alignment;
 
 public class HaplotypesTest {
 
-	private static AlignmentMapping amap;
+	private static AlignmentMapping aMap;
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		
 		String dir = "/home/sw167/Postdoc/Project_A2BI_temp/data/srAlignment/";
-		String refFileName = "1110_10.ref";
 		String srpFileName = "1110_10_align_test.fasta";
 		DataImporter dataImporter = new DataImporter(dir);
 
 		Alignment shortReads = dataImporter.importAlignment(srpFileName);
-		amap = new AlignmentMapping(shortReads);
+//		aMap = new AlignmentMapping(shortReads);
 //		refSeq = dataImporter.importRefSeq(refFileName);
 	}
 

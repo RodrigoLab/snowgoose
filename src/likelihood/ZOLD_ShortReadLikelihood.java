@@ -46,7 +46,7 @@ public class ZOLD_ShortReadLikelihood extends AbstractModelLikelihood {
 	private int maxDist;
 	private double[] allFactorialLog;
 
-	private ArrayList<char[]> haplotypesChars = new ArrayList<>();
+	private ArrayList<char[]> haplotypesChars = new ArrayList<char[]>();
 	private ArrayList<char[]> shortReadChars;
 	
 	private HashMap<Integer, double[]> logPoissonDesnity;
@@ -79,8 +79,8 @@ public class ZOLD_ShortReadLikelihood extends AbstractModelLikelihood {
     public ZOLD_ShortReadLikelihood(Sequences reads, Alignment alignment){
 		this(SHORT_READ_LIKELIHOOD);
 
-		ArrayList<String> haplotypes = new ArrayList<>();
-		ArrayList<String> shortRead = new ArrayList<>();
+		ArrayList<String> haplotypes = new ArrayList<String>();
+		ArrayList<String> shortRead = new ArrayList<String>();
 		for (int i = 0; i < alignment.getSequenceCount(); i++) {
 			haplotypes.add(alignment.getAlignedSequenceString(i));
 		}
@@ -129,7 +129,7 @@ public class ZOLD_ShortReadLikelihood extends AbstractModelLikelihood {
 	
 	private void preprocessLikelihood() {//~4ms
 		
-		shortReadChars = new ArrayList<>();
+		shortReadChars = new ArrayList<char[]>();
 
 		allFactorialLog = new double[hapLength+1];
 		for (int i = 0; i < allFactorialLog.length; i++) {
@@ -137,8 +137,8 @@ public class ZOLD_ShortReadLikelihood extends AbstractModelLikelihood {
 		}
 		
 		maxDist=0;
-		logPoissonDesnity = new HashMap<>();
-		logBinomialDesnity = new HashMap<>();
+		logPoissonDesnity = new HashMap<Integer, double[]>();
+		logBinomialDesnity = new HashMap<Integer, double[]>();
 		for (String reads : shortRead) {
 			shortReadChars.add(reads.toCharArray());
 			int srLength = reads.length();

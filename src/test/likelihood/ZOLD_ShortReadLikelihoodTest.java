@@ -43,8 +43,8 @@ public class ZOLD_ShortReadLikelihoodTest {
 	@Before
 	public void setUp() throws Exception {
 
-		shortReads = new ArrayList<>();
-		haplotypes = new ArrayList<>();
+		shortReads = new ArrayList<String>();
+		haplotypes = new ArrayList<String>();
 	}
 
 	@After

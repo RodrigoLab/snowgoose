@@ -135,7 +135,7 @@ public class ShortReadLikelihood extends AbstractModelLikelihood {
 
 	private void preprocessLikelihoodAlignmentMap() {
 		makeDirty();
-		shortReadChars = new ArrayList<>();
+		shortReadChars = new ArrayList<char[]>();
 
 		allFactorialLog = new double[hapLength+1];
 		for (int i = 0; i < allFactorialLog.length; i++) {
@@ -144,7 +144,7 @@ public class ShortReadLikelihood extends AbstractModelLikelihood {
 		
 		maxDist=0;
 
-		logBinomialDesnity = new HashMap<>();
+		logBinomialDesnity = new HashMap<Integer, double[]>();
 //		for (String reads : shortRead) {
 		eachLikelihood = new double[aMap.getSrpCount()];
 		storedEachLikelihood = new double[aMap.getSrpCount()];
@@ -228,7 +228,7 @@ public class ShortReadLikelihood extends AbstractModelLikelihood {
 
 
 	private double calculateShoreReadLikelihoodBinomalFull() {
-System.out.println("FULL Likelihood calculation");
+//System.out.println("FULL Likelihood calculation");
 		double logLikelihood = 0;
 		LikelihoodScaler liS = new LikelihoodScaler(LOG_C);
 		
@@ -264,7 +264,8 @@ System.out.println("FULL Likelihood calculation");
 			logLikelihood += eachLikelihood[i];
 			liS.reset(LOG_C);
 		}	
-		System.arraycopy(eachLikelihood, 0, storedEachLikelihood, 0, eachLikelihood.length);
+		storeState();
+		
 		
 		return logLikelihood;
 	}
@@ -333,11 +334,11 @@ System.out.println("FULL Likelihood calculation");
 				}
 			}
 
-			storedEachLikelihood[i] = liS.getLogLikelihood();
+			eachLikelihood[i] = liS.getLogLikelihood();
 			liS.reset(LOG_C);
 		}
 
-		logLikelihood = StatUtils.sum(storedEachLikelihood);
+		logLikelihood = StatUtils.sum(eachLikelihood);
 //		double tempLL = StatUtils.sum(tempL);
 //		
 //		if (tempLL != logLikelihood)	{
@@ -365,7 +366,7 @@ System.out.println("FULL Likelihood calculation");
 //			
 //		}
 		
-		
+		storeState();
 		return logLikelihood;
 	}
 
@@ -431,8 +432,8 @@ System.out.println("FULL Likelihood calculation");
 	public ShortReadLikelihood(Sequences reads, Alignment alignment){
 		this(SHORT_READ_LIKELIHOOD);
 	
-		ArrayList<String> haplotypes = new ArrayList<>();
-		ArrayList<String> shortRead = new ArrayList<>();
+		ArrayList<String> haplotypes = new ArrayList<String>();
+		ArrayList<String> shortRead = new ArrayList<String>();
 		for (int i = 0; i < alignment.getSequenceCount(); i++) {
 			haplotypes.add(alignment.getAlignedSequenceString(i));
 		}
@@ -511,7 +512,7 @@ System.out.println("FULL Likelihood calculation");
 		@Deprecated
 		private void preprocessLikelihood() {//~4ms
 			
-			shortReadChars = new ArrayList<>();
+			shortReadChars = new ArrayList<char[]>();
 	
 			allFactorialLog = new double[hapLength+1];
 			for (int i = 0; i < allFactorialLog.length; i++) {
@@ -520,7 +521,7 @@ System.out.println("FULL Likelihood calculation");
 			
 			maxDist=0;
 	
-			logBinomialDesnity = new HashMap<>();
+			logBinomialDesnity = new HashMap<Integer, double[]>();
 			for (String reads : shortRead) {
 				shortReadChars.add(reads.toCharArray());
 				int srLength = reads.length();
@@ -551,6 +552,6 @@ System.out.println("FULL Likelihood calculation");
 	@Deprecated
 	private ArrayList<String> haplotypes;// = new ArrayList<>();
 	@Deprecated
-	private ArrayList<char[]> haplotypesCharsList = new ArrayList<>();
+	private ArrayList<char[]> haplotypesCharsList = new ArrayList<char[]>();
 	
 }

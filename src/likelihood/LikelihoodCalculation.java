@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import alignment.AlignmentMapping;
 import alignment.Haplotypes;
-
 import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.SitePatterns;
 import dr.evolution.datatype.Nucleotides;
@@ -25,7 +24,6 @@ import dr.evomodel.treelikelihood.TreeLikelihood;
 import dr.evomodelxml.coalescent.ConstantPopulationModelParser;
 import dr.evomodelxml.sitemodel.GammaSiteModelParser;
 import dr.evomodelxml.substmodel.HKYParser;
-import dr.inference.distribution.LogLinearModel;
 import dr.inference.model.Parameter;
 
 public class LikelihoodCalculation {//extends TraceCorrelationAssert {

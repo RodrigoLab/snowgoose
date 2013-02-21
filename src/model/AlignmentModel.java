@@ -38,7 +38,7 @@ public class AlignmentModel extends AbstractModel{
 	public AlignmentModel(Alignment alignment) {
 		this(ALIGNMENT_MODEL);
 		
-		ArrayList<String> haplotypes = new ArrayList<>();
+		ArrayList<String> haplotypes = new ArrayList<String>();
 		for (int i = 0; i < alignment.getSequenceCount(); i++) {
 			haplotypes.add(alignment.getAlignedSequenceString(i));
 		}

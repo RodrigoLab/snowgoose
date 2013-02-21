@@ -1,28 +1,18 @@
 package dr.ext;
 
-import java.util.Arrays;
-import java.util.logging.Logger;
-
+import alignment.Haplotypes;
+import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.PatternList;
 import dr.evolution.datatype.DataType;
 import dr.evolution.util.TaxonList;
 import dr.evomodel.branchratemodel.BranchRateModel;
-import dr.evomodel.branchratemodel.DefaultBranchRateModel;
 import dr.evomodel.sitemodel.SiteModel;
-import dr.evomodel.substmodel.FrequencyModel;
 import dr.evomodel.tree.TreeModel;
-import dr.evomodel.treelikelihood.AbstractTreeLikelihood;
-import dr.evomodel.treelikelihood.AminoAcidLikelihoodCore;
 import dr.evomodel.treelikelihood.GeneralLikelihoodCore;
-import dr.evomodel.treelikelihood.LikelihoodCore;
-import dr.evomodel.treelikelihood.NativeAminoAcidLikelihoodCore;
-import dr.evomodel.treelikelihood.NativeGeneralLikelihoodCore;
 import dr.evomodel.treelikelihood.NativeNucleotideLikelihoodCore;
 import dr.evomodel.treelikelihood.NucleotideLikelihoodCore;
 import dr.evomodel.treelikelihood.TipStatesModel;
 import dr.evomodel.treelikelihood.TreeLikelihood;
-import dr.evomodel.treelikelihood.TreeLikelihood.SiteLikelihoodsStatistic;
-import dr.evomodelxml.treelikelihood.TreeLikelihoodParser;
 
 public class TreeLikelihoodExt extends TreeLikelihood {
 
@@ -99,7 +89,7 @@ public class TreeLikelihoodExt extends TreeLikelihood {
 
 //		            integrateAcrossCategories = siteModel.integrateAcrossCategories();
 
-		            this.categoryCount = siteModel.getCategoryCount();
+		            categoryCount = siteModel.getCategoryCount();
 
 //		            final Logger logger = Logger.getLogger("dr.evomodel");
 		            String coreName = "Java general";
@@ -207,6 +197,13 @@ public class TreeLikelihoodExt extends TreeLikelihood {
 		        }
 
 		        addStatistic(new SiteLikelihoodsStatistic());
+	}
+
+	public void updatePatternList(SitePatternsExt patterns, Haplotypes haplotypes) {
+//		TODO: more test required
+		Alignment alignment = haplotypes.getAlignment();
+		patterns.updateAlignment(alignment);
+		updatePatternList(patterns);
 	}
 
 

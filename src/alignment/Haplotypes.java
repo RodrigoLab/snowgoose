@@ -8,6 +8,7 @@ import dr.evolution.alignment.SimpleAlignment;
 import dr.evolution.datatype.Nucleotides;
 import dr.evolution.sequence.Sequence;
 import dr.evolution.util.Taxon;
+import dr.evolution.util.TaxonList;
 import dr.util.NumberFormatter;
 
 
@@ -110,6 +111,24 @@ public class Haplotypes {
 		alignment = (SimpleAlignment) trueAlignment;
 		alignmentToMatrix();
 	
+	}
+	public Alignment swapAlignment(){
+		
+		SimpleAlignment newA = new SimpleAlignment();
+		int seqCount = alignment.getSequenceCount();
+		int siteCount = alignment.getSiteCount();
+		for (int i = 0; i < alignment.getSequenceCount(); i++) {
+			StringBuilder sb = new StringBuilder();
+			for (int j = 0; j < siteCount; j++) {
+				int r = rand.nextInt(seqCount);
+				char c = alignment.getAlignedSequenceString(r).charAt(j);
+				sb.append(c);
+			}
+			
+			Sequence seq = new Sequence(taxons[i], sb.toString());
+			newA.addSequence(seq);
+		}
+		return newA;
 	}
 //	public void setAlignment(Alignment trueAlignment){
 //		
@@ -220,39 +239,37 @@ public class Haplotypes {
 		swapInfo[2] = matrix[hapIndex][pos];
 		
 		int size = aMap.mapToSrp[pos].size();
-		if (size != 0){
-			int srpIndex = aMap.mapToSrp[pos].get(rand.nextInt(size));
-			swapBase(hapIndex, pos, srpIndex);
-		}
-		else{
-			matrix[hapIndex][pos] = GAP;
-			swapInfo[3] = GAP;
-		}
+//		if (size != 0){
+			char c = GAP;
+//			for (int i = 0; i < size; i++) {
+			if(size!= 0){
+				int srpIndex = aMap.mapToSrp[pos].get(rand.nextInt(size));
+				c = aMap.getShortReadCharAt(srpIndex, pos);
+			}
+//				if (c!= matrix[hapIndex][pos]){
+//					break;
+//				}
+//			}
+//			matrix[hapIndex][pos] = c;
+//			swapInfo[3] = c;
+			swapBase(hapIndex, pos, c);
+//		}
+//		else{
+//			matrix[hapIndex][pos] = GAP;
+//			swapInfo[3] = GAP;
+//		}
 	
 	
 	}
 
-	private void swapBase(int hapIndex, int pos, int srpIndex){
+	private void swapBase(int hapIndex, int pos, char c){
 
-		char c = aMap.getShortReadCharAt(srpIndex, pos);
 		matrix[hapIndex][pos] = c;
 		swapInfo[3] = c;
 
-		// System.out.println(c +"\t"+ matrix[hapIndex][pos] +"\t"+ oldhap[2]);
 		
 	}
-	private void swapBase(int hapIndex, int pos, int srpIndex, boolean t){
-//		swapInfo = new int[]{hapIndex, pos, matrix[hapIndex][pos]};
-		char c = 0;//matrix[hapIndex][pos];
-		do{
-			c = aMap.getShortReadCharAt(srpIndex, pos);
-//			System.out.println("A" +"\t"+ matrix[hapIndex][pos] +"\t"+  c);
-		} while (matrix[hapIndex][pos] == c );
-		matrix[hapIndex][pos] = c;
-		swapInfo[3] = c;
-//		System.out.println(c +"\t"+ matrix[hapIndex][pos] +"\t"+ oldhap[2]);
-		
-	}
+
 
 	public double calculateSPS(){
 		double sps = 0;
@@ -323,6 +340,9 @@ public class Haplotypes {
 	}
 
 //	@Override
+	/*
+	 * Call getHaplotypesCount(), return haplotypesCount
+	*/
 	public int getSequenceCount() {
 		return getHaplotypesCount();
 	}

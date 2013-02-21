@@ -3,47 +3,25 @@ package core;
  -XX:CompileThreshold=50000 -XX:+CITime
  
 */
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Hashtable;
-import java.util.LinkedHashMap;
 import java.util.List;
 
-import org.apache.commons.math3.stat.Frequency;
-import org.apache.commons.math3.stat.StatUtils;
-import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
-
-import com.google.common.base.internal.Finalizer;
-
+import likelihood.LikelihoodCalculation;
+import likelihood.ShortReadLikelihood;
 import alignment.AlignmentMapping;
 import alignment.Haplotypes;
-
-import likelihood.LikelihoodCalculation;
-import likelihood.LikelihoodUtils;
-import likelihood.ShortReadLikelihood;
-
-import io.ShortReadImporter;
 import dr.evolution.alignment.Alignment;
-import dr.evolution.alignment.SimpleAlignment;
 import dr.evolution.alignment.SitePatterns;
 import dr.evolution.datatype.Nucleotides;
-import dr.evolution.io.FastaImporter;
-import dr.evolution.io.Importer.ImportException;
 import dr.evolution.sequence.Sequence;
 import dr.evolution.sequence.Sequences;
-import dr.evolution.tree.FlexibleTree;
 import dr.evolution.tree.Tree;
 import dr.evolution.util.Taxon;
 import dr.evolution.util.TaxonList;
@@ -55,7 +33,6 @@ import dr.evomodel.sitemodel.GammaSiteModel;
 import dr.evomodel.substmodel.FrequencyModel;
 import dr.evomodel.substmodel.HKY;
 import dr.evomodel.tree.TreeModel;
-import dr.evomodel.treelikelihood.TreeLikelihood;
 import dr.evomodelxml.coalescent.ConstantPopulationModelParser;
 import dr.evomodelxml.sitemodel.GammaSiteModelParser;
 import dr.evomodelxml.substmodel.HKYParser;
@@ -63,10 +40,7 @@ import dr.evomodelxml.treelikelihood.TreeLikelihoodParser;
 import dr.ext.SitePatternsExt;
 import dr.ext.TreeLikelihoodExt;
 import dr.inference.mcmc.MCMCCriterion;
-import dr.inference.model.CompoundLikelihood;
-import dr.inference.model.Likelihood;
 import dr.inference.model.Parameter;
-import dr.inferencexml.model.CompoundLikelihoodParser;
 
 
 public class Main {
@@ -109,19 +83,43 @@ public class Main {
 		Alignment shortReads = dataImporter.importAlignment(shortReadFile);
 		AlignmentMapping aMap = new AlignmentMapping(shortReads);
 		
+		
+		int[][] sps;
 		final Haplotypes trueHaplotypes = new Haplotypes(aMap, alignment);
-		Haplotypes haplotypes = new Haplotypes(aMap, alignment);//.getSequenceCount());
-		if(args[4].equals("0")){
-			haplotypes = new Haplotypes(aMap, alignment);//.getSequenceCount());
-		}
-		else{
-			haplotypes = new Haplotypes(aMap, alignment.getSequenceCount());
-		}
-		ShortReadLikelihood srpLikelihood = new ShortReadLikelihood(aMap, haplotypes);
+		Haplotypes haplotypes;// = new Haplotypes(aMap, alignment);//.getSequenceCount());
+//		if(args[4].equals("0")){
+//			haplotypes = new Haplotypes(aMap, alignment);//.getSequenceCount());
+//		}
+//		else{
+//			haplotypes = new Haplotypes(aMap, alignment.getSequenceCount());
+//		}
+		
+//		{Alignment startingAlignment = trueHaplotypes.swapAlignment();
+//		haplotypes = new Haplotypes(aMap, startingAlignment);
+//		System.out.println(haplotypes.toString());}
+		
+		haplotypes = new Haplotypes(aMap, alignment);
+		{int max = haplotypes.getHaplotypesCount() * haplotypes.getLength() *1;
+		System.out.println("Max swap: "+max);
+		for (int i = 0; i < max; i++) {
+			haplotypes.swapBase();
+		}}
+//		
+//		haplotypes = new Haplotypes(aMap, alignment.getSequenceCount());
+		
 	
+		sps = Haplotypes.calculeteSPSArray(trueHaplotypes, haplotypes);
+		for (int i = 0; i < sps.length; i++) {
+				System.out.println(Arrays.toString(sps[i]));
+		}
+		
 		
 		int ite = Integer.parseInt(args[5]);
 		int thinning = ite/10000;
+		if (thinning < 1000){
+			thinning = 1000;
+		}
+		ite = (int) 1e6;
 		
 
 		
@@ -148,7 +146,9 @@ public class Main {
 			Path resultFileName = Paths.get(dataDir+"result.log");
 			BufferedWriter logFile = Files.newBufferedWriter(logFileName, StandardCharsets.UTF_8);
 			BufferedWriter resultFile = Files.newBufferedWriter(resultFileName, StandardCharsets.UTF_8);
-			logFile.write("ite\tlikelihood\tSrpLikelihood\tTreelikelihood\tsps1\tsps2\n");
+			logFile.write("ite\tlikelihood\tsps1\tsps2\n");
+			
+			
 			
 	    	Parameter popSize = new Parameter.Default(ConstantPopulationModelParser.POPULATION_SIZE, 3000,0,10000);
 	    	ConstantPopulationModel constantModel = new ConstantPopulationModel(popSize, Units.Type.DAYS);//createRandomInitialTree(popSize);
@@ -157,12 +157,13 @@ public class Main {
 	    	coalescent.setId("coalescent");
 	
 	    	// clock model
-	    	Parameter rateParameter =  new Parameter.Default(StrictClockBranchRates.RATE, 1E-5, 0, 1);
+	    	Parameter rateParameter =  new Parameter.Default(StrictClockBranchRates.RATE, 1, 0, 1);//1e5-5
 	    	StrictClockBranchRates branchRateModel = new StrictClockBranchRates(rateParameter);
 	
 	    	// Sub model
+	    	System.out.println(Arrays.toString(alignment.getStateFrequencies()));
 	    	Parameter freqs = new Parameter.Default(alignment.getStateFrequencies());
-	    	Parameter kappa = new Parameter.Default(HKYParser.KAPPA, 1.0, 0, 100.0);
+	    	Parameter kappa = new Parameter.Default(HKYParser.KAPPA, 2.0, 0, 100.0);
 	
 	    	FrequencyModel f = new FrequencyModel(Nucleotides.INSTANCE, freqs);
 	    	HKY hky = new HKY(kappa, f);
@@ -172,14 +173,32 @@ public class Main {
 	    	Parameter mu = new Parameter.Default(GammaSiteModelParser.MUTATION_RATE, 1.0, 0, Double.POSITIVE_INFINITY);
 	    	siteModel.setMutationRateParameter(mu);
 	
-	    	SitePatternsExt patterns = new SitePatternsExt(alignment, null, 0, -1, 1, true);
+	    	SitePatternsExt patterns = new SitePatternsExt(haplotypes, null, 0, -1, 1, true);
 
 	    	TreeLikelihoodExt treeLikelihood = new TreeLikelihoodExt(patterns, treeModel, siteModel, branchRateModel, null,
 	  			false, false, true, false, false);
 	    	treeLikelihood.setId(TreeLikelihoodParser.TREE_LIKELIHOOD);
 	
 			// end
-	        
+
+//			SitePatterns patterns2 = new SitePatterns(alignment, null, 0, -1, 1, true);
+//	    	TreeLikelihood treeLikelihood2 = new TreeLikelihood(patterns2, treeModel, siteModel, branchRateModel, null,
+//	  			false, false, true, false, false);
+			
+			sps = Haplotypes.calculeteSPSArray(trueHaplotypes, trueHaplotypes);
+			String tempTrue = "";
+			{ShortReadLikelihood trueSrpLikelihood = new ShortReadLikelihood(aMap, trueHaplotypes);
+			tempTrue += "TrueSrpLikelihood\t" + trueSrpLikelihood.getLogLikelihood() + "\t"
+					+ treeLikelihood.getLogLikelihood() +"\t"+ trueHaplotypes.calculateSPS() +"\n";}
+			for (int i = 0; i < sps.length; i++) {
+				tempTrue+= Arrays.toString(sps[i])+"\n";
+			}
+			tempTrue +="\n"; 
+			resultFile.write(tempTrue);
+			System.out.println(tempTrue);
+			
+	    	
+			
 			MCMCCriterion criterion = new MCMCCriterion();
 	        double hastingsRatio = 0.0;
 	        double[] logr = {-Double.MAX_VALUE};
@@ -188,25 +207,49 @@ public class Main {
 	        double likelihood = 0;
 
 	        
-	        resultFile.write("Likelihood:\t"+srpLikelihood.getLogLikelihood() +"\t"
-					+ treeLikelihood.getLogLikelihood() 
-					+"\t"+ haplotypes.calculateSPS()+"\n");
-			int[][] sps = Haplotypes.calculeteSPSArray(trueHaplotypes, haplotypes);
+	        
+	        sps = Haplotypes.calculeteSPSArray(trueHaplotypes, haplotypes);
 			for (int i = 0; i < sps.length; i++) {
 					resultFile.write(Arrays.toString(sps[i])+"\n");
 			}
+
 			
-			likelihood = srpLikelihood.getLogLikelihood() + treeLikelihood.getLogLikelihood();
+//			alignment = haplotypes.getAlignment();
+//			patterns.updateAlignment(alignment);
+//			treeLikelihood.updatePatternList(patterns);
+//			likelihood =  srpLikelihood.getLogLikelihood();
+//			likelihood = treeLikelihood.getLogLikelihood();
+			ShortReadLikelihood srpLikelihood = new ShortReadLikelihood(aMap, haplotypes);
+			likelihood =  srpLikelihood.getLogLikelihood() + treeLikelihood.getLogLikelihood();
+			
+			resultFile.write("Likelihood:\t"+likelihood
+					+"\t"+ haplotypes.calculateSPS()+"\n");
+//			
 	        for (int i = 0; i < ite; i++) {
-	
+        	
 				haplotypes.swapBase();
 				srpLikelihood.updateHaplotypes(haplotypes);
-	
+
 				alignment = haplotypes.getAlignment();
 				patterns.updateAlignment(alignment);
 				treeLikelihood.updatePatternList(patterns);
-	
-				double newL = srpLikelihood.getLogLikelihood() + treeLikelihood.getLogLikelihood();
+				//srpLikelihood.getLogLikelihood();// +
+				
+				double srpL =  srpLikelihood.getLogLikelihood();
+				double treeL = treeLikelihood.getLogLikelihood();
+
+				double newL = srpL + treeL; 
+//				double newL = treeL;
+
+				
+//				SitePatterns patterns2 = new SitePatterns(alignment, null, 0, -1, 1, true);
+//		    	TreeLikelihood treeLikelihood2 = new TreeLikelihood(patterns2, treeModel, siteModel, branchRateModel, null,
+//		  			false, false, true, false, false);
+//				double checkL = treeLikelihood2.getLogLikelihood();
+//				if(newL!=checkL){
+//					System.out.println(newL +"\t"+ checkL);
+//					System.exit(-1);
+//				}
 				
 				boolean accept = criterion.accept(likelihood, newL, hastingsRatio, logr);
 	//				System.out.println(likelihood +"\t"+newL +"\t"+ logr[0] +"\t"+  accept);
@@ -219,13 +262,15 @@ public class Main {
 					haplotypes.reject();
 	//				likelihoodModel.restorreState();
 					treeLikelihood.restoreModelState();
+					treeLikelihood.updatePatternList(patterns);
+					
 					srpLikelihood.restoreState();
 				}
 				if (i% thinning == 0){
-					
-					String temp = i +"\t"+ likelihood +"\t"+ srpLikelihood.getLogLikelihood()
-							+"\t"+ treeLikelihood.getLogLikelihood() +"\t"+ haplotypes.calculateSPS() + 
-							"\t"+ Haplotypes.calculeteSPS(trueHaplotypes, haplotypes) + "\n";
+//					System.out.println(i +"\t"+  likelihood +"\t"+ newL +"\t"+ srpLikelihood.getLogLikelihood());
+					String temp = i +"\t"+ likelihood +"\t"+ haplotypes.calculateSPS() + 
+							"\t"+ Haplotypes.calculeteSPS(trueHaplotypes, haplotypes) + 
+							"\t"+ newL +"\t"+ srpL +"\t"+ treeL +"\n";
 					System.out.print(temp);
 					logFile.write(temp);
 					logFile.flush();
@@ -240,8 +285,7 @@ public class Main {
 						
 			}
 			
-			resultFile.write("\n\n===Done\n\nLikelihood:\t"+srpLikelihood.getLogLikelihood() +"\t"
-					+ treeLikelihood.getLogLikelihood() 
+			resultFile.write("\n\n===Done\n\nLikelihood:\t"+likelihood
 					+"\t"+ haplotypes.calculateSPS()+"\n");
 			sps = Haplotypes.calculeteSPSArray(trueHaplotypes, haplotypes);
 			for (int i = 0; i < sps.length; i++) {
@@ -550,9 +594,9 @@ public class Main {
 		AlignmentMapping aMap = new AlignmentMapping(shortReads);
 	
 		Path logFileName = Paths.get(dataDir+"likelihood.log");
-		try (BufferedWriter logFile = Files.newBufferedWriter(logFileName, StandardCharsets.UTF_8) ){
+		try {
 			    
-			
+			BufferedWriter logFile = Files.newBufferedWriter(logFileName, StandardCharsets.UTF_8);
 	//		AlignmentMatrix haplotypes = new AlignmentMatrix(aMap, 20);
 			Haplotypes haplotypes = new Haplotypes(aMap, trueAlignment);
 			ShortReadLikelihood srpLikelihood = new ShortReadLikelihood(aMap, haplotypes);
@@ -595,7 +639,7 @@ public class Main {
 				logFile.write(i +"\t"+ likelihood +"\t"+ sps +"\n");
 					
 			}
-			List<String> al = new ArrayList<>();
+			List<String> al = new ArrayList<String>();
 
 			al.add(srpLikelihood.getLogLikelihood()+"\n");
 			al.add(haplotypes.toString());
