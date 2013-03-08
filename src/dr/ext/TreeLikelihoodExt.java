@@ -1,6 +1,6 @@
 package dr.ext;
 
-import alignment.Haplotypes;
+import srp.haplotypes.HaplotypeModel;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.PatternList;
 import dr.evolution.datatype.DataType;
@@ -21,6 +21,7 @@ public class TreeLikelihoodExt extends TreeLikelihood {
 			TipStatesModel tipStatesModel, boolean useAmbiguities,
 			boolean allowMissingTaxa, boolean storePartials,
 			boolean forceJavaCore, boolean forceRescaling) {
+		
 		super(patternList, treeModel, siteModel, branchRateModel,
 				tipStatesModel, useAmbiguities, allowMissingTaxa,
 				storePartials, forceJavaCore, forceRescaling);
@@ -199,9 +200,9 @@ public class TreeLikelihoodExt extends TreeLikelihood {
 		        addStatistic(new SiteLikelihoodsStatistic());
 	}
 
-	public void updatePatternList(SitePatternsExt patterns, Haplotypes haplotypes) {
+	public void updatePatternList(SitePatternsExt patterns, HaplotypeModel haplotypeModel) {
 //		TODO: more test required
-		Alignment alignment = haplotypes.getAlignment();
+		Alignment alignment = haplotypeModel.getAlignment();
 		patterns.updateAlignment(alignment);
 		updatePatternList(patterns);
 	}

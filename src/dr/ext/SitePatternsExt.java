@@ -1,6 +1,6 @@
 package dr.ext;
 
-import alignment.Haplotypes;
+import srp.haplotypes.HaplotypeModel;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.SitePatterns;
 import dr.evolution.util.TaxonList;
@@ -12,10 +12,10 @@ public class SitePatternsExt extends SitePatterns{
 		super(alignment, taxa, from, to, every, strip);
 
 	}
-	public SitePatternsExt(Haplotypes haplotypes, TaxonList taxa, int from,
+	public SitePatternsExt(HaplotypeModel haplotypeModel, TaxonList taxa, int from,
 			int to, int every, boolean strip) {
 //		Alignment alignment = haplotypes.getAlignment();
-		this(haplotypes.getAlignment(), taxa, from, to, every, strip);
+		this(haplotypeModel.getAlignment(), taxa, from, to, every, strip);
 	}
 	public void updateAlignment(Alignment alignment){
 //		this.strip = strip;

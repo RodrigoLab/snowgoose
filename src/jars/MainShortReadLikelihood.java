@@ -3,8 +3,9 @@ package jars;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
-import likelihood.LikelihoodCalculation;
-import core.DataImporter;
+import srp.core.DataImporter;
+import srp.likelihood.LikelihoodCalculation;
+
 import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.SimpleAlignment;
 import dr.evolution.sequence.Sequences;
