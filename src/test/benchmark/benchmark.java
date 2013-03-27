@@ -1,4 +1,4 @@
-package test.srp.benchmark;
+package test.benchmark;
 
 import static org.junit.Assert.*;
 

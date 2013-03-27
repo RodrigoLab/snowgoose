@@ -1,15 +1,15 @@
 package srp.haplotypes;
 
-import java.util.Iterator;
-
-import dr.app.gui.tree.SquareTreePainter;
 import dr.evolution.datatype.DataType;
 import dr.evolution.sequence.Sequence;
 import dr.evolution.util.Taxon;
-import dr.util.Attributable;
 
 public class Haplotype extends Sequence {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1481408524381652240L;
 	StringBuilder sequenceString;
 
 	public Haplotype() {
@@ -50,35 +50,40 @@ public class Haplotype extends Sequence {
     /**
      * @return the DataType of the sequences.
      */
-    public DataType getDataType() {
+    @Override
+	public DataType getDataType() {
         return dataType;
     }
 
     /**
      * @return the length of the sequences.
      */
-    public int getLength() {
+    @Override
+	public int getLength() {
         return sequenceString.length();
     }
 
     /**
      * @return a String containing the sequences.
      */
-    public String getSequenceString() {
+    @Override
+	public String getSequenceString() {
         return sequenceString.toString();
     }
 
     /**
      * @return a char containing the state at index.
      */
-    public char getChar(int index) {
+    @Override
+	public char getChar(int index) {
         return sequenceString.charAt(index);
     }
 
     /**
      * @return the state at site index.
      */
-    public int getState(int index) {
+    @Override
+	public int getState(int index) {
         return dataType.getState(sequenceString.charAt(index));
     }
 
@@ -92,21 +97,24 @@ public class Haplotype extends Sequence {
     /**
      * Characters are copied from the sequences into the destination character array dst.
      */
-    public void getChars(int srcBegin, int srcEnd, char[] dst, int dstBegin) {
+    @Override
+	public void getChars(int srcBegin, int srcEnd, char[] dst, int dstBegin) {
         sequenceString.getChars(srcBegin, srcEnd, dst, dstBegin);
     }
 
     /**
      * Set the DataType of the sequences.
      */
-    public DataType guessDataType() {
+    @Override
+	public DataType guessDataType() {
         return DataType.guessDataType(sequenceString.toString());
     }
 
     /**
      * Set the sequences using a string.
      */
-    public void setSequenceString(String sequence) {
+    @Override
+	public void setSequenceString(String sequence) {
         sequenceString.setLength(0);
         sequenceString.append(sequence.toUpperCase());
     }
@@ -114,14 +122,16 @@ public class Haplotype extends Sequence {
     /**
      * Append a string to the sequences.
      */
-    public void appendSequenceString(String sequence) {
+    @Override
+	public void appendSequenceString(String sequence) {
         sequenceString.append(sequence);
     }
 
     /**
      * Insert a string into the sequences.
      */
-    public void insertSequenceString(int offset, String sequence) {
+    @Override
+	public void insertSequenceString(int offset, String sequence) {
         sequenceString.insert(offset, sequence);
     }
 

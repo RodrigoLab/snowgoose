@@ -16,7 +16,7 @@ import dr.inference.model.Variable;
 import dr.inference.model.Variable.ChangeType;
 import dr.inference.model.VariableListener;
 import dr.inference.model.Model.ListenerHelper;
-
+@Deprecated
 public class AlignmentModel extends AbstractModel{
 	
 	public static final String ALIGNMENT_MODEL = "alignmentModel";

@@ -1,4 +1,4 @@
-package test.srp.likelihood;
+package test.likelihood;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -59,9 +59,9 @@ public class ShortReadLikelihoodTest {
 		String[] seqs = new String[]{"AACCGGTT"};
 	
 		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
-		SimpleAlignment alignment = AlignmentUtils.createAlignment(seqs);
+//		SimpleAlignment alignment = AlignmentUtils.createAlignment(seqs);
 		
-		HaplotypeModel haplotypeModel = new HaplotypeModel(aMap, alignment);
+		HaplotypeModel haplotypeModel = AlignmentUtils.createHaplotypeModel(seqs);
 		ShortReadLikelihood srL = new ShortReadLikelihood(aMap, haplotypeModel);
 		
 		double logLikelihood = srL.calculateLogLikelihoodSelect(BINOMIAL);
@@ -76,7 +76,7 @@ public class ShortReadLikelihoodTest {
 				};
 		aMap = AlignmentUtils.createAlignmentMapping(seqs);
 		seqs = new String[]{"XXXXXAACCGGTTYYYYYYYY"};
-		alignment = AlignmentUtils.createAlignment(seqs);
+		SimpleAlignment alignment = AlignmentUtils.createAlignment(seqs);
 		
 		haplotypeModel = new HaplotypeModel(aMap, alignment);
 		srL = new ShortReadLikelihood(aMap, haplotypeModel);
@@ -112,9 +112,6 @@ public class ShortReadLikelihoodTest {
 		ShortReadLikelihood srL = new ShortReadLikelihood(aMap, haplotypeModel);
 		double logLikelihood = srL.calculateLogLikelihoodSelect(BINOMIAL);
 		
-		System.out.println(haplotypeModel.getHaplotypeString(0) );
-		System.out.println("init:\t"+logLikelihood);
-		System.out.println();
 		
 //		aMatrix = new AlignmentMatrix(aMap, 1);
 //		srL = new ShortReadLikelihood(aMap, aMatrix);
@@ -135,7 +132,7 @@ public class ShortReadLikelihoodTest {
 //		}
 
 		srL = new ShortReadLikelihood(aMap, haplotypeModel);
-		System.out.println("Likelihood:\t"+srL.getLogLikelihood()+"\n");
+//		System.out.println("Likelihood:\t"+srL.getLogLikelihood()+"\n");
 		
 		double likelihood = srL.getLogLikelihood(); 
 		
@@ -169,10 +166,10 @@ public class ShortReadLikelihoodTest {
 				
 		}
 		for (int i = 0; i < haplotypeModel.getHaplotypeCount(); i++) {
-			System.out.println(haplotypeModel.getHaplotypeString(i) );
+//			System.out.println(haplotypeModel.getHaplotypeString(i) );
 		}
 		srL = new ShortReadLikelihood(aMap, haplotypeModel);
-		System.out.println("Likelihood:\t"+srL.getLogLikelihood()+"\n");
+//		System.out.println("Likelihood:\t"+srL.getLogLikelihood()+"\n");
 		
 
 //AAAAACCCCCGGGCCTTCGCGTCCACTTTATAGGGG

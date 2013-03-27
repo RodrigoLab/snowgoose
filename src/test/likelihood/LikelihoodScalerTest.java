@@ -1,4 +1,4 @@
-package test.srp.likelihood;
+package test.likelihood;
 
 import static org.junit.Assert.*;
 

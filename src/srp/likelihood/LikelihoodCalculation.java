@@ -27,7 +27,7 @@ import dr.evomodelxml.coalescent.ConstantPopulationModelParser;
 import dr.evomodelxml.sitemodel.GammaSiteModelParser;
 import dr.evomodelxml.substmodel.HKYParser;
 import dr.inference.model.Parameter;
-
+@Deprecated
 public class LikelihoodCalculation {//extends TraceCorrelationAssert {
 
 	

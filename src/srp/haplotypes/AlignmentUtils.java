@@ -35,16 +35,16 @@ public class AlignmentUtils {
     }
 	
 
-	public static SimpleAlignment createAlignment(String[] taxa_sequence){
+	public static SimpleAlignment createAlignment(String[] sequences){
 
         SimpleAlignment alignment = new SimpleAlignment();
         alignment.setDataType(Nucleotides.INSTANCE);
 
-        Taxon[] taxa = new Taxon[taxa_sequence.length]; // 6, 17
-        for (int i=0; i < taxa_sequence.length; i++) {
+        Taxon[] taxa = new Taxon[sequences.length]; 
+        for (int i=0; i < sequences.length; i++) {
             taxa[i] = new Taxon("Taxa_"+i);
 
-            Sequence sequence = new Sequence(taxa_sequence[i].toString());
+            Sequence sequence = new Sequence(sequences[i].toString());
             sequence.setTaxon(taxa[i]);
 //            sequence.setDataType(dataType);
 
@@ -61,7 +61,7 @@ public class AlignmentUtils {
 		return aMap;
 	}
 	
-	public static HaplotypeModel createHaplotypes(String[] taxa_sequence){
+	public static HaplotypeModel createHaplotypeModel(String[] taxa_sequence){
 		
 		Alignment alignment = AlignmentUtils.createAlignment(taxa_sequence);
 		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(taxa_sequence);

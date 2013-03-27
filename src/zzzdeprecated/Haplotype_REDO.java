@@ -1,4 +1,4 @@
-package srp.haplotypes;
+package zzzdeprecated;
 
 
 
@@ -8,7 +8,7 @@ import dr.util.Attributable;
 import dr.util.Identifiable;
 
 import java.util.Iterator;
-
+@Deprecated
 public class Haplotype_REDO implements Identifiable, Attributable {
 
 	    /**

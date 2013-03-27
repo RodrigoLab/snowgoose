@@ -1,4 +1,4 @@
-package test.srp.likelihood;
+package test.likelihood;
 
 import static org.junit.Assert.assertTrue;
 
@@ -140,24 +140,24 @@ public class CopyStrictClockTest  {
         operator.setWeight(1.0);
         schedule.addOperator(operator);
 
-        operator = new ScaleOperator(rateParameter, 0.75);
-        operator.setWeight(3.0);
-        schedule.addOperator(operator);
+//        operator = new ScaleOperator(rateParameter, 0.75);
+//        operator.setWeight(3.0);
+//        schedule.addOperator(operator);
 
-        Parameter allInternalHeights = treeModel.createNodeHeightsParameter(true, true, false);
-        operator = new UpDownOperator(new Scalable[]{new Scalable.Default(rateParameter)},
-                new Scalable[] {new Scalable.Default(allInternalHeights)}, 0.75, 3.0, CoercionMode.COERCION_ON);
-        schedule.addOperator(operator);
+//        Parameter allInternalHeights = treeModel.createNodeHeightsParameter(true, true, false);
+//        operator = new UpDownOperator(new Scalable[]{new Scalable.Default(rateParameter)},
+//                new Scalable[] {new Scalable.Default(allInternalHeights)}, 0.75, 3.0, CoercionMode.COERCION_ON);
+//        schedule.addOperator(operator);
 
-        operator = new ScaleOperator(popSize, 0.75);
-        operator.setWeight(3.0);
-        schedule.addOperator(operator);
+//        operator = new ScaleOperator(popSize, 0.75);
+//        operator.setWeight(3.0);
+//        schedule.addOperator(operator);
 
-        Parameter rootHeight = treeModel.getRootHeightParameter();
-        rootHeight.setId(TREE_HEIGHT);
-        operator = new ScaleOperator(rootHeight, 0.75);
-        operator.setWeight(3.0);
-        schedule.addOperator(operator);
+//        Parameter rootHeight = treeModel.getRootHeightParameter();
+//        rootHeight.setId(TREE_HEIGHT);
+//        operator = new ScaleOperator(rootHeight, 0.75);
+//        operator.setWeight(3.0);
+//        schedule.addOperator(operator);
 
         Parameter internalHeights = treeModel.createNodeHeightsParameter(false, true, false);
         operator = new UniformOperator(internalHeights, 30.0);
@@ -166,13 +166,13 @@ public class CopyStrictClockTest  {
         operator = new SubtreeSlideOperator(treeModel, 15.0, 1.0, true, false, false, false, CoercionMode.COERCION_ON);
         schedule.addOperator(operator);
 
-        operator = new ExchangeOperator(ExchangeOperator.NARROW, treeModel, 15.0);
-//        operator.doOperation();
-        schedule.addOperator(operator);
-
-        operator = new ExchangeOperator(ExchangeOperator.WIDE, treeModel, 3.0);
-//        operator.doOperation();
-        schedule.addOperator(operator);
+//        operator = new ExchangeOperator(ExchangeOperator.NARROW, treeModel, 15.0);
+////        operator.doOperation();
+//        schedule.addOperator(operator);
+//
+//        operator = new ExchangeOperator(ExchangeOperator.WIDE, treeModel, 3.0);
+////        operator.doOperation();
+//        schedule.addOperator(operator);
 
         operator = new WilsonBalding(treeModel, 3.0);
 //        operator.doOperation();
@@ -201,7 +201,7 @@ public class CopyStrictClockTest  {
         loggers[0] = new MCLogger(formatter, 500, false);
         loggers[0].add(posterior);
         loggers[0].add(treeLikelihood);
-        loggers[0].add(rootHeight);
+//        loggers[0].add(rootHeight);
         loggers[0].add(rateParameter);
         loggers[0].add(popSize);
         loggers[0].add(kappa);
@@ -210,7 +210,7 @@ public class CopyStrictClockTest  {
         loggers[1] = new MCLogger(new TabDelimitedFormatter(System.out), 10000, false);
         loggers[1].add(posterior);
         loggers[1].add(treeLikelihood);
-        loggers[1].add(rootHeight);
+//        loggers[1].add(rootHeight);
         loggers[1].add(rateParameter);
         loggers[1].add(coalescent);
 

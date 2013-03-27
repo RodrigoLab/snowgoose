@@ -1,4 +1,4 @@
-package test.srp.haplotypes;
+package test.haplotypes;
 
 import static org.junit.Assert.*;
 
@@ -98,7 +98,7 @@ public class ShortReadTest {
 		s = "..ZZ..";
 		srTemp = new ShortRead(new Sequence(taxon, s));
 		assertFalse(srTemp.getIsValid());
-		assertEquals("..ZZ...", srTemp.getFullSrp());
+		assertEquals("..ZZ..", srTemp.getFullSrp());
 		
 	}
 

@@ -95,7 +95,7 @@ public class ShortReadLikelihood extends AbstractModelLikelihood {
 
     }
 
-	public ShortReadLikelihood(AlignmentMapping aMap, HaplotypeModel aMatrix){
+	public ShortReadLikelihood(AlignmentMapping aMap, HaplotypeModel haplotypeModel){
 		this(SHORT_READ_LIKELIHOOD);
 		
 		
@@ -110,10 +110,12 @@ public class ShortReadLikelihood extends AbstractModelLikelihood {
 
 		makeDirty();
 		this.aMap = aMap;
-		updateHaplotypes(aMatrix);
+		updateHaplotypes(haplotypeModel);
 //		this.haplotypesChars = alignment.getCharMatrix();
 		preprocessLikelihoodAlignmentMap();
 		calculateShoreReadLikelihoodBinomalFull();
+		
+		addModel(haplotypeModel);
 	}
 	
 	public void updateHaplotypes(HaplotypeModel aMatrix){
@@ -184,7 +186,7 @@ public class ShortReadLikelihood extends AbstractModelLikelihood {
     
 	@Override
 	public double getLogLikelihood(){
-		likelihoodKnown = false; //TODO REMOVE later 
+//		likelihoodKnown = false; //TODO REMOVE later //
         if (!likelihoodKnown) {
             logLikelihood = calculateLogLikelihood();
             likelihoodKnown = true;
@@ -206,15 +208,19 @@ public class ShortReadLikelihood extends AbstractModelLikelihood {
 	public double calculateLogLikelihoodSelect(int index){
 
 		double logLikelihood = Double.NEGATIVE_INFINITY;
+		
 		if (!Arrays.equals(NULL_SWAPINFO,  swapInfo) ){
 			index=1;
 		}
 		switch (index) {
 		case 0:
+			
 			logLikelihood = calculateShoreReadLikelihoodBinomalFull();
 			break;
 		case 1:
+			
 			logLikelihood = calculateShoreReadLikelihoodBinomal2();
+			
 			break;
 //		case 2:
 //			logLikelihood = calculateShoreReadLikelihoodBinomialModel2();
@@ -226,7 +232,7 @@ public class ShortReadLikelihood extends AbstractModelLikelihood {
 //	    double logLikelihood = calculateShoreReadLikelihoodBinomialModel2();
 	    
 //	    timeTrial();
-		storeState();
+//		storeState();
 		return logLikelihood;
 	}
 
@@ -268,7 +274,7 @@ public class ShortReadLikelihood extends AbstractModelLikelihood {
 			logLikelihood += eachLikelihood[i];
 			liS.reset(LOG_C);
 		}	
-		storeState();
+//		storeState();
 		
 		
 		return logLikelihood;
@@ -370,7 +376,7 @@ public class ShortReadLikelihood extends AbstractModelLikelihood {
 //			
 //		}
 		
-		storeState();
+//		storeState();
 		return logLikelihood;
 	}
 
@@ -411,6 +417,7 @@ public class ShortReadLikelihood extends AbstractModelLikelihood {
 
 	@Override
 	protected void storeState() {
+//		System.err.println("SR likelihood store: " + logLikelihood);
 		System.arraycopy(eachLikelihood, 0, storedEachLikelihood, 0, eachLikelihood.length);
 		storedLogLikelihood = logLikelihood;
 //		System.arraycopy(storedEachLikelihood, 0, eachLikelihood, 0, eachLikelihood.length);
@@ -419,6 +426,7 @@ public class ShortReadLikelihood extends AbstractModelLikelihood {
 
 	@Override
 	public void restoreState() {
+//		System.err.println("SR likelihood restore: " + storedLogLikelihood);
 		logLikelihood = storedLogLikelihood;
 		System.arraycopy(storedEachLikelihood, 0, eachLikelihood, 0, eachLikelihood.length);
 		

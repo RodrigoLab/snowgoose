@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
+import dr.app.beauti.types.OperatorType;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.PatternList;
 import dr.evolution.alignment.SimpleAlignment;
@@ -13,6 +14,11 @@ import dr.evolution.datatype.DataType;
 import dr.evolution.datatype.Nucleotides;
 import dr.evolution.sequence.Sequence;
 import dr.evolution.util.Taxon;
+import dr.evomodel.tree.TreeModel.TreeChangedEvent;
+import dr.inference.model.AbstractModel;
+import dr.inference.model.Model;
+import dr.inference.model.Variable;
+import dr.inference.model.Variable.ChangeType;
 import dr.util.Attributable;
 import dr.util.NumberFormatter;
 
@@ -62,34 +68,31 @@ import dr.util.NumberFormatter;
 
 
 */
-public class HaplotypeModel implements Alignment{
-//public class HaplotypeModel extends Abstract{
-	
-	public static final int[] NULL_SWAPINFO = new int[4];
+
+
+public class HaplotypeModel extends AbstractHaplotypeModel  {
+
 	public static final char GAP = '-';
 	public static final String TAXON_PREFIX = "Hap_";
 	
-	
+	private static final long serialVersionUID = -5057514703825711955L;
+
 	private static Random rand = new Random();
 
-
-    private Attributable.AttributeHelper attributes = null;
-
-	private DataType dataType = null;
-	
-	char[][] matrix;
-
 //	int haplotypesCount;
-	int haplotypesLength;
 	AlignmentMapping aMap;
+	SwapInfo swapInfo = new SwapInfo();
+
 	
-	ArrayList<Haplotype> haplotypes;
-//	SimpleAlignment alignment;
-//	Taxa taxa;	//FIXME might be better/easier to like with trees, or might not need at all
-//	Taxon[] taxons;
-	private int[] swapInfo = new int[NULL_SWAPINFO.length]; 
+	
+	@Deprecated
+	char[][] matrix;
+	@Deprecated
+	private int[] swapInfoOld = new int[NULL_SWAPINFO.length]; 
 	//TODO: Expand to a class later, use this to speed up likelihood calculation
-	
+	@Deprecated
+	public static final int[] NULL_SWAPINFO = new int[4];
+	private static final String MODEL_NAME = "HaplotypeModel";
 	
 	
 	
@@ -143,20 +146,22 @@ public class HaplotypeModel implements Alignment{
 		}
 	}
 	private void addHaplotype(Haplotype haplotype) {
-		haplotype.setDataType(dataType);
+		haplotype.setDataType(getDataType());
 	    haplotypes.add(haplotype);
 	
 	}
 
 	public HaplotypeModel(AlignmentMapping aMap, int hapCount) {
+		super(MODEL_NAME);
 		setupData(aMap);
 				
 		initSeqs(hapCount);
-		swapInfo = new int[4];//TODO remove later
+		swapInfoOld = new int[4];//TODO remove later
 		
 	}
 
 	public HaplotypeModel(AlignmentMapping aMap, Alignment trueAlignment) {
+		super(MODEL_NAME);
 		setupData(aMap);
 		setupAlignment(trueAlignment);
 		alignmentToMatrix();
@@ -220,20 +225,27 @@ public class HaplotypeModel implements Alignment{
 	}
 
 	private void swapBase(int hapIndex, int pos, char c){
-		swapInfo[0] = hapIndex;
-		swapInfo[1] = pos;
-		swapInfo[2] = matrix[hapIndex][pos];
-		swapInfo[3] = c;
-		
+		swapInfoOld[0] = hapIndex;
+		swapInfoOld[1] = pos;
+		swapInfoOld[2] = matrix[hapIndex][pos];
+		swapInfoOld[3] = c;
+
+		swapInfo.storeOperation(Operation.SWAPBASE, swapInfoOld);
 		matrix[hapIndex][pos] = c;
 
 		getHaplotype(hapIndex).setCharAt(pos, c);
-
+		fireModelChanged();
 		
+	}
+	public void fireModelChanged(){
+//		for (TreeChangedEvent treeChangedEvent : treeChangedEvents) {
+		listenerHelper.fireModelChanged(this);//, treeChangedEvent);
+//		}
+//		treeChangedEvents.clear();
 	}
 
 
-
+	@Deprecated
 	public void swapSrp(int hapIndex, int start, int end, int srpIndex){
 		String srp = aMap.getSrpFull(srpIndex);
 		for (int p = start; p < end; p++) {
@@ -246,9 +258,9 @@ public class HaplotypeModel implements Alignment{
 	}
 
 	public void reject() {
-
-		matrix[swapInfo[0]][swapInfo[1]] = (char) swapInfo[2];
-		getHaplotype(swapInfo[0]).setCharAt(swapInfo[1], (char)swapInfo[2]);
+		swapInfoOld = swapInfo.getSwapInfo();
+		matrix[swapInfoOld[0]][swapInfoOld[1]] = (char) swapInfoOld[2];
+		getHaplotype(swapInfoOld[0]).setCharAt(swapInfoOld[1], (char)swapInfoOld[2]);
 	}
 
 	@Deprecated
@@ -278,7 +290,7 @@ public class HaplotypeModel implements Alignment{
 	}
 
 	public int[] getSwapInfo() {
-		return swapInfo;
+		return swapInfo.getSwapInfo();
 	}
 
 	@Override
@@ -309,419 +321,6 @@ public class HaplotypeModel implements Alignment{
 	}
 
 
-	public String getHaplotypeString(int i) {
-	
-//		return String.valueOf(matrix[i]);
-		return getHaplotype(i).getSequenceString();
-		
-	}
-
-	public int getHaplotypeLength() {
-	
-		return haplotypesLength;
-	}
-
-	public int getHaplotypeCount() {
-		// TODO OR sequence.length()? change number of haplotypes
-		return haplotypes.size();
-	}
-
-	public Haplotype getHaplotype(int i){
-		return haplotypes.get(i);
-	}
-
-    // **************************************************************
-    // SequenceList IMPLEMENTATION
-    // **************************************************************
-	
-	/*
-	 * Call getHaplotypesCount(), return haplotypesCount
-	 */
-	@Override
-	public int getSequenceCount() {
-		return getHaplotypeCount();
-	}
-
-	@Override
-	public Sequence getSequence(int i) {
-		// TODO think again
-		return getHaplotype(i);
-	}
-
-	
-	public void setSequenceAttribute(int index, String name, Object value) {
-		// XXX double check
-		Sequence sequence = getSequence(index);
-        sequence.setAttribute(name, value);
-	}
-
-	
-	public Object getSequenceAttribute(int index, String name) {
-		//XXX double check
-		Sequence sequence = getSequence(index);
-        return sequence.getAttribute(name);
-	}
-
-    // **************************************************************
-    // TaxonList IMPLEMENTATION
-    // **************************************************************
-
-	@Override
-	public int getTaxonCount() {
-		return getHaplotypeCount();
-	}
-	
-	@Override
-	public Taxon getTaxon(int taxonIndex) {
-		return getHaplotype(taxonIndex).getTaxon();
-	}
-
-	/**
-     * @return the ID of the taxon of the ith sequence. If it doesn't have
-     *         a taxon, returns the ID of the sequence itself.
-     */
-    public String getTaxonId(int taxonIndex) {
-		//XXX double check
-        Taxon taxon = getTaxon(taxonIndex);
-        if (taxon != null)
-            return taxon.getId();
-        else
-            throw new IllegalArgumentException("Illegal taxon index:" + taxonIndex);
-    }
-
-    /**
-     * returns the index of the taxon with the given id.
-     */
-    @Override
-	public int getTaxonIndex(String id) {
-        for (int i = 0, n = getTaxonCount(); i < n; i++) {
-            if (getTaxonId(i).equals(id)) return i;
-        }
-        return -1;
-    }
-
-    /**
-     * returns the index of the given taxon.
-     * must be the same object
-     */
-    @Override
-	public int getTaxonIndex(Taxon taxon) {
-        for (int i = 0, n = getTaxonCount(); i < n; i++) {
-            if (getTaxon(i) == taxon) return i;
-        }
-        return -1;
-    }
-
-    @Override
-	public List<Taxon> asList() {
-        List<Taxon> taxa = new ArrayList<Taxon>();
-        for (int i = 0, n = getTaxonCount(); i < n; i++) {
-            taxa.add(getTaxon(i));
-        }
-        return taxa;
-    }
-
-	
-//    /**
-//     * Sets an named attribute for the taxon of a given sequence. If the sequence
-//     * doesn't have a taxon then the attribute is added to the sequence itself.
-//     *
-//     * @param taxonIndex the index of the taxon whose attribute is being set.
-//     * @param name       the name of the attribute.
-//     * @param value      the new value of the attribute.
-//     */
-//    public void setTaxonAttribute(int taxonIndex, String name, Object value) {
-//        Taxon taxon = getTaxon(taxonIndex);
-//        if (taxon != null)
-//            taxon.setAttribute(name, value);
-//        else
-//            setSequenceAttribute(taxonIndex, name, value);
-//    }
-
-    /**
-     * @param taxonIndex the index of the taxon whose attribute is being fetched.
-     * @param name       the name of the attribute of interest.
-     * @return an object representing the named attributed for the given taxon.
-     */
-    @Override
-	public Object getTaxonAttribute(int taxonIndex, String name) {
-    	Taxon taxon = getTaxon(taxonIndex);
-        if (taxon != null)
-            return taxon.getAttribute(name);
-        else
-        	//TODO test this, might not needed
-            return getSequenceAttribute(taxonIndex, name);
-    }
-
-    @Override
-	public Iterator<Taxon> iterator() {
-        return new Iterator<Taxon>() {
-            private int index = -1;
-
-            @Override
-			public boolean hasNext() {
-                return index < getTaxonCount() - 1;
-            }
-
-            @Override
-			public Taxon next() {
-                index++;
-                return getTaxon(index);
-            }
-
-            @Override
-			public void remove() { /* do nothing */ }
-        };
-    }
-
-
-    // **************************************************************
-    // SiteList IMPLEMENTATION
-    // **************************************************************
-
-    /**
-     * Gets the pattern index at a particular site
-     * @param siteIndex
-     * @return siteIndex, identical to @param
-     */
-    @Override
-	public int getPatternIndex(int siteIndex) {
-        return siteIndex;
-    }
-
-    /**
-     * @return number of sites - getHaplotypeLength()
-     */
-    @Override
-	public int getSiteCount() {
-        return getHaplotypeLength();
-    }
-
-    /**
-     * Gets the pattern of site as an array of state numbers (one per sequence)
-     *
-     * @return the site pattern at siteIndex
-     */
-    @Override
-	public int[] getSitePattern(int siteIndex) {
-
-    	int n = getHaplotypeCount();
-
-    	int[] pattern = new int[n];
-        for (int i = 0; i < n; i++) {
-            Haplotype hap = getHaplotype(i);
-
-            if (siteIndex >= hap.getLength())
-                pattern[i] = dataType.getGapState();
-            else
-                pattern[i] = hap.getState(siteIndex);
-        }
-
-        return pattern;
-    }
-
-
-    /**
-     * @return the sequence state at (taxon, site)
-     */
-    @Override
-	public int getState(int taxonIndex, int siteIndex) {
-        Haplotype hap = getHaplotype(taxonIndex);
-
-        if (siteIndex >= hap.getLength()) {
-            return dataType.getGapState();
-        }
-
-        return hap.getState(siteIndex);
-    }
-
-//    /**
-//     */
-//    public void setState(int taxonIndex, int siteIndex, int state) {
-//
-//        Sequence seq = getSequence(taxonIndex);
-//
-//        if (siteIndex >= seq.getLength()) {
-//            throw new IllegalArgumentException();
-//        }
-//
-//        seq.setState(siteIndex, state);
-//    }
-
-    // **************************************************************
-    // PatternList IMPLEMENTATION
-    // **************************************************************
-
-    /**
-     * @return number of patterns
-     */
-    @Override
-	public int getPatternCount() {
-        return getSiteCount();
-    }
- 
-
-    /**
-     * @return number of states for this siteList
-     */
-    @Override
-	public int getStateCount() {
-        return getDataType().getStateCount();
-    }
-
-    /**
-     * Gets the length of the pattern strings which will usually be the
-     * same as the number of taxa
-     *
-     * @return the length of patterns
-     */
-    @Override
-	public int getPatternLength() {
-        return getSequenceCount();
-    }
-
-    /**
-     * Gets the pattern as an array of state numbers (one per sequence)
-     *
-     * @return the pattern at patternIndex
-     */
-    public int[] getPattern(int patternIndex) {
-    	//XXX double check
-        return getSitePattern(patternIndex);
-    }
-
-    /**
-     * @return state at (taxonIndex, patternIndex)
-     */
-    public int getPatternState(int taxonIndex, int patternIndex) {
-    	//XXX double check
-    	return getState(taxonIndex, patternIndex);
-    }
-
-    /**
-     * Gets the weight of a site pattern (always 1.0)
-     */
-    @Override
-	public double getPatternWeight(int patternIndex) {
-        return 1.0;
-    }
-
-    /**
-     * @return the array of pattern weights
-     */
-    @Override
-	public double[] getPatternWeights() {
-        double[] weights = new double[getSiteCount()];
-        for (int i = 0; i < weights.length; i++)
-            weights[i] = 1.0;
-        return weights;
-    }
-
-	
-    /**
-     * @return the frequency of each state
-     */
-    public double[] getStateFrequencies() {
-    	// XXX double check
-        return PatternList.Utils.empiricalStateFrequencies(this);
-    }
-
-	@Override
-	public DataType getDataType() {
-		// XXX double check
-		return dataType;
-	}
-	
-    // **************************************************************
-    // Alignment IMPLEMENTATION
-    // **************************************************************
-
-	@Override
-	public void setDataType(DataType dataType) {
-		// XXX double check
-		this.dataType = dataType;
-	}
-
-
-
-	
-	/**
-	 * call getHaplotypeString(sequenceIndex);
-	 */
-	@Override
-	public String getAlignedSequenceString(int sequenceIndex) {
-		
-		return getHaplotypeString(sequenceIndex);
-	}
-
-	/**
-	 * call getHaplotypeString(sequenceIndex);
-	 */
-	@Override
-	public String getUnalignedSequenceString(int sequenceIndex) {
-		
-		return getHaplotypeString(sequenceIndex);
-	}
-	
-    // **************************************************************
-    // Identifiable IMPLEMENTATION
-    // **************************************************************
-
-	protected String id = null;
-
-	/**
-	 * @return the id.
-	 */
-	@Override
-	public String getId() {
-		return id;
-	}
-
-	/**
-	 * Sets the id.
-	 */
-	@Override
-	public void setId(String id) {
-		this.id = id;
-	}
-
-
-    // **************************************************************
-    // Attributable IMPLEMENTATION
-    // **************************************************************
-
-    /**
-     * Sets an named attribute for this object.
-     *
-     * @param name  the name of the attribute.
-     * @param value the new value of the attribute.
-     */
-    public void setAttribute(String name, Object value) {
-        if (attributes == null)
-            attributes = new Attributable.AttributeHelper();
-        attributes.setAttribute(name, value);
-    }
-
-    /**
-     * @param name the name of the attribute of interest.
-     * @return an object representing the named attributed for this object.
-     */
-    public Object getAttribute(String name) {
-        if (attributes == null)
-            return null;
-        else
-            return attributes.getAttribute(name);
-    }
-
-    /**
-     * @return an iterator of the attributes that this object has.
-     */
-    public Iterator<String> getAttributeNames() {
-        if (attributes == null)
-            return null;
-        else
-            return attributes.getAttributeNames();
-    }
 
     
     // **************************************************************
@@ -778,7 +377,7 @@ public class HaplotypeModel implements Alignment{
 	}
 
 	
-
+	@Deprecated
 	public static Alignment swapAlignment(Alignment alignment){
 		
 		SimpleAlignment newAlignment = new SimpleAlignment();
@@ -798,6 +397,41 @@ public class HaplotypeModel implements Alignment{
 			newAlignment.addSequence(seq);
 		}
 		return newAlignment;
+	}
+
+	@Override
+	protected void handleModelChangedEvent(Model model, Object object, int index) {
+		// TODO Auto-generated method stub
+		System.err.println("Call handleModelChangedEvent");
+		
+	}
+
+	@Override
+	protected void handleVariableChangedEvent(Variable variable, int index,
+			ChangeType type) {
+		// TODO Auto-generated method stub
+		System.err.println("Call handleVariableChangedEvent");
+	}
+
+	@Override
+	protected void storeState() {
+
+//		System.err.println("Call storeState");
+		swapInfo.storeOperation(Operation.NONE, null);
+	}
+
+	@Override
+	protected void restoreState() {
+//		System.err.println("Call restoreState");
+
+		if(Operation.NONE != swapInfo.getOperation()){
+			reject();
+		}
+	}
+
+	@Override
+	protected void acceptState() {
+		//Do nothing
 	}
 
 }

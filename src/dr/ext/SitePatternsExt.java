@@ -12,11 +12,11 @@ public class SitePatternsExt extends SitePatterns{
 		super(alignment, taxa, from, to, every, strip);
 
 	}
-	public SitePatternsExt(HaplotypeModel haplotypeModel, TaxonList taxa, int from,
-			int to, int every, boolean strip) {
-//		Alignment alignment = haplotypes.getAlignment();
-		this(haplotypeModel.getAlignment(), taxa, from, to, every, strip);
-	}
+//	public SitePatternsExt(HaplotypeModel haplotypeModel, TaxonList taxa, int from,
+//			int to, int every, boolean strip) {
+////		Alignment alignment = haplotypes.getAlignment();
+//		this(haplotypeModel.getAlignment(), taxa, from, to, every, strip);
+//	}
 	public void updateAlignment(Alignment alignment){
 //		this.strip = strip;
 //	    this.unique = unique;

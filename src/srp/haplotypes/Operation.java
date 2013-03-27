@@ -1,7 +1,8 @@
 package srp.haplotypes;
 
 public enum Operation {
-	SWAPBASE(0), SWAPCOLUMN(1);
+	NONE(0),
+	SWAPBASE(1), SWAPCOLUMN(2);
 	
 	private int code;
 	private Operation(int i){

@@ -1,4 +1,4 @@
-package test.srp.haplotypes;
+package test.haplotypes;
 
 import static org.junit.Assert.*;
 

@@ -104,12 +104,14 @@ public class Main {
 	private static void testSim1(String[] args){
 //		. 1110_10_org_6.phyml 1110_10_org_6.phyml_phyml_tree.txt 1110_10_align_100.fasta 1		
 		String dataDir = args[0];//"/home/sw167/Postdoc/Project_A2BI_temp/data/srAlignment/";
-
+		dataDir = "/home/sw167/Postdoc/Project_A2BI_temp/data/srAlignment/";
+		
 		String trueAlignmentFile = args[1];//"1110_10_org_6.phyml";
 		String truephylogenyFile = args[2];//"1110_10_org_6.phyml_phyml_tree.txt";
 		String shortReadFile = args[3];//"1110_10_align_100.fasta";//"1110_10_align_2.fasta";
 		
-		
+		truephylogenyFile = "130220_H4_haplotypes.tree";
+		shortReadFile = "130220_H4_srp.fasta";
 		
 		DataImporter dataImporter = new DataImporter(dataDir);
 		Alignment alignment = dataImporter.importAlignment(trueAlignmentFile);

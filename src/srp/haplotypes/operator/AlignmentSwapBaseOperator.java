@@ -50,16 +50,29 @@ public class AlignmentSwapBaseOperator extends AbstractCoercableOperator {
 
 	@Override
 	public String getOperatorName() {
-		// TODO Auto-generated method stub
+
 		return "swapBaseOperator";
 	}
 
 	@Override
 	public double doOperation() throws OperatorFailedException {
 		haplotypeModel.swapBase();
-		return 0;
+		// symmetrical move so return a zero hasting ratio. reture logq
+		return 0.0;
 	}
 
+//	public void reject(){
+//		super.reject();
+//		System.err.println("REJECT!!!" + getRejectCount());
+//		haplotypeModel.reject();
+////	  if( !operateAllowed ) {
+////            operateAllowed = true;
+////            rejectCount += 1;
+////        } else {
+////            throw new RuntimeException(
+////                    "Accept/reject methods called twice without operate called in between!");
+////        }
+//	}
 /*	
 package operator;
 
