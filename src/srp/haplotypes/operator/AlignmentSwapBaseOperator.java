@@ -1,6 +1,7 @@
 package srp.haplotypes.operator;
 
 import srp.haplotypes.HaplotypeModel;
+import dr.evolution.alignment.Alignment;
 import dr.inference.model.Parameter;
 import dr.inference.operators.AbstractCoercableOperator;
 import dr.inference.operators.CoercionMode;
@@ -57,6 +58,16 @@ public class AlignmentSwapBaseOperator extends AbstractCoercableOperator {
 	@Override
 	public double doOperation() throws OperatorFailedException {
 		haplotypeModel.swapBase();
+		
+		
+
+		
+//		srpLikelihood.updateHaplotypes(haplotypeModel);
+//
+//		Alignment alignment = haplotypeModel.getAlignment();
+//		patterns.updateAlignment(alignment);
+//		treeLikelihood.updatePatternList(patterns);
+		
 		// symmetrical move so return a zero hasting ratio. reture logq
 		return 0.0;
 	}

@@ -174,7 +174,27 @@ public class LikelihoodUtils {
 	}
 
 
-
+	public static int Dist(int start, int end, char[] srp, String hap) {
+//		hapCharArray = hapString.toCharArray();
+		hapString = hap;
+		srCharArray = srp;
+		
+		int count = 0;
+		int dist = 0;
+//		System.out.println(Arrays.toString(srCharArray));
+//		char[] c = 		ArrayUtils.subarray(hapCharArray, start, end);
+//		System.out.println(Arrays.toString(c));
+		for (int i = start; i < end; i++) {
+//			match = (srCharArray[count] - hapCharArray[i]);
+			match = (srCharArray[count] - hapString.charAt(i));
+			dist += (match==ZERO)? 0:1;
+//				System.out.println(count +"\t"+ i+"\t"+ match +"\t"+ (srCharArray[count] - hapCharArray[i]) +"\t");
+			count++;
+		}
+//		System.out.println(dist);
+//		System.out.println("===============");
+		return dist;
+	}
 	public static int Dist(int start, int end, char[] srp, char[] hapChar) {
 		hapCharArray = hapChar;
 		srCharArray = srp;

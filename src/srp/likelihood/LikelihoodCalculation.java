@@ -96,14 +96,12 @@ public class LikelihoodCalculation {//extends TraceCorrelationAssert {
 	public LikelihoodCalculation(TreeModel treeModel, HaplotypeModel haplotypeModel){
 //		Alignment alignment, Alignment shortReads) {
 	
-		alignment = haplotypeModel.getAlignment();
-		setTreeAndAlignment(treeModel, alignment);
+		setTreeAndAlignment(treeModel, haplotypeModel);
 	}
 	public LikelihoodCalculation(TreeModel treeModel, AlignmentMapping aMap, HaplotypeModel haplotypeModel){
 //			Alignment alignment, Alignment shortReads) {
 		
-		alignment = haplotypeModel.getAlignment();
-		setTreeAndAlignment(treeModel, alignment);
+		setTreeAndAlignment(treeModel, haplotypeModel);
 		setShortReads(aMap, haplotypeModel);
 	}
 	

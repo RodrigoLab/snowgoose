@@ -202,8 +202,9 @@ public class TreeLikelihoodExt extends TreeLikelihood {
 
 	public void updatePatternList(SitePatternsExt patterns, HaplotypeModel haplotypeModel) {
 //		TODO: more test required
-		Alignment alignment = haplotypeModel.getAlignment();
-		patterns.updateAlignment(alignment);
+//		Alignment alignment = haplotypeModel.getAlignment();
+        
+		patterns.updateAlignment(haplotypeModel);
 		updatePatternList(patterns);
 	}
 

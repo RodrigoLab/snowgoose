@@ -32,13 +32,17 @@ public class Haplotype extends Sequence {
 	}
 
 	
-	public void setCharAt(int index, char ch) {
-		sequenceString.setCharAt(index, ch);
+	public void setCharAt(int index, char newChar) {
+		sequenceString.setCharAt(index, newChar);
 	}
 
 	public void setHaplotypeString(String haplotypeString) {
 		setSequenceString(haplotypeString);
 
+	}
+	
+	public char charAt(int index){
+		return sequenceString.charAt(index);
 	}
 	
 	// **************************************
@@ -76,7 +80,7 @@ public class Haplotype extends Sequence {
      */
     @Override
 	public char getChar(int index) {
-        return sequenceString.charAt(index);
+        return charAt(index);
     }
 
     /**

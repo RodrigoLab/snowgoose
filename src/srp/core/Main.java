@@ -1,7 +1,7 @@
 package srp.core;
 /*
  -XX:CompileThreshold=50000 -XX:+CITime
- 
+-Djava.library.path=/home/sw167/PostdocLarge/Software/BEAST/BEASTv1.7.1/lib -Xms128m -Xmx256m
 */
 
 import java.io.BufferedWriter;
@@ -269,8 +269,8 @@ public class Main {
 				haplotypeModel.swapBase();
 				srpLikelihood.updateHaplotypes(haplotypeModel);
 
-				alignment = haplotypeModel.getAlignment();
-				patterns.updateAlignment(alignment);
+//				alignment = .getAlignment();
+				patterns.updateAlignment(haplotypeModel);
 				treeLikelihood.updatePatternList(patterns);
 				//srpLikelihood.getLogLikelihood();// +
 				
@@ -533,8 +533,8 @@ public class Main {
 		
 		for (int i = 0; i < 100; i++) {
 			haplotypeModel.swapBase();
-			alignment = haplotypeModel.getAlignment();
-			patterns2.updateAlignment(alignment);
+//			alignment = haplotypeModel.getAlignment();
+			patterns2.updateAlignment(haplotypeModel);
 			treeLikelihood2.updatePatternList(patterns2);
 		}
 		
@@ -559,8 +559,8 @@ public class Main {
 //		System.out.println(Arrays.toString(patterns2.getPattern(x[0])));
 //			}
 			
-			alignment = haplotypeModel.getAlignment();
-			patterns2.updateAlignment(alignment);
+//			alignment = haplotypeModel.getAlignment();
+			patterns2.updateAlignment(haplotypeModel);
 			treeLikelihood2.updatePatternList(patterns2);
 			
 			
@@ -766,7 +766,7 @@ public class Main {
 //			alignmentMatrix.testGetSeq();
 //			
 //			alignmentMatrix.testMultipleSeq();
-			haplotypeModel.getAlignment();
+//			haplotypeModel.getAlignment();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

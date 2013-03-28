@@ -75,6 +75,7 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 	public static final char GAP = '-';
 	public static final String TAXON_PREFIX = "Hap_";
 	
+	private static final String MODEL_NAME = "HaplotypeModel";
 	private static final long serialVersionUID = -5057514703825711955L;
 
 	private static Random rand = new Random();
@@ -83,20 +84,6 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 	AlignmentMapping aMap;
 	SwapInfo swapInfo = new SwapInfo();
 
-	
-	
-	@Deprecated
-	char[][] matrix;
-	@Deprecated
-	private int[] swapInfoOld = new int[NULL_SWAPINFO.length]; 
-	//TODO: Expand to a class later, use this to speed up likelihood calculation
-	@Deprecated
-	public static final int[] NULL_SWAPINFO = new int[4];
-	private static final String MODEL_NAME = "HaplotypeModel";
-	
-	
-	
-	
 	
 	
 	
@@ -125,12 +112,11 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 			Haplotype haplotype = new Haplotype(trueAlignment.getSequence(i));
 			addHaplotype(haplotype);
 		}
-		matrix = new char[getHaplotypeCount()][getHaplotypeLength()];
 		
     }
 	
 	private void initSeqs(int hapCount){
-		matrix = new char[hapCount][getHaplotypeLength()];
+		
 		char[] temp = new char[getHaplotypeLength()];
 		Arrays.fill(temp, DataType.GAP_CHARACTER);
 		String tempSeq = String.valueOf(temp);
@@ -141,7 +127,7 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 			addHaplotype(haplotype);
 
 //			String tempSeq = 
-					randomSeq(i);
+			randomSeq(i);
 
 		}
 	}
@@ -156,7 +142,7 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 		setupData(aMap);
 				
 		initSeqs(hapCount);
-		swapInfoOld = new int[4];//TODO remove later
+
 		
 	}
 
@@ -164,33 +150,23 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 		super(MODEL_NAME);
 		setupData(aMap);
 		setupAlignment(trueAlignment);
-		alignmentToMatrix();
+
 	
 	}
-	@Deprecated
-	private void alignmentToMatrix(){
 
-		for (int i = 0; i < getHaplotypeCount(); i++) {
-			Haplotype tempSeq = haplotypes.get(i);
-			tempSeq.getChars(0, getHaplotypeLength(), matrix[i], 0);
-		}
+	
+	public void randomSeq(int hapIndex) {
+		randomSeq(hapIndex, 0, getHaplotypeLength());
 		
 	}
 	
-	public String randomSeq(int hapIndex) {
-		String tempSeq = randomSeq(hapIndex, 0, getHaplotypeLength());
-		return tempSeq;
-	}
 	
-	
-	public String randomSeq(int hapIndex, int start, int end){
+	public void randomSeq(int hapIndex, int start, int end){
 		
 		for (int p = start; p < end; p++) {
 			swapBase(hapIndex, p);
 
 		}
-		String tempSeq = String.valueOf(matrix[hapIndex]);
-		return tempSeq;
 		
 	}
 
@@ -224,16 +200,18 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 	
 	}
 
-	private void swapBase(int hapIndex, int pos, char c){
-		swapInfoOld[0] = hapIndex;
-		swapInfoOld[1] = pos;
-		swapInfoOld[2] = matrix[hapIndex][pos];
-		swapInfoOld[3] = c;
+	private void swapBase(int hapIndex, int pos, char newChar){
+		int[] swapInfo2 = new int[4];
+		swapInfo2[0] = hapIndex;
+		swapInfo2[1] = pos;
+		swapInfo2[2] = getHaplotype(hapIndex).getChar(pos); //matrix[hapIndex][pos];
+		swapInfo2[3] = newChar;
 
-		swapInfo.storeOperation(Operation.SWAPBASE, swapInfoOld);
-		matrix[hapIndex][pos] = c;
-
-		getHaplotype(hapIndex).setCharAt(pos, c);
+		swapInfo.storeOperation(Operation.SWAPBASE, swapInfo2);
+		
+		getHaplotype(hapIndex).setCharAt(pos, newChar);
+	
+		
 		fireModelChanged();
 		
 	}
@@ -245,43 +223,24 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 	}
 
 
-	@Deprecated
-	public void swapSrp(int hapIndex, int start, int end, int srpIndex){
-		String srp = aMap.getSrpFull(srpIndex);
-		for (int p = start; p < end; p++) {
-			matrix[hapIndex][p] = srp.charAt(p);
-		}
-	}
 
-	public char[][] getCharMatrix() {
-		return matrix;
-	}
-
-	public void reject() {
-		swapInfoOld = swapInfo.getSwapInfo();
-		matrix[swapInfoOld[0]][swapInfoOld[1]] = (char) swapInfoOld[2];
-		getHaplotype(swapInfoOld[0]).setCharAt(swapInfoOld[1], (char)swapInfoOld[2]);
-	}
-
-	@Deprecated
-	public Alignment getAlignment() {
-		SimpleAlignment alignment = new SimpleAlignment();
-		for (int i = 0; i < getHaplotypeCount(); i++) {
-			Haplotype tempSeq = haplotypes.get(i);
-			tempSeq.setHaplotypeString( getHaplotypeString(i) );
-			alignment.addSequence(tempSeq);
-		}
+	public void reject() {//FIXME for different swapInfo/Operation
+		int[] swapInfo2 = swapInfo.getSwapInfoIntArray();
 		
-		return alignment;
+		getHaplotype(swapInfo2[0]).setCharAt(swapInfo2[1], (char)swapInfo2[2]);
 	}
+
 
 	
 	public int calculateSPS(){
 		int sps = 0;
+		
 		for (int i = 0; i < getHaplotypeCount(); i++) {
+			Haplotype h1 = getHaplotype(i);
 			for (int j = 0; j < i; j++) {
-				for (int b = 0; b < getHaplotypeLength(); b++) {
-					int c = matrix[i][b] - matrix[j][b];
+				Haplotype h2 = getHaplotype(j);
+				for (int pos = 0; pos < getHaplotypeLength(); pos++) {
+					int c = h1.charAt(pos) - h2.charAt(pos);
 					sps += (c==0)? 0: 1;
 				}
 			}
@@ -289,8 +248,14 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 		return sps;
 	}
 
-	public int[] getSwapInfo() {
-		return swapInfo.getSwapInfo();
+	public SwapInfo getSwapInfo() {
+		return swapInfo;
+	}
+
+	
+	@Deprecated
+	public int[] getSwapInfoIntArray() {
+		return swapInfo.getSwapInfoIntArray();
 	}
 
 	@Override
@@ -330,20 +295,16 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 	
 	public static int[][] calculeteSPSArray(HaplotypeModel h1, HaplotypeModel h2){
 		
-		
-		char[][] m1 = h1.getCharMatrix();
-		char[][] m2 = h2.getCharMatrix();
-		int[][] sps = calculateSPSCore(m1,m2);
+		int[][] sps = calculateSPSCore(h1,h2);
 		return sps;
 		
 	}
 	
 	public static int calculeteSPS(HaplotypeModel h1, HaplotypeModel h2){
-		
+//		
 		int sps = 0;
-		char[][] m1 = h1.getCharMatrix();
-		char[][] m2 = h2.getCharMatrix();
-		int[][] spsArray = calculateSPSCore(m1, m2);
+		int[][] spsArray = calculateSPSCore(h1, h2);
+		
 		for (int i = 0; i < spsArray.length; i++) {
 			for (int j = 0; j < spsArray[i].length; j++) {
 				sps += spsArray[i][j];
@@ -352,52 +313,49 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 		return sps;
 		
 	}
-
-	private static int[][] calculateSPSCore(char[][] m1, char[][] m2){
-			int hapLength = m1.length;
-			int seqLength = m1[0].length;
-			int sps[][] = new int[hapLength][hapLength];
-			if (seqLength != m2[0].length){
-				System.err.println("Incompariable alignments lenght: "+m1[0].length +" and "+  m2[0].length);
+	
+	private static int[][] calculateSPSCore(HaplotypeModel h1, HaplotypeModel h2){
+			int hapCount = h1.getHaplotypeCount();
+			int seqLength = h1.getHaplotypeLength();
+			int sps[][] = new int[hapCount][hapCount];
+			if (seqLength != h2.getHaplotypeLength()){
+				System.err.println("Incompariable alignments lenght: "+seqLength +" and "+  h2.getHaplotypeLength());
 			}
-			for (int i = 0; i < m1.length; i++) {
-				for (int j = 0; j < m2.length; j++) {
-					sps[i][j] = 0;
-					for (int l = 0; l < seqLength; l++) {
-	//					System.out.println(((m1[i][l] - m2[j][l]) == 0) +"\t"+ m1[i][l] +"\t"+  m2[j][l]);
-	//					sps +=  ((m1[i][l] - m2[j][l]) == 0)? 0:1;
-						sps[i][j] +=  ((m1[i][l] - m2[j][l]) == 0)? 0:1;
-						
-					}
-					
+			if (hapCount != h2.getHaplotypeCount()){
+				System.err.println("Different number of haplotypes: "+hapCount +" and "+  h2.getHaplotypeCount());
+			}
+			String[] s1 = h1.toStringArray();
+			String[] s2 = h2.toStringArray();
+			for (int i = 0; i < hapCount; i++) {
+				for (int j = 0; j < hapCount; j++) {
+					sps[i][j] = caluclateSPSSingle(s1[i], s2[j]);
 				}
 			}
 			return sps;
 			
 	}
 
-	
-	@Deprecated
-	public static Alignment swapAlignment(Alignment alignment){
-		
-		SimpleAlignment newAlignment = new SimpleAlignment();
-		
-		int seqCount = alignment.getSequenceCount();
-		int siteCount = alignment.getSiteCount();
-		
-		for (int i = 0; i < seqCount; i++) {
-			StringBuilder sb = new StringBuilder(siteCount);
-			for (int j = 0; j < siteCount; j++) {
-				int r = rand.nextInt(seqCount);
-				char c = alignment.getAlignedSequenceString(r).charAt(j);
-				sb.append(c);
-			}
-			
-			Haplotype seq = new Haplotype(alignment.getTaxon(i), sb.toString());
-			newAlignment.addSequence(seq);
+	private static int caluclateSPSSingle(String s1, String s2){
+		int sps = 0;
+		if (s1.length() != s2.length()){
+			System.err.println("Incompariable sequence lenght: "+ s1.length() +" and "+  s2.length());
 		}
-		return newAlignment;
+		for (int i = 0; i < s1.length(); i++) {
+			int c = s1.charAt(i) - s2.charAt(i);
+			sps += (c == 0)? 0:1;
+		}
+
+		return sps;
 	}
+	
+	private String[] toStringArray() {
+		String[] string = new String[getHaplotypeCount()];
+		for (int i = 0; i < string.length; i++) {
+			string[i] = getHaplotypeString(i);
+		}
+		return string;
+	}
+
 
 	@Override
 	protected void handleModelChangedEvent(Model model, Object object, int index) {

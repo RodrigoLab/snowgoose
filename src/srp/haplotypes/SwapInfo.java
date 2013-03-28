@@ -35,7 +35,7 @@ public class SwapInfo {
 		
 		}
 //	
-	public int[] getSwapInfo(){
+	public int[] getSwapInfoIntArray(){//FIXME
 		switch (operation) {
 		case SWAPBASE:
 			return swapBase;

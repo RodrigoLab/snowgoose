@@ -26,7 +26,6 @@ public abstract class AbstractHaplotypeModel  extends AbstractModel implements A
 	protected ArrayList<Haplotype> haplotypes;
 
 	public String getHaplotypeString(int i) {
-	
 		return getHaplotype(i).getSequenceString();
 		
 	}
@@ -42,6 +41,9 @@ public abstract class AbstractHaplotypeModel  extends AbstractModel implements A
 
 	public Haplotype getHaplotype(int i){
 		return haplotypes.get(i);
+	}
+	public char getHaplotypeCharAt(int hapIndex, int charIndex){
+		return haplotypes.get(hapIndex).charAt(charIndex);
 	}
 	
     // **************************************************************

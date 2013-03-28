@@ -148,15 +148,15 @@ public class HaplotypeModelTest {
 		
 	
 		String[] newHaplotypes = new String[haplotypeModel.getHaplotypeCount()];
-		for (int i = 0; i < haplotypeModel.getHaplotypeCount(); i++) {
-			haplotypeModel.randomSeq(i);
-			newHaplotypes[i] = String.valueOf( haplotypeModel.getCharMatrix()[i] );
-			assertEquals(newHaplotypes[i], haplotypeModel.getHaplotypeString(i));
-		}
-
-		Alignment expectedAlignment = haplotypeModel.getAlignment();
+//		for (int i = 0; i < haplotypeModel.getHaplotypeCount(); i++) {
+//			haplotypeModel.randomSeq(i);
+////			newHaplotypes[i] = String.valueOf( haplotypeModel.getCharMatrix()[i] );
+//			assertEquals(newHaplotypes[i], );
+//		}
+//
+//		Alignment expectedAlignment = haplotypeModel.getAlignment();
 		for (int i = 0; i < newHaplotypes.length; i++) {
-			assertEquals(newHaplotypes[i], expectedAlignment.getAlignedSequenceString(i)) ;
+			assertEquals(haplotypeModel.getHaplotypeString(i), haplotypeModel.getAlignedSequenceString(i)) ;
 		}
 	}
 	@Test
@@ -211,12 +211,10 @@ public class HaplotypeModelTest {
 		for (int i = 0; i < 1000; i++) {
 			haplotypeModel.swapBase(0);
 		}	
-		String newSeq = haplotypeModel.getHaplotypeString(0);
-		Alignment alignment = haplotypeModel.getAlignment();
 		
-		assertNotEquals(newSeq, srpAlignment.getAlignedSequenceString(0));
-		assertNotSame(alignment.getSequence(0), srpAlignment.getSequence(0));
-		assertNotSame(alignment, srpAlignment);
+		assertNotEquals(haplotypeModel.getHaplotypeString(0), srpAlignment.getAlignedSequenceString(0));
+		assertNotSame(haplotypeModel.getHaplotypeString(0), srpAlignment.getSequence(0));
+		assertNotSame(haplotypeModel, srpAlignment);
 		
 	}
 

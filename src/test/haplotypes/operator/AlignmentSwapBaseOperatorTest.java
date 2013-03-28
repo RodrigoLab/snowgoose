@@ -3,10 +3,15 @@ package test.haplotypes.operator;
 import static org.junit.Assert.*;
 
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 
 import org.junit.After;
@@ -40,12 +45,15 @@ import dr.evomodel.operators.WilsonBalding;
 import dr.evomodel.sitemodel.GammaSiteModel;
 import dr.evomodel.substmodel.FrequencyModel;
 import dr.evomodel.substmodel.HKY;
+import dr.evomodel.tree.TreeLogger;
 import dr.evomodel.tree.TreeModel;
 import dr.evomodel.treelikelihood.TreeLikelihood;
 import dr.evomodelxml.coalescent.ConstantPopulationModelParser;
 import dr.evomodelxml.sitemodel.GammaSiteModelParser;
 import dr.evomodelxml.substmodel.HKYParser;
 import dr.evomodelxml.treelikelihood.TreeLikelihoodParser;
+import dr.ext.SitePatternsExt;
+import dr.ext.TreeLikelihoodExt;
 import dr.inference.loggers.ArrayLogFormatter;
 import dr.inference.loggers.MCLogger;
 import dr.inference.loggers.TabDelimitedFormatter;
@@ -251,7 +259,7 @@ public class AlignmentSwapBaseOperatorTest {
 		coalescent.setId("coalescent");
 
 	        // clock model
-        Parameter rateParameter =  new Parameter.Default(StrictClockBranchRates.RATE, 2.3E-5, 0, 100.0);
+        Parameter rateParameter =  new Parameter.Default(StrictClockBranchRates.RATE, 1E-5, 0, 100.0);
         StrictClockBranchRates branchRateModel = new StrictClockBranchRates(rateParameter);
 
 	        // Sub model
@@ -267,9 +275,9 @@ public class AlignmentSwapBaseOperatorTest {
         siteModel.setMutationRateParameter(mu);
 
         //treeLikelihood
-        SitePatterns patterns = new SitePatterns(haplotypeModel, null, 0, -1, 1, true);
+        SitePatternsExt patterns = new SitePatternsExt(haplotypeModel, null, 0, -1, 1, true);
 
-        TreeLikelihood treeLikelihood = new TreeLikelihood(patterns, treeModel, siteModel, branchRateModel, null,
+        TreeLikelihoodExt treeLikelihood = new TreeLikelihoodExt(patterns, treeModel, siteModel, branchRateModel, null,
                 false, false, true, false, false);
         treeLikelihood.setId(TreeLikelihoodParser.TREE_LIKELIHOOD);
         
@@ -315,16 +323,33 @@ public class AlignmentSwapBaseOperatorTest {
     	ArrayLogFormatter formatter = new ArrayLogFormatter(false);
     	
     	int lengthScaler = 1000;
-    	MCLogger[] loggers = new MCLogger[1];
-//    	loggers[0] = new MCLogger(formatter, lengthScaler*1, false);
-    	loggers[0] = new MCLogger(new TabDelimitedFormatter(System.out), lengthScaler*1, false);
-    	loggers[0] = new MCLogger("/home/sw167/Postdoc/Project_A2BI_temp/data/srAlignment/zzzout.log", lengthScaler*1, false, 0);
+    	MCLogger[] loggers = new MCLogger[3];
+    	loggers[0] = new MCLogger(formatter, lengthScaler*1, false);
+//    	loggers[0] = new MCLogger(new TabDelimitedFormatter(System.out), lengthScaler*1, false);
+//    	loggers[0] = new MCLogger("/home/sw167/Postdoc/Project_A2BI_temp/data/srAlignment/zzzout.log", lengthScaler*1, false, 0);
     	loggers[0].add(prior);
     	loggers[0].add(likelihood);
     	loggers[0].add(shortReadlikelihood );
-    	loggers[0].add(srpLikelihood);
     	loggers[0].add(posterior);
 //    	loggers[0].add(kappa);
+
+
+    	loggers[1] = new MCLogger(new TabDelimitedFormatter(System.out), lengthScaler*1, false);
+//    	loggers[1] = new MCLogger("/home/sw167/Postdoc/Project_A2BI_temp/data/srAlignment/zzzout.log", lengthScaler*1, false, 0);
+    	loggers[1].add(prior);
+    	loggers[1].add(likelihood);
+    	loggers[1].add(shortReadlikelihood );
+    	loggers[1].add(posterior);
+
+
+        File file = new File("testSwap.trees");
+        
+        final PrintWriter pw = new PrintWriter(new FileOutputStream(file));
+
+        TabDelimitedFormatter treeFormatter = new TabDelimitedFormatter(pw);
+        
+//        loggers[1] = new TreeLogger(treeModel, new TabDelimitedFormatter(out), lengthScaler, true, true, false);
+        loggers[2] = new TreeLogger(treeModel, branchRateModel, null, null, treeFormatter, lengthScaler, true, true, true, null, null/*, Double.NaN*/);
 
 //    	loggers[1] = new MCLogger(new TabDelimitedFormatter(System.out), lengthScaler*1, false);
 //    	loggers[1].add(likelihood);
@@ -336,37 +361,39 @@ public class AlignmentSwapBaseOperatorTest {
     	MCMC mcmc = new MCMC("mcmc1");
     	MCMCOptions options = new MCMCOptions();
 //    	options.setChainLength(10000);
-    	options.setChainLength(lengthScaler*1000);
+    	options.setChainLength(lengthScaler*100);
 //    	options.setUseCoercion(true); // autoOptimize = true
 //    	options.setCoercionDelay(lengthScaler*5);
 //    	options.setTemperature(1.0);
 //    	options.setFullEvaluationCount(lengthScaler*2);
-//    	mcmc.setShowOperatorAnalysis(true);
+    	mcmc.setShowOperatorAnalysis(true);
     	mcmc.init(options, posterior, schedule, loggers);
     	mcmc.run();
-
+    	
+//    	out.flush();
+//    	out.close();
     	// time
     	System.out.println(mcmc.getTimer().toString());
 
     	// Tracer
-    	List<Trace> traces = formatter.getTraces();
-    	ArrayTraceList traceList = new ArrayTraceList("test", traces, 0);
-
-    	
-    	
-//		Trace trace = traces.get(0);
-		for (Trace trace : traces) {
-			if (trace.getName().equals("ShortReadLikelihood")) {
-
-				double startValue = (Double) trace.getValue(0);
-				double endValue = (Double) trace
-						.getValue(trace.getValuesSize() - 1);
-				assertEquals(expectedInit , startValue,0);
-				assertTrue(endValue > startValue);
-//				System.out.println(trace.getName());
-//				break;
-			}
-		}
+//    	List<Trace> traces = formatter.getTraces();
+//    	ArrayTraceList traceList = new ArrayTraceList("test", traces, 0);
+//
+//    	
+//    	
+////		Trace trace = traces.get(0);
+//		for (Trace trace : traces) {
+//			if (trace.getName().equals("ShortReadLikelihood")) {
+//
+//				double startValue = (Double) trace.getValue(0);
+//				double endValue = (Double) trace
+//						.getValue(trace.getValuesSize() - 1);
+//				assertEquals(expectedInit , startValue,0);
+//				assertTrue(endValue > startValue);
+////				System.out.println(trace.getName());
+////				break;
+//			}
+//		}
 		
 //		for (int j = 0; j < trace.getValuesSize(); j++) {
 //			System.out.print(trace.getValue(j) +"\t");
@@ -377,47 +404,49 @@ public class AlignmentSwapBaseOperatorTest {
 			
 	}
 
-	private OperatorSchedule defalutOperators(OperatorSchedule schedule, Parameter kappa,
+	private static OperatorSchedule defalutOperators(OperatorSchedule schedule, Parameter kappa,
 			Parameter rateParameter, TreeModel treeModel) {
+		
+		
+//		MCMCOperator operator = new ScaleOperator(kappa, 0.75);
+//		schedule.addOperator(operator);
+//		
+//		operator = new ScaleOperator(rateParameter, 0.75);
+//		operator.setWeight(3.0);
+//		schedule.addOperator(operator);
+//
+//		Parameter allInternalHeights = treeModel.createNodeHeightsParameter(true, true, false);
+//		operator = new UpDownOperator(new Scalable[] { new Scalable.Default(
+//				rateParameter) }, new Scalable[] { new Scalable.Default(
+//				allInternalHeights) }, 0.75, 3.0, CoercionMode.COERCION_ON);
+//		schedule.addOperator(operator);
+//
+//		// operator = new ScaleOperator(popSize, 0.75);
+//		// operator.setWeight(3.0);
+//		// schedule.addOperator(operator);
+//
+//		Parameter rootHeight = treeModel.getRootHeightParameter();
+//		rootHeight.setId("TREE_HEIGHT");
+//		operator = new ScaleOperator(rootHeight, 0.75);
+//		operator.setWeight(3.0);
+//		schedule.addOperator(operator);
+//
+//		Parameter internalHeights = treeModel.createNodeHeightsParameter(false,true, false);
+//		operator = new UniformOperator(internalHeights, 30.0);
+//		schedule.addOperator(operator);
+//
+//		operator = new SubtreeSlideOperator(treeModel, 15.0, 1.0, true, false,false, false, CoercionMode.COERCION_ON);
+//		schedule.addOperator(operator);
+//
+//		operator = new ExchangeOperator(ExchangeOperator.NARROW, treeModel,15.0);
+//		schedule.addOperator(operator);
+//
+//		operator = new ExchangeOperator(ExchangeOperator.WIDE, treeModel, 3.0);
+//		schedule.addOperator(operator);
+//
+//		operator = new WilsonBalding(treeModel, 3.0);
+//		schedule.addOperator(operator);
 
-		MCMCOperator operator = new ScaleOperator(kappa, 0.75);
-		schedule.addOperator(operator);
-		operator = new ScaleOperator(rateParameter, 0.75);
-	      operator.setWeight(3.0);
-	      schedule.addOperator(operator);
-
-	      Parameter allInternalHeights = treeModel.createNodeHeightsParameter(true, true, false);
-	      operator = new UpDownOperator(new Scalable[]{new Scalable.Default(rateParameter)},
-	              new Scalable[] {new Scalable.Default(allInternalHeights)}, 0.75, 3.0, CoercionMode.COERCION_ON);
-	      schedule.addOperator(operator);
-
-//	      operator = new ScaleOperator(popSize, 0.75);
-//	      operator.setWeight(3.0);
-//	      schedule.addOperator(operator);
-
-	      Parameter rootHeight = treeModel.getRootHeightParameter();
-	      rootHeight.setId("TREE_HEIGHT");
-	      operator = new ScaleOperator(rootHeight, 0.75);
-	      operator.setWeight(3.0);
-	      schedule.addOperator(operator);
-
-	      Parameter internalHeights = treeModel.createNodeHeightsParameter(false, true, false);
-	      operator = new UniformOperator(internalHeights, 30.0);
-	      schedule.addOperator(operator);
-
-	      operator = new SubtreeSlideOperator(treeModel, 15.0, 1.0, true, false, false, false, CoercionMode.COERCION_ON);
-	      schedule.addOperator(operator);
-
-	      operator = new ExchangeOperator(ExchangeOperator.NARROW, treeModel, 15.0);
-
-	      schedule.addOperator(operator);
-
-	      operator = new ExchangeOperator(ExchangeOperator.WIDE, treeModel, 3.0);
-	      schedule.addOperator(operator);
-
-	      operator = new WilsonBalding(treeModel, 3.0);
-	      schedule.addOperator(operator);
-	      
 		return schedule;
 	}
 
