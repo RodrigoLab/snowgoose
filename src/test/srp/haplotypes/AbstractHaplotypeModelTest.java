@@ -1,4 +1,4 @@
-package test.haplotypes;
+package test.srp.haplotypes;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;

@@ -1,4 +1,4 @@
-package test.haplotypes;
+package test.srp.haplotypes;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -11,6 +11,6 @@ import org.junit.runners.Suite.SuiteClasses;
 	AlignmentUtilsTest.class,
 	HaplotypeModelTest.class, 
 	ShortReadTest.class })
-public class AAllTestsAlignment {
+public class AAllTestsHaplotypes {
 
 }

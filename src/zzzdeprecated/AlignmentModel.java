@@ -1,4 +1,4 @@
-package srp.haplotypes;
+package zzzdeprecated;
 
 import java.util.ArrayList;
 import java.util.List;

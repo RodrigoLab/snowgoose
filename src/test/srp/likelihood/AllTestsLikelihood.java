@@ -1,4 +1,4 @@
-package test.likelihood;
+package test.srp.likelihood;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;

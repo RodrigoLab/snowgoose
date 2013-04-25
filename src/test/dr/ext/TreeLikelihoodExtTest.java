@@ -15,6 +15,8 @@ import org.junit.Test;
 import srp.core.DataImporter;
 import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.HaplotypeModel;
+import srp.haplotypes.HaplotypeModelUtils;
+import srp.haplotypes.operator.SwapBaseOperator;
 import srp.likelihood.ShortReadLikelihood;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.SitePatterns;
@@ -86,9 +88,9 @@ public class TreeLikelihoodExtTest {
 //		-Djava.library.path=/home/sw167/PostdocLarge/Software/BEAST/BEASTv1.7.1/lib -Xms128m -Xmx256m
 		String dataDir = "/home/sw167/workspace/ABI/unittest/";
 
-		String trueAlignmentFile = "1110_10_org_6.phyml";
-		String phylogenyFile = "1110_10_org_6.phyml_phyml_tree.txt";
-		String shortReadFile = "1110_10_align_100.fasta";//"1110_10_align_2.fasta";
+		String trueAlignmentFile = "H4_haplotypes.phyml";
+		String phylogenyFile = "H4_haplotypes.tree";
+		String shortReadFile = "H4_srp.fasta";//"1110_10_align_2.fasta";
 		
 		DataImporter dataImporter = new DataImporter(dataDir);
 		
@@ -113,7 +115,7 @@ public class TreeLikelihoodExtTest {
 
     	//treeLikelihoodExt
     	SitePatternsExt patternsExt = new SitePatternsExt(haplotypeModel, null, 0, -1, 1, true);
-        TreeLikelihoodExt treeLikelihoodExt = new TreeLikelihoodExt(patternsExt, treeModel, siteModel, branchRateModel, null,
+        TreeLikelihoodExt treeLikelihoodExt = new TreeLikelihoodExt(haplotypeModel, treeModel, siteModel, branchRateModel, null,
     			false, false, false, false, false);
 		// end
     	
@@ -122,13 +124,15 @@ public class TreeLikelihoodExtTest {
 		
 		
 		srpLikelihood = new ShortReadLikelihood(aMap, haplotypeModel);
-		        
+
+		SwapBaseOperator op = new SwapBaseOperator(haplotypeModel, 0);
         for (int i = 0; i < 100; i++) {
-			haplotypeModel.swapBase();
-			
-			patternsExt.updateAlignment(haplotypeModel);
-			treeLikelihoodExt.updatePatternList(patternsExt);
-		
+			op.doOperation();
+
+//			patternsExt.updateAlignment(haplotypeModel);
+//			treeLikelihoodExt.updatePatternList(patternsExt);
+					
+			treeLikelihoodExt.updatePatternList(haplotypeModel);
 			
 			srpLikelihoodUpdate = new ShortReadLikelihood(aMap, haplotypeModel);
 			assertEquals(srpLikelihood.getLogLikelihood(), srpLikelihoodUpdate.getLogLikelihood(), 0);
@@ -138,24 +142,47 @@ public class TreeLikelihoodExtTest {
 	    	treeLikelihood = new TreeLikelihood(patterns, treeModel, siteModel, branchRateModel, null,
 	    			false, false, true, false, false);
 
-    		assertEquals(treeLikelihood.getLogLikelihood(), treeLikelihoodExt.getLogLikelihood(), 0);
+    		assertEquals(treeLikelihood.getLogLikelihood(), treeLikelihoodExt.getLogLikelihood(), 1e-8);
 		}
         
-        for (int i = 0; i < 100; i++) {
-			haplotypeModel.swapBase();
+
+        long time1, time2;
+		time1 = System.currentTimeMillis();
+		for (int i = 0; i < 1e4; i++) {
+			treeLikelihood.makeDirty();
+			treeLikelihood.getLogLikelihood();
+		}
+		time2 = System.currentTimeMillis();
+		System.out.println("\t" + (time2 - time1) + "\t");
+		time1 = System.currentTimeMillis();
+		for (int i = 0; i < 1e4; i++) {
+			treeLikelihoodExt.updatePatternList(haplotypeModel);
+//			treeLikelihoodExt.makeDirty();
+			treeLikelihoodExt.getLogLikelihood();
+		}
+		time2 = System.currentTimeMillis();
+		System.out.println("\t" + (time2 - time1) + "\t");
+
+
+
+        
+        
+        for (int i = 0; i < 500; i++) {
+        	op.doOperation();
         }
 //        patternsExt.updateAlignment(haplotypeModel);
 //		treeLikelihoodExt.updatePatternList(patternsExt);
 
-
-		treeLikelihoodExt.updatePatternList(patternsExt, haplotypeModel);
+//        treeLikelihoodExt.updatePatternList(patternsExt, haplotypeModel);
+        treeLikelihoodExt.updatePatternList(haplotypeModel);
+		
 
 		//treeLikelihood
     	patterns = new SitePatterns(haplotypeModel, null, 0, -1, 1, true);
     	treeLikelihood = new TreeLikelihood(patterns, treeModel, siteModel, branchRateModel, null,
     			false, false, true, false, false);
 
-		assertEquals(treeLikelihood.getLogLikelihood(), treeLikelihoodExt.getLogLikelihood(), 0);
+		assertEquals(treeLikelihood.getLogLikelihood(), treeLikelihoodExt.getLogLikelihood(), 1e-8);
 	      	
 //		srpLikelihoodUpdate = new ShortReadLikelihood(aMap, haplotypeModel);
 		//Fail atm, should pass after get ride of matrix[][]
@@ -198,7 +225,7 @@ public class TreeLikelihoodExtTest {
 		
 //			System.out.println("Likelihood:\t"+srpLikelihood.getLogLikelihood() 
 //					+"\t"+ trueHaplotypes.calculateSPS());
-		int[][] sps = HaplotypeModel.calculeteSPSArray(trueHaplotypes, trueHaplotypes);
+		int[][] sps = HaplotypeModelUtils.calculeteSPSArray(trueHaplotypes, trueHaplotypes);
 //			for (int i = 0; i < sps.length; i++) {
 //					System.out.println(Arrays.toString(sps[i]));
 //			}
@@ -302,7 +329,7 @@ public class TreeLikelihoodExtTest {
 		
 		System.out.println("Likelihood:\t"+srpLikelihood.getLogLikelihood() 
 				+"\t"+ haplotypeModel.calculateSPS());
-		sps = HaplotypeModel.calculeteSPSArray(trueHaplotypes, haplotypeModel);
+		sps = HaplotypeModelUtils.calculeteSPSArray(trueHaplotypes, haplotypeModel);
 		for (int i = 0; i < sps.length; i++) {
 				System.out.println(Arrays.toString(sps[i]));
 		
@@ -316,23 +343,24 @@ public class TreeLikelihoodExtTest {
         
         int thinning = 1000;
         SitePatternsExt patternsExt = new SitePatternsExt(haplotypeModel, null, 0, -1, 1, true);
-        TreeLikelihoodExt treeLikelihoodExt = new TreeLikelihoodExt(patternsExt, treeModel, siteModel, branchRateModel, null,
+        TreeLikelihoodExt treeLikelihoodExt = new TreeLikelihoodExt(haplotypeModel, treeModel, siteModel, branchRateModel, null,
     			false, false, false, false, false);
         
         double likelihood = srpLikelihood.getLogLikelihood() + treeLikelihoodExt.getLogLikelihood();
 		likelihood = treeLikelihoodExt.getLogLikelihood();
 		System.out.println(likelihood);
 		
-		for (int i = 0; i < 100; i++) {
-			haplotypeModel.swapBase();
+		SwapBaseOperator op = new SwapBaseOperator(haplotypeModel, 0);
+        for (int i = 0; i < 100; i++) {
+        	op.doOperation();
 //			alignment = haplotypeModel.getAlignment();
 			patternsExt.updateAlignment(haplotypeModel);
-			treeLikelihoodExt.updatePatternList(patternsExt);
+			treeLikelihoodExt.updatePatternListExt(patternsExt);
 		}
 		
 		likelihood = treeLikelihoodExt.getLogLikelihood();
 		System.out.println("updated: "+likelihood);
-		treeLikelihoodExt = new TreeLikelihoodExt(patternsExt, treeModel, siteModel, branchRateModel, null,
+		treeLikelihoodExt = new TreeLikelihoodExt(haplotypeModel, treeModel, siteModel, branchRateModel, null,
     			false, false, false, false, false);
 		likelihood = treeLikelihoodExt.getLogLikelihood();
 		System.out.println("updated: "+likelihood);

@@ -11,7 +11,6 @@ import org.apache.commons.math3.util.ArithmeticUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import srp.haplotypes.AlignmentModel;
 import srp.likelihood.LikelihoodScaler;
 import srp.likelihood.LikelihoodUtils;
 

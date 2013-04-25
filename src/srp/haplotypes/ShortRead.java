@@ -28,8 +28,10 @@ public class ShortRead {
 		if (m.matches() == true) {
 			isValid = true;
 			setStartEnd(m.start(2), m.end(2));
+			fullSrp = fullSrp.replaceAll("\\*", "-");
 			fragmentSrp = fullSrp.substring(start, end);
-
+			
+			
 			// System.out.println(fragmentSrp.equals(m.group(2)));
 			// System.out.println(fragmentSrp.length() +"\t"+ (end-start));
 

@@ -1,9 +1,12 @@
 package dr.ext;
 
+import javax.swing.text.TabableView;
+
 import srp.haplotypes.HaplotypeModel;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.PatternList;
 import dr.evolution.datatype.DataType;
+import dr.evolution.util.Taxon;
 import dr.evolution.util.TaxonList;
 import dr.evomodel.branchratemodel.BranchRateModel;
 import dr.evomodel.sitemodel.SiteModel;
@@ -13,18 +16,28 @@ import dr.evomodel.treelikelihood.NativeNucleotideLikelihoodCore;
 import dr.evomodel.treelikelihood.NucleotideLikelihoodCore;
 import dr.evomodel.treelikelihood.TipStatesModel;
 import dr.evomodel.treelikelihood.TreeLikelihood;
+import dr.inference.model.Model;
 
 public class TreeLikelihoodExt extends TreeLikelihood {
 
-	public TreeLikelihoodExt(PatternList patternList, TreeModel treeModel,
+	private HaplotypeModel haplotypeModel;
+	private SitePatternsExt sitePatternExt;
+
+	public TreeLikelihoodExt(HaplotypeModel haplotypeModel, TreeModel treeModel,
 			SiteModel siteModel, BranchRateModel branchRateModel,
 			TipStatesModel tipStatesModel, boolean useAmbiguities,
 			boolean allowMissingTaxa, boolean storePartials,
 			boolean forceJavaCore, boolean forceRescaling) {
 		
-		super(patternList, treeModel, siteModel, branchRateModel,
+		
+		super(new SitePatternsExt (haplotypeModel, null, 0, -1, 1, true),
+				treeModel, siteModel, branchRateModel,
 				tipStatesModel, useAmbiguities, allowMissingTaxa,
 				storePartials, forceJavaCore, forceRescaling);
+		
+		this.sitePatternExt = (SitePatternsExt) getPatternList(); 
+		this.haplotypeModel = haplotypeModel;
+		addModel(this.haplotypeModel);
 	}
 
 	/**
@@ -32,7 +45,37 @@ public class TreeLikelihoodExt extends TreeLikelihood {
 	 */
 	private static final long serialVersionUID = 6348244745369755426L;
 
-	public void updatePatternList(PatternList patternList) {
+
+    /**
+     * Handles model changed events from the submodels.
+     */
+    protected void handleModelChangedEvent(Model model, Object object, int index) {
+    	if (model == haplotypeModel){
+//    		System.out.println("GOOD here");
+    		sitePatternExt.updateAlignment(haplotypeModel);
+    		updatePatternListExt(sitePatternExt);
+    		likelihoodKnown = false;
+    	}
+    	else{
+    		super.handleModelChangedEvent(model, object, index);
+    	}
+    }
+    protected void restoreState() {
+
+//        if (storePartials) {
+//            likelihoodCore.restoreState();
+//        } else {
+//            updateAllNodes();
+//        }
+    	sitePatternExt.updateAlignment(haplotypeModel);
+		updatePatternListExt(sitePatternExt);
+        super.restoreState();
+
+    }
+
+
+	
+	public void updatePatternListExt(PatternList patternList) {
 		
 
         this.patternList = patternList;
@@ -43,11 +86,11 @@ public class TreeLikelihoodExt extends TreeLikelihood {
         patternWeights = patternList.getPatternWeights();
 
 //        this.treeModel = treeModel;
-        addModel(treeModel);
+//        addModel(treeModel);
 
-        nodeCount = treeModel.getNodeCount();
+//        nodeCount = treeModel.getNodeCount();
 
-        updateNode = new boolean[nodeCount];
+//        updateNode = new boolean[nodeCount];
         for (int i = 0; i < nodeCount; i++) {
             updateNode[i] = true;
         }
@@ -93,42 +136,26 @@ public class TreeLikelihoodExt extends TreeLikelihood {
 		            categoryCount = siteModel.getCategoryCount();
 
 //		            final Logger logger = Logger.getLogger("dr.evomodel");
-		            String coreName = "Java general";
-		            boolean forceJavaCore = false;
-		            if (integrateAcrossCategories) {
-
-		                final DataType dataType = patternList.getDataType();
-
-		                if (dataType instanceof dr.evolution.datatype.Nucleotides) {
-
-		                    if (!forceJavaCore && NativeNucleotideLikelihoodCore.isAvailable()) {
-		                        coreName = "native nucleotide";
-		                        likelihoodCore = new NativeNucleotideLikelihoodCore();
-		                    } else {
-		                        coreName = "Java nucleotide";
-		                        likelihoodCore = new NucleotideLikelihoodCore();
-		                    }
-
-		                } 
-		            } else {
-		                likelihoodCore = new GeneralLikelihoodCore(patternList.getStateCount());
-		            }
-		//TODO add/remove/change/surpress later            
-//		            {
-//		              final String id = getId();
-//		              logger.info("TreeLikelihood(" + ((id != null) ? id : treeModel.getId()) + ") using " + coreName + " likelihood core");
-		//
-//		              logger.info("  " + (useAmbiguities ? "Using" : "Ignoring") + " ambiguities in tree likelihood.");
-//		              logger.info("  With " + patternList.getPatternCount() + " unique site patterns.");
-//		            }
-
-//		            if (branchRateModel != null) {
-//		                this.branchRateModel = branchRateModel;
-////		                logger.info("Branch rate model used: " + branchRateModel.getModelName());
+//		            String coreName = "Java general";
+//		            boolean forceJavaCore = false;
+//		            if (integrateAcrossCategories) {
+//
+//		                final DataType dataType = patternList.getDataType();
+//
+//		                if (dataType instanceof dr.evolution.datatype.Nucleotides) {
+//
+//		                    if (!forceJavaCore && NativeNucleotideLikelihoodCore.isAvailable()) {
+//		                        coreName = "native nucleotide";
+//		                        likelihoodCore = new NativeNucleotideLikelihoodCore();
+//		                    } else {
+//		                        coreName = "Java nucleotide";
+//		                        likelihoodCore = new NucleotideLikelihoodCore();
+//		                    }
+//
+//		                } 
 //		            } else {
-//		                this.branchRateModel = new DefaultBranchRateModel();
+//		                likelihoodCore = new GeneralLikelihoodCore(patternList.getStateCount());
 //		            }
-//		            addModel(this.branchRateModel);
 
 		            probabilities = new double[stateCount * stateCount];
 
@@ -136,29 +163,7 @@ public class TreeLikelihoodExt extends TreeLikelihood {
 
 		            int extNodeCount = treeModel.getExternalNodeCount();
 		            int intNodeCount = treeModel.getInternalNodeCount();
-		            /*
-		            if (tipStatesModel != null) {
-		                tipStatesModel.setTree(treeModel);
-
-		                tipPartials = new double[patternCount * stateCount];
-
-		                for (int i = 0; i < extNodeCount; i++) {
-		                    // Find the id of tip i in the patternList
-		                    String id = treeModel.getTaxonId(i);
-		                    int index = patternList.getTaxonIndex(id);
-
-		                    if (index == -1) {
-		                        throw new TaxonList.MissingTaxonException("Taxon, " + id + ", in tree, " + treeModel.getId() +
-		                                ", is not found in patternList, " + patternList.getId());
-		                    }
-
-		                    tipStatesModel.setStates(patternList, index, i, id);
-		                    likelihoodCore.createNodePartials(i);
-		                }
-
-		                addModel(tipStatesModel);
-		                //useAmbiguities = true;
-		            } else */
+		           
 		            {
 		                for (int i = 0; i < extNodeCount; i++) {
 		                    // Find the id of tip i in the patternList
@@ -188,16 +193,15 @@ public class TreeLikelihoodExt extends TreeLikelihood {
 		                likelihoodCore.createNodePartials(extNodeCount + i);
 		            }
 
-//		            if (forceRescaling) {
-//		                likelihoodCore.setUseScaling(true);
-////		                logger.info("  Forcing use of partials rescaling.");
-//		            }
+
 
 		        } catch (TaxonList.MissingTaxonException mte) {
 		            throw new RuntimeException(mte.toString());
 		        }
 
-		        addStatistic(new SiteLikelihoodsStatistic());
+//		        addStatistic(new SiteLikelihoodsStatistic());
+//		        System.out.println(getStatisticCount());
+//		        System.out.println(getStatistic(0).getDimension()+"\t"+ getStatistic(0).getStatisticValue(10));
 	}
 
 	public void updatePatternList(SitePatternsExt patterns, HaplotypeModel haplotypeModel) {
@@ -205,9 +209,14 @@ public class TreeLikelihoodExt extends TreeLikelihood {
 //		Alignment alignment = haplotypeModel.getAlignment();
         
 		patterns.updateAlignment(haplotypeModel);
-		updatePatternList(patterns);
+		updatePatternListExt(patterns);
 	}
 
+	public void updatePatternList(HaplotypeModel haplotypeModel) {
+//		TODO: more test required
+//		sitePatternExt.updateAlignment(haplotypeModel);
+		updatePatternListExt(haplotypeModel);
+	}
 
 
 }
