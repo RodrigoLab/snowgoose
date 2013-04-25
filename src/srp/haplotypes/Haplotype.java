@@ -11,6 +11,7 @@ public class Haplotype extends Sequence {
 	 */
 	private static final long serialVersionUID = -1481408524381652240L;
 	StringBuilder sequenceString;
+	String storeHaplotype;
 
 	public Haplotype() {
 		sequenceString = new StringBuilder();
@@ -33,14 +34,11 @@ public class Haplotype extends Sequence {
 
 	
 	public void setCharAt(int index, char newChar) {
+
 		sequenceString.setCharAt(index, newChar);
 	}
 
-	public void setHaplotypeString(String haplotypeString) {
-		setSequenceString(haplotypeString);
-
-	}
-	
+		
 	public char charAt(int index){
 		return sequenceString.charAt(index);
 	}
@@ -138,6 +136,14 @@ public class Haplotype extends Sequence {
 	public void insertSequenceString(int offset, String sequence) {
         sequenceString.insert(offset, sequence);
     }
+
+	public void storeState() {
+		storeHaplotype = sequenceString.toString();
+		
+	}
+	public void restoreState(){
+		setSequenceString(storeHaplotype);
+	}
 
 
 

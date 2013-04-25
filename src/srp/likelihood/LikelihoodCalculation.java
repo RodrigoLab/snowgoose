@@ -49,7 +49,7 @@ public class LikelihoodCalculation {//extends TraceCorrelationAssert {
 	
     private ShortReadLikelihood shortReadLikelihood;
 	private int LogLikelihood;
-	
+	@Deprecated
 	public LikelihoodCalculation() {
 	}
 
@@ -269,7 +269,7 @@ public class LikelihoodCalculation {//extends TraceCorrelationAssert {
 	public void updateHaplotypes(HaplotypeModel haplotypeModel) {
 		this.haplotypeModel = haplotypeModel;
 //		alignment = this.haplotypes.getAlignment();
-		shortReadLikelihood.updateHaplotypes(this.haplotypeModel);
+		shortReadLikelihood.makeDirty();
 		
 //		patterns = new SitePatterns(alignment, null, 0, -1, 1, true);
 //		setTreeAndAlignment(treeModel, alignment);

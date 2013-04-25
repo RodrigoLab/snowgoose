@@ -1,4 +1,4 @@
-package test.likelihood;
+package test.srp.likelihood;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -19,6 +19,8 @@ import srp.core.DataImporter;
 import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.AlignmentUtils;
 import srp.haplotypes.HaplotypeModel;
+import srp.haplotypes.Operation;
+import srp.haplotypes.operator.SwapBaseOperator;
 import srp.likelihood.ShortReadLikelihood;
 
 import dr.evolution.alignment.Alignment;
@@ -26,6 +28,7 @@ import dr.evolution.alignment.SimpleAlignment;
 import dr.inference.mcmc.MCMCCriterion;
 import dr.inference.model.CompoundLikelihood;
 import dr.inference.model.Likelihood;
+import dr.inference.operators.OperatorFailedException;
 
 public class ShortReadLikelihoodTest {
 
@@ -64,7 +67,7 @@ public class ShortReadLikelihoodTest {
 		HaplotypeModel haplotypeModel = AlignmentUtils.createHaplotypeModel(seqs);
 		ShortReadLikelihood srL = new ShortReadLikelihood(aMap, haplotypeModel);
 		
-		double logLikelihood = srL.calculateLogLikelihoodSelect(BINOMIAL);
+		double logLikelihood = srL.getLogLikelihood();
 		double expected = -0.086061253223681313806; //dbinom(0,8,E,log=T)
 		assertEquals("0 mismatch",expected, logLikelihood, 1e-10);
 		
@@ -82,14 +85,14 @@ public class ShortReadLikelihoodTest {
 		srL = new ShortReadLikelihood(aMap, haplotypeModel);
 		
 		
-		logLikelihood = srL.calculateLogLikelihoodSelect(BINOMIAL);
+		logLikelihood = srL.getLogLikelihood();
 		expected = -0.086061253223681313806*4; //dbinom(0,8,E,log=T)
 		assertEquals("0 mismatch",expected, logLikelihood, 1e-10);
 		
 	}
 
 	@Test
-	public void testCalculateLikelihoodSomething() {
+	public void testCalculateLikelihoodSomething() throws Exception {
 		String[] seqs = new String[]{
 				"AAAAAAAAATGTGTTTT....",
 				".....CCCCCCCCCCCCCCCCCCCTTTTCCCC....",
@@ -110,7 +113,7 @@ public class ShortReadLikelihoodTest {
 		HaplotypeModel haplotypeModel = new HaplotypeModel(aMap, hapAlignment);
 
 		ShortReadLikelihood srL = new ShortReadLikelihood(aMap, haplotypeModel);
-		double logLikelihood = srL.calculateLogLikelihoodSelect(BINOMIAL);
+		double logLikelihood = srL.getLogLikelihood();
 		
 		
 //		aMatrix = new AlignmentMatrix(aMap, 1);
@@ -140,10 +143,11 @@ public class ShortReadLikelihoodTest {
         double hastingsRatio = 0.0;
         double[] logr = {-Double.MAX_VALUE};
         
+        SwapBaseOperator op = new SwapBaseOperator(haplotypeModel, 0);
 		for (int i = 0; i < 1e4; i++) {
-			
-			haplotypeModel.swapBase();
-			srL.updateHaplotypes(haplotypeModel);
+			op.doOperation();
+
+			srL.makeDirty();
 //			System.out.print(srL.getLogLikelihood() +"\t" );
 //			srL = new ShortReadLikelihood(aMap, aMatrix);
 //			System.out.println(srL.getLogLikelihood());
@@ -159,7 +163,8 @@ public class ShortReadLikelihoodTest {
 			}
 			else{
 				haplotypeModel.reject();
-				srL.restoreState();
+//				srL.restoreState();
+				srL.restoreModelState();
 				
 			}
 			
@@ -191,7 +196,7 @@ public class ShortReadLikelihoodTest {
 		HaplotypeModel haplotypeModel = new HaplotypeModel(aMap, hap);
 		ShortReadLikelihood srL = new ShortReadLikelihood(aMap, haplotypeModel);
 		
-		double logLikelihood = srL.calculateLogLikelihoodSelect(BINOMIAL);
+		double logLikelihood = srL.getLogLikelihood();
 		double expected = -36.300092300114215504; //dbinom(0,8,E,log=T)
 		assertEquals("8 mismatches",expected, logLikelihood, 1e-10);
 		
@@ -238,7 +243,7 @@ public class ShortReadLikelihoodTest {
 	}
 	
 	@Test
-	public void testRandomQuickRun(){
+	public void testRandomQuickRun() throws Exception{
 
 		String dataDir = "/home/sw167/Postdoc/Project_A2BI_temp/data/srAlignment/";
 
@@ -267,11 +272,11 @@ public class ShortReadLikelihoodTest {
         double hastingsRatio = 0.0;
         double[] logr = {-Double.MAX_VALUE};
         
-        
+        SwapBaseOperator op = new SwapBaseOperator(haplotypeModel, 0);
         for (int i = 0; i < 1e2; i++) {
+        	op.doOperation();
 
-			haplotypeModel.swapBase();
-			srpLikelihood.updateHaplotypes(haplotypeModel);
+			srpLikelihood.makeDirty();
 
 			double newL = srpLikelihood.getLogLikelihood();
 
@@ -282,7 +287,7 @@ public class ShortReadLikelihoodTest {
 			}
 			else{
 				haplotypeModel.reject();
-				srpLikelihood.restoreState();
+				srpLikelihood.restoreModelState();
 			}
 			
 			
@@ -334,5 +339,49 @@ public class ShortReadLikelihoodTest {
         
 
 	}
+
 	
+
+	@Test
+	public void testCalculateLikelihoodTime() throws Exception {
+		String[] seqs = new String[]{
+				"AAAAAATTTTT.........",
+				"..CCCCCCCCCCCCC.....",
+				"......GGGGGGGGGGG...",
+				"........TTTTTTTTT...",
+				"............ACGTACGT",
+				};
+		
+		String[] haps = new String[]{
+
+				"CCCCCTTTTTAAAAAGGGGG",
+				"ACGTACGTACGTACGTACGT",
+
+				};
+		
+		HaplotypeModel haplotypeModel = AlignmentUtils.createHaplotypeModel(seqs, haps);
+
+		ShortReadLikelihood srL = new ShortReadLikelihood(haplotypeModel);
+
+		double logLikelihood = srL.getLogLikelihood();
+		long time1 = System.currentTimeMillis();
+		for (int i = 0; i < 1e6; i++) {
+			srL.makeDirty();
+			logLikelihood = srL.getLogLikelihood();
+		}
+		long time2 = System.currentTimeMillis();
+		System.out.println((time2 - time1) + "\t");
+		
+		haplotypeModel.storeOperationRecord(Operation.SWAPBASE, new int[]{1,1,42,42});
+		time1 = System.currentTimeMillis();
+		for (int i = 0; i < 1e6; i++) {
+			srL.makeDirty();
+			logLikelihood = srL.getLogLikelihood();
+		}
+		time2 = System.currentTimeMillis();
+		
+		System.out.println((time2 - time1) + "\t");
+		
+		
+	}
 }

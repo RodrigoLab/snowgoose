@@ -5,7 +5,8 @@ import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.SitePatterns;
 import dr.evolution.util.TaxonList;
 
-public class SitePatternsExt extends SitePatterns{
+
+public class SitePatternsExt extends SitePatterns {
 
 	public SitePatternsExt(Alignment alignment, TaxonList taxa, int from,
 			int to, int every, boolean strip) {
@@ -50,7 +51,7 @@ public class SitePatternsExt extends SitePatterns{
 
 //        siteCount = ((to - from) / every) + 1;
 
-//        patternCount = 0;
+        patternCount = 0;
 
 //        patterns = new int[siteCount][];
 

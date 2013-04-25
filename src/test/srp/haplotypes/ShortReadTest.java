@@ -1,4 +1,4 @@
-package test.haplotypes;
+package test.srp.haplotypes;
 
 import static org.junit.Assert.*;
 
@@ -17,13 +17,11 @@ import dr.evolution.util.Taxon;
 public class ShortReadTest {
 
 	private ShortRead srp;
-	private static String seqs;
 	private static Taxon taxon;
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-		taxon = new Taxon("id");
-		seqs = "........ACGTACGT****ACGTACGT....";
+		
 	}
 
 	@AfterClass
@@ -33,7 +31,8 @@ public class ShortReadTest {
 	@Before
 	public void setUp() throws Exception {
 		
-		
+		taxon = new Taxon("id");
+		String seqs = "........ACGTACGT****ACGTACGT....";
 		Sequence seq = new Sequence(taxon, seqs);
 		srp = new ShortRead(seq);
 	}
@@ -54,10 +53,9 @@ public class ShortReadTest {
 
 	@Test
 	public void testGetSrpString() {
-		String expected = "........ACGTACGT****ACGTACGT....";
+		String expected = "........ACGTACGT----ACGTACGT....";
 		assertEquals(expected, srp.getFullSrp());
-		
-		expected = "ACGTACGT****ACGTACGT";
+		expected = "ACGTACGT----ACGTACGT";
 		assertEquals(expected, srp.getFragmentSrp());
 		
 		expected = "id";
@@ -78,7 +76,7 @@ public class ShortReadTest {
 		String s = "...***...";
 		ShortRead srTemp = new ShortRead(new Sequence(taxon, s));
 		assertTrue(srTemp.getIsValid());
-		assertEquals("***", srTemp.getFragmentSrp());
+		assertEquals("---", srTemp.getFragmentSrp());
 		
 		s = "AA";
 		srTemp = new ShortRead(new Sequence(taxon, s));

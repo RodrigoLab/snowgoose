@@ -2,24 +2,20 @@ package srp.haplotypes;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Deque;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
 
-import dr.app.beauti.types.OperatorType;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Iterators;
+
 import dr.evolution.alignment.Alignment;
-import dr.evolution.alignment.PatternList;
-import dr.evolution.alignment.SimpleAlignment;
 import dr.evolution.datatype.DataType;
 import dr.evolution.datatype.Nucleotides;
-import dr.evolution.sequence.Sequence;
 import dr.evolution.util.Taxon;
-import dr.evomodel.tree.TreeModel.TreeChangedEvent;
-import dr.inference.model.AbstractModel;
 import dr.inference.model.Model;
 import dr.inference.model.Variable;
 import dr.inference.model.Variable.ChangeType;
-import dr.util.Attributable;
+import dr.math.MathUtils;
 import dr.util.NumberFormatter;
 
 
@@ -73,21 +69,18 @@ import dr.util.NumberFormatter;
 public class HaplotypeModel extends AbstractHaplotypeModel  {
 
 	public static final char GAP = '-';
-	public static final String TAXON_PREFIX = "Hap_";
+	public static final String TAXON_PREFIX = "hap_";
 	
 	private static final String MODEL_NAME = "HaplotypeModel";
 	private static final long serialVersionUID = -5057514703825711955L;
 
-	private static Random rand = new Random();
+
 
 //	int haplotypesCount;
 	AlignmentMapping aMap;
-	SwapInfo swapInfo = new SwapInfo();
+	private SwapInfo swapInfo = new SwapInfo();
+	private boolean isEdit;
 
-	
-	
-	
-	
 	
 	private void setupData(AlignmentMapping aMap) {
 		this.aMap = aMap;
@@ -125,12 +118,11 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 			Taxon t = new Taxon(TAXON_PREFIX+i); 
 			Haplotype haplotype = new Haplotype(t, tempSeq);
 			addHaplotype(haplotype);
-
-//			String tempSeq = 
 			randomSeq(i);
 
 		}
 	}
+	
 	private void addHaplotype(Haplotype haplotype) {
 		haplotype.setDataType(getDataType());
 	    haplotypes.add(haplotype);
@@ -139,82 +131,137 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 
 	public HaplotypeModel(AlignmentMapping aMap, int hapCount) {
 		super(MODEL_NAME);
-		setupData(aMap);
-				
-		initSeqs(hapCount);
-
+		setupData(aMap);//		swapBase(hapIndex, pos);
 		
+		initSeqs(hapCount);
 	}
 
 	public HaplotypeModel(AlignmentMapping aMap, Alignment trueAlignment) {
 		super(MODEL_NAME);
 		setupData(aMap);
 		setupAlignment(trueAlignment);
-
 	
 	}
 
 	
 	public void randomSeq(int hapIndex) {
-		randomSeq(hapIndex, 0, getHaplotypeLength());
 		
-	}
-	
-	
-	public void randomSeq(int hapIndex, int start, int end){
-		
-		for (int p = start; p < end; p++) {
-			swapBase(hapIndex, p);
+		for (int i = 0; i < getHaplotypeLength(); i++) {
+//			char newChar = GAP;
+//			int size = aMap.mapToSrp[i].size();
+//			if (size != 0) {
+//				int srpIndex = aMap.mapToSrp[i].get(rand.nextInt(0, size));
+//				newChar = aMap.getShortReadCharAt(srpIndex, i);
+//			}
+			char newChar = (char) aMap.nextBaseAt(i);
+//			int[] swapInfoArray = swapHaplotypeBase(hapIndex, posChar);
+
+			getHaplotype(hapIndex).setCharAt(i, newChar);
 
 		}
-		
 	}
-
-	public void swapBase() {
-		
-		int hapIndex = rand.nextInt(getHaplotypeCount());
-		swapBase(hapIndex);
+	public void startHaplotypeOperation(){
+		isEdit = true;
 	}
-
-	public void swapBase(int hapIndex){
-		int pos = rand.nextInt(aMap.getLength());
-		swapBase(hapIndex, pos);
-//		int size = aMap.mapToSrp[pos].size();
-//		int srpIndex = aMap.mapToSrp[pos].get(rand.nextInt(size));
-////		char c = aMap.getShortReadCharAt(srpIndex, pos);
-//		
-//		swapBase(hapIndex, pos, srpIndex);
-		
-	}
-	
-	public void swapBase(int hapIndex, int pos){
-		
-		char c = GAP;
-		int size = aMap.mapToSrp[pos].size();
-		if (size != 0) {
-			int srpIndex = aMap.mapToSrp[pos].get(rand.nextInt(size));
-			c = aMap.getShortReadCharAt(srpIndex, pos);
-		}
-		swapBase(hapIndex, pos, c);
-	
-	
-	}
-
-	private void swapBase(int hapIndex, int pos, char newChar){
-		int[] swapInfo2 = new int[4];
-		swapInfo2[0] = hapIndex;
-		swapInfo2[1] = pos;
-		swapInfo2[2] = getHaplotype(hapIndex).getChar(pos); //matrix[hapIndex][pos];
-		swapInfo2[3] = newChar;
-
-		swapInfo.storeOperation(Operation.SWAPBASE, swapInfo2);
-		
-		getHaplotype(hapIndex).setCharAt(pos, newChar);
-	
-		
+	public void endHaplotypeOperation(){
+		isEdit = false;
 		fireModelChanged();
+	}
+	
+	public int[] getNextBase(){
+		return aMap.nextBase();
+	}
+	public int[] getNextBaseUniform(){
+		return aMap.nextBaseUniform();
+	}
+	
+	public void storeOperationRecord(Operation op, Object opRecord){
+		swapInfo.storeOperation(op, opRecord);
+	}
+	public int[] swapHaplotypeBase(int hapIndex, int[] posChar){
+//		replaceHaplotypeCharAt(hapIndex, posChar);
+		
+		int[] swapRecord = new int[4];
+		swapRecord[0] = hapIndex;
+		swapRecord[1] = posChar[0];
+		swapRecord[2] = posChar[1];
+		swapRecord[3] = swapHaplotypeCharAt(hapIndex, posChar[0], posChar[1]);
+
+//		System.out.println(Arrays.toString(swapRecord));
+//		System.out.println(getHaplotype(hapIndex).charAt(posChar[0]));
+
+//		swapInfoArray[2] = replaceHaplotypeCharAt(hapIndex, posChar);
+		return swapRecord;
+	}
+
+	private int swapHaplotypeCharAt(int hapIndex, int pos, int newChar){
+		int oldChar = getHaplotype(hapIndex).getChar(pos); 
+		getHaplotype(hapIndex).setCharAt(pos, (char) newChar);
+		return oldChar;
 		
 	}
+	private void resetHaplotypeToOldChar(int[] swapArray){
+		swapHaplotypeCharAt(swapArray[0], swapArray[1], swapArray[3]);
+	}
+	
+//	private int swapHaplotypeCharAt(int hapIndex, int[] posChar){
+//		int oldChar = getHaplotype(hapIndex).getChar(posChar[0]); 
+//		getHaplotype(hapIndex).setCharAt(posChar[0], (char) posChar[1]);
+//		return oldChar;
+//		
+//	}
+//	
+//	
+
+	public void reject() {//FIXME for different swapInfo/Operation
+		Operation op = swapInfo.getOperation();
+		int[] temp;
+		switch (op) {
+			case SWAPBASE: 
+				
+				temp = swapInfo.getSwapInfoSWAPBASE();
+				resetHaplotypeToOldChar(temp);
+				break;
+			case UNIFORMSWAPBASE:
+				
+				temp = swapInfo.getSwapInfoSWAPBASE();
+				resetHaplotypeToOldChar(temp);
+				break;
+			case SWAPMULTI:
+				Deque<int[]> swapMulti = swapInfo.getSwapInfoSWAPMULTI();
+				
+				for (Iterator<int[]> iterator = swapMulti.descendingIterator(); iterator
+						.hasNext();) {
+
+					temp= iterator.next();
+					resetHaplotypeToOldChar(temp);
+				}
+
+				break;
+			case SWAPSECTION:
+				temp = swapInfo.getSwapHaplotypeRecord();
+				for (int i = 0; i < temp.length; i++) {
+					haplotypes.get(temp[i]).restoreState();
+				}
+				break;
+			case RECOMB:
+				temp = swapInfo.getSwapHaplotypeRecord();
+				for (int i = 0; i < temp.length; i++) {
+					haplotypes.get(temp[i]).restoreState();
+				}
+				break;
+				
+				
+			default:
+				throw new IllegalArgumentException("Unknown operation type: "+op);
+				
+		}
+		
+	}
+	
+
+
+	@Override
 	public void fireModelChanged(){
 //		for (TreeChangedEvent treeChangedEvent : treeChangedEvents) {
 		listenerHelper.fireModelChanged(this);//, treeChangedEvent);
@@ -222,16 +269,6 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 //		treeChangedEvents.clear();
 	}
 
-
-
-	public void reject() {//FIXME for different swapInfo/Operation
-		int[] swapInfo2 = swapInfo.getSwapInfoIntArray();
-		
-		getHaplotype(swapInfo2[0]).setCharAt(swapInfo2[1], (char)swapInfo2[2]);
-	}
-
-
-	
 	public int calculateSPS(){
 		int sps = 0;
 		
@@ -248,16 +285,17 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 		return sps;
 	}
 
+	
 	public SwapInfo getSwapInfo() {
 		return swapInfo;
 	}
-
 	
-	@Deprecated
-	public int[] getSwapInfoIntArray() {
-		return swapInfo.getSwapInfoIntArray();
+	public Operation getOperation() {
+		 
+		return swapInfo.getOperation();
 	}
 
+	
 	@Override
 	public String toString(){
 
@@ -288,67 +326,8 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 
 
     
-    // **************************************************************
-    // static method
-    // **************************************************************
-
 	
-	public static int[][] calculeteSPSArray(HaplotypeModel h1, HaplotypeModel h2){
-		
-		int[][] sps = calculateSPSCore(h1,h2);
-		return sps;
-		
-	}
-	
-	public static int calculeteSPS(HaplotypeModel h1, HaplotypeModel h2){
-//		
-		int sps = 0;
-		int[][] spsArray = calculateSPSCore(h1, h2);
-		
-		for (int i = 0; i < spsArray.length; i++) {
-			for (int j = 0; j < spsArray[i].length; j++) {
-				sps += spsArray[i][j];
-			}
-		}
-		return sps;
-		
-	}
-	
-	private static int[][] calculateSPSCore(HaplotypeModel h1, HaplotypeModel h2){
-			int hapCount = h1.getHaplotypeCount();
-			int seqLength = h1.getHaplotypeLength();
-			int sps[][] = new int[hapCount][hapCount];
-			if (seqLength != h2.getHaplotypeLength()){
-				System.err.println("Incompariable alignments lenght: "+seqLength +" and "+  h2.getHaplotypeLength());
-			}
-			if (hapCount != h2.getHaplotypeCount()){
-				System.err.println("Different number of haplotypes: "+hapCount +" and "+  h2.getHaplotypeCount());
-			}
-			String[] s1 = h1.toStringArray();
-			String[] s2 = h2.toStringArray();
-			for (int i = 0; i < hapCount; i++) {
-				for (int j = 0; j < hapCount; j++) {
-					sps[i][j] = caluclateSPSSingle(s1[i], s2[j]);
-				}
-			}
-			return sps;
-			
-	}
-
-	private static int caluclateSPSSingle(String s1, String s2){
-		int sps = 0;
-		if (s1.length() != s2.length()){
-			System.err.println("Incompariable sequence lenght: "+ s1.length() +" and "+  s2.length());
-		}
-		for (int i = 0; i < s1.length(); i++) {
-			int c = s1.charAt(i) - s2.charAt(i);
-			sps += (c == 0)? 0:1;
-		}
-
-		return sps;
-	}
-	
-	private String[] toStringArray() {
+	public String[] toStringArray() {
 		String[] string = new String[getHaplotypeCount()];
 		for (int i = 0; i < string.length; i++) {
 			string[i] = getHaplotypeString(i);
@@ -380,7 +359,7 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 
 	@Override
 	protected void restoreState() {
-//		System.err.println("Call restoreState");
+//		System.err.println("Call restoreState - haplotypeModel");
 
 		if(Operation.NONE != swapInfo.getOperation()){
 			reject();
@@ -391,5 +370,10 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 	protected void acceptState() {
 		//Do nothing
 	}
+
+	public AlignmentMapping getAlignmentMapping() {
+		return aMap;
+	}
+
 
 }

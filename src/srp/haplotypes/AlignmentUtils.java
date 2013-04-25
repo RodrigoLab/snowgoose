@@ -69,4 +69,13 @@ public class AlignmentUtils {
 		return haplotypeModel;
 		
 	}
+	
+	public static HaplotypeModel createHaplotypeModel(String[] shortRead, String[] taxa_sequence){
+		
+		Alignment alignment = AlignmentUtils.createAlignment(taxa_sequence);
+		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(shortRead);
+		HaplotypeModel haplotypeModel = new HaplotypeModel(aMap, alignment);
+		return haplotypeModel;
+		
+	}
 }

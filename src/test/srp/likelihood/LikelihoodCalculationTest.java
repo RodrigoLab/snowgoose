@@ -1,4 +1,4 @@
-package test.likelihood;
+package test.srp.likelihood;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -23,7 +23,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import srp.core.DataImporter;
-import srp.haplotypes.operator.AlignmentSwapBaseOperator;
+import srp.haplotypes.operator.SwapBaseOperator;
 import srp.likelihood.LikelihoodCalculation;
 import srp.likelihood.ShortReadLikelihood;
 
@@ -118,7 +118,7 @@ public class LikelihoodCalculationTest {
 
 	
 	@Test
-	public void testTreeLikelihoodCustomData(){
+	public void testTreeLikelihoodCustomData() throws Exception{
 
 		String dataDir = "/home/sw167/Postdoc/Project_A2BI_temp/data/Stage0/";
 		
@@ -148,7 +148,7 @@ public class LikelihoodCalculationTest {
 	
 
 	@Test
-	public void testCoalescentLikelihoodCustomData(){
+	public void testCoalescentLikelihoodCustomData() throws Exception{
 
 		String dataDir = "/home/sw167/Postdoc/Project_A2BI_temp/data/Stage0/";
 		
@@ -179,7 +179,7 @@ public class LikelihoodCalculationTest {
 	
 
 //	@Test
-	public void testShortReadLikelihoodCustomData(){
+	public void testShortReadLikelihoodCustomData() throws Exception{
 		//Note: Take way too long to test this on 1000 short reads
 		String dataDir = "/home/sw167/Postdoc/Project_A2BI_temp/data/Stage0/";
 		

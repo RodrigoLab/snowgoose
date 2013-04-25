@@ -1,0 +1,74 @@
+package test.srp.haplotypes.operator;
+
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+
+import org.apache.commons.lang3.StringUtils;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import srp.haplotypes.AlignmentUtils;
+import srp.haplotypes.HaplotypeModel;
+import srp.haplotypes.operator.HaplotypeRecombinationOperator;
+
+
+public class HaplotypeRecombinationOperatorTest {
+
+	@BeforeClass
+	public static void setUpBeforeClass() throws Exception {
+	}
+
+	@AfterClass
+	public static void tearDownAfterClass() throws Exception {
+	}
+
+	@Before
+	public void setUp() throws Exception {
+	}
+
+	@After
+	public void tearDown() throws Exception {
+	}
+	
+
+	@Test
+	public void testDoOperation() throws Exception {
+		
+		String[] srp = new String[]{
+				".....TTTTT",
+				"TTTTT....."
+				};
+		
+		String[] haps = new String[]{
+				"AAAAAAAAAA",
+				"CCCCCCCCCC"
+				};
+		
+		for (int i = 1; i < 1000; i++) {
+			HaplotypeModel haplotypeModel = AlignmentUtils.createHaplotypeModel(srp, haps);
+			HaplotypeRecombinationOperator op = new HaplotypeRecombinationOperator(haplotypeModel, i);
+			op.doOperation();
+			String s0 = haplotypeModel.getHaplotypeString(0);
+			String s1 = haplotypeModel.getHaplotypeString(1);
+			assertTrue( StringUtils.countMatches(s0, "A")>0 && StringUtils.countMatches(s0, "A")<10);
+			assertTrue( StringUtils.countMatches(s0, "C")>0 && StringUtils.countMatches(s0, "C")<10);
+			assertTrue( StringUtils.countMatches(s1, "A")>0 && StringUtils.countMatches(s1, "A")<10);
+			assertTrue( StringUtils.countMatches(s1, "C")>0 && StringUtils.countMatches(s1, "C")<10);
+			assertEquals(10, StringUtils.getLevenshteinDistance(s0, s1));
+
+			haplotypeModel.reject();
+			assertEquals(haps[0], haplotypeModel.getHaplotypeString(0));
+			assertEquals(haps[1], haplotypeModel.getHaplotypeString(1));
+
+		}
+	}
+		
+	
+	
+
+}

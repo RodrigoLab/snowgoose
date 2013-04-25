@@ -46,7 +46,7 @@ public class benchmark {
 	}
 
 
-	public void tesAllLikelihoodCustomData(){
+	public void tesAllLikelihoodCustomData() throws Exception{
 		//Take a while to run
 		String dataDir = "/home/sw167/Postdoc/Project_A2BI_temp/data/benchMark/";
 		
