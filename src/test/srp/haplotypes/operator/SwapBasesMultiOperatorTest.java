@@ -16,8 +16,7 @@ import org.junit.Test;
 import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.AlignmentUtils;
 import srp.haplotypes.HaplotypeModel;
-import srp.haplotypes.operator.SwapBaseOperator;
-import srp.haplotypes.operator.SwapMultiBasesOperator;
+import srp.haplotypes.operator.SwapBasesMultiOperator;
 import srp.likelihood.ShortReadLikelihood;
 import dr.evolution.alignment.SimpleAlignment;
 import dr.evomodelxml.substmodel.HKYParser;
@@ -39,7 +38,7 @@ import dr.inference.trace.ArrayTraceList;
 import dr.inference.trace.Trace;
 import dr.inferencexml.model.CompoundLikelihoodParser;
 
-public class SwapMultiBasesOperatorTest {
+public class SwapBasesMultiOperatorTest {
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -70,11 +69,11 @@ public class SwapMultiBasesOperatorTest {
 		
 		HaplotypeModel haplotypeModel = new HaplotypeModel(aMap, 3);
 
-		int nBases = 20;
-		CoercableMCMCOperator operator = new SwapMultiBasesOperator(haplotypeModel, nBases, CoercionMode.COERCION_ON);
+		int nBases = 10;
+		CoercableMCMCOperator operator = new SwapBasesMultiOperator(haplotypeModel, nBases, CoercionMode.COERCION_OFF);
     	assertEquals(operator.getOperatorName(), "SwapMultiBasesOperator");
     	assertEquals(operator.getRawParameter(), nBases, 0);
-    	assertEquals(operator.getCoercableParameter(), Math.log(nBases), 1e-10); 
+    	assertEquals(operator.getCoercableParameter(), Math.log(nBases-1), 1e-10); 
 	}
 
 	
@@ -96,7 +95,7 @@ public class SwapMultiBasesOperatorTest {
 				};
 		
 		HaplotypeModel haplotypeModel = AlignmentUtils.createHaplotypeModel(seqs, haps);
-    	SwapMultiBasesOperator operator = new SwapMultiBasesOperator(haplotypeModel, 5, null);
+    	SwapBasesMultiOperator operator = new SwapBasesMultiOperator(haplotypeModel, 5, CoercionMode.COERCION_OFF);
     	
     	
     	for (int i = 0; i < 100; i++) {
@@ -137,7 +136,7 @@ public class SwapMultiBasesOperatorTest {
     	// Operators
     	OperatorSchedule schedule = new SimpleOperatorSchedule();
 
-    	MCMCOperator operator = new SwapMultiBasesOperator(haplotypeModel, 3, CoercionMode.COERCION_OFF);
+    	MCMCOperator operator = new SwapBasesMultiOperator(haplotypeModel, 3, CoercionMode.COERCION_OFF);
     	operator.setWeight(3.0);
     	schedule.addOperator(operator);
     	
@@ -147,7 +146,7 @@ public class SwapMultiBasesOperatorTest {
     	
     	List<Likelihood> likelihoods = new ArrayList<Likelihood>();        
 
-        ShortReadLikelihood srpLikelihood = new ShortReadLikelihood(aMap, haplotypeModel);
+        ShortReadLikelihood srpLikelihood = new ShortReadLikelihood(haplotypeModel);
     	likelihoods.add(srpLikelihood);
     	Likelihood shortReadlikelihood = new CompoundLikelihood(-1, likelihoods);
     	

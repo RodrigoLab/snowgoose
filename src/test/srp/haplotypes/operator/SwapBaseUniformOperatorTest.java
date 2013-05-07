@@ -14,13 +14,13 @@ import org.junit.Test;
 import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.AlignmentUtils;
 import srp.haplotypes.HaplotypeModel;
-import srp.haplotypes.operator.UniformSwapBaseOperator;
+import srp.haplotypes.operator.SingleBaseUniformOperator;
 import dr.evolution.alignment.SimpleAlignment;
 import dr.inference.operators.MCMCOperator;
 import dr.inference.operators.OperatorFailedException;
 import dr.inference.operators.SimpleMCMCOperator;
 
-public class UniformSwapBaseOperatorTest {
+public class SwapBaseUniformOperatorTest {
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -52,7 +52,7 @@ public class UniformSwapBaseOperatorTest {
 		
 		HaplotypeModel haplotypeModel = new HaplotypeModel(aMap, 3);
 
-		MCMCOperator operator = new UniformSwapBaseOperator(haplotypeModel, 0);
+		MCMCOperator operator = new SingleBaseUniformOperator(haplotypeModel, 0);
     	assertEquals(operator.getOperatorName(), "UniformSwapBaseOperator");
 	}
 
@@ -78,7 +78,7 @@ public class UniformSwapBaseOperatorTest {
 		SimpleAlignment hapAlignment = AlignmentUtils.createAlignment(haps);
 		HaplotypeModel haplotypeModel = new HaplotypeModel(aMap, hapAlignment);
 
-		SimpleMCMCOperator operator = new UniformSwapBaseOperator(haplotypeModel, 0);
+		SimpleMCMCOperator operator = new SingleBaseUniformOperator(haplotypeModel, 0);
     	
     	
     	for (int i = 0; i < 100; i++) {

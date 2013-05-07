@@ -5,6 +5,13 @@ import java.util.Arrays;
 import java.util.Deque;
 import java.util.Iterator;
 
+import org.apache.commons.math3.random.EmpiricalDistribution;
+import org.apache.commons.math3.stat.Frequency;
+import org.apache.commons.math3.stat.StatUtils;
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+import org.apache.commons.math3.stat.descriptive.StatisticalSummaryValues;
+import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
+
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
 
@@ -80,37 +87,29 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 	AlignmentMapping aMap;
 	private SwapInfo swapInfo = new SwapInfo();
 	private boolean isEdit;
+	private double[] cumSumFrequencies;
 
 	
-	private void setupData(AlignmentMapping aMap) {
-		this.aMap = aMap;
-		this.haplotypesLength = this.aMap.getLength();
-		
-//		this.haplotypesCount = hapCount;
-
-//		taxa = new Taxa();
-		
-//		taxons = new Taxon[haplotypesCount];
-//		alignment = new SimpleAlignment();
-		
-		haplotypes = new ArrayList<Haplotype>();
-
-		setDataType(Nucleotides.INSTANCE);
-		
-	}
-	
-	private void setupAlignment(Alignment trueAlignment) {
-
-		for (int i = 0; i < trueAlignment.getSequenceCount(); i++) {
-			Haplotype haplotype = new Haplotype(trueAlignment.getSequence(i));
-			addHaplotype(haplotype);
+	private HaplotypeModel(AlignmentMapping aMap){
+			super(MODEL_NAME);
+	//		setupData(aMap);
+			this.aMap = aMap;
+			this.haplotypesLength = this.aMap.getLength();
+			
+			haplotypes = new ArrayList<Haplotype>();
+			setDataType(Nucleotides.INSTANCE);
+			
 		}
-		
-    }
+
+	private void addHaplotype(Haplotype haplotype) {
+		haplotype.setDataType(getDataType());
+	    haplotypes.add(haplotype);
 	
+	}
+
 	private void initSeqs(int hapCount){
 		
-		char[] temp = new char[getHaplotypeLength()];
+		char[] temp = new char[haplotypesLength];
 		Arrays.fill(temp, DataType.GAP_CHARACTER);
 		String tempSeq = String.valueOf(temp);
 		
@@ -118,66 +117,40 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 			Taxon t = new Taxon(TAXON_PREFIX+i); 
 			Haplotype haplotype = new Haplotype(t, tempSeq);
 			addHaplotype(haplotype);
-			randomSeq(i);
+			randomHaplotype(i);
 
+		}
+
+	}
+	
+
+	private void randomHaplotype(int hapIndex) {
+		Haplotype haplotype = getHaplotype(hapIndex);
+		for (int i = 0; i < haplotypesLength; i++) {
+			char newChar = (char) aMap.nextBaseAt(i);
+			haplotype.setCharAt(i, newChar);
+	
 		}
 	}
 	
-	private void addHaplotype(Haplotype haplotype) {
-		haplotype.setDataType(getDataType());
-	    haplotypes.add(haplotype);
-	
-	}
-
 	public HaplotypeModel(AlignmentMapping aMap, int hapCount) {
-		super(MODEL_NAME);
-		setupData(aMap);//		swapBase(hapIndex, pos);
-		
+		this(aMap);		
 		initSeqs(hapCount);
+		
 	}
 
 	public HaplotypeModel(AlignmentMapping aMap, Alignment trueAlignment) {
-		super(MODEL_NAME);
-		setupData(aMap);
-		setupAlignment(trueAlignment);
-	
-	}
+		this(aMap);
 
-	
-	public void randomSeq(int hapIndex) {
-		
-		for (int i = 0; i < getHaplotypeLength(); i++) {
-//			char newChar = GAP;
-//			int size = aMap.mapToSrp[i].size();
-//			if (size != 0) {
-//				int srpIndex = aMap.mapToSrp[i].get(rand.nextInt(0, size));
-//				newChar = aMap.getShortReadCharAt(srpIndex, i);
-//			}
-			char newChar = (char) aMap.nextBaseAt(i);
-//			int[] swapInfoArray = swapHaplotypeBase(hapIndex, posChar);
-
-			getHaplotype(hapIndex).setCharAt(i, newChar);
-
+		for (int i = 0; i < trueAlignment.getSequenceCount(); i++) {
+			Haplotype haplotype = new Haplotype(trueAlignment.getSequence(i));
+			addHaplotype(haplotype);
 		}
-	}
-	public void startHaplotypeOperation(){
-		isEdit = true;
-	}
-	public void endHaplotypeOperation(){
-		isEdit = false;
-		fireModelChanged();
-	}
+
+	}	
 	
-	public int[] getNextBase(){
-		return aMap.nextBase();
-	}
-	public int[] getNextBaseUniform(){
-		return aMap.nextBaseUniform();
-	}
+
 	
-	public void storeOperationRecord(Operation op, Object opRecord){
-		swapInfo.storeOperation(op, opRecord);
-	}
 	public int[] swapHaplotypeBase(int hapIndex, int[] posChar){
 //		replaceHaplotypeCharAt(hapIndex, posChar);
 		
@@ -213,62 +186,19 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 //	
 //	
 
-	public void reject() {//FIXME for different swapInfo/Operation
-		Operation op = swapInfo.getOperation();
-		int[] temp;
-		switch (op) {
-			case SWAPBASE: 
-				
-				temp = swapInfo.getSwapInfoSWAPBASE();
-				resetHaplotypeToOldChar(temp);
-				break;
-			case UNIFORMSWAPBASE:
-				
-				temp = swapInfo.getSwapInfoSWAPBASE();
-				resetHaplotypeToOldChar(temp);
-				break;
-			case SWAPMULTI:
-				Deque<int[]> swapMulti = swapInfo.getSwapInfoSWAPMULTI();
-				
-				for (Iterator<int[]> iterator = swapMulti.descendingIterator(); iterator
-						.hasNext();) {
-
-					temp= iterator.next();
-					resetHaplotypeToOldChar(temp);
-				}
-
-				break;
-			case SWAPSECTION:
-				temp = swapInfo.getSwapHaplotypeRecord();
-				for (int i = 0; i < temp.length; i++) {
-					haplotypes.get(temp[i]).restoreState();
-				}
-				break;
-			case RECOMB:
-				temp = swapInfo.getSwapHaplotypeRecord();
-				for (int i = 0; i < temp.length; i++) {
-					haplotypes.get(temp[i]).restoreState();
-				}
-				break;
-				
-				
-			default:
-				throw new IllegalArgumentException("Unknown operation type: "+op);
-				
-		}
-		
+	public SwapInfo getSwapInfo() {
+		return swapInfo;
 	}
+	public Operation getOperation() {
+		return swapInfo.getOperation();
+	}
+	public void storeOperationRecord(Operation op, Object opRecord){
+		swapInfo.storeOperation(op, opRecord);
+	}
+
+
+
 	
-
-
-	@Override
-	public void fireModelChanged(){
-//		for (TreeChangedEvent treeChangedEvent : treeChangedEvents) {
-		listenerHelper.fireModelChanged(this);//, treeChangedEvent);
-//		}
-//		treeChangedEvents.clear();
-	}
-
 	public int calculateSPS(){
 		int sps = 0;
 		
@@ -276,7 +206,7 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 			Haplotype h1 = getHaplotype(i);
 			for (int j = 0; j < i; j++) {
 				Haplotype h2 = getHaplotype(j);
-				for (int pos = 0; pos < getHaplotypeLength(); pos++) {
+				for (int pos = 0; pos < haplotypesLength; pos++) {
 					int c = h1.charAt(pos) - h2.charAt(pos);
 					sps += (c==0)? 0: 1;
 				}
@@ -285,17 +215,14 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 		return sps;
 	}
 
-	
-	public SwapInfo getSwapInfo() {
-		return swapInfo;
-	}
-	
-	public Operation getOperation() {
-		 
-		return swapInfo.getOperation();
+	public String[] toStringArray() {
+		String[] string = new String[getHaplotypeCount()];
+		for (int i = 0; i < string.length; i++) {
+			string[i] = getHaplotypeString(i);
+		}
+		return string;
 	}
 
-	
 	@Override
 	public String toString(){
 
@@ -327,14 +254,13 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 
     
 	
-	public String[] toStringArray() {
-		String[] string = new String[getHaplotypeCount()];
-		for (int i = 0; i < string.length; i++) {
-			string[i] = getHaplotypeString(i);
+	@Override
+		public void fireModelChanged(){
+	//		for (TreeChangedEvent treeChangedEvent : treeChangedEvents) {
+			listenerHelper.fireModelChanged(this);//, treeChangedEvent);
+	//		}
+	//		treeChangedEvents.clear();
 		}
-		return string;
-	}
-
 
 	@Override
 	protected void handleModelChangedEvent(Model model, Object object, int index) {
@@ -351,19 +277,75 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 	}
 
 	@Override
-	protected void storeState() {
-
-//		System.err.println("Call storeState");
-		swapInfo.storeOperation(Operation.NONE, null);
-	}
+		protected void storeState() {
+	
+	//		System.err.println("Call storeState");
+			swapInfo.storeOperation(Operation.NONE, null);
+		}
 
 	@Override
-	protected void restoreState() {
-//		System.err.println("Call restoreState - haplotypeModel");
-
-		if(Operation.NONE != swapInfo.getOperation()){
-			reject();
+		protected void restoreState() {
+	//		System.err.println("Call restoreState - haplotypeModel");
+	
+	//		if(Operation.NONE != swapInfo.getOperation()){
+				reject();
+	//		}
 		}
+
+	//	private int swapHaplotypeCharAt(int hapIndex, int[] posChar){
+	//		int oldChar = getHaplotype(hapIndex).getChar(posChar[0]); 
+	//		getHaplotype(hapIndex).setCharAt(posChar[0], (char) posChar[1]);
+	//		return oldChar;
+	//		
+	//	}
+	//	
+	//	
+
+	public void reject() {// FIXME for different swapInfo/Operation
+		Operation op = swapInfo.getOperation();
+		int[] temp;
+		switch (op) {
+		case NONE:
+			break;
+		case SWAPBASE:
+
+			temp = swapInfo.getSwapInfoSWAPBASE();
+			resetHaplotypeToOldChar(temp);
+			break;
+		case UNIFORMSWAPBASE:
+
+			temp = swapInfo.getSwapInfoSWAPBASE();
+			resetHaplotypeToOldChar(temp);
+			break;
+		case SWAPMULTI:
+			Deque<int[]> swapMulti = swapInfo.getSwapInfoSWAPMULTI();
+
+			for (Iterator<int[]> iterator = swapMulti.descendingIterator(); iterator
+					.hasNext();) {
+
+				temp = iterator.next();
+				resetHaplotypeToOldChar(temp);
+			}
+
+			break;
+		case SWAPSECTION:
+			temp = swapInfo.getSwapHaplotypeRecord();
+			for (int i = 0; i < temp.length; i++) {
+				haplotypes.get(temp[i]).restoreState();
+			}
+			break;
+		case RECOMB:
+			temp = swapInfo.getSwapHaplotypeRecord();
+			for (int i = 0; i < temp.length; i++) {
+				haplotypes.get(temp[i]).restoreState();
+			}
+			break;
+
+		default:
+			throw new IllegalArgumentException("Unknown operation type: " + op);
+
+		}
+
 	}
 
 	@Override
@@ -371,9 +353,31 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 		//Do nothing
 	}
 
+	public void startHaplotypeOperation(){
+		isEdit = true;
+	}
+
+	public void endHaplotypeOperation(){
+		isEdit = false;
+		fireModelChanged();
+	}
+
+	public int[] getNextBase(){
+		return aMap.getNextBase();
+	}
+
+	public int[] getNextBaseUniform() {
+		return aMap.getNextBaseUniform();
+	}
+	
+	public int[] getNextBaseEmpirical(){
+		return aMap.getNextBaseEmpirical();
+	}
+	
 	public AlignmentMapping getAlignmentMapping() {
 		return aMap;
 	}
-
+	
+	
 
 }

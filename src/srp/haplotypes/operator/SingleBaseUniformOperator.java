@@ -1,5 +1,6 @@
 package srp.haplotypes.operator;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import srp.haplotypes.HaplotypeModel;
@@ -12,10 +13,10 @@ import dr.inference.operators.OperatorFailedException;
 import dr.inference.operators.SimpleMCMCOperator;
 import dr.math.MathUtils;
 
-public class UniformSwapBaseOperator extends SimpleMCMCOperator {
+public class SingleBaseUniformOperator extends SimpleMCMCOperator {
 
-	public final static String OPERATOR_NAME = UniformSwapBaseOperator.class.getSimpleName();//"UniformSwapBaseOperator";
-	public final static Operation OP = Operation.UNIFORMSWAPBASE;
+	public final static String OPERATOR_NAME = SingleBaseUniformOperator.class.getSimpleName();
+	public final static Operation OP = Operation.SWAPBASE;
 
 	@Deprecated
 	private int index;
@@ -23,7 +24,7 @@ public class UniformSwapBaseOperator extends SimpleMCMCOperator {
 	
 
 	
-	public UniformSwapBaseOperator(HaplotypeModel haplotypeModel, int nothing) {
+	public SingleBaseUniformOperator(HaplotypeModel haplotypeModel, int nothing) {
 //		super(mode);
 		this.index = nothing;
 		this.haplotypeModel= haplotypeModel; 
@@ -59,5 +60,6 @@ public class UniformSwapBaseOperator extends SimpleMCMCOperator {
 
 		return 0.0;
 	}
+
 
 }

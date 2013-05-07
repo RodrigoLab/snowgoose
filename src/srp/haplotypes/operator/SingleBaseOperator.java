@@ -10,24 +10,27 @@ import dr.inference.operators.OperatorFailedException;
 import dr.inference.operators.SimpleMCMCOperator;
 import dr.math.MathUtils;
 
-public class SwapBaseOperator extends SimpleMCMCOperator {
 
-	public final static String OPERATOR_NAME = "SwapBaseOperator";
+public class SingleBaseOperator extends SimpleMCMCOperator {
+
+	public final static String OPERATOR_NAME = SingleBaseOperator.class.getSimpleName();
 	public final static Operation OP = Operation.SWAPBASE;
 
 	@Deprecated
 	private int index;
 	private HaplotypeModel haplotypeModel;
+	private int haplotypeCount;
 	
 //	public AlignmentSwapBaseOperator(Parameter parameter, HaplotypeModel haplotypeModel, int index, CoercionMode mode) {
 ////		super(mode);
 //	}
 
 	
-	public SwapBaseOperator(HaplotypeModel haplotypeModel, int nothing) {
+	public SingleBaseOperator(HaplotypeModel haplotypeModel, int nothing) {
 //		super(mode);
 		this.index = nothing;
 		this.haplotypeModel= haplotypeModel; 
+		haplotypeCount = this.haplotypeModel.getHaplotypeCount();
 	}
 
 	@Override
@@ -48,9 +51,10 @@ public class SwapBaseOperator extends SimpleMCMCOperator {
 		
 		haplotypeModel.startHaplotypeOperation();
 			
-		int hapIndex = MathUtils.nextInt( haplotypeModel.getHaplotypeCount());
+		int hapIndex = MathUtils.nextInt( haplotypeCount);
 
 		int[] posChar = haplotypeModel.getNextBase();
+
 		int[] swapInfoArray = haplotypeModel.swapHaplotypeBase(hapIndex, posChar);
 		
 		haplotypeModel.storeOperationRecord(OP, swapInfoArray);

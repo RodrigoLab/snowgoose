@@ -1,5 +1,7 @@
 package srp.haplotypes.operator;
 
+import org.apache.commons.math3.stat.StatUtils;
+
 import srp.haplotypes.Haplotype;
 import srp.haplotypes.HaplotypeModel;
 import srp.haplotypes.Operation;
@@ -12,16 +14,12 @@ import dr.inference.operators.SimpleMCMCOperator;
 import dr.math.MathUtils;
 
 
-public class HaplotypeSwapSectionOperator extends AbstractCoercableOperator {
+public class HaplotypeSwapSectionOperator extends AbstractHaplotypeOperator {
 
 	
 	public final static String OPERATOR_NAME = "SwapSectionOperator";
 	public final static Operation OP = Operation.SWAPSECTION;
 
-	
-	private int swapFragmentLength;
-	private int hapLength;
-	private HaplotypeModel haplotypeModel;
 	
 	
 //	public AlignmentSwapBaseOperator(Parameter parameter, HaplotypeModel haplotypeModel, int index, CoercionMode mode) {
@@ -30,17 +28,13 @@ public class HaplotypeSwapSectionOperator extends AbstractCoercableOperator {
 
 	
 	public HaplotypeSwapSectionOperator(HaplotypeModel haplotypeModel, int length, CoercionMode mode) {
-		super(mode);
-		this.swapFragmentLength = length;
-		this.haplotypeModel= haplotypeModel; 
-		this.hapLength = this.haplotypeModel.getHaplotypeLength();
-		
+		super(haplotypeModel, length, mode);
+
 	}
 
 	@Override
 	public String getPerformanceSuggestion() {
 
-//		System.err.println("getPero");
 		return "getPerformanceSuggestion";
 	}
 
@@ -50,25 +44,13 @@ public class HaplotypeSwapSectionOperator extends AbstractCoercableOperator {
 		return OPERATOR_NAME;
 	}
 
-	@Override
-	public double getCoercableParameter() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 
-	@Override
-	public void setCoercableParameter(double value) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
+    @Override
 	public double getRawParameter() {
-		// TODO Auto-generated method stub
-		return 0;
+		return swapLength;
 	}
 
-	@Override
+    @Override
 	public double doOperation() throws OperatorFailedException {
 		
 
@@ -86,8 +68,8 @@ public class HaplotypeSwapSectionOperator extends AbstractCoercableOperator {
 		
 		String oldS1 = h1.getSequenceString();
 		String oldS2 = h2.getSequenceString();
-		int pos = MathUtils.nextInt(hapLength-swapFragmentLength+1);
-		int end = pos + swapFragmentLength; 
+		int pos = MathUtils.nextInt(haplotypeLength-swapLength+1);
+		int end = pos + swapLength; 
 
 
 		String temp1 = oldS1.substring(pos, end);

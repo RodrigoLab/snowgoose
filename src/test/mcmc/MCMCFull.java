@@ -18,8 +18,14 @@ import org.junit.Test;
 
 import srp.core.DataImporter;
 import srp.haplotypes.AlignmentMapping;
+import srp.haplotypes.HaplotypeLoggerWithTrueHaplotype;
 import srp.haplotypes.HaplotypeModel;
-import srp.haplotypes.operator.SwapBaseOperator;
+import srp.haplotypes.operator.HaplotypeRecombinationOperator;
+import srp.haplotypes.operator.HaplotypeSwapSectionOperator;
+import srp.haplotypes.operator.SingleBaseOperator;
+import srp.haplotypes.operator.SwapBasesMultiOperator;
+import srp.haplotypes.operator.SingleBaseUniformOperator;
+import srp.haplotypes.operator.SwapBasesUniformOperator;
 import srp.likelihood.ShortReadLikelihood;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.coalescent.CoalescentSimulator;
@@ -87,12 +93,17 @@ public class MCMCFull {
 	
 	@Test
 	public void testMCMCFull() throws Exception {
-		String dataDir = "/home/sw167/workspace/ABI/unittest/";
-		String truePhylogenyFile = "H6_haplotypes.tree";
-		String shortReadFile = "H6_srp_300.fasta";
+		String dataDir = "/home/sw167/workspace/ABI/data/";
+		String truePhylogenyFile = "H6_005_true_tree.trees";
+		String shortReadFile = "H6_srp.fasta";
 		
-		String logTracerName = "testH6_300_fixtree.log";
-		String logTreeName = "testFixTreeH6_300.trees";
+		String prefix = "Tree_";
+		String logTracerName = prefix+"H6_300_tracer.log";
+		String logTreeName = prefix+"H6_300.trees";
+		String logHaplotypeName = prefix+"H6_300_haplatype.log";
+		String operatorAnalysisFile = prefix+"operatorAnalysisFile";
+				
+		int logInterval = 1000;
 		
 		DataImporter dataImporter = new DataImporter(dataDir);
 //		Tree truePhylogeny = dataImporter.importTree(truePhylogenyFile);
@@ -104,7 +115,7 @@ public class MCMCFull {
 
 		// coalescent
 		Parameter popSize = new Parameter.Default(
-				ConstantPopulationModelParser.POPULATION_SIZE, 1000.0, 100, 100000.0);
+				ConstantPopulationModelParser.POPULATION_SIZE, 3000.0, 100, 100000.0);
 
 //		 Random treeModel
 		ConstantPopulationModel startingTree = new ConstantPopulationModel(popSize, Units.Type.YEARS);
@@ -133,27 +144,24 @@ public class MCMCFull {
 		siteModel.setMutationRateParameter(mu);
 
 		// treeLikelihood
-		SitePatternsExt patterns = new SitePatternsExt(haplotypeModel, null, 0, -1, 1, true);
+//		SitePatternsExt patterns = new SitePatternsExt(haplotypeModel, null, 0, -1, 1, true);
 
-		 TreeLikelihoodExt treeLikelihood = new TreeLikelihoodExt(haplotypeModel, treeModel, siteModel,
+		TreeLikelihoodExt treeLikelihood = new TreeLikelihoodExt(haplotypeModel, treeModel, siteModel,
 				 branchRateModel, null, false, false, true, false, false);
-//			TreeLikelihood treeLikelihood = new TreeLikelihood(patterns, treeModel,
-//					siteModel, branchRateModel, null, false, false, true, false, false);
+//		TreeLikelihood treeLikelihood = new TreeLikelihood(patterns, treeModel,
+//				siteModel, branchRateModel, null, false, false, true, false, false);
 		treeLikelihood.setId(TreeLikelihoodParser.TREE_LIKELIHOOD);
 
 		// Operators
 		OperatorSchedule schedule = new SimpleOperatorSchedule();
-		schedule = defalutOperators(schedule, popSize, kappa, rateParameter, treeModel);
+		schedule = defalutOperators(schedule, haplotypeModel, popSize, kappa);
+		schedule = defalutTreeOperators(schedule, treeModel);
 		Parameter rootHeight = treeModel.getRootHeightParameter();
 
-		int index = 0;
-		MCMCOperator operator = new SwapBaseOperator(haplotypeModel,index);
-		operator.setWeight(10.0); // 400,000 start to increase with w=0.01
-		schedule.addOperator(operator);
-
-		// CompoundLikelihood
+//		 CompoundLikelihood
 		List<Likelihood> likelihoods = new ArrayList<Likelihood>();
 
+		// Prior
 		OneOnXPrior oneOnX = new OneOnXPrior();
 		oneOnX.addData(popSize);
 
@@ -167,14 +175,14 @@ public class MCMCFull {
 		Likelihood prior = new CompoundLikelihood(0, likelihoods);
 		prior.setId(CompoundLikelihoodParser.PRIOR);
 
+		// Likelihood
 		likelihoods.clear();
 		likelihoods.add(treeLikelihood);
 		Likelihood likelihood = new CompoundLikelihood(-1, likelihoods);
 		likelihood.setId(CompoundLikelihoodParser.LIKELIHOOD);
 
 		likelihoods.clear();
-		ShortReadLikelihood srpLikelihood = new ShortReadLikelihood(aMap,
-				haplotypeModel);
+		ShortReadLikelihood srpLikelihood = new ShortReadLikelihood(haplotypeModel);
 		likelihoods.add(srpLikelihood);
 		Likelihood shortReadlikelihood = new CompoundLikelihood(-1, likelihoods);
 		shortReadlikelihood.setId("shortReadLikelihood");
@@ -184,6 +192,7 @@ public class MCMCFull {
 		likelihoods.add(likelihood);
 		likelihoods.add(srpLikelihood);
 
+		// Posterior
 		Likelihood posterior = new CompoundLikelihood(0, likelihoods);
 		posterior.setId(CompoundLikelihoodParser.POSTERIOR);
 
@@ -192,8 +201,8 @@ public class MCMCFull {
 
 		ArrayLogFormatter formatter = new ArrayLogFormatter(false);
 
-		int logInterval = 1000;
-		MCLogger[] loggers = new MCLogger[3];
+
+		MCLogger[] loggers = new MCLogger[4];
 		loggers[0] = new MCLogger(formatter, logInterval, false);
 		
 		loggers[0] = new MCLogger(logTracerName, logInterval, false, 0);
@@ -201,7 +210,7 @@ public class MCMCFull {
 				rootHeight, rateParameter, popSize, kappa,
 				coalescent);
 
-		loggers[1] = new MCLogger(new TabDelimitedFormatter(System.out), logInterval, true);
+		loggers[1] = new MCLogger(new TabDelimitedFormatter(System.out), logInterval, true, logInterval*2);
 		addToLogger(loggers[1], posterior, prior, likelihood, shortReadlikelihood,
 				popSize, kappa,				coalescent);
 		
@@ -211,72 +220,37 @@ public class MCMCFull {
 		loggers[2] = new TreeLogger(treeModel, branchRateModel, null, null,
 				treeFormatter, logInterval, true, true, true, null, null);
 
-		
+		Alignment trueAlignment = dataImporter.importAlignment("H6_005.fasta");
+		loggers[3] = new HaplotypeLoggerWithTrueHaplotype(haplotypeModel, trueAlignment, logHaplotypeName, logInterval*10);
+
 		// MCMC
 		MCMC mcmc = new MCMC("mcmc1");
 		MCMCOptions options = new MCMCOptions();
-		options.setChainLength(logInterval * 10);
+		options.setChainLength(logInterval * 1000);
 
 		options.setUseCoercion(false); // autoOptimize = true
 		options.setCoercionDelay(logInterval * 1);
 		options.setTemperature(1.0);
-		options.setFullEvaluationCount(1000);
+		options.setFullEvaluationCount(logInterval);
 
 		mcmc.setShowOperatorAnalysis(true);
+		mcmc.setOperatorAnalysisFile(new File(operatorAnalysisFile));
+		
 		mcmc.init(options, posterior, schedule, loggers);
 		mcmc.run();
 
-		// time
 		System.out.println(mcmc.getTimer().toString());
-		PrintWriter fout = new PrintWriter(new BufferedWriter(new FileWriter(
-				"finalAlignment")));
-
-		fout.write(haplotypeModel.toString());
-		fout.close();
-		// Tracer
-		// List<Trace> traces = formatter.getTraces();
-		// ArrayTraceList traceList = new ArrayTraceList("test", traces, 0);
-		//
-		//
-		//
-		// // Trace trace = traces.get(0);
-		// for (Trace trace : traces) {
-		// if (trace.getName().equals("ShortReadLikelihood")) {
-		//
-		// double startValue = (Double) trace.getValue(0);
-		// double endValue = (Double) trace
-		// .getValue(trace.getValuesSize() - 1);
-		// assertEquals(expectedInit , startValue,0);
-		// assertTrue(endValue > startValue);
-		// // System.out.println(trace.getName());
-		// // break;
-		// }
-		// }
-
-		// for (int j = 0; j < trace.getValuesSize(); j++) {
-		// System.out.print(trace.getValue(j) +"\t");
-		// }
-		// System.out.println();
-		// System.out.println(Arrays.toString(trace.getRange()));
-		// System.out.println(trace.getTraceT9ype());
-
 	}
 
 	public static MCLogger addToLogger(MCLogger mcLogger, Loggable... loggableParameter){
 		return MCMCTrueTree.addToLogger(mcLogger, loggableParameter);
 	}
 
-	private static OperatorSchedule defalutOperators(OperatorSchedule schedule,
-			Parameter popSize, Parameter kappa, Parameter rateNotUse,
+	private static OperatorSchedule defalutTreeOperators(OperatorSchedule schedule,
+//			Parameter popSize, Parameter kappa, Parameter rateNotUse,
 			TreeModel treeModel) {
 
 		MCMCOperator operator;
-		operator = new ScaleOperator(kappa, 0.75);
-		schedule.addOperator(operator);
-
-		operator = new ScaleOperator(popSize, 0.75);
-		operator.setWeight(3.0);
-		schedule.addOperator(operator);
 
 //		 operator = new ScaleOperator(rateParameter, 0.75);
 //		 operator.setWeight(3.0);
@@ -312,6 +286,46 @@ public class MCMCFull {
 		
 		 operator = new WilsonBalding(treeModel, 3.0);
 		 schedule.addOperator(operator);
+
+		return schedule;
+	}
+	private static OperatorSchedule defalutOperators(OperatorSchedule schedule,
+			HaplotypeModel haplotypeModel, Parameter popSize, Parameter kappa) {
+
+		int index = 20;
+		MCMCOperator operator;
+		
+		operator = new SingleBaseOperator(haplotypeModel,index);
+		operator.setWeight(1.0);
+		schedule.addOperator(operator);
+//	
+		operator = new SwapBasesMultiOperator(haplotypeModel, 24, CoercionMode.COERCION_OFF);
+		operator.setWeight(3.0); 
+		schedule.addOperator(operator);
+	
+		operator = new SingleBaseUniformOperator(haplotypeModel,index);
+		operator.setWeight(1.0);
+		schedule.addOperator(operator);
+
+		operator = new SwapBasesUniformOperator(haplotypeModel, 12, CoercionMode.COERCION_OFF);
+		operator.setWeight(3.0); 
+		schedule.addOperator(operator);
+
+		operator = new HaplotypeRecombinationOperator(haplotypeModel, 0);
+		operator.setWeight(6.0); 
+		schedule.addOperator(operator);
+		
+		operator = new HaplotypeSwapSectionOperator(haplotypeModel, 24, CoercionMode.COERCION_OFF);
+		operator.setWeight(6.0); 
+		schedule.addOperator(operator);
+		
+		operator = new ScaleOperator(kappa, 0.75);
+		schedule.addOperator(operator);
+//
+		operator = new ScaleOperator(popSize, 0.75);
+		operator.setWeight(1.0);
+		schedule.addOperator(operator);
+
 
 		return schedule;
 	}

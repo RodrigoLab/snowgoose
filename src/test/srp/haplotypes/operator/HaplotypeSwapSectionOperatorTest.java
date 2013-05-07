@@ -10,8 +10,11 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import dr.inference.operators.CoercionMode;
+
 import srp.haplotypes.AlignmentUtils;
 import srp.haplotypes.HaplotypeModel;
+import srp.haplotypes.operator.AbstractHaplotypeOperator;
 import srp.haplotypes.operator.HaplotypeSwapSectionOperator;
 
 public class HaplotypeSwapSectionOperatorTest {
@@ -48,7 +51,7 @@ public class HaplotypeSwapSectionOperatorTest {
 
 		for (int i = 1; i < 10; i++) {
 			HaplotypeModel haplotypeModel = AlignmentUtils.createHaplotypeModel(srp, haps);
-			HaplotypeSwapSectionOperator op = new HaplotypeSwapSectionOperator(haplotypeModel, i, null);
+			AbstractHaplotypeOperator op = new HaplotypeSwapSectionOperator(haplotypeModel, i, CoercionMode.COERCION_OFF);
 
 			for (int j = 0; j < 100; j++) {
 				op.doOperation();

@@ -9,16 +9,19 @@ import java.util.regex.Pattern;
 
 
 import dr.evolution.alignment.Alignment;
+import dr.evolution.datatype.Nucleotides;
 import dr.evolution.sequence.Sequence;
+import dr.evolution.wrightfisher.NeutralModel;
 import dr.math.MathUtils;
 
 public class AlignmentMapping {
 
 	private static final int GAP = '-';
+	private static final char[] validChars = Nucleotides.INSTANCE.getValidChars();
 	
 	private ArrayList<Integer>[] mapToSrp; // each [] = position, each ArrayList = map to which read
+	
 	private HashSet<Character>[] setsOfAvailableChar;
-
 	private ArrayList<Character>[] listOfAvailableChar;
 	
 	private HashMap<String, Integer> seqNameToSeqID; // map sequence_name >xxx to int
@@ -28,28 +31,19 @@ public class AlignmentMapping {
 	private int length;
 	private Integer srpCount;
 
+	private double[] frequencies;
+	private double[] cumSum;
+	
+
 	
 	
-	public AlignmentMapping(Alignment srpAlignment){
-		
-		init( srpAlignment.getSiteCount() );
-		for (int i = 0; i < srpAlignment.getSequenceCount(); i++) {
-			Sequence s = srpAlignment.getSequence(i);
-			addSequence(s);
-		}
-		for (int i = 0; i < length; i++) {
-			listOfAvailableChar[i] = new ArrayList<Character>(setsOfAvailableChar[i]);
-		}
-		setsOfAvailableChar=null;
-	}
-
-
 	private void init(int l){
 			length = l;
 			mapToSrp = new ArrayList[length];
 			setsOfAvailableChar = new HashSet[length];
 			listOfAvailableChar = new ArrayList[length];
 			
+			frequencies = new double['T'+1];
 			for (int i = 0; i < this.length; i++) {
 				mapToSrp[i] = new ArrayList<Integer>(); 
 				setsOfAvailableChar[i] = new HashSet<Character>();
@@ -64,6 +58,37 @@ public class AlignmentMapping {
 		}
 
 
+	public AlignmentMapping(Alignment srpAlignment){
+		
+		init( srpAlignment.getSiteCount() );
+		for (int i = 0; i < srpAlignment.getSequenceCount(); i++) {
+			Sequence s = srpAlignment.getSequence(i);
+			addSequence(s);
+		}
+		for (int i = 0; i < length; i++) {
+			listOfAvailableChar[i] = new ArrayList<Character>(setsOfAvailableChar[i]);
+		}
+
+		cumSum = new double[]{frequencies['A'],frequencies['C'],frequencies['G'],frequencies['T']};
+		
+		System.out.println(Arrays.toString(cumSum));
+		for (int i = 1; i < cumSum.length; i++) {
+			cumSum[i] = cumSum[i] + cumSum[i-1];  
+		}
+		double sum = cumSum[3];
+		for (int i = 0; i < cumSum.length; i++) {
+			cumSum[i] /= sum;  
+		}
+//		double sum = cumSum[3];
+//		
+//		frequencies[frequencies.length-1] = 1;
+		System.out.println(Arrays.toString(cumSum));	
+			
+		
+		setsOfAvailableChar=null;
+	}
+
+
 	private void addSequence(Sequence s) {
 
 		ShortRead srp = new ShortRead(s);
@@ -73,7 +98,9 @@ public class AlignmentMapping {
 			
 			for (int j = srp.getStart(); j < srp.getEnd(); j++) {
 				mapToSrp[j].add(srpCount);
-				setsOfAvailableChar[j].add(srp.getFullSrpCharAt(j));
+				char c = srp.getFullSrpCharAt(j);
+				setsOfAvailableChar[j].add(c);
+				frequencies[c]++;
 			}
 			srpCount++;
 		}
@@ -144,14 +171,7 @@ public class AlignmentMapping {
 	}
 
 
-	public int[] nextBase() {
-
-		int pos = MathUtils.nextInt(length);
-		int newChar = nextBaseAt(pos);
-	
-		return new int[]{pos, newChar};
-	}
-	public int nextBaseAt(int pos){
+	protected int nextBaseAt(int pos){
 		int newChar = GAP;
 		int size = mapToSrp[pos].size();
 		if (size != 0) {
@@ -163,15 +183,41 @@ public class AlignmentMapping {
 	}
 
 
-	public int[] nextBaseUniform() {
-		int newChar = GAP;
+	public int[] getNextBase() {
+
+		int pos = MathUtils.nextInt(length);
+		int newChar = nextBaseAt(pos);
+	
+		return new int[]{pos, newChar};
+	}
+	
+	public int[] getNextBaseUniform() {
+		int newChar = GAP ;
 		int pos = MathUtils.nextInt(length);
 		int size = listOfAvailableChar[pos].size();
 		if (size != 0) {
 			newChar = listOfAvailableChar[pos].get(MathUtils.nextInt(size));
 		}
 		
-		
 		return new int[]{pos, newChar};
+	}
+
+
+	public int[] getNextBaseEmpirical() {
+
+		int newChar = GAP;
+		int pos = MathUtils.nextInt(length);
+		
+		double d = MathUtils.nextDouble();
+		for (int i = 0; i < cumSum.length; i++) {
+			if (d <= cumSum[i]) {
+				newChar = validChars[i];
+				break;
+			}
+			
+		}
+		
+
+		return new int[] { pos, newChar };
 	}
 }

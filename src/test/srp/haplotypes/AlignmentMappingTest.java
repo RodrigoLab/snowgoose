@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.apache.commons.math3.stat.Frequency;
 import org.apache.commons.math3.stat.StatUtils;
@@ -82,87 +83,87 @@ public class AlignmentMappingTest {
 	}
 	
 	@Test
-	public void testNextBase() {
-
-
-		String[] seqs = new String[] {
-			"A***AAA...",
-			".C**AAA...",
-			"..G*AAA...",
-			"...TTGC..."};
-		
-		aMap = new AlignmentMapping(AlignmentUtils.createAlignment(seqs));
-				
-		for (int i = 0; i < 1e5; i++) {
-			int[] posChar = aMap.nextBase();
-			switch (posChar[0]) {
-			case 0:
-				assertEquals(posChar[1], 'A');
-				break;
-			case 1:
-				assertTrue( posChar[1]=='C' || posChar[1]=='-');
-				break;
-			case 2:
-				assertTrue( posChar[1]=='G' || posChar[1]=='-');
-				break;
-			case 3:
-				assertTrue( posChar[1]=='T' || posChar[1]=='-');
-				break;
-			case 4:
-				assertTrue( posChar[1]=='A' || posChar[1]=='T');
-				break;
-			case 7:
-				assertEquals(posChar[1], '-');
-				break;
-			default:
-				break;
-			}
-		}
-		
-		seqs = new String[] {
-				"AAA",
-				"AAA",
-				"AAA",
-				"AAA",
-				"AAA",
-				"AAA",
-				"AAA",
-				"AAA",
-				"AAA",
-				"AAA",
-				"CGT"};
-
-		aMap = new AlignmentMapping(AlignmentUtils.createAlignment(seqs));
-		int[][] count = new int[3][85];
-		for (int i = 0; i < 3e5; i++) {
-			int[] posChar = aMap.nextBase();
-			switch (posChar[0]) {
+		public void testGetNextBase() {
+	
+	
+			String[] seqs = new String[] {
+				"A***AAA...",
+				".C**AAA...",
+				"..G*AAA...",
+				"...TTGC..."};
+			
+			aMap = new AlignmentMapping(AlignmentUtils.createAlignment(seqs));
+					
+			for (int i = 0; i < 1e5; i++) {
+				int[] posChar = aMap.getNextBase();
+				switch (posChar[0]) {
 				case 0:
-					count[0][posChar[1]]++;
+					assertEquals(posChar[1], 'A');
 					break;
 				case 1:
-					count[1][posChar[1]]++;
+					assertTrue( posChar[1]=='C' || posChar[1]=='-');
 					break;
 				case 2:
-					count[2][posChar[1]]++;
+					assertTrue( posChar[1]=='G' || posChar[1]=='-');
+					break;
+				case 3:
+					assertTrue( posChar[1]=='T' || posChar[1]=='-');
+					break;
+				case 4:
+					assertTrue( posChar[1]=='A' || posChar[1]=='T');
+					break;
+				case 7:
+					assertEquals(posChar[1], '-');
 					break;
 				default:
 					break;
+				}
 			}
+			
+			seqs = new String[] {
+					"AAA",
+					"AAA",
+					"AAA",
+					"AAA",
+					"AAA",
+					"AAA",
+					"AAA",
+					"AAA",
+					"AAA",
+					"AAA",
+					"CGT"};
+	
+			aMap = new AlignmentMapping(AlignmentUtils.createAlignment(seqs));
+			int[][] count = new int[3][85];
+			for (int i = 0; i < 3e5; i++) {
+				int[] posChar = aMap.getNextBase();
+				switch (posChar[0]) {
+					case 0:
+						count[0][posChar[1]]++;
+						break;
+					case 1:
+						count[1][posChar[1]]++;
+						break;
+					case 2:
+						count[2][posChar[1]]++;
+						break;
+					default:
+						break;
+				}
+			}
+			double expectedRatio = 10;
+			double ratio = (double)count[0]['A'] / (double)count[0]['C'];
+			TestUtils.assertExpectationRange(ratio, expectedRatio , 0.25);
+			ratio = (double)count[1]['A'] / (double)count[1]['G'];
+			TestUtils.assertExpectationRange(ratio, expectedRatio , 0.25);
+			ratio = (double)count[2]['A'] / (double)count[2]['T'];
+			TestUtils.assertExpectationRange(ratio, expectedRatio , 0.25);
 		}
-		double expectedRatio = 10;
-		double ratio = (double)count[0]['A'] / (double)count[0]['C'];
-		TestUtils.assertExpectationRange(ratio, expectedRatio , 0.25);
-		ratio = (double)count[1]['A'] / (double)count[1]['G'];
-		TestUtils.assertExpectationRange(ratio, expectedRatio , 0.25);
-		ratio = (double)count[2]['A'] / (double)count[2]['T'];
-		TestUtils.assertExpectationRange(ratio, expectedRatio , 0.25);
-	}
 
 
 
 	@Test
-	public void testNextBaseUniform() {
+	public void testGetNextBaseUniform() {
 
 	
 		String[] seqs = new String[] {
@@ -181,7 +182,7 @@ public class AlignmentMappingTest {
 		aMap = new AlignmentMapping(AlignmentUtils.createAlignment(seqs));
 		double[][] count = new double[6][85];
 		for (int i = 0; i < 5e5; i++) {
-			int[] posChar = aMap.nextBaseUniform();
+			int[] posChar = aMap.getNextBaseUniform();
 			count[posChar[0]][posChar[1]]++;
 			
 		}
@@ -208,6 +209,43 @@ public class AlignmentMappingTest {
 
 		
 	}
+	
+
+	@Test
+	public void testGetNextBaseEmpirical() {
+
+		String[] seqs = new String[] {
+				"AAATT.",
+				"AAAAA.",
+				"AAAAA.",
+				"AAAAA.",
+				"AAACC.",
+				"AAACC.",
+				"ACCAA.",
+				"ACCAA.",
+				"CAAAA.",
+				"CAAAA.",
+				"TTTAA."};
+//A:C:T = 8:2:1
+		aMap = new AlignmentMapping(AlignmentUtils.createAlignment(seqs));
+		double[][] count = new double[6][85];
+		for (int i = 0; i < 1e6; i++) {
+			int[] posChar = aMap.getNextBaseEmpirical();//FIXME
+			count[posChar[0]][posChar[1]]++;
+		}
+		
+		double ratio = 1;
+		for (int i = 0; i < count.length; i++) {
+			ratio = count[i]['C'] / count[0]['A'];
+			TestUtils.assertExpectationRange(ratio, 0.25, 0.01);
+			ratio = count[i]['G'] / count[1]['A'];
+			TestUtils.assertExpectationRange(ratio, 0, 1e-8);
+			ratio = count[i]['T'] / count[2]['A'];
+			TestUtils.assertExpectationRange(ratio, 0.125, 0.01);
+		}
+		
+	}
+
 
 	@Test
 	public void testMapNameToID() {

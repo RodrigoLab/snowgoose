@@ -11,55 +11,30 @@ import dr.inference.operators.OperatorFailedException;
 import dr.inference.operators.SimpleMCMCOperator;
 import dr.math.MathUtils;
 
-public class UniformSwapMultiBasesOperator extends AbstractCoercableOperator {
+public class SwapBasesMultiOperator extends AbstractHaplotypeOperator {
 
 
-	public final static String OPERATOR_NAME = "UniformSwapMultiBasesOperator";
+	public final static String OPERATOR_NAME = SwapBasesMultiOperator.class.getSimpleName();
 	public final static Operation OP = Operation.SWAPMULTI;
 
-
-	int swapNBases;
-	private HaplotypeModel haplotypeModel;
 	
-	public UniformSwapMultiBasesOperator(Parameter parameter, HaplotypeModel haplotypeModel, int swapNBase, CoercionMode mode) {
-		super(mode);
-		// TODO Auto-generated constructor stub
-	}
 
 	
-	public UniformSwapMultiBasesOperator(HaplotypeModel haplotypeModel, int nBases, CoercionMode mode) {
-		super(mode);
-		this.swapNBases =  nBases;
-		this.haplotypeModel= haplotypeModel; 
+	public SwapBasesMultiOperator(HaplotypeModel haplotypeModel, int length, CoercionMode mode) {
+		super(haplotypeModel, length, mode);
+		
 	}
 
-	@Override
-	public double getCoercableParameter() {
-
-//		System.out.println("getCoercableP");
-		return Math.log(swapNBases);
-	}
-
-	@Override
-	public void setCoercableParameter(double value) {
-		swapNBases = (int) (Math.exp(value));
-//		if (swapNBase == 0)
-//			swapNBase = 1;
-		System.out.println("setCoer\t"+ swapNBases +"\t"+ getAcceptanceProbability());
-	}
-
-	
-	@Override
+    @Override
 	public double getRawParameter() {
 		// 
 //		System.err.println("getRaw");
-		return swapNBases;
+		return swapLength;
 	}
 
 	@Override
 	public String getPerformanceSuggestion() {
 
-//		System.err.println("getPero");
 		return "getPerformanceSuggestion";
 	}
 	@Override
@@ -77,9 +52,9 @@ public class UniformSwapMultiBasesOperator extends AbstractCoercableOperator {
 
 		int hapIndex = MathUtils.nextInt( haplotypeModel.getHaplotypeCount());
 		haplotypeModel.storeOperationRecord(OP, null);
-		for (int i = 0; i < swapNBases; i++) {
+		for (int i = 0; i < swapLength; i++) {
 
-			int[] posChar = haplotypeModel.getNextBaseUniform();
+			int[] posChar = haplotypeModel.getNextBase();
 			int[] swapInfoArray = haplotypeModel.swapHaplotypeBase(hapIndex, posChar);
 
 			haplotypeModel.storeOperationRecord(OP, swapInfoArray);
@@ -93,5 +68,4 @@ public class UniformSwapMultiBasesOperator extends AbstractCoercableOperator {
 		
 		return 0.0;
 	}
-
 }

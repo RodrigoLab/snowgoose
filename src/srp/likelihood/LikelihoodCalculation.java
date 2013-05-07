@@ -108,7 +108,7 @@ public class LikelihoodCalculation {//extends TraceCorrelationAssert {
 	private void setShortReads(AlignmentMapping aMap, HaplotypeModel haplotypeModel) {
 		this.aMap = aMap;
 		this.haplotypeModel =haplotypeModel;
-		shortReadLikelihood = new ShortReadLikelihood(this.aMap, this.haplotypeModel);
+		shortReadLikelihood = new ShortReadLikelihood(this.haplotypeModel);
 		
 	}
 

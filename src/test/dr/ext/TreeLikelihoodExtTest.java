@@ -16,7 +16,7 @@ import srp.core.DataImporter;
 import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.HaplotypeModel;
 import srp.haplotypes.HaplotypeModelUtils;
-import srp.haplotypes.operator.SwapBaseOperator;
+import srp.haplotypes.operator.SingleBaseOperator;
 import srp.likelihood.ShortReadLikelihood;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.SitePatterns;
@@ -103,8 +103,8 @@ public class TreeLikelihoodExtTest {
 		AlignmentMapping aMap = new AlignmentMapping(shortReads);
 		
 		HaplotypeModel haplotypeModel = new HaplotypeModel(aMap, alignment);
-		ShortReadLikelihood srpLikelihood = new ShortReadLikelihood(aMap, haplotypeModel);
-		ShortReadLikelihood srpLikelihoodUpdate = new ShortReadLikelihood(aMap, haplotypeModel);
+		ShortReadLikelihood srpLikelihood = new ShortReadLikelihood(haplotypeModel);
+		ShortReadLikelihood srpLikelihoodUpdate = new ShortReadLikelihood(haplotypeModel);
 		
 		TreeModel treeModel = new TreeModel(TreeModel.TREE_MODEL, truePhylogeny, false, false);
 
@@ -123,9 +123,9 @@ public class TreeLikelihoodExtTest {
         assertEquals(treeLikelihood.getLogLikelihood(), treeLikelihoodExt.getLogLikelihood(), 0);
 		
 		
-		srpLikelihood = new ShortReadLikelihood(aMap, haplotypeModel);
+		srpLikelihood = new ShortReadLikelihood(haplotypeModel);
 
-		SwapBaseOperator op = new SwapBaseOperator(haplotypeModel, 0);
+		SingleBaseOperator op = new SingleBaseOperator(haplotypeModel, 0);
         for (int i = 0; i < 100; i++) {
 			op.doOperation();
 
@@ -134,7 +134,7 @@ public class TreeLikelihoodExtTest {
 					
 			treeLikelihoodExt.updatePatternList(haplotypeModel);
 			
-			srpLikelihoodUpdate = new ShortReadLikelihood(aMap, haplotypeModel);
+			srpLikelihoodUpdate = new ShortReadLikelihood(haplotypeModel);
 			assertEquals(srpLikelihood.getLogLikelihood(), srpLikelihoodUpdate.getLogLikelihood(), 0);
 			
 			//treeLikelihood
@@ -211,7 +211,7 @@ public class TreeLikelihoodExtTest {
 		AlignmentMapping aMap = new AlignmentMapping(shortReads);
 		
 		HaplotypeModel trueHaplotypes = new HaplotypeModel(aMap, trueAlignment);
-		ShortReadLikelihood srpLikelihood = new ShortReadLikelihood(aMap, trueHaplotypes);
+		ShortReadLikelihood srpLikelihood = new ShortReadLikelihood(trueHaplotypes);
 	
 		
 
@@ -336,7 +336,7 @@ public class TreeLikelihoodExtTest {
 		}
 		
 		
-		srpLikelihood = new ShortReadLikelihood(aMap, haplotypeModel);
+		srpLikelihood = new ShortReadLikelihood(haplotypeModel);
 		
                 
         
@@ -350,7 +350,7 @@ public class TreeLikelihoodExtTest {
 		likelihood = treeLikelihoodExt.getLogLikelihood();
 		System.out.println(likelihood);
 		
-		SwapBaseOperator op = new SwapBaseOperator(haplotypeModel, 0);
+		SingleBaseOperator op = new SingleBaseOperator(haplotypeModel, 0);
         for (int i = 0; i < 100; i++) {
         	op.doOperation();
 //			alignment = haplotypeModel.getAlignment();

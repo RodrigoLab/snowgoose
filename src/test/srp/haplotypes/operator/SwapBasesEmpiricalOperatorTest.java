@@ -16,7 +16,7 @@ import org.junit.Test;
 import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.AlignmentUtils;
 import srp.haplotypes.HaplotypeModel;
-import srp.haplotypes.operator.SwapBaseOperator;
+import srp.haplotypes.operator.SwapBasesEmpiricalOperator;
 import srp.likelihood.ShortReadLikelihood;
 import dr.evolution.alignment.SimpleAlignment;
 import dr.evomodelxml.substmodel.HKYParser;
@@ -27,6 +27,8 @@ import dr.inference.mcmc.MCMCOptions;
 import dr.inference.model.CompoundLikelihood;
 import dr.inference.model.Likelihood;
 import dr.inference.model.Parameter;
+import dr.inference.operators.CoercableMCMCOperator;
+import dr.inference.operators.CoercionMode;
 import dr.inference.operators.MCMCOperator;
 import dr.inference.operators.OperatorFailedException;
 import dr.inference.operators.OperatorSchedule;
@@ -36,7 +38,7 @@ import dr.inference.trace.ArrayTraceList;
 import dr.inference.trace.Trace;
 import dr.inferencexml.model.CompoundLikelihoodParser;
 
-public class SwapBaseOperatorTest {
+public class SwapBasesEmpiricalOperatorTest {
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -67,10 +69,14 @@ public class SwapBaseOperatorTest {
 		
 		HaplotypeModel haplotypeModel = new HaplotypeModel(aMap, 3);
 
-		MCMCOperator operator = new SwapBaseOperator(haplotypeModel, 0);
-    	assertEquals(operator.getOperatorName(), "SwapBaseOperator");
+		int nBases = 10;
+		CoercableMCMCOperator operator = new SwapBasesEmpiricalOperator(haplotypeModel, nBases, CoercionMode.COERCION_OFF);
+    	assertEquals(operator.getOperatorName(), "SwapBasesEmpiricalOperator");
+    	assertEquals(operator.getRawParameter(), nBases, 0);
+    	assertEquals(operator.getCoercableParameter(), Math.log(nBases-1), 1e-10); 
 	}
 
+	
 	@Test
 	public void testDoOperation() throws OperatorFailedException {
 		String[] seqs = new String[]{
@@ -81,17 +87,15 @@ public class SwapBaseOperatorTest {
 //				 AAAAACCCCCGCGCCTTCGGTCGTTTTCTATAGGGG"
 //				 AAAAACCCCCGCGCCTTCGGTCGTTTTCTATAGGGG
 				};
-		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
 		
 		String[] haps = new String[]{
 //				"AAAAACCCCCGGGGGTTTTTACGTACACTATATATA"
 //				"CCCCCTTTTTAAAAAGGGGGTCGATGCAGTAGCTAG"
 				"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
 				};
-		SimpleAlignment hapAlignment = AlignmentUtils.createAlignment(haps);
-		HaplotypeModel haplotypeModel = new HaplotypeModel(aMap, hapAlignment);
-
-    	SwapBaseOperator operator = new SwapBaseOperator(haplotypeModel, 0);
+		
+		HaplotypeModel haplotypeModel = AlignmentUtils.createHaplotypeModel(seqs, haps);
+    	SwapBasesEmpiricalOperator operator = new SwapBasesEmpiricalOperator(haplotypeModel, 5, CoercionMode.COERCION_OFF);
     	
     	
     	for (int i = 0; i < 100; i++) {
@@ -114,14 +118,14 @@ public class SwapBaseOperatorTest {
 				".....CCCCCCCCCCCCCCCCCCCTTTTCCCC....",
 				"..........GGGGGGGGGGGGGGCGCGTATAGGGG",
 				"...............TTTTTTTTTACACTATA....",
-//				"CCCCCTTTTTAAAAAGGGGGTCGATGCAGTAGCTAG"
+				"CCCCCTTTTTAAAAAGGGGGTCGATGCAGTAGCTAG"
 //				 AAAAACCCCCGCGCCTTCGGTCGTTTTCTATAGGGG"
 //				 AAAAACCCCCGCGCCTTCGGTCGTTTTCTATAGGGG
 				};
 		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
 		
 		String[] haps = new String[]{
-//				"AAAAACCCCCGGGGGTTTTTACGTACACTATATATA"
+				"AAAAACCCCCGGGGGTTTTTACGTACACTATATATA",
 				"CCCCCTTTTTAAAAAGGGGGTCGATGCAGTAGCTAG"
 //				"AAAAAAAAAAAAAAAAAATTTTTTTTTTTTTTTTTT"
 				};
@@ -132,13 +136,7 @@ public class SwapBaseOperatorTest {
     	// Operators
     	OperatorSchedule schedule = new SimpleOperatorSchedule();
 
-    	Parameter kappa = new Parameter.Default(HKYParser.KAPPA, 1.0, 0, 100.0);
-    	MCMCOperator operator = new ScaleOperator(kappa, 0.75);
-    	schedule.addOperator(operator);
-
-    	int index = 0;
-    	
-    	operator = new SwapBaseOperator(haplotypeModel, index);
+    	MCMCOperator operator = new SwapBasesEmpiricalOperator(haplotypeModel, 3, CoercionMode.COERCION_OFF);
     	operator.setWeight(3.0);
     	schedule.addOperator(operator);
     	
@@ -148,7 +146,7 @@ public class SwapBaseOperatorTest {
     	
     	List<Likelihood> likelihoods = new ArrayList<Likelihood>();        
 
-        ShortReadLikelihood srpLikelihood = new ShortReadLikelihood(aMap, haplotypeModel);
+        ShortReadLikelihood srpLikelihood = new ShortReadLikelihood(haplotypeModel);
     	likelihoods.add(srpLikelihood);
     	Likelihood shortReadlikelihood = new CompoundLikelihood(-1, likelihoods);
     	
@@ -164,19 +162,18 @@ public class SwapBaseOperatorTest {
 
     	ArrayLogFormatter formatter = new ArrayLogFormatter(false);
     	
-    	int lengthScaler = 10;
+    	int lengthScaler = 1;
     	MCLogger[] loggers = new MCLogger[1];
     	loggers[0] = new MCLogger(formatter, lengthScaler*1, false);
     	loggers[0].add(shortReadlikelihood );
     	loggers[0].add(srpLikelihood);
     	loggers[0].add(posterior);
-    	loggers[0].add(kappa);
 
     	// MCMC
     	MCMC mcmc = new MCMC("mcmc1");
     	MCMCOptions options = new MCMCOptions();
 //    	options.setChainLength(10000);
-    	options.setChainLength(lengthScaler*10);
+    	options.setChainLength(lengthScaler*100);
 //    	options.setUseCoercion(true); // autoOptimize = true
 //    	options.setCoercionDelay(lengthScaler*5);
 //    	options.setTemperature(1.0);

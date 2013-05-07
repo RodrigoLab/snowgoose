@@ -20,7 +20,7 @@ import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.AlignmentUtils;
 import srp.haplotypes.HaplotypeModel;
 import srp.haplotypes.Operation;
-import srp.haplotypes.operator.SwapBaseOperator;
+import srp.haplotypes.operator.SingleBaseOperator;
 import srp.likelihood.ShortReadLikelihood;
 
 import dr.evolution.alignment.Alignment;
@@ -65,7 +65,7 @@ public class ShortReadLikelihoodTest {
 //		SimpleAlignment alignment = AlignmentUtils.createAlignment(seqs);
 		
 		HaplotypeModel haplotypeModel = AlignmentUtils.createHaplotypeModel(seqs);
-		ShortReadLikelihood srL = new ShortReadLikelihood(aMap, haplotypeModel);
+		ShortReadLikelihood srL = new ShortReadLikelihood(haplotypeModel);
 		
 		double logLikelihood = srL.getLogLikelihood();
 		double expected = -0.086061253223681313806; //dbinom(0,8,E,log=T)
@@ -82,7 +82,7 @@ public class ShortReadLikelihoodTest {
 		SimpleAlignment alignment = AlignmentUtils.createAlignment(seqs);
 		
 		haplotypeModel = new HaplotypeModel(aMap, alignment);
-		srL = new ShortReadLikelihood(aMap, haplotypeModel);
+		srL = new ShortReadLikelihood(haplotypeModel);
 		
 		
 		logLikelihood = srL.getLogLikelihood();
@@ -112,7 +112,7 @@ public class ShortReadLikelihoodTest {
 		SimpleAlignment hapAlignment = AlignmentUtils.createAlignment(haps);
 		HaplotypeModel haplotypeModel = new HaplotypeModel(aMap, hapAlignment);
 
-		ShortReadLikelihood srL = new ShortReadLikelihood(aMap, haplotypeModel);
+		ShortReadLikelihood srL = new ShortReadLikelihood(haplotypeModel);
 		double logLikelihood = srL.getLogLikelihood();
 		
 		
@@ -134,7 +134,7 @@ public class ShortReadLikelihoodTest {
 //			System.out.println(aMatrix.getHaplotype(i) );
 //		}
 
-		srL = new ShortReadLikelihood(aMap, haplotypeModel);
+		srL = new ShortReadLikelihood(haplotypeModel);
 //		System.out.println("Likelihood:\t"+srL.getLogLikelihood()+"\n");
 		
 		double likelihood = srL.getLogLikelihood(); 
@@ -143,7 +143,7 @@ public class ShortReadLikelihoodTest {
         double hastingsRatio = 0.0;
         double[] logr = {-Double.MAX_VALUE};
         
-        SwapBaseOperator op = new SwapBaseOperator(haplotypeModel, 0);
+        SingleBaseOperator op = new SingleBaseOperator(haplotypeModel, 0);
 		for (int i = 0; i < 1e4; i++) {
 			op.doOperation();
 
@@ -159,7 +159,7 @@ public class ShortReadLikelihoodTest {
 //			System.out.println(likelihood +"\t"+newL +"\t"+ logr[0] +"\t"+  accept);
 			if(accept){
 				likelihood = newL;
-				srL.acceptState();
+//				srL.acceptState();
 			}
 			else{
 				haplotypeModel.reject();
@@ -173,7 +173,7 @@ public class ShortReadLikelihoodTest {
 		for (int i = 0; i < haplotypeModel.getHaplotypeCount(); i++) {
 //			System.out.println(haplotypeModel.getHaplotypeString(i) );
 		}
-		srL = new ShortReadLikelihood(aMap, haplotypeModel);
+		srL = new ShortReadLikelihood(haplotypeModel);
 //		System.out.println("Likelihood:\t"+srL.getLogLikelihood()+"\n");
 		
 
@@ -194,7 +194,7 @@ public class ShortReadLikelihoodTest {
 		SimpleAlignment hap = AlignmentUtils.createAlignment(seqs);
 		
 		HaplotypeModel haplotypeModel = new HaplotypeModel(aMap, hap);
-		ShortReadLikelihood srL = new ShortReadLikelihood(aMap, haplotypeModel);
+		ShortReadLikelihood srL = new ShortReadLikelihood(haplotypeModel);
 		
 		double logLikelihood = srL.getLogLikelihood();
 		double expected = -36.300092300114215504; //dbinom(0,8,E,log=T)
@@ -230,7 +230,7 @@ public class ShortReadLikelihoodTest {
 		SimpleAlignment hapAlignment = AlignmentUtils.createAlignment(haps);
 		HaplotypeModel haplotypeModel = new HaplotypeModel(aMap, hapAlignment);
 
-		ShortReadLikelihood srL = new ShortReadLikelihood(aMap, haplotypeModel);
+		ShortReadLikelihood srL = new ShortReadLikelihood(haplotypeModel);
 		double logLikelihood = srL.getLogLikelihood();
 
 		
@@ -263,7 +263,7 @@ public class ShortReadLikelihoodTest {
 
 		HaplotypeModel haplotypeModel = new HaplotypeModel(aMap, trueAlignment.getSequenceCount());
 
-		ShortReadLikelihood srpLikelihood = new ShortReadLikelihood(aMap, haplotypeModel);
+		ShortReadLikelihood srpLikelihood = new ShortReadLikelihood(haplotypeModel);
 		
 		double likelihood = srpLikelihood.getLogLikelihood(); 
 		double initLikelihood = likelihood;
@@ -272,7 +272,7 @@ public class ShortReadLikelihoodTest {
         double hastingsRatio = 0.0;
         double[] logr = {-Double.MAX_VALUE};
         
-        SwapBaseOperator op = new SwapBaseOperator(haplotypeModel, 0);
+        SingleBaseOperator op = new SingleBaseOperator(haplotypeModel, 0);
         for (int i = 0; i < 1e2; i++) {
         	op.doOperation();
 
@@ -283,7 +283,7 @@ public class ShortReadLikelihoodTest {
 			boolean accept = criterion.accept(likelihood, newL, hastingsRatio, logr);
 			if(accept){
 				likelihood = newL;
-				srpLikelihood.acceptState();
+//				srpLikelihood.acceptState();
 			}
 			else{
 				haplotypeModel.reject();
@@ -319,7 +319,7 @@ public class ShortReadLikelihoodTest {
 		SimpleAlignment hapAlignment = AlignmentUtils.createAlignment(haps);
 		HaplotypeModel haplotypeModel = new HaplotypeModel(aMap, hapAlignment);
 
-		ShortReadLikelihood srL = new ShortReadLikelihood(aMap, haplotypeModel);
+		ShortReadLikelihood srL = new ShortReadLikelihood(haplotypeModel);
 		double logLikelihood = srL.getLogLikelihood();
 
 		

@@ -27,8 +27,8 @@ import srp.haplotypes.Haplotype;
 import srp.haplotypes.HaplotypeModel;
 import srp.haplotypes.HaplotypeModelUtils;
 import srp.haplotypes.SwapInfo;
-import srp.haplotypes.operator.SwapBaseOperator;
-import srp.haplotypes.operator.SwapMultiBasesOperator;
+import srp.haplotypes.operator.SingleBaseOperator;
+import srp.haplotypes.operator.SwapBasesMultiOperator;
 import srp.likelihood.LikelihoodUtils;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.util.Taxon;
@@ -155,7 +155,7 @@ public class HaplotypeModelTest {
 	public void testReject() throws Exception {
 		
 		MCMCOperator op;
-		op = new SwapBaseOperator(haplotypeModel, 0);
+		op = new SingleBaseOperator(haplotypeModel, 0);
 		
 		for (int i = 0; i < 1000; i++) {
 			op.operate();
@@ -166,7 +166,7 @@ public class HaplotypeModelTest {
 			assertEquals(haplotypeModel.getAlignedSequenceString(i), srpAlignment.getAlignedSequenceString(i));
 		}
 		
-		op = new SwapMultiBasesOperator(haplotypeModel, 10, null);
+		op = new SwapBasesMultiOperator(haplotypeModel, 10, null);
 		for (int i = 0; i < 1000; i++) {
 			op.operate();
 			op.reject();
@@ -182,9 +182,8 @@ public class HaplotypeModelTest {
 	@Test
 	public void testSetupAlignment() throws Exception {
 
-		
+		haplotypeModel = new HaplotypeModel(aMap, 5);
 		for (int i = 0; i < haplotypeModel.getHaplotypeCount(); i++) {
-			haplotypeModel.randomSeq(i);
 			assertNotEquals(haplotypeModel.getHaplotypeString(i), srpAlignment.getAlignedSequenceString(i));
 			assertNotSame(haplotypeModel.getHaplotypeString(i), srpAlignment.getSequence(i));
 			assertNotEquals(haplotypeModel.getHaplotypeString(i), expectedSequences[0] );

@@ -23,7 +23,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import srp.core.DataImporter;
-import srp.haplotypes.operator.SwapBaseOperator;
+import srp.haplotypes.operator.SingleBaseOperator;
 import srp.likelihood.LikelihoodCalculation;
 import srp.likelihood.ShortReadLikelihood;
 

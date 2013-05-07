@@ -3,7 +3,10 @@ package srp.likelihood;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Deque;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 
 import org.apache.commons.math3.stat.StatUtils;
 import org.apache.commons.math3.util.ArithmeticUtils;
@@ -93,17 +96,15 @@ public class ShortReadLikelihood extends AbstractModelLikelihood {
 
     }
 
-	public ShortReadLikelihood(HaplotypeModel haplotypeModel) {
-		this(haplotypeModel.getAlignmentMapping(), haplotypeModel);
-	}
 
-	public ShortReadLikelihood(AlignmentMapping aMap, HaplotypeModel haplotypeModel){
+	public ShortReadLikelihood(HaplotypeModel haplotypeModel){
 		this(SHORT_READ_LIKELIHOOD);
 		
 
 		makeDirty();
-		this.aMap = aMap;
 		this.haplotypeModel = haplotypeModel;
+		this.aMap = this.haplotypeModel.getAlignmentMapping();
+		
 		
 		srpCount = this.aMap.getSrpCount();
 		haplotypeCount = this.haplotypeModel.getHaplotypeCount();
@@ -111,32 +112,9 @@ public class ShortReadLikelihood extends AbstractModelLikelihood {
 		
 //		this.haplotypesChars = alignment.getCharMatrix();
 		preprocessLikelihoodAlignmentMap();
-		calculateShoreReadLikelihoodBinomalFull();
+		calculateSrpLikelihoodFull();
 		
-		addModel(haplotypeModel);
-	}
-	
-	@Deprecated
-	public void updateHaplotypes(HaplotypeModel haplotypeModel){
-//		updatehaplotypesChars(aMatrix, null);
-//	}
-//	public void updatehaplotypesChars(Haplotypes aMatrix, int[] swapInfo){
-		
-		
-		
-		
-
-//		for (int i = 0; i < haplotypesChars.length; i++) {
-//			boolean isSame = Arrays.equals(oldHaplotypesChars[i], haplotypesChars[i]);
-//			if (!isSame){
-//				for (int j = 0; j < array.length; j++) {
-//					
-//				}
-//			}
-//					
-//		}
-		
-		makeDirty();
+		addModel(this.haplotypeModel);
 	}
 	
 
@@ -207,29 +185,33 @@ public class ShortReadLikelihood extends AbstractModelLikelihood {
 
 	public double calculateLogLikelihoodSelect(int index){
 
-		double logLikelihood = Double.NEGATIVE_INFINITY;
+//		double logLikelihood = Double.NEGATIVE_INFINITY;
 		Operation op = haplotypeModel.getOperation();
 
 
 		switch (op) {
 			case NONE:
-				
-				logLikelihood = calculateShoreReadLikelihoodBinomalFull();
+				logLikelihood = calculateSrpLikelihoodFull();
 				break;
 			case SWAPMULTI:
-				logLikelihood = calculateShoreReadLikelihoodBinomalFull();
+				logLikelihood = calculateSrpLikelihoodMultiBasesSwap();
+//				logLikelihood = calculateSrpLikelihoodFull();
+//				logLikelihood = storedLogLikelihood;
 				break;
 			case SWAPBASE:
-				logLikelihood = calculateShoreReadLikelihoodBinomalSingleBaseSwap();
+				logLikelihood = calculateSrpLikelihoodSingleBaseSwap();
+//				logLikelihood = storedLogLikelihood;
 				break;
-			case UNIFORMSWAPBASE:
-				logLikelihood = calculateShoreReadLikelihoodBinomalSingleBaseSwap();
-				break;
+//			case UNIFORMSWAPBASE:
+//				logLikelihood = calculateSrpLikelihoodSingleBaseSwap();
+//				break;
 			case RECOMB:
-				logLikelihood = calculateShoreReadLikelihoodBinomalFull();
+				logLikelihood = calculateSrpLikelihoodFull();
+//				logLikelihood = storedLogLikelihood;
 				break;
 			case SWAPSECTION:
-				logLikelihood = calculateShoreReadLikelihoodBinomalFull();
+				logLikelihood = calculateSrpLikelihoodFull();
+//				logLikelihood = storedLogLikelihood;
 				break;
 	
 			default:
@@ -245,7 +227,90 @@ public class ShortReadLikelihood extends AbstractModelLikelihood {
 	}
 
 
-	private double calculateShoreReadLikelihoodBinomalFull() {
+	private double calculateSrpLikelihoodMultiBasesSwap() {
+		
+
+		double logLikelihood = 0;
+		liS.reset(LOG_C);
+		Deque<int[]> swapMulti = haplotypeModel.getSwapInfo().getSwapInfoSWAPMULTI();
+
+//		ArrayList<Integer> mapPos = new ArrayList<Integer>();
+		HashSet<Integer> mapPos = new HashSet<Integer>();
+		for (Iterator<int[]> iterator = swapMulti.descendingIterator(); iterator
+				.hasNext();) {
+
+			int swapPos = iterator.next()[1];
+			ArrayList<Integer> mapToSrp = aMap.getMapToSrp(swapPos);
+			
+			mapPos.addAll(mapToSrp);
+//			System.out.println(mapToSrp.toString());
+		}
+//		System.out.println(mapPos.toString());
+//		System.exit(-1);
+//		int swapPos = 0;
+		
+//		ArrayList<Integer> mapPos = aMap.getMapToSrp(swapPos);
+		
+		
+		for (int i : mapPos) {
+					
+			Arrays.fill(counter, 0);
+			char[] srpChar = shortReadChars.get(i);
+			int start = aMap.getSrpStart(i);
+			int end = aMap.getSrpEnd(i);
+
+			for (int j = 0; j < haplotypeCount; j++) {
+//				int dists = LikelihoodUtils.Dist(start, end, srpChar, haplotypesChars[j]);
+				int dists = LikelihoodUtils.Dist(start, end, srpChar, haplotypeModel.getAlignedSequenceString(j));
+				counter[dists]++;
+			}	
+			
+			double[] logPD = logBinomialDesnity.get(aMap.getSrpLength(i));
+			for (int j = 0; j < counter.length; j++) {
+				if(counter[j]!=0){
+					liS.scaleLogProb(logPD[j], counter[j]);
+				}
+			}
+
+			eachLikelihood[i] = liS.getLogLikelihood();
+			liS.reset(LOG_C);
+		}
+
+		logLikelihood = StatUtils.sum(eachLikelihood);
+//		double tempLL = StatUtils.sum(tempL);
+//		
+//		if (tempLL != logLikelihood)	{
+//			System.out.println("EXIT");
+//			
+//			System.exit(-1);
+//			System.out.println((tempLL == logLikelihood) + "\t" + tempLL + "\t"
+//					+ logLikelihood + "\t" + Arrays.toString(swapInfo) + "\t"+ mapPos.toString());
+//			for (int i = 0; i < tempL.length; i++) {
+//				if (tempL[i]!= tempEachLikelihood[i]){
+//					System.out.println(i +"\t"+ tempL[i] +"\t"+ tempEachLikelihood[i]);
+//				}
+//				
+//			}
+//			
+//
+////			for (int i = 0; i < haplotypesChars.length; i++) {
+////				System.out.println(Arrays.toString(haplotypesChars[i]));
+////			}
+//			System.out.println(mapPos.toString());
+//////			System.out.println(Arrays.toString(swapInfo)+"\t"+ mapPos.size());
+////			for (int i = 0; i < haplotypesChars.length; i++) {
+////				System.out.println(Arrays.toString(haplotypesChars[i]));
+////			}
+//			
+//		}
+		
+//		storeState();
+		return logLikelihood;
+	
+		
+	}
+
+	private double calculateSrpLikelihoodFull() {
 //System.out.println("FULL Likelihood calculation");
 
 		double logLikelihood = 0;
@@ -291,7 +356,7 @@ public class ShortReadLikelihood extends AbstractModelLikelihood {
 		return logLikelihood;
 	}
 
-	private double calculateShoreReadLikelihoodBinomalSingleBaseSwap() {
+	private double calculateSrpLikelihoodSingleBaseSwap() {
 //		System.out.println("Partial");
 //		System.out
 //		.println("\n==========\nEQUAL Likelihood:" +"\t"+ Arrays.equals(eachLikelihood, tempEachLikelihood));
@@ -337,27 +402,29 @@ public class ShortReadLikelihood extends AbstractModelLikelihood {
 //			liS.reset(LOG_C);
 //		}	
 		
-//		for (int i = 0; i < aMap.getSrpCount(); i++) {
+
 		for (int i : mapPos) {
 					
 			Arrays.fill(counter, 0);
 			char[] srpChar = shortReadChars.get(i);
 			int start = aMap.getSrpStart(i);
 			int end = aMap.getSrpEnd(i);
-
+			String srpString = aMap.getSrpFragment(i);
+			
 			for (int j = 0; j < haplotypeCount; j++) {
-//				int dists = LikelihoodUtils.Dist(start, end, srpChar, haplotypesChars[j]);
-				int dists = LikelihoodUtils.Dist(start, end, srpChar, haplotypeModel.getAlignedSequenceString(j));
+//				int dists = LikelihoodUtils.Dist(start, end, srpChar, haplotypeModel.getAlignedSequenceString(j));
+//				int dists = LikelihoodUtils.Dist(start, end, srpChar, haplotypeModel.getAlignedSequenceString(j).toCharArray());
+				int dists = LikelihoodUtils.Dist(start, end, srpString, haplotypeModel.getAlignedSequenceString(j));
+//				int dists = j;
 				counter[dists]++;
 			}	
 			
 			double[] logPD = logBinomialDesnity.get(aMap.getSrpLength(i));
-			for (int j = 0; j < counter.length; j++) {
+			for (int j = 0; j < logPD.length; j++) {
 				if(counter[j]!=0){
 					liS.scaleLogProb(logPD[j], counter[j]);
 				}
 			}
-
 			eachLikelihood[i] = liS.getLogLikelihood();
 			liS.reset(LOG_C);
 		}
@@ -429,6 +496,11 @@ public class ShortReadLikelihood extends AbstractModelLikelihood {
 		
 	}
 
+	@Deprecated
+	public void restoreStatePublicTest(){
+		restoreState();
+	}
+
 	@Override
 	protected void storeState() {
 //		System.err.println("SR likelihood store: " + logLikelihood);
@@ -436,10 +508,6 @@ public class ShortReadLikelihood extends AbstractModelLikelihood {
 		storedLogLikelihood = logLikelihood;
 //		System.arraycopy(storedEachLikelihood, 0, eachLikelihood, 0, eachLikelihood.length);
 		
-	}
-
-	public void restoreStatePublicTest(){
-		restoreState();
 	}
 	@Override
 	protected void restoreState() {
@@ -450,7 +518,8 @@ public class ShortReadLikelihood extends AbstractModelLikelihood {
 	}
 
 	@Override
-	public void acceptState() {
+	protected void acceptState() {
+		//Do nothing
 //		System.out.println("Accept");
 		
 //		System.arraycopy(storedEachLikelihood, 0, eachLikelihood, 0, eachLikelihood.length);

@@ -8,9 +8,10 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({ 
 	HaplotypeRecombinationOperatorTest.class,
 	HaplotypeSwapSectionOperatorTest.class,
-	SwapBaseOperatorTest.class, 
-	SwapMultiBasesOperatorTest.class,
-	UniformSwapBaseOperatorTest.class,
+	SingleBaseOperatorTest.class, 
+	SwapBasesEmpiricalOperatorTest.class,
+	SwapBasesMultiOperatorTest.class,
+	SwapBaseUniformOperatorTest.class,
 
 })
 public class AllTestsHaplotyesOperator {
