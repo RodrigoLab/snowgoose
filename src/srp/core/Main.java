@@ -4,46 +4,12 @@ package srp.core;
 -Djava.library.path=/home/sw167/PostdocLarge/Software/BEAST/BEASTv1.7.1/lib -Xms128m -Xmx256m
 */
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.HaplotypeModel;
 import srp.haplotypes.HaplotypeModelUtils;
-import srp.likelihood.LikelihoodCalculation;
-import srp.likelihood.ShortReadLikelihood;
-
 import dr.evolution.alignment.Alignment;
-import dr.evolution.alignment.SitePatterns;
-import dr.evolution.datatype.Nucleotides;
-import dr.evolution.sequence.Sequence;
-import dr.evolution.sequence.Sequences;
-import dr.evolution.tree.Tree;
-import dr.evolution.util.Taxon;
-import dr.evolution.util.TaxonList;
-import dr.evolution.util.Units;
-import dr.evomodel.branchratemodel.StrictClockBranchRates;
-import dr.evomodel.coalescent.CoalescentLikelihood;
-import dr.evomodel.coalescent.ConstantPopulationModel;
-import dr.evomodel.sitemodel.GammaSiteModel;
-import dr.evomodel.substmodel.FrequencyModel;
-import dr.evomodel.substmodel.HKY;
-import dr.evomodel.tree.TreeModel;
-import dr.evomodelxml.coalescent.ConstantPopulationModelParser;
-import dr.evomodelxml.sitemodel.GammaSiteModelParser;
-import dr.evomodelxml.substmodel.HKYParser;
-import dr.evomodelxml.treelikelihood.TreeLikelihoodParser;
-import dr.ext.SitePatternsExt;
-import dr.ext.TreeLikelihoodExt;
-import dr.inference.mcmc.MCMCCriterion;
-import dr.inference.model.Parameter;
 
 
 public class Main {

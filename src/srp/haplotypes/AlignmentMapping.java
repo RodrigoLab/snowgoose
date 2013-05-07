@@ -71,7 +71,6 @@ public class AlignmentMapping {
 
 		cumSum = new double[]{frequencies['A'],frequencies['C'],frequencies['G'],frequencies['T']};
 		
-		System.out.println(Arrays.toString(cumSum));
 		for (int i = 1; i < cumSum.length; i++) {
 			cumSum[i] = cumSum[i] + cumSum[i-1];  
 		}
@@ -79,12 +78,7 @@ public class AlignmentMapping {
 		for (int i = 0; i < cumSum.length; i++) {
 			cumSum[i] /= sum;  
 		}
-//		double sum = cumSum[3];
-//		
-//		frequencies[frequencies.length-1] = 1;
-		System.out.println(Arrays.toString(cumSum));	
-			
-		
+
 		setsOfAvailableChar=null;
 	}
 

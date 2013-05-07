@@ -1,26 +1,16 @@
 package test.benchmark;
 
-import static org.junit.Assert.*;
-
 import java.io.OutputStream;
 import java.io.PrintStream;
-
 
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
 
 import srp.core.DataImporter;
-import srp.likelihood.LikelihoodCalculation;
-
 import dr.evolution.alignment.Alignment;
-import dr.evolution.alignment.SimpleAlignment;
-import dr.evolution.sequence.Sequences;
 import dr.evolution.tree.Tree;
-import dr.evomodel.tree.TreeModel;
 
 public class benchmark {
 
