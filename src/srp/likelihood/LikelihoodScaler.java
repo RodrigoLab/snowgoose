@@ -27,7 +27,8 @@ public class LikelihoodScaler {
 	private double sumScaledLikelihood;
 
 	public LikelihoodScaler(double logScaler){
-		reset(logScaler);
+		this.logScaler = logScaler;
+		reset();
 	}
 	
 	public void scaleLogProb(double logProb){
@@ -44,8 +45,7 @@ public class LikelihoodScaler {
 		return logLikelihood;
 	}
 
-	public void reset(double log) {
-		this.logScaler = log;
+	public void reset() {
 		sumScaledLikelihood = 0;		
 	}
 	
