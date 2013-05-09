@@ -31,13 +31,8 @@ public class LikelihoodScaler {
 		reset();
 	}
 	
-	public void scaleLogProb(double logProb){
-		sumScaledLikelihood += scale(logProb, logScaler);
-	}
-
-	public void scaleLogProb(double logProb, int count){
-		double sum = scale(logProb, logScaler) * count;
-		sumScaledLikelihood += sum;
+	public void reset() {
+		sumScaledLikelihood = 0;		
 	}
 
 	public double getLogLikelihood(){
@@ -45,11 +40,23 @@ public class LikelihoodScaler {
 		return logLikelihood;
 	}
 
-	public void reset() {
-		sumScaledLikelihood = 0;		
+	public void scaleLogProb(double logProb){
+		sumScaledLikelihood += scale(logProb, logScaler);
 	}
-	
-		
+
+	public void scaleLogProb(double logProb, int count){
+
+		double sum = scale(logProb, logScaler) * count;
+		sumScaledLikelihood += sum;
+	}
+
+	public void addScaledLogProb(double scaledLogProb){
+		sumScaledLikelihood += scaledLogProb;
+	}
+	public double scale(double logProb){
+		return scale(logProb, logScaler);
+	}
+
 	private static double scale(double logProb, double logScaler) {
 
 		double expB = Math.exp(logProb - logScaler);

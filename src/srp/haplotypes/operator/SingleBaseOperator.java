@@ -14,7 +14,7 @@ import dr.math.MathUtils;
 public class SingleBaseOperator extends SimpleMCMCOperator {
 
 	public final static String OPERATOR_NAME = SingleBaseOperator.class.getSimpleName();
-	public final static Operation OP = Operation.SWAPBASE;
+	public final static Operation OP = Operation.SWAPSINGLE;
 
 	@Deprecated
 	private int index;
@@ -54,7 +54,6 @@ public class SingleBaseOperator extends SimpleMCMCOperator {
 		int hapIndex = MathUtils.nextInt( haplotypeCount);
 
 		int[] posChar = haplotypeModel.getNextBase();
-
 		int[] swapInfoArray = haplotypeModel.swapHaplotypeBase(hapIndex, posChar);
 		
 		haplotypeModel.storeOperationRecord(OP, swapInfoArray);

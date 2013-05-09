@@ -87,7 +87,7 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 	AlignmentMapping aMap;
 	private SwapInfo swapInfo = new SwapInfo();
 	private boolean isEdit;
-	private double[] cumSumFrequencies;
+	
 
 	
 	private HaplotypeModel(AlignmentMapping aMap){
@@ -307,16 +307,12 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 		switch (op) {
 		case NONE:
 			break;
-		case SWAPBASE:
+		case SWAPSINGLE:
 
 			temp = swapInfo.getSwapInfoSWAPBASE();
 			resetHaplotypeToOldChar(temp);
 			break;
-		case UNIFORMSWAPBASE:
 
-			temp = swapInfo.getSwapInfoSWAPBASE();
-			resetHaplotypeToOldChar(temp);
-			break;
 		case SWAPMULTI:
 			Deque<int[]> swapMulti = swapInfo.getSwapInfoSWAPMULTI();
 

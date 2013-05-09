@@ -39,6 +39,9 @@ import dr.evomodel.branchratemodel.BranchRateModel;
 import dr.evomodel.branchratemodel.StrictClockBranchRates;
 import dr.evomodel.coalescent.CoalescentLikelihood;
 import dr.evomodel.coalescent.ConstantPopulationModel;
+import dr.evomodel.operators.ExchangeOperator;
+import dr.evomodel.operators.SubtreeSlideOperator;
+import dr.evomodel.operators.WilsonBalding;
 import dr.evomodel.sitemodel.GammaSiteModel;
 import dr.evomodel.substmodel.FrequencyModel;
 import dr.evomodel.substmodel.HKY;
@@ -65,8 +68,11 @@ import dr.inference.model.Statistic;
 import dr.inference.operators.CoercionMode;
 import dr.inference.operators.MCMCOperator;
 import dr.inference.operators.OperatorSchedule;
+import dr.inference.operators.Scalable;
 import dr.inference.operators.ScaleOperator;
 import dr.inference.operators.SimpleOperatorSchedule;
+import dr.inference.operators.UniformOperator;
+import dr.inference.operators.UpDownOperator;
 import dr.inferencexml.model.CompoundLikelihoodParser;
 import dr.math.distributions.LogNormalDistribution;
 import dr.util.Attribute;
@@ -92,29 +98,35 @@ public class MCMCTrueTree {
 	@Test
 	public void testMCMCFixTree() throws Exception {
 		String dataDir = "/home/sw167/workspace/ABI/data/";
-		String truePhylogenyFile = "H6_005_true_tree.trees";
-		String shortReadFile = "H6_srp.fasta";
+//		String truePhylogenyFile = "H6_005_true_tree.trees";
+//		String shortReadFile = "H6_srp.fasta";
+//		
+//		String dataDir = "/home/sw167/workspace/ABI/data/H7/";
+		String truePhylogenyFile = "H7Srp.tree";
+		String shortReadFile = "H7Srp.fasta";
+		String trueHaplotypeFile = "H7Srp_fullHaplotype.fasta";
 		
-		String prefix = "FixTree_";
-		String logTracerName = prefix+"H6_300_tracer.log";
-		String logTreeName = prefix+"H6_300.trees";
-		String logHaplotypeName = prefix+"H6_300_haplatype.log";
-		String operatorAnalysisFile = prefix+"operatorAnalysisFile";
+		String prefix = "FixTree_H7";
+		String logTracerName = prefix+".log";
+		String logTreeName = prefix+".trees";
+		String logHaplotypeName = prefix+"_haplatype.hap";
+		String operatorAnalysisFile = prefix+"_operatorAnalysisFile";
 		
+		int numberOfHaplotype = 7;
 		int logInterval = 1000;
 		
 		DataImporter dataImporter = new DataImporter(dataDir);
 		Tree truePhylogeny = dataImporter.importTree(truePhylogenyFile);
 		TreeModel treeModel = new TreeModel(TreeModel.TREE_MODEL, truePhylogeny, false, false);
-		
+
 		Alignment shortReads = dataImporter.importAlignment(shortReadFile);
-		AlignmentMapping aMap = new AlignmentMapping(shortReads);
-		HaplotypeModel haplotypeModel = new HaplotypeModel(aMap, 6);
+		AlignmentMapping alignmentMapping = new AlignmentMapping(shortReads);
+		HaplotypeModel haplotypeModel = new HaplotypeModel(alignmentMapping, numberOfHaplotype);
 
 		// coalescent
 		Parameter popSize = new Parameter.Default(
 				ConstantPopulationModelParser.POPULATION_SIZE, 3000.0, 100, 100000.0);
-		ConstantPopulationModel startingTree = new ConstantPopulationModel(popSize, Units.Type.YEARS);
+		ConstantPopulationModel startingTree = new ConstantPopulationModel(popSize, Units.Type.DAYS);
 
 		CoalescentLikelihood coalescent = new CoalescentLikelihood(treeModel,null, new ArrayList<TaxonList>(), startingTree);
 		coalescent.setId("coalescent");
@@ -122,7 +134,7 @@ public class MCMCTrueTree {
 
 		
 		// clock model
-		Parameter rateParameter = new Parameter.Default(StrictClockBranchRates.RATE, 1E-5, 0, 1);
+		Parameter rateParameter = new Parameter.Default(StrictClockBranchRates.RATE, 1e-5, 0, 1);
 		StrictClockBranchRates branchRateModel = new StrictClockBranchRates(rateParameter);
 		// sub model
 		Parameter freqs = new Parameter.Default("Frequency", haplotypeModel.getStateFrequencies());
@@ -147,6 +159,7 @@ public class MCMCTrueTree {
 		// Operators
 		OperatorSchedule schedule = new SimpleOperatorSchedule();
 		schedule = defalutOperators(schedule, haplotypeModel, popSize, kappa);
+//		schedule = defalutTreeOperators(schedule, treeModel);
 		Parameter rootHeight = treeModel.getRootHeightParameter();
 		
 		
@@ -161,14 +174,17 @@ public class MCMCTrueTree {
 		
 		loggers[0] = new MCLogger(logTracerName, logInterval, false, 0);
 		addToLogger(loggers[0], posterior, prior, likelihood, shortReadLikelihood,
-//				rootHeight, rateParameter,
+//				rootHeight, 
+				//rateParameter,
 				popSize, kappa, coalescent,
 				freqs
 				);
 
 		loggers[1] = new MCLogger(new TabDelimitedFormatter(System.out), logInterval, true, logInterval*2);
 		addToLogger(loggers[1], posterior, prior, likelihood, shortReadLikelihood,
-				popSize, kappa,				coalescent);
+				popSize, kappa, coalescent, 
+				rootHeight
+				);
 		
 		TabDelimitedFormatter treeFormatter = new TabDelimitedFormatter(
 				new PrintWriter(new FileOutputStream(new File(logTreeName))));
@@ -176,9 +192,9 @@ public class MCMCTrueTree {
 		loggers[2] = new TreeLogger(treeModel, branchRateModel, null, null,
 				treeFormatter, logInterval, true, true, true, null, null);
 
-		Alignment trueAlignment = dataImporter.importAlignment("H6_005.fasta");
+		Alignment trueAlignment = dataImporter.importAlignment(trueHaplotypeFile);
 		loggers[3] = new HaplotypeLoggerWithTrueHaplotype(haplotypeModel, trueAlignment, logHaplotypeName, logInterval*10);
-
+		
 		// MCMC
 		
 		MCMCOptions options = setMCMCOptions(logInterval);
@@ -300,55 +316,96 @@ public class MCMCTrueTree {
 		MCMCOptions options = new MCMCOptions();
 		options.setChainLength(logInterval * 10);
 		options.setUseCoercion(true); // autoOptimize = true
-		options.setCoercionDelay(logInterval * 0);
+		options.setCoercionDelay(logInterval * 2);
 		options.setTemperature(1.0);
-		options.setFullEvaluationCount(logInterval*0);
+		options.setFullEvaluationCount(logInterval*2);
 
 		return options;
 	}
 
+	private static OperatorSchedule defalutTreeOperators(
+			OperatorSchedule schedule, TreeModel treeModel) {
+
+		MCMCOperator operator;
+
+		Parameter allInternalHeights = treeModel.createNodeHeightsParameter(
+				true, true, false);
+		operator = new UpDownOperator(
+				null,// new Scalable[] { new Scalable.Default(rateParameter) },
+				new Scalable[] { new Scalable.Default(allInternalHeights) },
+				0.75, 3.0, CoercionMode.COERCION_ON);
+		schedule.addOperator(operator);
+
+		Parameter rootHeight = treeModel.getRootHeightParameter();
+		rootHeight.setId("TREE_HEIGHT");
+		operator = new ScaleOperator(rootHeight, 0.75);
+		operator.setWeight(3.0);
+		schedule.addOperator(operator);
+
+		Parameter internalHeights = treeModel.createNodeHeightsParameter(false,
+				true, false);
+		operator = new UniformOperator(internalHeights, 30.0);
+		schedule.addOperator(operator);
+
+//		 operator = new SubtreeSlideOperator(treeModel, 15.0, 1.0, true,
+//				 false,false, false, CoercionMode.COERCION_ON);
+//		 schedule.addOperator(operator);
+		
+//		 operator = new ExchangeOperator(ExchangeOperator.NARROW, treeModel,15.0);
+//		 schedule.addOperator(operator);
+//		
+//		 operator = new ExchangeOperator(ExchangeOperator.WIDE, treeModel, 3.0);
+//		 schedule.addOperator(operator);
+//		
+//		 operator = new WilsonBalding(treeModel, 3.0);
+//		 schedule.addOperator(operator);
+
+		return schedule;
+	}
+	
+	
 	private static OperatorSchedule defalutOperators(OperatorSchedule schedule,
 			HaplotypeModel haplotypeModel, Parameter popSize, Parameter kappa) {
 
 		MCMCOperator operator;
 		
-		operator = new SingleBaseOperator(haplotypeModel,0);
-		operator.setWeight(3.0);
-		schedule.addOperator(operator);
+//		operator = new SingleBaseOperator(haplotypeModel,0);
+//		operator.setWeight(1.0);
+//		schedule.addOperator(operator);
 
 //		operator = new SingleBaseUniformOperator(haplotypeModel,0);
-//		operator.setWeight(3.0);
+//		operator.setWeight(10);
 //		schedule.addOperator(operator);
 
-		operator = new SwapBasesMultiOperator(haplotypeModel, 2, CoercionMode.COERCION_OFF);
-		operator.setWeight(3.0); 
-		schedule.addOperator(operator);
-
-
-//		operator = new SwapBasesUniformOperator(haplotypeModel, 1, CoercionMode.COERCION_OFF);
+//		operator = new SwapBasesMultiOperator(haplotypeModel, 12, CoercionMode.COERCION_ON);
 //		operator.setWeight(3.0); 
 //		schedule.addOperator(operator);
-//
-//		operator = new SwapBasesEmpiricalOperator(haplotypeModel, 6, CoercionMode.COERCION_ON);
-//		operator.setWeight(6.0); 
-//		schedule.addOperator(operator);
 //		
-		operator = new HaplotypeRecombinationOperator(haplotypeModel, 12);
+
+		operator = new SwapBasesUniformOperator(haplotypeModel, 10, CoercionMode.COERCION_ON);
 		operator.setWeight(6.0); 
 		schedule.addOperator(operator);
-//		
-//		operator = new HaplotypeSwapSectionOperator(haplotypeModel, 24, CoercionMode.COERCION_ON);
-//		operator.setWeight(6.0); 
-//		schedule.addOperator(operator);
-//		
-		
-//		operator = new ScaleOperator(kappa, 0.75);
-//		operator.setWeight(0.1);
+
+//		operator = new SwapBasesEmpiricalOperator(haplotypeModel, 3, CoercionMode.COERCION_ON);
+//		operator.setWeight(12.0); 
 //		schedule.addOperator(operator);
 
-//		operator = new ScaleOperator(popSize, 0.75);
-//		operator.setWeight(0.1);
+//		operator = new HaplotypeRecombinationOperator(haplotypeModel, 12);
+//		operator.setWeight(3.0); 
 //		schedule.addOperator(operator);
+//		
+//		operator = new HaplotypeSwapSectionOperator(haplotypeModel, 24, CoercionMode.COERCION_ON);
+//		operator.setWeight(3.0); 
+//		schedule.addOperator(operator);
+		
+		
+		operator = new ScaleOperator(kappa, 0.75);
+		operator.setWeight(0.1);
+		schedule.addOperator(operator);
+
+		operator = new ScaleOperator(popSize, 0.75);
+		operator.setWeight(0.1);
+		schedule.addOperator(operator);
 
 
 		return schedule;
@@ -362,4 +419,4 @@ public class MCMCTrueTree {
 		
 	}
 
-	}
+}

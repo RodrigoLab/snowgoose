@@ -2,9 +2,9 @@ package srp.haplotypes;
 
 public enum Operation {
 	NONE(0),
-	SWAPBASE(1), 
+	SWAPSINGLE(1), 
 	
-	UNIFORMSWAPBASE(6),
+//	UNIFORMSWAPBASE(6),
 	SWAPMULTI(3),
 	 
 	SWAPCOLUMN(2), 

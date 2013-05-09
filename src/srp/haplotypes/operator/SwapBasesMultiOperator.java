@@ -50,7 +50,7 @@ public class SwapBasesMultiOperator extends AbstractHaplotypeOperator {
 
 		haplotypeModel.startHaplotypeOperation();
 
-		int hapIndex = MathUtils.nextInt( haplotypeModel.getHaplotypeCount());
+		int hapIndex = 0;//MathUtils.nextInt(haplotypeCount);
 		haplotypeModel.storeOperationRecord(OP, null);
 		for (int i = 0; i < swapLength; i++) {
 

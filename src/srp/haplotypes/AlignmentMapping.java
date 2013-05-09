@@ -1,89 +1,84 @@
 package srp.haplotypes;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 
 import dr.evolution.alignment.Alignment;
 import dr.evolution.datatype.Nucleotides;
 import dr.evolution.sequence.Sequence;
-import dr.evolution.wrightfisher.NeutralModel;
 import dr.math.MathUtils;
 
 public class AlignmentMapping {
 
 	private static final int GAP = '-';
-	private static final char[] validChars = Nucleotides.INSTANCE.getValidChars();
-	
-	private ArrayList<Integer>[] mapToSrp; // each [] = position, each ArrayList = map to which read
-	
-	private HashSet<Character>[] setsOfAvailableChar;
-	private ArrayList<Character>[] listOfAvailableChar;
-	
-	private HashMap<String, Integer> seqNameToSeqID; // map sequence_name >xxx to int
+	private static final char[] VALID_CHARS = Nucleotides.INSTANCE.getValidChars();
 
+	private ArrayList<Integer>[] mapToSrp; // each [] = position, each ArrayList
+											// = map to which read
+	private HashMap<String, Integer> seqNameToSeqID; // map sequence_name >xxxto int
+
+	private ArrayList<Character>[] listOfAvailableChar;
 	private ArrayList<ShortRead> shortReads;
 
-	private int length;
+	private int haplotypeLength;
 	private Integer srpCount;
+	private double[] cumFreq;
+	
+	
+	private void init(int l) {
+		haplotypeLength = l;
+		srpCount = 0;
 
-	private double[] frequencies;
-	private double[] cumSum;
-	
+		cumFreq = new double[haplotypeLength];
 
-	
-	
-	private void init(int l){
-			length = l;
-			mapToSrp = new ArrayList[length];
-			setsOfAvailableChar = new HashSet[length];
-			listOfAvailableChar = new ArrayList[length];
-			
-			frequencies = new double['T'+1];
-			for (int i = 0; i < this.length; i++) {
-				mapToSrp[i] = new ArrayList<Integer>(); 
-				setsOfAvailableChar[i] = new HashSet<Character>();
-			}
-	
-			seqNameToSeqID = new HashMap<String, Integer>();
-			shortReads = new ArrayList<ShortRead>();
-	//		fullSrp = new HashMap<>();
-			srpCount = 0;
-			
-			
+		seqNameToSeqID = new HashMap<String, Integer>();
+		shortReads = new ArrayList<ShortRead>();
+
+		listOfAvailableChar = new ArrayList[haplotypeLength];
+		mapToSrp = new ArrayList[haplotypeLength];
+		for (int i = 0; i < haplotypeLength; i++) {
+			mapToSrp[i] = new ArrayList<Integer>();
 		}
 
+	}
 
 	public AlignmentMapping(Alignment srpAlignment){
 		
 		init( srpAlignment.getSiteCount() );
-		for (int i = 0; i < srpAlignment.getSequenceCount(); i++) {
-			Sequence s = srpAlignment.getSequence(i);
-			addSequence(s);
+		
+		@SuppressWarnings("unchecked")
+		HashSet<Character>[] setsOfAvailableChar = new HashSet[haplotypeLength];
+		for (int i = 0; i < setsOfAvailableChar.length; i++) {
+			setsOfAvailableChar[i] = new HashSet<Character>();
 		}
-		for (int i = 0; i < length; i++) {
+
+		for (int i = 0; i < srpAlignment.getSequenceCount(); i++) {
+			
+			Sequence s = srpAlignment.getSequence(i);
+			addSequence(s, setsOfAvailableChar);
+		}
+		
+		for (int i = 0; i < haplotypeLength; i++) {
 			listOfAvailableChar[i] = new ArrayList<Character>(setsOfAvailableChar[i]);
 		}
-
-		cumSum = new double[]{frequencies['A'],frequencies['C'],frequencies['G'],frequencies['T']};
 		
-		for (int i = 1; i < cumSum.length; i++) {
-			cumSum[i] = cumSum[i] + cumSum[i-1];  
-		}
-		double sum = cumSum[3];
-		for (int i = 0; i < cumSum.length; i++) {
-			cumSum[i] /= sum;  
-		}
+		cumFreq = new double[] { cumFreq['A'], cumFreq['C'],
+				cumFreq['G'], cumFreq['T'] };
 
-		setsOfAvailableChar=null;
+
+		for (int i = 1; i < cumFreq.length; i++) {
+			cumFreq[i] = cumFreq[i] + cumFreq[i-1];  
+		}
+		double sum = cumFreq[3];
+		for (int i = 0; i < cumFreq.length; i++) {
+			cumFreq[i] /= sum;  
+		}
 	}
 
 
-	private void addSequence(Sequence s) {
+	private void addSequence(Sequence s,
+			HashSet<Character>[] setsOfAvailableChar) {
 
 		ShortRead srp = new ShortRead(s);
 		if (srp.getIsValid()){
@@ -93,12 +88,14 @@ public class AlignmentMapping {
 			for (int j = srp.getStart(); j < srp.getEnd(); j++) {
 				mapToSrp[j].add(srpCount);
 				char c = srp.getFullSrpCharAt(j);
-				setsOfAvailableChar[j].add(c);
-				frequencies[c]++;
+				if (c!= GAP){
+					setsOfAvailableChar[j].add(c);
+					cumFreq[c]++;
+				}
 			}
 			srpCount++;
 		}
-		
+
 	}
 
 	@Override
@@ -121,7 +118,7 @@ public class AlignmentMapping {
 	}
 
 	public int getLength() {
-		return length;
+		return haplotypeLength;
 	}
 
 	public int getSrpCount() {
@@ -179,7 +176,7 @@ public class AlignmentMapping {
 
 	public int[] getNextBase() {
 
-		int pos = MathUtils.nextInt(length);
+		int pos = MathUtils.nextInt(haplotypeLength);
 		int newChar = nextBaseAt(pos);
 	
 		return new int[]{pos, newChar};
@@ -187,7 +184,7 @@ public class AlignmentMapping {
 	
 	public int[] getNextBaseUniform() {
 		int newChar = GAP ;
-		int pos = MathUtils.nextInt(length);
+		int pos = MathUtils.nextInt(haplotypeLength);
 		int size = listOfAvailableChar[pos].size();
 		if (size != 0) {
 			newChar = listOfAvailableChar[pos].get(MathUtils.nextInt(size));
@@ -200,12 +197,12 @@ public class AlignmentMapping {
 	public int[] getNextBaseEmpirical() {
 
 		int newChar = GAP;
-		int pos = MathUtils.nextInt(length);
+		int pos = MathUtils.nextInt(haplotypeLength);
 		
 		double d = MathUtils.nextDouble();
-		for (int i = 0; i < cumSum.length; i++) {
-			if (d <= cumSum[i]) {
-				newChar = validChars[i];
+		for (int i = 0; i < cumFreq.length; i++) {
+			if (d <= cumFreq[i]) {
+				newChar = VALID_CHARS[i];
 				break;
 			}
 			

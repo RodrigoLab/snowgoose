@@ -64,13 +64,13 @@ public class HaplotypeRecombinationOperator extends SimpleMCMCOperator {
 		
 		String oldS1 = h1.getSequenceString();
 		String oldS2 = h2.getSequenceString();
-		int pos = MathUtils.nextInt(hapLength);
+		int start = MathUtils.nextInt(hapLength);
 		do{
-			pos = MathUtils.nextInt(hapLength);
-		}while(pos==0);
+			start = MathUtils.nextInt(hapLength);
+		}while(start==0);
 
-		String newS1 = oldS1.substring(0, pos) + oldS2.substring(pos);
-		String newS2 = oldS2.substring(0, pos) + oldS1.substring(pos);
+		String newS1 = oldS1.substring(0, start) + oldS2.substring(start);
+		String newS2 = oldS2.substring(0, start) + oldS1.substring(start);
 		
 		h1.storeState();
 		h1.setSequenceString(newS1);
@@ -78,7 +78,7 @@ public class HaplotypeRecombinationOperator extends SimpleMCMCOperator {
 		h2.storeState();
 		h2.setSequenceString(newS2);
 		
-		int[] swapHaplotype = {hapIndex1, hapIndex2};
+		int[] swapHaplotype = {hapIndex1, hapIndex2, start, hapLength};
 
 		haplotypeModel.storeOperationRecord(OP, swapHaplotype);
 		haplotypeModel.endHaplotypeOperation();

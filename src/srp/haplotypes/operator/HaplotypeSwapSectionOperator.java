@@ -68,15 +68,15 @@ public class HaplotypeSwapSectionOperator extends AbstractHaplotypeOperator {
 		
 		String oldS1 = h1.getSequenceString();
 		String oldS2 = h2.getSequenceString();
-		int pos = MathUtils.nextInt(haplotypeLength-swapLength+1);
-		int end = pos + swapLength; 
+		int start = MathUtils.nextInt(haplotypeLength-swapLength+1);
+		int end = start + swapLength; 
 
 
-		String temp1 = oldS1.substring(pos, end);
-		String temp2 = oldS2.substring(pos, end);
+		String temp1 = oldS1.substring(start, end);
+		String temp2 = oldS2.substring(start, end);
 
-		String newS1 = oldS1.substring(0, pos) + temp2 + oldS1.substring(end);
-		String newS2 = oldS2.substring(0, pos) + temp1 + oldS2.substring(end);
+		String newS1 = oldS1.substring(0, start) + temp2 + oldS1.substring(end);
+		String newS2 = oldS2.substring(0, start) + temp1 + oldS2.substring(end);
 		
 		h1.storeState();
 		h1.setSequenceString(newS1);
@@ -84,7 +84,7 @@ public class HaplotypeSwapSectionOperator extends AbstractHaplotypeOperator {
 		h2.storeState();
 		h2.setSequenceString(newS2);
 		
-		int[] swapHaplotype = {hapIndex1, hapIndex2};
+		int[] swapHaplotype = {hapIndex1, hapIndex2, start, end};
 
 		haplotypeModel.storeOperationRecord(OP, swapHaplotype);
 		haplotypeModel.endHaplotypeOperation();

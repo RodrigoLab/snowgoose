@@ -3,11 +3,8 @@ package test.srp.likelihood;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -22,17 +19,14 @@ import srp.haplotypes.HaplotypeModel;
 import srp.haplotypes.Operation;
 import srp.haplotypes.operator.SingleBaseOperator;
 import srp.likelihood.ShortReadLikelihood;
-
 import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.SimpleAlignment;
 import dr.inference.mcmc.MCMCCriterion;
 import dr.inference.model.CompoundLikelihood;
 import dr.inference.model.Likelihood;
-import dr.inference.operators.OperatorFailedException;
 
 public class ShortReadLikelihoodTest {
 
-	private static final int BINOMIAL = ShortReadLikelihood.BINOMIAL;
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -372,7 +366,7 @@ public class ShortReadLikelihoodTest {
 		long time2 = System.currentTimeMillis();
 		System.out.println((time2 - time1) + "\t");
 		
-		haplotypeModel.storeOperationRecord(Operation.SWAPBASE, new int[]{1,1,42,42});
+		haplotypeModel.storeOperationRecord(Operation.SWAPSINGLE, new int[]{1,1,42,42});
 		time1 = System.currentTimeMillis();
 		for (int i = 0; i < 1e6; i++) {
 			srL.makeDirty();

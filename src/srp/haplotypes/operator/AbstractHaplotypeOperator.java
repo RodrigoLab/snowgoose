@@ -7,20 +7,22 @@ import dr.inference.operators.CoercionMode;
 public abstract class AbstractHaplotypeOperator  extends AbstractCoercableOperator {
 
 	protected final int haplotypeLength;
+	protected final int haplotypeCount;
+
+	protected HaplotypeModel haplotypeModel;
 	
 	protected int swapLength;
-	
-	protected HaplotypeModel haplotypeModel;
 	protected double autoOptimize;
-
 	protected double scaleFactor;
+
+	
 	
 	public AbstractHaplotypeOperator(HaplotypeModel haplotypeModel, int swapLength, CoercionMode mode) {
 		super(mode);
 		
 		this.haplotypeModel = haplotypeModel;
 		this.haplotypeLength = this.haplotypeModel.getHaplotypeLength();
-		
+		this.haplotypeCount  = this.haplotypeModel.getHaplotypeCount();
 		if (swapLength < 1){
     		swapLength = 1;
     	}

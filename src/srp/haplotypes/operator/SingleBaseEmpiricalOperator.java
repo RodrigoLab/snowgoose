@@ -13,9 +13,9 @@ import dr.inference.operators.OperatorFailedException;
 import dr.inference.operators.SimpleMCMCOperator;
 import dr.math.MathUtils;
 
-public class SingleBaseUniformOperator extends SimpleMCMCOperator {
+public class SingleBaseEmpiricalOperator extends SimpleMCMCOperator {
 
-	public final static String OPERATOR_NAME = SingleBaseUniformOperator.class.getSimpleName();
+	public final static String OPERATOR_NAME = SingleBaseEmpiricalOperator.class.getSimpleName();
 	public final static Operation OP = Operation.SWAPSINGLE;
 
 	@Deprecated
@@ -25,7 +25,7 @@ public class SingleBaseUniformOperator extends SimpleMCMCOperator {
 	
 
 	
-	public SingleBaseUniformOperator(HaplotypeModel haplotypeModel, int nothing) {
+	public SingleBaseEmpiricalOperator(HaplotypeModel haplotypeModel, int nothing) {
 //		super(mode);
 		this.index = nothing;
 		this.haplotypeModel= haplotypeModel; 
@@ -50,9 +50,9 @@ public class SingleBaseUniformOperator extends SimpleMCMCOperator {
 		
 		haplotypeModel.startHaplotypeOperation();
 			
-		int hapIndex = MathUtils.nextInt(haplotypeCount);
+		int hapIndex = MathUtils.nextInt( haplotypeCount);
 
-		int[] posChar = haplotypeModel.getNextBaseUniform();
+		int[] posChar = haplotypeModel.getNextBaseEmpirical();
 		int[] swapInfoArray = haplotypeModel.swapHaplotypeBase(hapIndex, posChar);
 		
 		haplotypeModel.storeOperationRecord(OP, swapInfoArray);

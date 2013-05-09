@@ -11,7 +11,7 @@ public class SwapInfo {
 	 * Record how/which move/operation is performed
 	*/
 	
-	int[] swapBase = new int[4];
+	int[] swapBase = new int[4];//hapIndex, posIndex, newChar, oldChar
 	
 	private Operation operation;
 	private Deque<int[]> swapMulti;
@@ -37,12 +37,12 @@ public class SwapInfo {
 		switch (operation) {
 			case NONE:
 				break;
-			case SWAPBASE:
+			case SWAPSINGLE:
 				swapBase = (int[]) swapRecord;
 				break;
-			case UNIFORMSWAPBASE:
-				swapBase = (int[]) swapRecord;
-				break;
+//			case UNIFORMSWAPBASE:
+//				swapBase = (int[]) swapRecord;
+//				break;
 //			case SWAPCOLUMN:
 //				
 //				break;
