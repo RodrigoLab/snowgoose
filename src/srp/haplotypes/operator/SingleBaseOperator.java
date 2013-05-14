@@ -54,7 +54,7 @@ public class SingleBaseOperator extends SimpleMCMCOperator {
 		int hapIndex = MathUtils.nextInt( haplotypeCount);
 
 		int[] posChar = haplotypeModel.getNextBase();
-		int[] swapInfoArray = haplotypeModel.swapHaplotypeBase(hapIndex, posChar);
+		int[] swapInfoArray = haplotypeModel.swapHaplotypeSingleBase(hapIndex, posChar);
 		
 		haplotypeModel.storeOperationRecord(OP, swapInfoArray);
 			

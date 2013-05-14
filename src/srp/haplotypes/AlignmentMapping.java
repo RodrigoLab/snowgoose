@@ -1,6 +1,8 @@
 package srp.haplotypes;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -19,6 +21,7 @@ public class AlignmentMapping {
 	private HashMap<String, Integer> seqNameToSeqID; // map sequence_name >xxxto int
 
 	private ArrayList<Character>[] listOfAvailableChar;
+	private ArrayList<int[]> listOfAvailableChar2 = new ArrayList<int[]>();
 	private ArrayList<ShortRead> shortReads;
 
 	private int haplotypeLength;
@@ -61,6 +64,18 @@ public class AlignmentMapping {
 		
 		for (int i = 0; i < haplotypeLength; i++) {
 			listOfAvailableChar[i] = new ArrayList<Character>(setsOfAvailableChar[i]);
+
+			Character[] temp = new Character[setsOfAvailableChar[i].size()];
+			setsOfAvailableChar[i].toArray(temp);
+			int[] temp2 = new int[temp.length];
+			for (int j = 0; j < temp2.length; j++) {
+				temp2[j] = temp[j];
+			}
+			
+			listOfAvailableChar2.add(temp2); //TODO: even faster??
+//			System.out.println(listOfAvailableChar[i].toString());
+//			System.out.println(Arrays.toString(  listOfAvailableChar2.get(i)  ));
+//			System.out.println();
 		}
 		
 		cumFreq = new double[] { cumFreq['A'], cumFreq['C'],
@@ -182,17 +197,51 @@ public class AlignmentMapping {
 		return new int[]{pos, newChar};
 	}
 	
-	public int[] getNextBaseUniform() {
-		int newChar = GAP ;
-		int pos = MathUtils.nextInt(haplotypeLength);
-		int size = listOfAvailableChar[pos].size();
-		if (size != 0) {
-			newChar = listOfAvailableChar[pos].get(MathUtils.nextInt(size));
-		}
-		
-		return new int[]{pos, newChar};
-	}
 
+//	public int[] getNextBaseUniform() {
+//		int newChar = GAP ;
+//		int pos = MathUtils.nextInt(haplotypeLength);
+//		ArrayList<Character> charList = listOfAvailableChar[pos];
+//		int size = charList .size();
+//		if (size != 0) {
+//			newChar = charList .get(MathUtils.nextInt(size));
+//		}
+//		return new int[]{pos, newChar};
+//	}
+	
+	 
+	  
+	 
+	public int[] getNextBaseUniform() {
+		posChar[0] = MathUtils.nextInt(haplotypeLength);
+		int[] chars = listOfAvailableChar2.get(  posChar[0] );
+		int size = chars.length;
+
+		if (size != 0) {
+			posChar[1] = chars[ MathUtils.nextInt(size) ];
+		}
+		else{
+			posChar[1] = GAP;
+		}
+		return posChar;
+	}
+//	 
+//	public int[] getNextBaseUniform() {
+//		int pos = MathUtils.nextInt(haplotypeLength);
+//		posChar[0] = pos;//MathUtils.nextInt(haplotypeLength)
+//		
+//		int size = listOfAvailableChar[pos].size();
+//		if (size != 0) {
+//			posChar[1] = listOfAvailableChar[pos].get(MathUtils.nextInt(size));
+//		}
+//		else{
+//			posChar[1] = GAP;
+//		}
+//		return posChar;
+//	}
+//	
+
+	private int[] posChar = new int[2];
 
 	public int[] getNextBaseEmpirical() {
 
@@ -205,9 +254,7 @@ public class AlignmentMapping {
 				newChar = VALID_CHARS[i];
 				break;
 			}
-			
 		}
-		
 
 		return new int[] { pos, newChar };
 	}

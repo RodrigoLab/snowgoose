@@ -2,10 +2,8 @@ package test.mcmc;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,15 +17,13 @@ import org.junit.Test;
 
 import srp.core.DataImporter;
 import srp.haplotypes.AlignmentMapping;
-import srp.haplotypes.HaplotypeLogger;
 import srp.haplotypes.HaplotypeLoggerWithTrueHaplotype;
 import srp.haplotypes.HaplotypeModel;
 import srp.haplotypes.operator.HaplotypeRecombinationOperator;
 import srp.haplotypes.operator.HaplotypeSwapSectionOperator;
-import srp.haplotypes.operator.SingleBaseOperator;
+import srp.haplotypes.operator.SingleBaseUniformOperator;
 import srp.haplotypes.operator.SwapBasesEmpiricalOperator;
 import srp.haplotypes.operator.SwapBasesMultiOperator;
-import srp.haplotypes.operator.SingleBaseUniformOperator;
 import srp.haplotypes.operator.SwapBasesUniformOperator;
 import srp.likelihood.ShortReadLikelihood;
 import dr.evolution.alignment.Alignment;
@@ -35,13 +31,9 @@ import dr.evolution.datatype.Nucleotides;
 import dr.evolution.tree.Tree;
 import dr.evolution.util.TaxonList;
 import dr.evolution.util.Units;
-import dr.evomodel.branchratemodel.BranchRateModel;
 import dr.evomodel.branchratemodel.StrictClockBranchRates;
 import dr.evomodel.coalescent.CoalescentLikelihood;
 import dr.evomodel.coalescent.ConstantPopulationModel;
-import dr.evomodel.operators.ExchangeOperator;
-import dr.evomodel.operators.SubtreeSlideOperator;
-import dr.evomodel.operators.WilsonBalding;
 import dr.evomodel.sitemodel.GammaSiteModel;
 import dr.evomodel.substmodel.FrequencyModel;
 import dr.evomodel.substmodel.HKY;
@@ -51,10 +43,8 @@ import dr.evomodelxml.coalescent.ConstantPopulationModelParser;
 import dr.evomodelxml.sitemodel.GammaSiteModelParser;
 import dr.evomodelxml.substmodel.HKYParser;
 import dr.evomodelxml.treelikelihood.TreeLikelihoodParser;
-import dr.ext.SitePatternsExt;
 import dr.ext.TreeLikelihoodExt;
 import dr.inference.distribution.DistributionLikelihood;
-import dr.inference.loggers.ArrayLogFormatter;
 import dr.inference.loggers.Loggable;
 import dr.inference.loggers.MCLogger;
 import dr.inference.loggers.TabDelimitedFormatter;
@@ -64,7 +54,6 @@ import dr.inference.model.CompoundLikelihood;
 import dr.inference.model.Likelihood;
 import dr.inference.model.OneOnXPrior;
 import dr.inference.model.Parameter;
-import dr.inference.model.Statistic;
 import dr.inference.operators.CoercionMode;
 import dr.inference.operators.MCMCOperator;
 import dr.inference.operators.OperatorSchedule;
@@ -75,7 +64,6 @@ import dr.inference.operators.UniformOperator;
 import dr.inference.operators.UpDownOperator;
 import dr.inferencexml.model.CompoundLikelihoodParser;
 import dr.math.distributions.LogNormalDistribution;
-import dr.util.Attribute;
 
 public class MCMCTrueTree {
 
@@ -236,7 +224,7 @@ public class MCMCTrueTree {
 
 	}
 
-	private TreeLikelihoodExt setupTreeLikelihood(Parameter kappa, Parameter freqs,
+	private static TreeLikelihoodExt setupTreeLikelihood(Parameter kappa, Parameter freqs,
 			HaplotypeModel haplotypeModel, TreeModel treeModel, StrictClockBranchRates branchRateModel) {
 
 		// Sub model
@@ -261,7 +249,7 @@ public class MCMCTrueTree {
 		return treeLikelihood;
 	}
 
-	private HashMap<String, Likelihood> setupCompoundLikelihood(
+	private static HashMap<String, Likelihood> setupCompoundLikelihood(
 			Parameter popSize, Parameter kappa, Likelihood coalescent,
 			Likelihood treeLikelihood, Likelihood srpLikelihood) {
 
@@ -314,56 +302,15 @@ public class MCMCTrueTree {
 
 	private static MCMCOptions setMCMCOptions(int logInterval) {
 		MCMCOptions options = new MCMCOptions();
-		options.setChainLength(logInterval * 10);
+		options.setChainLength(logInterval * 10);;
 		options.setUseCoercion(true); // autoOptimize = true
 		options.setCoercionDelay(logInterval * 2);
 		options.setTemperature(1.0);
-		options.setFullEvaluationCount(logInterval*2);
+		options.setFullEvaluationCount(logInterval*1);
 
 		return options;
 	}
 
-	private static OperatorSchedule defalutTreeOperators(
-			OperatorSchedule schedule, TreeModel treeModel) {
-
-		MCMCOperator operator;
-
-		Parameter allInternalHeights = treeModel.createNodeHeightsParameter(
-				true, true, false);
-		operator = new UpDownOperator(
-				null,// new Scalable[] { new Scalable.Default(rateParameter) },
-				new Scalable[] { new Scalable.Default(allInternalHeights) },
-				0.75, 3.0, CoercionMode.COERCION_ON);
-		schedule.addOperator(operator);
-
-		Parameter rootHeight = treeModel.getRootHeightParameter();
-		rootHeight.setId("TREE_HEIGHT");
-		operator = new ScaleOperator(rootHeight, 0.75);
-		operator.setWeight(3.0);
-		schedule.addOperator(operator);
-
-		Parameter internalHeights = treeModel.createNodeHeightsParameter(false,
-				true, false);
-		operator = new UniformOperator(internalHeights, 30.0);
-		schedule.addOperator(operator);
-
-//		 operator = new SubtreeSlideOperator(treeModel, 15.0, 1.0, true,
-//				 false,false, false, CoercionMode.COERCION_ON);
-//		 schedule.addOperator(operator);
-		
-//		 operator = new ExchangeOperator(ExchangeOperator.NARROW, treeModel,15.0);
-//		 schedule.addOperator(operator);
-//		
-//		 operator = new ExchangeOperator(ExchangeOperator.WIDE, treeModel, 3.0);
-//		 schedule.addOperator(operator);
-//		
-//		 operator = new WilsonBalding(treeModel, 3.0);
-//		 schedule.addOperator(operator);
-
-		return schedule;
-	}
-	
-	
 	private static OperatorSchedule defalutOperators(OperatorSchedule schedule,
 			HaplotypeModel haplotypeModel, Parameter popSize, Parameter kappa) {
 
@@ -373,16 +320,16 @@ public class MCMCTrueTree {
 //		operator.setWeight(1.0);
 //		schedule.addOperator(operator);
 
-//		operator = new SingleBaseUniformOperator(haplotypeModel,0);
-//		operator.setWeight(10);
-//		schedule.addOperator(operator);
+		operator = new SingleBaseUniformOperator(haplotypeModel,0);
+		operator.setWeight(10);
+		schedule.addOperator(operator);
 
-//		operator = new SwapBasesMultiOperator(haplotypeModel, 12, CoercionMode.COERCION_ON);
+//		operator = new SwapBasesMultiOperator(haplotypeModel, 12, CoercionMode.COERCION_OFF);
 //		operator.setWeight(3.0); 
 //		schedule.addOperator(operator);
-//		
 
-		operator = new SwapBasesUniformOperator(haplotypeModel, 10, CoercionMode.COERCION_ON);
+
+		operator = new SwapBasesUniformOperator(haplotypeModel, 12, CoercionMode.COERCION_OFF);
 		operator.setWeight(6.0); 
 		schedule.addOperator(operator);
 
@@ -391,9 +338,9 @@ public class MCMCTrueTree {
 //		schedule.addOperator(operator);
 
 //		operator = new HaplotypeRecombinationOperator(haplotypeModel, 12);
-//		operator.setWeight(3.0); 
+//		operator.setWeight(1.0); 
 //		schedule.addOperator(operator);
-//		
+		
 //		operator = new HaplotypeSwapSectionOperator(haplotypeModel, 24, CoercionMode.COERCION_ON);
 //		operator.setWeight(3.0); 
 //		schedule.addOperator(operator);
@@ -410,6 +357,46 @@ public class MCMCTrueTree {
 
 		return schedule;
 	}
+
+	private static OperatorSchedule defalutTreeOperators(
+				OperatorSchedule schedule, TreeModel treeModel) {
+	
+			MCMCOperator operator;
+	
+			Parameter allInternalHeights = treeModel.createNodeHeightsParameter(
+					true, true, false);
+			operator = new UpDownOperator(
+					null,// new Scalable[] { new Scalable.Default(rateParameter) },
+					new Scalable[] { new Scalable.Default(allInternalHeights) },
+					0.75, 3.0, CoercionMode.COERCION_ON);
+			schedule.addOperator(operator);
+	
+			Parameter rootHeight = treeModel.getRootHeightParameter();
+			rootHeight.setId("TREE_HEIGHT");
+			operator = new ScaleOperator(rootHeight, 0.75);
+			operator.setWeight(3.0);
+			schedule.addOperator(operator);
+	
+			Parameter internalHeights = treeModel.createNodeHeightsParameter(false,
+					true, false);
+			operator = new UniformOperator(internalHeights, 30.0);
+			schedule.addOperator(operator);
+	
+	//		 operator = new SubtreeSlideOperator(treeModel, 15.0, 1.0, true,
+	//				 false,false, false, CoercionMode.COERCION_ON);
+	//		 schedule.addOperator(operator);
+			
+	//		 operator = new ExchangeOperator(ExchangeOperator.NARROW, treeModel,15.0);
+	//		 schedule.addOperator(operator);
+	//		
+	//		 operator = new ExchangeOperator(ExchangeOperator.WIDE, treeModel, 3.0);
+	//		 schedule.addOperator(operator);
+	//		
+	//		 operator = new WilsonBalding(treeModel, 3.0);
+	//		 schedule.addOperator(operator);
+	
+			return schedule;
+		}
 
 	public static MCLogger addToLogger(MCLogger mcLogger, Loggable... loggableParameter) {
 		for (Loggable loggable : loggableParameter) {

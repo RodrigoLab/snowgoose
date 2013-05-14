@@ -53,7 +53,7 @@ public class SingleBaseUniformOperator extends SimpleMCMCOperator {
 		int hapIndex = MathUtils.nextInt(haplotypeCount);
 
 		int[] posChar = haplotypeModel.getNextBaseUniform();
-		int[] swapInfoArray = haplotypeModel.swapHaplotypeBase(hapIndex, posChar);
+		int[] swapInfoArray = haplotypeModel.swapHaplotypeSingleBase(hapIndex, posChar);
 		
 		haplotypeModel.storeOperationRecord(OP, swapInfoArray);
 			

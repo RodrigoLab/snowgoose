@@ -14,7 +14,7 @@ import dr.math.MathUtils;
 public class HaplotypeRecombinationOperator extends SimpleMCMCOperator {
 
 	public final static String OPERATOR_NAME = "HaplotypeRecombinationOperator";
-	public final static Operation OP = Operation.RECOMB;
+	public final static Operation OP = Operation.SWAPSECTION;
 
 	@Deprecated
 	private int index;

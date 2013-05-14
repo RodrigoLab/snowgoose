@@ -9,8 +9,8 @@ public enum Operation {
 	 
 	SWAPCOLUMN(2), 
 	
-	RECOMB(4), 
 	SWAPSECTION(5);
+	
 	
 	private int code;
 	private Operation(int i){

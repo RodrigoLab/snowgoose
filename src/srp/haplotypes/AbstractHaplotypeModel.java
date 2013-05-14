@@ -12,7 +12,7 @@ import dr.evolution.util.Taxon;
 import dr.inference.model.AbstractModel;
 import dr.util.Attributable;
 
-public abstract class AbstractHaplotypeModel  extends AbstractModel implements Alignment {
+public abstract class AbstractHaplotypeModel extends AbstractModel implements Alignment {
 
 	
 	public AbstractHaplotypeModel(String name) {
@@ -26,7 +26,7 @@ public abstract class AbstractHaplotypeModel  extends AbstractModel implements A
 	protected ArrayList<Haplotype> haplotypes;
 
 	public String getHaplotypeString(int i) {
-		return getHaplotype(i).getSequenceString();
+		return haplotypes.get(i).getSequenceString();
 		
 	}
 
@@ -42,9 +42,7 @@ public abstract class AbstractHaplotypeModel  extends AbstractModel implements A
 	public Haplotype getHaplotype(int i){
 		return haplotypes.get(i);
 	}
-	public char getHaplotypeCharAt(int hapIndex, int charIndex){
-		return haplotypes.get(hapIndex).charAt(charIndex);
-	}
+	
 	
     // **************************************************************
     // SequenceList IMPLEMENTATION

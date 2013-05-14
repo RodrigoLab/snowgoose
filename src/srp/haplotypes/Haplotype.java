@@ -19,7 +19,7 @@ public class Haplotype extends Sequence {
 
 	public Haplotype(String sequence) {
 		this();
-		setSequenceString(sequence);
+		setSequenceString(sequence.toUpperCase());
 	}
 
 	public Haplotype(Sequence sequence) {
@@ -38,9 +38,10 @@ public class Haplotype extends Sequence {
 		sequenceString.setCharAt(index, newChar);
 	}
 
-		
-	public char charAt(int index){
-		return sequenceString.charAt(index);
+	public char replaceCharAt(int index, int newChar){
+		char oldChar = getChar(index);
+		setCharAt(index, (char) newChar);
+		return oldChar;
 	}
 	
 	// **************************************
@@ -78,7 +79,7 @@ public class Haplotype extends Sequence {
      */
     @Override
 	public char getChar(int index) {
-        return charAt(index);
+        return sequenceString.charAt(index);
     }
 
     /**
@@ -118,7 +119,7 @@ public class Haplotype extends Sequence {
     @Override
 	public void setSequenceString(String sequence) {
         sequenceString.setLength(0);
-        sequenceString.append(sequence.toUpperCase());
+        sequenceString.append(sequence);
     }
 
     /**

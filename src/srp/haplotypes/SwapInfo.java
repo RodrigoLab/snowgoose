@@ -14,10 +14,12 @@ public class SwapInfo {
 	int[] swapBase = new int[4];//hapIndex, posIndex, newChar, oldChar
 	
 	private Operation operation;
-	private Deque<int[]> swapMulti;
-
 	
 	private int[] swapHaplotypeRecord;
+
+	private int hapIndex;
+
+	private int[][] allPosChars;
 	
 	public SwapInfo() {
 		operation = Operation.NONE;
@@ -31,14 +33,14 @@ public class SwapInfo {
 		return operation;
 	}
 
-	public void storeOperation(Operation op, Object swapRecord){
+	public void storeOperation(Operation op, Object... swapRecord){
 		this.operation = op;
 		int[] tempIntArray;
 		switch (operation) {
 			case NONE:
 				break;
 			case SWAPSINGLE:
-				swapBase = (int[]) swapRecord;
+				swapBase = (int[]) swapRecord[0];
 				break;
 //			case UNIFORMSWAPBASE:
 //				swapBase = (int[]) swapRecord;
@@ -47,25 +49,29 @@ public class SwapInfo {
 //				
 //				break;
 			case SWAPMULTI:
-				if (swapRecord==null){
-					swapMulti = new ArrayDeque<int[]>(); 
-//					swapMulti = new ArrayList<int[]>();
-				}
-				else{
-//					tempIntArray = new int[4];
-					tempIntArray = (int[]) swapRecord;
-//					for (int i = 0; i < tempIntArray.length; i++) {
-//						tempIntArray[i] = (Integer) swapInfo[i];
-//					}
-					swapMulti.add( tempIntArray);
-				}
+				hapIndex = (Integer) swapRecord[0];
+				allPosChars = (int[][]) swapRecord[1];
+
+//				int[] allNewChars = (int[]) swapRecord[2];
+				
+//				System.out.println(Arrays.toString(allNewChars));
+//				if (swapRecord==null){
+//					swapMulti = new ArrayDeque<int[]>(); 
+////					swapMulti = new ArrayList<int[]>();
+//				}
+//				else{
+////					tempIntArray = new int[4];
+//					tempIntArray = (int[]) swapRecord[0];
+////					for (int i = 0; i < tempIntArray.length; i++) {
+////						tempIntArray[i] = (Integer) swapInfo[i];
+////					}
+//					swapMulti.add( tempIntArray);
+//				}
 				break;
 			case SWAPSECTION:
-				swapHaplotypeRecord = (int[]) swapRecord;
+				swapHaplotypeRecord = (int[]) swapRecord[0];
 				break;
-			case RECOMB:
-				swapHaplotypeRecord = (int[]) swapRecord;
-				break;
+
 			default:
 				throw new IllegalArgumentException("Unknown operation type: "+op);
 			}
@@ -77,8 +83,13 @@ public class SwapInfo {
 	
 	}
 
-	public Deque<int[]> getSwapInfoSWAPMULTI(){
-		return swapMulti;
+	public int[][] getSwapInfoSWAPMULTI(){
+		return allPosChars;
+	}
+
+	
+	public int getHapIndex(){
+		return hapIndex;
 	}
 
 

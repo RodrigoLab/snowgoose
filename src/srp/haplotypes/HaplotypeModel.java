@@ -3,17 +3,10 @@ package srp.haplotypes;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.Iterator;
-
-import org.apache.commons.math3.random.EmpiricalDistribution;
-import org.apache.commons.math3.stat.Frequency;
-import org.apache.commons.math3.stat.StatUtils;
-import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
-import org.apache.commons.math3.stat.descriptive.StatisticalSummaryValues;
-import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
-
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Iterators;
+import java.util.LinkedList;
+import java.util.Queue;
 
 import dr.evolution.alignment.Alignment;
 import dr.evolution.datatype.DataType;
@@ -22,7 +15,6 @@ import dr.evolution.util.Taxon;
 import dr.inference.model.Model;
 import dr.inference.model.Variable;
 import dr.inference.model.Variable.ChangeType;
-import dr.math.MathUtils;
 import dr.util.NumberFormatter;
 
 
@@ -125,7 +117,7 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 	
 
 	private void randomHaplotype(int hapIndex) {
-		Haplotype haplotype = getHaplotype(hapIndex);
+		Haplotype haplotype = haplotypes.get(hapIndex);
 		for (int i = 0; i < haplotypesLength; i++) {
 			char newChar = (char) aMap.nextBaseAt(i);
 			haplotype.setCharAt(i, newChar);
@@ -151,15 +143,21 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 	
 
 	
-	public int[] swapHaplotypeBase(int hapIndex, int[] posChar){
-//		replaceHaplotypeCharAt(hapIndex, posChar);
+	public int[] swapHaplotypeSingleBase(int hapIndex, int[] posChar){
 		
 		int[] swapRecord = new int[4];
 		swapRecord[0] = hapIndex;
 		swapRecord[1] = posChar[0];
 		swapRecord[2] = posChar[1];
-		swapRecord[3] = swapHaplotypeCharAt(hapIndex, posChar[0], posChar[1]);
+//		swapRecord[3] = swapHaplotypeCharAt(hapIndex, posChar[0], posChar[1]);
+		
+		Haplotype haplotype = haplotypes.get(hapIndex);
+		swapRecord[3] = haplotype.replaceCharAt(posChar[0], posChar[1]);
 
+//		swapRecord[3] = haplotype.getChar(posChar[0]);
+//		setCharAt(pos, (char) newChar);
+		
+		
 //		System.out.println(Arrays.toString(swapRecord));
 //		System.out.println(getHaplotype(hapIndex).charAt(posChar[0]));
 
@@ -167,14 +165,38 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 		return swapRecord;
 	}
 
-	private int swapHaplotypeCharAt(int hapIndex, int pos, int newChar){
-		int oldChar = getHaplotype(hapIndex).getChar(pos); 
-		getHaplotype(hapIndex).setCharAt(pos, (char) newChar);
+
+	public int[] swapHaplotypeMultiBases(int hapIndex, int[] allPosChars, int[] oldChars){
+		
+		Haplotype haplotype = haplotypes.get(hapIndex);
+
+		for (int i = 0; i < haplotypesLength; i++) {
+			int newChar = allPosChars[i];
+			if(newChar>0){
+				oldChars[i] = haplotype.replaceCharAt(i, newChar);
+			}
+		}
+		return oldChars;
+	}
+
+	
+	
+	private int replaceHaplotypeCharAt(int hapIndex, int pos, int newChar){
+		
+		int oldChar = haplotypes.get(hapIndex).replaceCharAt(pos, (char) newChar);
+		return oldChar;
+		
+	}
+	private static int replaceHaplotypeCharAt(Haplotype haplotype, int pos, int newChar){
+		int oldChar = haplotype.replaceCharAt(pos, (char) newChar);
 		return oldChar;
 		
 	}
 	private void resetHaplotypeToOldChar(int[] swapArray){
-		swapHaplotypeCharAt(swapArray[0], swapArray[1], swapArray[3]);
+		Haplotype haplotype = haplotypes.get(swapArray[0]);
+		haplotype.replaceCharAt(swapArray[1], swapArray[3]);
+
+//		swapHaplotypeCharAt(swapArray[0], swapArray[1], swapArray[3]);
 	}
 	
 //	private int swapHaplotypeCharAt(int hapIndex, int[] posChar){
@@ -192,7 +214,7 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 	public Operation getOperation() {
 		return swapInfo.getOperation();
 	}
-	public void storeOperationRecord(Operation op, Object opRecord){
+	public void storeOperationRecord(Operation op, Object... opRecord){
 		swapInfo.storeOperation(op, opRecord);
 	}
 
@@ -203,24 +225,16 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 		int sps = 0;
 		
 		for (int i = 0; i < getHaplotypeCount(); i++) {
-			Haplotype h1 = getHaplotype(i);
+			Haplotype h1 = haplotypes.get(i);
 			for (int j = 0; j < i; j++) {
-				Haplotype h2 = getHaplotype(j);
+				Haplotype h2 = haplotypes.get(j);
 				for (int pos = 0; pos < haplotypesLength; pos++) {
-					int c = h1.charAt(pos) - h2.charAt(pos);
+					int c = h1.getChar(pos) - h2.getChar(pos);
 					sps += (c==0)? 0: 1;
 				}
 			}
 		}
 		return sps;
-	}
-
-	public String[] toStringArray() {
-		String[] string = new String[getHaplotypeCount()];
-		for (int i = 0; i < string.length; i++) {
-			string[i] = getHaplotypeString(i);
-		}
-		return string;
 	}
 
 	@Override
@@ -290,6 +304,7 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 	//		if(Operation.NONE != swapInfo.getOperation()){
 				reject();
 	//		}
+				swapInfo.storeOperation(Operation.NONE, null);
 		}
 
 	//	private int swapHaplotypeCharAt(int hapIndex, int[] posChar){
@@ -310,29 +325,48 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 		case SWAPSINGLE:
 
 			temp = swapInfo.getSwapInfoSWAPBASE();
-			resetHaplotypeToOldChar(temp);
+			long time1 = System.currentTimeMillis();
+//			for (int i = 0; i < 1e9; i++) {
+		resetHaplotypeToOldChar(temp);
+//		replaceHaplotypeCharAt(haplotypes.get(temp[0]), temp[2], temp[3]);
+//			}
+			long time2 = System.currentTimeMillis();
+//
+//			System.out.println("Single: "+(time2 - time1) + "\t");
+//			System.exit(0);
 			break;
 
 		case SWAPMULTI:
-			Deque<int[]> swapMulti = swapInfo.getSwapInfoSWAPMULTI();
-
-			for (Iterator<int[]> iterator = swapMulti.descendingIterator(); iterator
-					.hasNext();) {
-
-				temp = iterator.next();
-				resetHaplotypeToOldChar(temp);
+			
+			int hapIndex = swapInfo.getHapIndex();
+			int[][] swapMulti = swapInfo.getSwapInfoSWAPMULTI();
+//			int[] allNewChars = swapMulti[0];
+			int[] allOldChars = swapMulti[1];
+			
+			
+			Haplotype haplotype = haplotypes.get(hapIndex);
+			for (int i = 0; i < allOldChars.length; i++) {
+				int oldChar = allOldChars[i];
+				if(oldChar>0){
+					haplotype.replaceCharAt(i, oldChar);
+				}
 			}
-
 			break;
+		
 		case SWAPSECTION:
 			temp = swapInfo.getSwapHaplotypeRecord();
-			for (int i = 0; i < temp.length; i++) {
-				haplotypes.get(temp[i]).restoreState();
-			}
-			break;
-		case RECOMB:
-			temp = swapInfo.getSwapHaplotypeRecord();
-			for (int i = 0; i < temp.length; i++) {
+			
+//			time1 = System.currentTimeMillis();
+////			for (int i = 0; i < 1e8; i++) {
+//				haplotypes.get(temp[0]).restoreState();
+////			}
+//			time2 = System.currentTimeMillis();
+
+//			System.out.println("Multi: "+(time2 - time1) + "\t");
+
+			
+			
+			for (int i = 0; i < 2; i++) {
 				haplotypes.get(temp[i]).restoreState();
 			}
 			break;
@@ -373,7 +407,20 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 	public AlignmentMapping getAlignmentMapping() {
 		return aMap;
 	}
+
+	public char getHaplotypeCharAt(int hapIndex, int charIndex) {
+		return haplotypes.get(hapIndex).getChar(charIndex);
+	}
 	
 	
+
+	@Deprecated
+	public String[] toStringArray() {
+		String[] string = new String[getHaplotypeCount()];
+		for (int i = 0; i < string.length; i++) {
+			string[i] = getHaplotypeString(i);
+		}
+		return string;
+	}
 
 }

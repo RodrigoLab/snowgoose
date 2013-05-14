@@ -1,16 +1,12 @@
 package srp.haplotypes.operator;
 
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 
-import srp.haplotypes.Haplotype;
 import srp.haplotypes.HaplotypeModel;
 import srp.haplotypes.Operation;
-import dr.evolution.alignment.Alignment;
-import dr.inference.model.Parameter;
-import dr.inference.operators.AbstractCoercableOperator;
 import dr.inference.operators.CoercionMode;
 import dr.inference.operators.OperatorFailedException;
-import dr.inference.operators.SimpleMCMCOperator;
 import dr.math.MathUtils;
 
 public class SwapBasesUniformOperator extends AbstractHaplotypeOperator{
@@ -19,9 +15,13 @@ public class SwapBasesUniformOperator extends AbstractHaplotypeOperator{
 	public final static String OPERATOR_NAME = SwapBasesUniformOperator.class.getSimpleName();
 	public final static Operation OP = Operation.SWAPMULTI;
 
-
+	private int[][] allPosChars; 
+	private int[] allNewChars;
+	
 	public SwapBasesUniformOperator(HaplotypeModel haplotypeModel, int length, CoercionMode mode) {
 		super(haplotypeModel, length, mode);
+		allPosChars = new int[2][haplotypeLength];
+		allNewChars = new int[haplotypeLength];
 	}
 
     @Override
@@ -42,30 +42,30 @@ public class SwapBasesUniformOperator extends AbstractHaplotypeOperator{
 		return OPERATOR_NAME;
 	}
 
-
-
+	
+	
 	@Override
 	public double doOperation() throws OperatorFailedException {
-//		haplotypeModel.swapMultiBase(swapNBase);
-
+		
 		haplotypeModel.startHaplotypeOperation();
 
-		int hapIndex = 0;//MathUtils.nextInt(haplotypeCount);
-		haplotypeModel.storeOperationRecord(OP, null);
-		for (int i = 0; i < swapLength; i++) {
-
-			int[] posChar = haplotypeModel.getNextBaseUniform();
-			int[] swapInfoArray = haplotypeModel.swapHaplotypeBase(hapIndex, posChar);
-
-			haplotypeModel.storeOperationRecord(OP, swapInfoArray);
+		int hapIndex = MathUtils.nextInt(haplotypeCount);
+		
+		for (int i = 0; i < allPosChars.length; i++) {
+			Arrays.fill(allPosChars[i], -1);
 		}
 
-		haplotypeModel.endHaplotypeOperation();
+		for (int i = 0; i < swapLength; i++) {
+			int[] posChar = haplotypeModel.getNextBaseUniform();
+			allPosChars[0][posChar[0]] = posChar[1];
+		}
 		
-		
+		haplotypeModel.swapHaplotypeMultiBases(hapIndex, allPosChars[0], allPosChars[1]);
 
+		haplotypeModel.storeOperationRecord(OP, hapIndex, allPosChars);
 		
-		
+		haplotypeModel.endHaplotypeOperation();
+
 		return 0.0;
 	}
 	
