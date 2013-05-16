@@ -4,7 +4,7 @@ import srp.haplotypes.HaplotypeModel;
 import dr.inference.operators.AbstractCoercableOperator;
 import dr.inference.operators.CoercionMode;
 
-public abstract class AbstractHaplotypeOperator  extends AbstractCoercableOperator {
+public abstract class AbstractSwapBasesOperator  extends AbstractCoercableOperator {
 
 	protected final int haplotypeLength;
 	protected final int haplotypeCount;
@@ -15,14 +15,17 @@ public abstract class AbstractHaplotypeOperator  extends AbstractCoercableOperat
 	protected double autoOptimize;
 	protected double scaleFactor;
 
+	protected int[][] allPosChars; 
 	
-	
-	public AbstractHaplotypeOperator(HaplotypeModel haplotypeModel, int swapLength, CoercionMode mode) {
+	public AbstractSwapBasesOperator(HaplotypeModel haplotypeModel, int swapLength, CoercionMode mode) {
 		super(mode);
 		
 		this.haplotypeModel = haplotypeModel;
 		this.haplotypeLength = this.haplotypeModel.getHaplotypeLength();
 		this.haplotypeCount  = this.haplotypeModel.getHaplotypeCount();
+
+		allPosChars = new int[2][haplotypeLength];
+		
 		if (swapLength < 1){
     		swapLength = 1;
     	}

@@ -33,7 +33,7 @@ public class AlignmentMapping {
 		haplotypeLength = l;
 		srpCount = 0;
 
-		cumFreq = new double[haplotypeLength];
+		cumFreq = new double['U'];
 
 		seqNameToSeqID = new HashMap<String, Integer>();
 		shortReads = new ArrayList<ShortRead>();
@@ -78,10 +78,7 @@ public class AlignmentMapping {
 //			System.out.println();
 		}
 		
-		cumFreq = new double[] { cumFreq['A'], cumFreq['C'],
-				cumFreq['G'], cumFreq['T'] };
-
-
+		cumFreq = new double[] { cumFreq['A'], cumFreq['C'], cumFreq['G'], cumFreq['T'] };
 		for (int i = 1; i < cumFreq.length; i++) {
 			cumFreq[i] = cumFreq[i] + cumFreq[i-1];  
 		}
@@ -106,6 +103,7 @@ public class AlignmentMapping {
 				if (c!= GAP){
 					setsOfAvailableChar[j].add(c);
 					cumFreq[c]++;
+					
 				}
 			}
 			srpCount++;

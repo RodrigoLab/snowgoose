@@ -2,11 +2,6 @@ package srp.haplotypes;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Queue;
 
 import dr.evolution.alignment.Alignment;
 import dr.evolution.datatype.DataType;
@@ -78,6 +73,8 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 //	int haplotypesCount;
 	AlignmentMapping aMap;
 	private SwapInfo swapInfo = new SwapInfo();
+	
+	
 	private boolean isEdit;
 	
 
@@ -181,17 +178,17 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 
 	
 	
-	private int replaceHaplotypeCharAt(int hapIndex, int pos, int newChar){
-		
-		int oldChar = haplotypes.get(hapIndex).replaceCharAt(pos, (char) newChar);
-		return oldChar;
-		
-	}
-	private static int replaceHaplotypeCharAt(Haplotype haplotype, int pos, int newChar){
-		int oldChar = haplotype.replaceCharAt(pos, (char) newChar);
-		return oldChar;
-		
-	}
+//	private int replaceHaplotypeCharAt(int hapIndex, int pos, int newChar){
+//		
+//		int oldChar = haplotypes.get(hapIndex).replaceCharAt(pos, (char) newChar);
+//		return oldChar;
+//		
+//	}
+//	private static int replaceHaplotypeCharAt(Haplotype haplotype, int pos, int newChar){
+//		int oldChar = haplotype.replaceCharAt(pos, (char) newChar);
+//		return oldChar;
+//		
+//	}
 	private void resetHaplotypeToOldChar(int[] swapArray){
 		Haplotype haplotype = haplotypes.get(swapArray[0]);
 		haplotype.replaceCharAt(swapArray[1], swapArray[3]);
@@ -278,7 +275,6 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 
 	@Override
 	protected void handleModelChangedEvent(Model model, Object object, int index) {
-		// TODO Auto-generated method stub
 		System.err.println("Call handleModelChangedEvent");
 		
 	}
@@ -286,26 +282,22 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 	@Override
 	protected void handleVariableChangedEvent(Variable variable, int index,
 			ChangeType type) {
-		// TODO Auto-generated method stub
 		System.err.println("Call handleVariableChangedEvent");
 	}
 
 	@Override
-		protected void storeState() {
-	
-	//		System.err.println("Call storeState");
-			swapInfo.storeOperation(Operation.NONE, null);
-		}
+	protected void storeState() {
+
+		// System.err.println("Call storeState");
+		swapInfo.storeOperation(Operation.NONE);
+	}
 
 	@Override
-		protected void restoreState() {
-	//		System.err.println("Call restoreState - haplotypeModel");
-	
-	//		if(Operation.NONE != swapInfo.getOperation()){
-				reject();
-	//		}
-				swapInfo.storeOperation(Operation.NONE, null);
-		}
+	protected void restoreState() {
+		// System.err.println("Call restoreState - haplotypeModel");
+		reject();
+		swapInfo.storeOperation(Operation.NONE);
+	}
 
 	//	private int swapHaplotypeCharAt(int hapIndex, int[] posChar){
 	//		int oldChar = getHaplotype(hapIndex).getChar(posChar[0]); 
@@ -316,7 +308,7 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 	//	
 	//	
 
-	public void reject() {// FIXME for different swapInfo/Operation
+	public void reject() {
 		Operation op = swapInfo.getOperation();
 		int[] temp;
 		switch (op) {

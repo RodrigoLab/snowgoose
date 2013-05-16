@@ -18,7 +18,7 @@ public class HaplotypeRecombinationOperator extends SimpleMCMCOperator {
 
 	@Deprecated
 	private int index;
-	private int hapLength;
+	private int haplotypeLength;
 	private HaplotypeModel haplotypeModel;
 	
 //	public AlignmentSwapBaseOperator(Parameter parameter, HaplotypeModel haplotypeModel, int index, CoercionMode mode) {
@@ -30,7 +30,7 @@ public class HaplotypeRecombinationOperator extends SimpleMCMCOperator {
 //		super(mode);
 		this.index = nothing;
 		this.haplotypeModel= haplotypeModel; 
-		this.hapLength = this.haplotypeModel.getHaplotypeLength();
+		this.haplotypeLength = this.haplotypeModel.getHaplotypeLength();
 		
 	}
 
@@ -64,9 +64,9 @@ public class HaplotypeRecombinationOperator extends SimpleMCMCOperator {
 		
 		String oldS1 = h1.getSequenceString();
 		String oldS2 = h2.getSequenceString();
-		int start = MathUtils.nextInt(hapLength);
+		int start = MathUtils.nextInt(haplotypeLength);
 		do{
-			start = MathUtils.nextInt(hapLength);
+			start = MathUtils.nextInt(haplotypeLength);
 		}while(start==0);
 
 		String newS1 = oldS1.substring(0, start) + oldS2.substring(start);
@@ -77,8 +77,7 @@ public class HaplotypeRecombinationOperator extends SimpleMCMCOperator {
 		
 		h2.storeState();
 		h2.setSequenceString(newS2);
-		
-		int[] swapHaplotype = {hapIndex1, hapIndex2, start, hapLength};
+		int[] swapHaplotype = {hapIndex1, hapIndex2, start, haplotypeLength};
 
 		haplotypeModel.storeOperationRecord(OP, swapHaplotype);
 		haplotypeModel.endHaplotypeOperation();

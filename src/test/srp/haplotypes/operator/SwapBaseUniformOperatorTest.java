@@ -53,7 +53,7 @@ public class SwapBaseUniformOperatorTest {
 		HaplotypeModel haplotypeModel = new HaplotypeModel(aMap, 3);
 
 		MCMCOperator operator = new SingleBaseUniformOperator(haplotypeModel, 0);
-    	assertEquals(operator.getOperatorName(), "UniformSwapBaseOperator");
+    	assertEquals(operator.getOperatorName(), "SingleBaseUniformOperator");
 	}
 
 	@Test

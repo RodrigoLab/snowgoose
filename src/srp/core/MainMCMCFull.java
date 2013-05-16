@@ -1,6 +1,4 @@
-package test.mcmc;
-
-import static org.junit.Assert.assertEquals;
+package srp.core;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -8,18 +6,14 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-import srp.core.DataImporter;
 import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.HaplotypeLoggerWithTrueHaplotype;
 import srp.haplotypes.HaplotypeModel;
 import srp.likelihood.ShortReadLikelihood;
+import test.mcmc.MCMCUtils;
 import dr.evolution.alignment.Alignment;
+import dr.evolution.coalescent.CoalescentSimulator;
+import dr.evolution.coalescent.ConstantPopulation;
 import dr.evolution.tree.Tree;
 import dr.evolution.util.TaxonList;
 import dr.evolution.util.Units;
@@ -41,57 +35,44 @@ import dr.inference.operators.OperatorSchedule;
 import dr.inference.operators.SimpleOperatorSchedule;
 import dr.inferencexml.model.CompoundLikelihoodParser;
 
-public class MCMCTrueTree {
+public class MainMCMCFull {
 
-	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-	}
+	public static void main(String[] args) throws Exception {
 
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
-	}
-
-	@Before
-	public void setUp() throws Exception {
-
-	}
-
-	@After
-	public void tearDown() throws Exception {
-	}
-
-	@Test
-	public void testMCMCFixTree() throws Exception {
-		String dataDir = "/home/sw167/workspace/ABI/data/";
-//		String truePhylogenyFile = "H6_005_true_tree.trees";
-//		String shortReadFile = "H6_srp.fasta";
-//		
-//		String dataDir = "/home/sw167/workspace/ABI/data/H7/";
-		String truePhylogenyFile = "H7Srp.tree";
+//		String dataDir = "/home/sw167/workspace/ABI/data/";
+//		int totalSamples = 5;
+		
+		String dataDir = args[0];
+		int totalSamples = Integer.parseInt(args[1]);
+		
 		String shortReadFile = "H7Srp.fasta";
 		String trueHaplotypeFile = "H7Srp_fullHaplotype.fasta";
 		
-		String prefix = "FixTree_H7";
+		String prefix = dataDir+"FullTree_H7";
 		String logTracerName = prefix+".log";
 		String logTreeName = prefix+".trees";
-		String logHaplotypeName = prefix+"_haplatype.hap";
-		String operatorAnalysisFile = prefix+"_operatorAnalysisFile";
+		String logHaplotypeName = prefix+".haplatype";
+		String operatorAnalysisFile = prefix+"_operatorAnalysisFile.txt";
 		
 		int numberOfHaplotype = 7;
 		int logInterval = 1000;
 		
+
 		DataImporter dataImporter = new DataImporter(dataDir);
-		Tree truePhylogeny = dataImporter.importTree(truePhylogenyFile);
-		TreeModel treeModel = new TreeModel(TreeModel.TREE_MODEL, truePhylogeny, false, false);
 
 		Alignment shortReads = dataImporter.importAlignment(shortReadFile);
 		AlignmentMapping alignmentMapping = new AlignmentMapping(shortReads);
 		HaplotypeModel haplotypeModel = new HaplotypeModel(alignmentMapping, numberOfHaplotype);
 
 		// coalescent
-		Parameter popSize = new Parameter.Default(
-				ConstantPopulationModelParser.POPULATION_SIZE, 3000.0, 100, 100000.0);
-		ConstantPopulationModel startingTree = new ConstantPopulationModel(popSize, Units.Type.DAYS);
+		Parameter popSize = new Parameter.Default(ConstantPopulationModelParser.POPULATION_SIZE, 3000.0, 100, 100000.0);
+
+//		 Random treeModel
+		ConstantPopulationModel startingTree = new ConstantPopulationModel(popSize, Units.Type.YEARS);
+		ConstantPopulation constant = (ConstantPopulation) startingTree.getDemographicFunction();
+		CoalescentSimulator simulator = new CoalescentSimulator();
+		Tree tree = simulator.simulateTree(haplotypeModel, constant);
+		TreeModel treeModel = new TreeModel(tree);// treeModel
 
 		CoalescentLikelihood coalescent = new CoalescentLikelihood(treeModel,null, new ArrayList<TaxonList>(), startingTree);
 		coalescent.setId("coalescent");
@@ -101,7 +82,7 @@ public class MCMCTrueTree {
 		Parameter rateParameter = new Parameter.Default(StrictClockBranchRates.RATE, 1e-5, 0, 1);
 		StrictClockBranchRates branchRateModel = new StrictClockBranchRates(rateParameter);
 		// sub model
-		Parameter freqs = new Parameter.Default("frequency", haplotypeModel.getStateFrequencies());
+		Parameter freqs = new Parameter.Default("Frequency", haplotypeModel.getStateFrequencies());
 		
 		// treeLikelihood
 		Parameter kappa = new Parameter.Default(HKYParser.KAPPA, 1.0, 0, 100.0);
@@ -123,15 +104,10 @@ public class MCMCTrueTree {
 		// Operators
 		OperatorSchedule schedule = new SimpleOperatorSchedule();
 		schedule = MCMCUtils.defalutOperators(schedule, haplotypeModel, freqs, kappa, popSize);
-//		schedule = defalutTreeOperators(schedule, treeModel);
+		schedule = MCMCUtils.defalutTreeOperators(schedule, treeModel);
 		Parameter rootHeight = treeModel.getRootHeightParameter();
 		
-		
-		double expectedInit = shortReadLikelihood.getLogLikelihood();
-		assertEquals(expectedInit, srpLikelihood.getLogLikelihood(), 0);
-		
 		MCLogger[] loggers = new MCLogger[4];
-//		loggers[0] = new MCLogger(formatter, logInterval, false);
 		
 		loggers[0] = new MCLogger(logTracerName, logInterval, false, 0);
 		MCMCUtils.addToLogger(loggers[0], posterior, prior, likelihood, shortReadLikelihood,
@@ -143,8 +119,7 @@ public class MCMCTrueTree {
 
 		loggers[1] = new MCLogger(new TabDelimitedFormatter(System.out), logInterval, true, logInterval*2);
 		MCMCUtils.addToLogger(loggers[1], posterior, prior, likelihood, shortReadLikelihood,
-				popSize, kappa, coalescent, 
-				rootHeight
+				popSize
 				);
 		
 		TabDelimitedFormatter treeFormatter = new TabDelimitedFormatter(
@@ -157,8 +132,7 @@ public class MCMCTrueTree {
 		loggers[3] = new HaplotypeLoggerWithTrueHaplotype(haplotypeModel, trueAlignment, logHaplotypeName, logInterval*10);
 		
 		// MCMC
-		
-		MCMCOptions options = setMCMCOptions(logInterval);
+		MCMCOptions options = setMCMCOptions(logInterval, totalSamples);
 		
 		MCMC mcmc = new MCMC("mcmc1");
 		mcmc.setShowOperatorAnalysis(true);
@@ -168,40 +142,15 @@ public class MCMCTrueTree {
 		mcmc.run();
 
 		System.out.println(mcmc.getTimer().toString());
-		// Tracer
-		// List<Trace> traces = formatter.getTraces();
-		// ArrayTraceList traceList = new ArrayTraceList("test", traces, 0);
-		//
-		//
-		//
-		// // Trace trace = traces.get(0);
-		// for (Trace trace : traces) {
-		// if (trace.getName().equals("ShortReadLikelihood")) {
-		//
-		// double startValue = (Double) trace.getValue(0);
-		// double endValue = (Double) trace
-		// .getValue(trace.getValuesSize() - 1);
-		// assertEquals(expectedInit , startValue,0);
-		// assertTrue(endValue > startValue);
-		// // System.out.println(trace.getName());
-		// // break;
-		// }
-		// }
-
-		// for (int j = 0; j < trace.getValuesSize(); j++) {
-		// System.out.print(trace.getValue(j) +"\t");
-		// }
-		// System.out.println();
-		// System.out.println(Arrays.toString(trace.getRange()));
-		// System.out.println(trace.getTraceT9ype());
+		
 
 	}
 
-	private static MCMCOptions setMCMCOptions(int logInterval) {
+	private static MCMCOptions setMCMCOptions(int logInterval, int totalSamples) {
 		MCMCOptions options = new MCMCOptions();
-		options.setChainLength(logInterval * 5);;
-		options.setUseCoercion(true); // autoOptimize = true
-		options.setCoercionDelay(logInterval * 2);
+		options.setChainLength(logInterval * totalSamples);;
+		options.setUseCoercion(false); // autoOptimize = true
+		options.setCoercionDelay(logInterval * 5);
 		options.setTemperature(1.0);
 		options.setFullEvaluationCount(logInterval*2);
 

@@ -14,7 +14,7 @@ import dr.inference.operators.CoercionMode;
 
 import srp.haplotypes.AlignmentUtils;
 import srp.haplotypes.HaplotypeModel;
-import srp.haplotypes.operator.AbstractHaplotypeOperator;
+import srp.haplotypes.operator.AbstractSwapBasesOperator;
 import srp.haplotypes.operator.HaplotypeSwapSectionOperator;
 
 public class HaplotypeSwapSectionOperatorTest {
@@ -51,7 +51,7 @@ public class HaplotypeSwapSectionOperatorTest {
 
 		for (int i = 1; i < 10; i++) {
 			HaplotypeModel haplotypeModel = AlignmentUtils.createHaplotypeModel(srp, haps);
-			AbstractHaplotypeOperator op = new HaplotypeSwapSectionOperator(haplotypeModel, i, CoercionMode.COERCION_OFF);
+			AbstractSwapBasesOperator op = new HaplotypeSwapSectionOperator(haplotypeModel, i, CoercionMode.COERCION_OFF);
 
 			for (int j = 0; j < 100; j++) {
 				op.doOperation();

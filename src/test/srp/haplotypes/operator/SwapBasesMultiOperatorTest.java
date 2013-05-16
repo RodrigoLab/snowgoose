@@ -71,7 +71,7 @@ public class SwapBasesMultiOperatorTest {
 
 		int nBases = 10;
 		CoercableMCMCOperator operator = new SwapBasesMultiOperator(haplotypeModel, nBases, CoercionMode.COERCION_OFF);
-    	assertEquals(operator.getOperatorName(), "SwapMultiBasesOperator");
+    	assertEquals(operator.getOperatorName(), "SwapBasesMultiOperator");
     	assertEquals(operator.getRawParameter(), nBases, 0);
     	assertEquals(operator.getCoercableParameter(), Math.log(nBases-1), 1e-10); 
 	}

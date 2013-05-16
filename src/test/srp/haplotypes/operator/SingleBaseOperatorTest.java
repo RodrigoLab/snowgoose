@@ -68,7 +68,7 @@ public class SingleBaseOperatorTest {
 		HaplotypeModel haplotypeModel = new HaplotypeModel(aMap, 3);
 
 		MCMCOperator operator = new SingleBaseOperator(haplotypeModel, 0);
-    	assertEquals(operator.getOperatorName(), "SwapBaseOperator");
+    	assertEquals(operator.getOperatorName(), "SingleBaseOperator");
 	}
 
 	@Test

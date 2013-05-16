@@ -202,7 +202,8 @@ public class AlignmentMappingTest {
 		TestUtils.assertExpectationRange(ratio, expectedRatio , 0.1);
 		
 		ratio = count[4]['A'] / count[4]['-'];
-		TestUtils.assertExpectationRange(ratio, expectedRatio , 0.1);
+		assertEquals(StatUtils.sum(count[4]), count[4]['A'], 0);
+		assertEquals(count[4]['-'], 0, 0);
 		
 		ratio = count[4]['A'] / count[5]['-'];
 		assertEquals(StatUtils.sum(count[5]), count[5]['-'], 0);

@@ -14,7 +14,7 @@ import dr.inference.operators.SimpleMCMCOperator;
 import dr.math.MathUtils;
 
 
-public class HaplotypeSwapSectionOperator extends AbstractHaplotypeOperator {
+public class HaplotypeSwapSectionOperator extends AbstractSwapBasesOperator {
 
 	
 	public final static String OPERATOR_NAME = "SwapSectionOperator";

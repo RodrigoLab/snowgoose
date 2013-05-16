@@ -10,15 +10,14 @@ public class SwapInfo {
 	/*
 	 * Record how/which move/operation is performed
 	*/
-	
-	int[] swapBase = new int[4];//hapIndex, posIndex, newChar, oldChar
-	
+
 	private Operation operation;
 	
+	private int[] swapBase;// hapIndex, posIndex, newChar, oldChar
+
 	private int[] swapHaplotypeRecord;
 
 	private int hapIndex;
-
 	private int[][] allPosChars;
 	
 	public SwapInfo() {
@@ -35,19 +34,14 @@ public class SwapInfo {
 
 	public void storeOperation(Operation op, Object... swapRecord){
 		this.operation = op;
-		int[] tempIntArray;
+
 		switch (operation) {
 			case NONE:
 				break;
 			case SWAPSINGLE:
 				swapBase = (int[]) swapRecord[0];
 				break;
-//			case UNIFORMSWAPBASE:
-//				swapBase = (int[]) swapRecord;
-//				break;
-//			case SWAPCOLUMN:
-//				
-//				break;
+
 			case SWAPMULTI:
 				hapIndex = (Integer) swapRecord[0];
 				allPosChars = (int[][]) swapRecord[1];

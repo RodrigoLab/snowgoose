@@ -238,12 +238,4 @@ public class LikelihoodUtils {
 
 
 
-	public static int DeltaDist(int swapPos, String srpString2,
-			String newHaplotypeStirng) {
-		hapString = newHaplotypeStirng;
-		srpString = srpString2;
-		match = (srCharArray[swapPos] - hapCharArray[swapPos]);
-		int dist = (match==ZERO)? -1:1;
-		return dist;
-	}
 }

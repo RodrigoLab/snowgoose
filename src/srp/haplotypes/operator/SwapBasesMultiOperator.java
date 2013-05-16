@@ -1,5 +1,7 @@
 package srp.haplotypes.operator;
 
+import java.util.Arrays;
+
 import srp.haplotypes.Haplotype;
 import srp.haplotypes.HaplotypeModel;
 import srp.haplotypes.Operation;
@@ -11,7 +13,7 @@ import dr.inference.operators.OperatorFailedException;
 import dr.inference.operators.SimpleMCMCOperator;
 import dr.math.MathUtils;
 
-public class SwapBasesMultiOperator extends AbstractHaplotypeOperator {
+public class SwapBasesMultiOperator extends AbstractSwapBasesOperator {
 
 
 	public final static String OPERATOR_NAME = SwapBasesMultiOperator.class.getSimpleName();
@@ -46,31 +48,23 @@ public class SwapBasesMultiOperator extends AbstractHaplotypeOperator {
 
 	@Override
 	public double doOperation() throws OperatorFailedException {
-//		haplotypeModel.swapMultiBase(swapNBase);
 
 		haplotypeModel.startHaplotypeOperation();
 
-		int hapIndex = MathUtils.nextInt(haplotypeCount);
-		
-				
-		haplotypeModel.storeOperationRecord(OP, null);
-		
-		
-		
-		for (int i = 0; i < swapLength; i++) {
-
-			int[] posChar = haplotypeModel.getNextBase();
-			int[] swapInfoArray = haplotypeModel.swapHaplotypeSingleBase(hapIndex, posChar);
-
-			haplotypeModel.storeOperationRecord(OP, swapInfoArray);
+		for (int i = 0; i < allPosChars.length; i++) {
+			Arrays.fill(allPosChars[i], -1);
 		}
+		for (int i = 0; i < swapLength; i++) {
+			int[] posChar = haplotypeModel.getNextBase();
+			allPosChars[0][posChar[0]] = posChar[1];
+		}
+		
+		int hapIndex = MathUtils.nextInt(haplotypeCount);
+		haplotypeModel.swapHaplotypeMultiBases(hapIndex, allPosChars[0], allPosChars[1]);
+
+		haplotypeModel.storeOperationRecord(OP, hapIndex, allPosChars);
 
 		haplotypeModel.endHaplotypeOperation();
-		
-		
-
-		
-		
 		return 0.0;
 	}
 }
