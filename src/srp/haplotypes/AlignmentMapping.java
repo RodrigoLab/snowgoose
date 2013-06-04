@@ -215,6 +215,27 @@ public class AlignmentMapping {
 		int[] chars = listOfAvailableChar2.get(  posChar[0] );
 		int size = chars.length;
 
+//		switch (size) {
+//		case 0:
+//			posChar[1] = GAP;
+//			break;
+//		case 1:
+//			posChar[1] = chars[0];
+//			break;
+//		case 2:
+//			boolean index = MathUtils.nextBoolean();
+//			if(index){
+//				posChar[1] = chars[0];
+//			}
+//			else{
+//				posChar[1] = chars[1];
+//			}
+//			break;
+//			
+//		default:
+//			posChar[1] = chars[ MathUtils.nextInt(size) ];
+//			break;
+//		}		
 		if (size != 0) {
 			posChar[1] = chars[ MathUtils.nextInt(size) ];
 		}
@@ -243,17 +264,16 @@ public class AlignmentMapping {
 
 	public int[] getNextBaseEmpirical() {
 
-		int newChar = GAP;
-		int pos = MathUtils.nextInt(haplotypeLength);
+		posChar[0] = MathUtils.nextInt(haplotypeLength);
 		
 		double d = MathUtils.nextDouble();
 		for (int i = 0; i < cumFreq.length; i++) {
 			if (d <= cumFreq[i]) {
-				newChar = VALID_CHARS[i];
-				break;
+				posChar[1] = VALID_CHARS[i];
+				return posChar;
 			}
 		}
-
-		return new int[] { pos, newChar };
+		posChar[1] = GAP;
+		return posChar;
 	}
 }

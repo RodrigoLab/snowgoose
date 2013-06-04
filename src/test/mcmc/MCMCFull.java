@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -37,6 +38,7 @@ import dr.inference.mcmc.MCMC;
 import dr.inference.mcmc.MCMCOptions;
 import dr.inference.model.Likelihood;
 import dr.inference.model.Parameter;
+import dr.inference.operators.MCMCOperator;
 import dr.inference.operators.OperatorSchedule;
 import dr.inference.operators.SimpleOperatorSchedule;
 import dr.inferencexml.model.CompoundLikelihoodParser;
@@ -121,9 +123,17 @@ public class MCMCFull {
 		
 		// Operators
 		OperatorSchedule schedule = new SimpleOperatorSchedule();
-		schedule = MCMCUtils.defalutOperators(schedule, haplotypeModel, freqs, kappa, popSize);
-		schedule = MCMCUtils.defalutTreeOperators(schedule, treeModel);
+		ArrayList<MCMCOperator> defalutOperatorsList = MCMCUtils.defalutOperators(haplotypeModel, freqs, kappa, popSize);
+		schedule.addOperators(defalutOperatorsList);
+		schedule.addOperators(MCMCUtils.defalutTreeOperators(treeModel));
 		Parameter rootHeight = treeModel.getRootHeightParameter();
+		
+		int total = 0;
+		for (int i = 0; i < schedule.getOperatorCount(); i++) {
+			MCMCOperator operator = schedule.getOperator(i);
+			total += operator.getWeight() ;
+		}
+		System.out.println("totalWeight: "+total);
 		
 		
 		// MCLogger
@@ -169,7 +179,7 @@ public class MCMCFull {
 
 	private static MCMCOptions setMCMCOptions(int logInterval) {
 		MCMCOptions options = new MCMCOptions();
-		options.setChainLength(logInterval * 5);;
+		options.setChainLength(logInterval * 500);;
 		options.setUseCoercion(false); // autoOptimize = true
 		options.setCoercionDelay(logInterval * 2);
 		options.setTemperature(1.0);

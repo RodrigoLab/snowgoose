@@ -50,7 +50,7 @@ public class SwapBasesUniformOperator extends AbstractSwapBasesOperator{
 			Arrays.fill(allPosChars[i], -1);
 		}
 		for (int i = 0; i < swapLength; i++) {
-			int[] posChar = haplotypeModel.getNextBaseUniform();
+			int[] posChar = alignmentMapping.getNextBaseUniform();
 			allPosChars[0][posChar[0]] = posChar[1];
 		}
 		

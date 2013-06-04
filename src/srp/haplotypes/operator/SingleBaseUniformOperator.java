@@ -3,6 +3,7 @@ package srp.haplotypes.operator;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.HaplotypeModel;
 import srp.haplotypes.Operation;
 import dr.evolution.alignment.Alignment;
@@ -22,6 +23,7 @@ public class SingleBaseUniformOperator extends SimpleMCMCOperator {
 	private int index;
 	private HaplotypeModel haplotypeModel;
 	private int haplotypeCount;
+	protected AlignmentMapping alignmentMapping;
 	
 
 	
@@ -30,6 +32,7 @@ public class SingleBaseUniformOperator extends SimpleMCMCOperator {
 		this.index = nothing;
 		this.haplotypeModel= haplotypeModel; 
 		haplotypeCount = this.haplotypeModel.getHaplotypeCount();
+		alignmentMapping = this.haplotypeModel.getAlignmentMapping();
 	}
 
 	@Override
@@ -52,7 +55,7 @@ public class SingleBaseUniformOperator extends SimpleMCMCOperator {
 			
 		int hapIndex = MathUtils.nextInt(haplotypeCount);
 
-		int[] posChar = haplotypeModel.getNextBaseUniform();
+		int[] posChar = alignmentMapping.getNextBaseUniform();
 		int[] swapInfoArray = haplotypeModel.swapHaplotypeSingleBase(hapIndex, posChar);
 		
 		haplotypeModel.storeOperationRecord(OP, swapInfoArray);

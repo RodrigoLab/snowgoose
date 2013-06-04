@@ -1,5 +1,6 @@
 package srp.haplotypes.operator;
 
+import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.HaplotypeModel;
 import srp.haplotypes.Operation;
 import dr.evolution.alignment.Alignment;
@@ -20,7 +21,7 @@ public class SingleBaseOperator extends SimpleMCMCOperator {
 	private int index;
 	private HaplotypeModel haplotypeModel;
 	private int haplotypeCount;
-	
+	protected AlignmentMapping alignmentMapping;
 //	public AlignmentSwapBaseOperator(Parameter parameter, HaplotypeModel haplotypeModel, int index, CoercionMode mode) {
 ////		super(mode);
 //	}
@@ -31,6 +32,7 @@ public class SingleBaseOperator extends SimpleMCMCOperator {
 		this.index = nothing;
 		this.haplotypeModel= haplotypeModel; 
 		haplotypeCount = this.haplotypeModel.getHaplotypeCount();
+		alignmentMapping = this.haplotypeModel.getAlignmentMapping();
 	}
 
 	@Override
@@ -53,7 +55,7 @@ public class SingleBaseOperator extends SimpleMCMCOperator {
 			
 		int hapIndex = MathUtils.nextInt( haplotypeCount);
 
-		int[] posChar = haplotypeModel.getNextBase();
+		int[] posChar = alignmentMapping.getNextBase();
 		int[] swapInfoArray = haplotypeModel.swapHaplotypeSingleBase(hapIndex, posChar);
 		
 		haplotypeModel.storeOperationRecord(OP, swapInfoArray);

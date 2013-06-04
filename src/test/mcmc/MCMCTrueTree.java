@@ -122,7 +122,7 @@ public class MCMCTrueTree {
 		
 		// Operators
 		OperatorSchedule schedule = new SimpleOperatorSchedule();
-		schedule = MCMCUtils.defalutOperators(schedule, haplotypeModel, freqs, kappa, popSize);
+		schedule.addOperators(MCMCUtils.defalutOperators(haplotypeModel, freqs, kappa, popSize));
 //		schedule = defalutTreeOperators(schedule, treeModel);
 		Parameter rootHeight = treeModel.getRootHeightParameter();
 		
@@ -199,11 +199,11 @@ public class MCMCTrueTree {
 
 	private static MCMCOptions setMCMCOptions(int logInterval) {
 		MCMCOptions options = new MCMCOptions();
-		options.setChainLength(logInterval * 5);;
+		options.setChainLength(logInterval * 300);;
 		options.setUseCoercion(true); // autoOptimize = true
 		options.setCoercionDelay(logInterval * 2);
 		options.setTemperature(1.0);
-		options.setFullEvaluationCount(logInterval*2);
+		options.setFullEvaluationCount(logInterval*0);
 
 		return options;
 	}

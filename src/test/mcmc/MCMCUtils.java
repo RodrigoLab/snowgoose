@@ -122,103 +122,114 @@ public class MCMCUtils {
 
 		return compoundLikelihoods;
 	}
-
-	public static OperatorSchedule defalutOperators(
-			OperatorSchedule schedule, HaplotypeModel haplotypeModel,
+	private static final double opTiny = 0.1;
+	private static final double opSmall = 3;
+	private static final double opMed = 10;
+	private static final double opLarge = 40;
+	private static final double opHuge = 300;
+	
+	public static ArrayList<MCMCOperator> defalutOperators(HaplotypeModel haplotypeModel,
 			Parameter... parameters) {
 
 		MCMCOperator operator;
+		ArrayList<MCMCOperator> OperatorList = new ArrayList<MCMCOperator>();
 
 		// operator = new SingleBaseOperator(haplotypeModel,0);
 		// operator.setWeight(1.0);
-		// schedule.addOperator(operator);
+		// OperatorList.add(operator);
 
 		// operator = new SingleBaseUniformOperator(haplotypeModel,0);
 		// operator.setWeight(1);
-		// schedule.addOperator(operator);
+		// OperatorList.add(operator);
 		//
 		operator = new SwapBasesMultiOperator(haplotypeModel, 12, CoercionMode.COERCION_ON);
-		operator.setWeight(15);
-		schedule.addOperator(operator);
+		operator.setWeight(opLarge);
+		OperatorList.add(operator);
 
 		operator = new SwapBasesUniformOperator(haplotypeModel, 12, CoercionMode.COERCION_ON);
-		operator.setWeight(30);
-		schedule.addOperator(operator);
+		operator.setWeight(opLarge);
+		OperatorList.add(operator);
 
 		operator = new SwapBasesEmpiricalOperator(haplotypeModel, 3, CoercionMode.COERCION_ON);
-		operator.setWeight(15);
-		schedule.addOperator(operator);
+		operator.setWeight(opMed);
+		OperatorList.add(operator);
 
 //		operator = new HaplotypeRecombinationOperator(haplotypeModel, 12);
 //		operator.setWeight(3.0);
-//		schedule.addOperator(operator);
+//		OperatorList.add(operator);
 
 		operator = new HaplotypeSwapSectionOperator(haplotypeModel, 12, CoercionMode.COERCION_ON);
-		operator.setWeight(3.0);
-		schedule.addOperator(operator);
+		operator.setWeight(opSmall);
+		OperatorList.add(operator);
 		
 		for (Parameter parameter : parameters) {
 			String parameterName = parameter.getParameterName();
 			
 			if("kappa".equals(parameterName)){
 				operator = new ScaleOperator(parameter, 0.75);
-				operator.setWeight(0.1);
-				schedule.addOperator(operator);
+				operator.setWeight(opTiny);
+				OperatorList.add(operator);
 			}
 			else if("frequency".equals(parameterName)){
 				operator = new DeltaExchangeOperator(parameter, new int[] { 1,
 						1, 1, 1 }, 0.01, 0.1, false, CoercionMode.COERCION_ON);
-				operator.setWeight(0.1);
-				schedule.addOperator(operator);
+				operator.setWeight(opTiny);
+				OperatorList.add(operator);
 			}
 			else if("populationSize".equals(parameterName)){
 				operator = new ScaleOperator(parameter, 0.75);
-				operator.setWeight(1);
-				schedule.addOperator(operator);
+				operator.setWeight(opTiny);
+				OperatorList.add(operator);
 			}
 			
 		}
 		
-		return schedule;
+		return OperatorList;
 	}
 
 	
-	public static OperatorSchedule defalutTreeOperators(
-			OperatorSchedule schedule, TreeModel treeModel) {
+	public static List<MCMCOperator> defalutTreeOperators(TreeModel treeModel) {
 
 		MCMCOperator operator;
-
+		List<MCMCOperator> OperatorList = new ArrayList<MCMCOperator>();
+		
 		Parameter allInternalHeights = treeModel.createNodeHeightsParameter(true, true, false);
 		operator = new UpDownOperator(
 				null,// new Scalable[] { new Scalable.Default(rateParameter) },
 				new Scalable[] { new Scalable.Default(allInternalHeights) },
 				0.75, 3.0, CoercionMode.COERCION_ON);
-		schedule.addOperator(operator);
+		operator.setWeight(opSmall);
+		OperatorList.add(operator);
 
 		Parameter rootHeight = treeModel.getRootHeightParameter();
 		rootHeight.setId("TREE_HEIGHT");
 		operator = new ScaleOperator(rootHeight, 0.75);
-		operator.setWeight(3.0);
-		schedule.addOperator(operator);
+		operator.setWeight(opSmall);
+		OperatorList.add(operator);
 
 		Parameter internalHeights = treeModel.createNodeHeightsParameter(false, true, false);
 		operator = new UniformOperator(internalHeights, 30.0);
-		schedule.addOperator(operator);
+		operator.setWeight(opMed);
+		OperatorList.add(operator);
 
 		operator = new SubtreeSlideOperator(treeModel, 15.0, 1.0, true, false,
 				false, false, CoercionMode.COERCION_ON);
-		schedule.addOperator(operator);
+		operator.setWeight(opMed);
+		OperatorList.add(operator);
 
 		operator = new ExchangeOperator(ExchangeOperator.NARROW, treeModel, 15.0);
-		schedule.addOperator(operator);
+		operator.setWeight(opMed);
+		OperatorList.add(operator);
 
 		operator = new ExchangeOperator(ExchangeOperator.WIDE, treeModel, 3.0);
-		schedule.addOperator(operator);
+		operator.setWeight(opSmall);
+		OperatorList.add(operator);
 
 		operator = new WilsonBalding(treeModel, 3.0);
-		schedule.addOperator(operator);
+		operator.setWeight(opSmall);
+		OperatorList.add(operator);
 
-		return schedule;
+		return OperatorList;
 	}
 
 	public static MCLogger addToLogger(MCLogger mcLogger,

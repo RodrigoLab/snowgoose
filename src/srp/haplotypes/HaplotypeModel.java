@@ -384,17 +384,7 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 		fireModelChanged();
 	}
 
-	public int[] getNextBase(){
-		return aMap.getNextBase();
-	}
 
-	public int[] getNextBaseUniform() {
-		return aMap.getNextBaseUniform();
-	}
-	
-	public int[] getNextBaseEmpirical(){
-		return aMap.getNextBaseEmpirical();
-	}
 	
 	public AlignmentMapping getAlignmentMapping() {
 		return aMap;

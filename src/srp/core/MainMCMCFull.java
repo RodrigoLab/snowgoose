@@ -31,6 +31,7 @@ import dr.inference.mcmc.MCMC;
 import dr.inference.mcmc.MCMCOptions;
 import dr.inference.model.Likelihood;
 import dr.inference.model.Parameter;
+import dr.inference.operators.MCMCOperator;
 import dr.inference.operators.OperatorSchedule;
 import dr.inference.operators.SimpleOperatorSchedule;
 import dr.inferencexml.model.CompoundLikelihoodParser;
@@ -41,23 +42,23 @@ public class MainMCMCFull {
 
 //		String dataDir = "/home/sw167/workspace/ABI/data/";
 //		int totalSamples = 5;
-		
+//		int logInterval = 1000;
 		String dataDir = args[0];
-		int totalSamples = Integer.parseInt(args[1]);
+		int index = Integer.parseInt(args[1]);
+		int totalSamples = Integer.parseInt(args[2]);
+		int logInterval = Integer.parseInt(args[3]);
 		
-		String shortReadFile = "H7Srp.fasta";
-		String trueHaplotypeFile = "H7Srp_fullHaplotype.fasta";
+		String shortReadFile = "H7_"+index+"_Srp.fasta";
+		String trueHaplotypeFile = "H7_"+index+"_Srp_fullHaplotype.fasta";
 		
-		String prefix = dataDir+"FullTree_H7";
+		String prefix = dataDir+"FullTree_H7_"+index;
 		String logTracerName = prefix+".log";
 		String logTreeName = prefix+".trees";
 		String logHaplotypeName = prefix+".haplatype";
 		String operatorAnalysisFile = prefix+"_operatorAnalysisFile.txt";
 		
 		int numberOfHaplotype = 7;
-		int logInterval = 1000;
 		
-
 		DataImporter dataImporter = new DataImporter(dataDir);
 
 		Alignment shortReads = dataImporter.importAlignment(shortReadFile);
@@ -82,7 +83,7 @@ public class MainMCMCFull {
 		Parameter rateParameter = new Parameter.Default(StrictClockBranchRates.RATE, 1e-5, 0, 1);
 		StrictClockBranchRates branchRateModel = new StrictClockBranchRates(rateParameter);
 		// sub model
-		Parameter freqs = new Parameter.Default("Frequency", haplotypeModel.getStateFrequencies());
+		Parameter freqs = new Parameter.Default("frequency", haplotypeModel.getStateFrequencies());
 		
 		// treeLikelihood
 		Parameter kappa = new Parameter.Default(HKYParser.KAPPA, 1.0, 0, 100.0);
@@ -103,10 +104,20 @@ public class MainMCMCFull {
 		
 		// Operators
 		OperatorSchedule schedule = new SimpleOperatorSchedule();
-		schedule = MCMCUtils.defalutOperators(schedule, haplotypeModel, freqs, kappa, popSize);
-		schedule = MCMCUtils.defalutTreeOperators(schedule, treeModel);
+		ArrayList<MCMCOperator> defalutOperatorsList = MCMCUtils.defalutOperators(haplotypeModel, freqs, kappa, popSize);
+		schedule.addOperators(defalutOperatorsList);
+		schedule.addOperators(MCMCUtils.defalutTreeOperators(treeModel));
 		Parameter rootHeight = treeModel.getRootHeightParameter();
 		
+		int total = 0;
+		for (int i = 0; i < schedule.getOperatorCount(); i++) {
+			MCMCOperator operator = schedule.getOperator(i);
+			total += operator.getWeight() ;
+		}
+		System.out.println("totalWeight: "+total);
+		
+		
+		// MCLogger
 		MCLogger[] loggers = new MCLogger[4];
 		
 		loggers[0] = new MCLogger(logTracerName, logInterval, false, 0);
@@ -119,7 +130,8 @@ public class MainMCMCFull {
 
 		loggers[1] = new MCLogger(new TabDelimitedFormatter(System.out), logInterval, true, logInterval*2);
 		MCMCUtils.addToLogger(loggers[1], posterior, prior, likelihood, shortReadLikelihood,
-				popSize
+				popSize, kappa, coalescent, 
+				rootHeight
 				);
 		
 		TabDelimitedFormatter treeFormatter = new TabDelimitedFormatter(
@@ -143,7 +155,6 @@ public class MainMCMCFull {
 
 		System.out.println(mcmc.getTimer().toString());
 		
-
 	}
 
 	private static MCMCOptions setMCMCOptions(int logInterval, int totalSamples) {

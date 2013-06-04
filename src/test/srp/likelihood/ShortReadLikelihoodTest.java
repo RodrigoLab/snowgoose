@@ -336,7 +336,7 @@ public class ShortReadLikelihoodTest {
 
 	
 
-	@Test
+//	@Test
 	public void testCalculateLikelihoodTime() throws Exception {
 		String[] seqs = new String[]{
 				"AAAAAATTTTT.........",

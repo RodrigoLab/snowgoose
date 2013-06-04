@@ -1,5 +1,6 @@
 package srp.haplotypes.operator;
 
+import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.HaplotypeModel;
 import dr.inference.operators.AbstractCoercableOperator;
 import dr.inference.operators.CoercionMode;
@@ -15,15 +16,17 @@ public abstract class AbstractSwapBasesOperator  extends AbstractCoercableOperat
 	protected double autoOptimize;
 	protected double scaleFactor;
 
-	protected int[][] allPosChars; 
+	protected int[][] allPosChars;
+	protected AlignmentMapping alignmentMapping; 
 	
 	public AbstractSwapBasesOperator(HaplotypeModel haplotypeModel, int swapLength, CoercionMode mode) {
 		super(mode);
 		
 		this.haplotypeModel = haplotypeModel;
-		this.haplotypeLength = this.haplotypeModel.getHaplotypeLength();
-		this.haplotypeCount  = this.haplotypeModel.getHaplotypeCount();
-
+		haplotypeLength = this.haplotypeModel.getHaplotypeLength();
+		haplotypeCount  = this.haplotypeModel.getHaplotypeCount();
+		alignmentMapping = this.haplotypeModel.getAlignmentMapping();
+		
 		allPosChars = new int[2][haplotypeLength];
 		
 		if (swapLength < 1){
