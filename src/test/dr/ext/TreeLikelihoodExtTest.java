@@ -201,7 +201,7 @@ public class TreeLikelihoodExtTest {
 
 		String trueAlignmentFile = "H6_haplotypes.phyml";
 		String phylogenyFile = "H6_haplotypes.tree";
-		String shortReadFile = "H6_srp_300.fasta";
+		String shortReadFile = "H6_srp.fasta";
 		
 		DataImporter dataImporter = new DataImporter(dataDir);
 		

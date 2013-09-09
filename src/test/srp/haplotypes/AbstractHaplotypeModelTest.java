@@ -64,7 +64,7 @@ public class AbstractHaplotypeModelTest {
 	public static void setUpBeforeClass() throws Exception {
 
 		String dir = System.getProperty("user.dir")+File.separatorChar+"unittest"+File.separator;
-		srpAlignment = DataImporter.importAlignment(dir, "HaplotypesTest_10.fasta");
+		srpAlignment = DataImporter.importAlignment(dir, "HaplotypeModelTest_10.fasta");
 		aMap = new AlignmentMapping(srpAlignment);
 		
 
