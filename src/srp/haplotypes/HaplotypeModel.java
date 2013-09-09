@@ -10,6 +10,7 @@ import dr.evolution.util.Taxon;
 import dr.inference.model.Model;
 import dr.inference.model.Variable;
 import dr.inference.model.Variable.ChangeType;
+import dr.math.MathUtils;
 import dr.util.NumberFormatter;
 
 
@@ -163,17 +164,19 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 	}
 
 
-	public int[] swapHaplotypeMultiBases(int hapIndex, int[] allPosChars, int[] oldChars){
+	public void swapHaplotypeMultiBases(Operation op, int[][] allPosChars){
+		int hapIndex = MathUtils.nextInt(getHaplotypeCount());
 		
 		Haplotype haplotype = haplotypes.get(hapIndex);
 
 		for (int i = 0; i < haplotypesLength; i++) {
-			int newChar = allPosChars[i];
+			int newChar = allPosChars[0][i];
 			if(newChar>0){
-				oldChars[i] = haplotype.replaceCharAt(i, newChar);
+				allPosChars[1][i] = haplotype.replaceCharAt(i, newChar);
 			}
 		}
-		return oldChars;
+		storeOperationRecord(op, hapIndex, allPosChars);
+		
 	}
 
 	
@@ -309,6 +312,7 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 	//	
 
 	public void reject() {
+		
 		Operation op = swapInfo.getOperation();
 		int[] temp;
 		switch (op) {
@@ -317,12 +321,12 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 		case SWAPSINGLE:
 
 			temp = swapInfo.getSwapInfoSWAPBASE();
-			long time1 = System.currentTimeMillis();
+			//			long time1 = System.currentTimeMillis();
 //			for (int i = 0; i < 1e9; i++) {
-		resetHaplotypeToOldChar(temp);
+			resetHaplotypeToOldChar(temp);
 //		replaceHaplotypeCharAt(haplotypes.get(temp[0]), temp[2], temp[3]);
 //			}
-			long time2 = System.currentTimeMillis();
+//			long time2 = System.currentTimeMillis();
 //
 //			System.out.println("Single: "+(time2 - time1) + "\t");
 //			System.exit(0);
@@ -367,6 +371,7 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 			throw new IllegalArgumentException("Unknown operation type: " + op);
 
 		}
+
 
 	}
 

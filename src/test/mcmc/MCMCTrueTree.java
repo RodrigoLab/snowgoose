@@ -105,14 +105,14 @@ public class MCMCTrueTree {
 		
 		// treeLikelihood
 		Parameter kappa = new Parameter.Default(HKYParser.KAPPA, 1.0, 0, 100.0);
-		TreeLikelihoodExt treeLikelihood = MCMCUtils.setupTreeLikelihood(kappa, freqs,
+		TreeLikelihoodExt treeLikelihood = MCMCSetupHelper.setupTreeLikelihood(kappa, freqs,
 				haplotypeModel, treeModel, branchRateModel);
 
 		// ShortReadLikelihood
 		ShortReadLikelihood srpLikelihood = new ShortReadLikelihood(haplotypeModel);
 
 		// CompoundLikelihood
-		HashMap<String, Likelihood> compoundlikelihoods = MCMCUtils.setupCompoundLikelihood(
+		HashMap<String, Likelihood> compoundlikelihoods = MCMCSetupHelper.setupCompoundLikelihood(
 				popSize, kappa, coalescent, treeLikelihood, srpLikelihood);
 		
 		Likelihood prior = compoundlikelihoods.get(CompoundLikelihoodParser.PRIOR);
@@ -122,7 +122,7 @@ public class MCMCTrueTree {
 		
 		// Operators
 		OperatorSchedule schedule = new SimpleOperatorSchedule();
-		schedule.addOperators(MCMCUtils.defalutOperators(haplotypeModel, freqs, kappa, popSize));
+		schedule.addOperators(MCMCSetupHelper.defalutOperators(haplotypeModel, freqs, kappa, popSize));
 //		schedule = defalutTreeOperators(schedule, treeModel);
 		Parameter rootHeight = treeModel.getRootHeightParameter();
 		
@@ -134,7 +134,7 @@ public class MCMCTrueTree {
 //		loggers[0] = new MCLogger(formatter, logInterval, false);
 		
 		loggers[0] = new MCLogger(logTracerName, logInterval, false, 0);
-		MCMCUtils.addToLogger(loggers[0], posterior, prior, likelihood, shortReadLikelihood,
+		MCMCSetupHelper.addToLogger(loggers[0], posterior, prior, likelihood, shortReadLikelihood,
 				rootHeight, 
 				//rateParameter,
 				popSize, kappa, coalescent,
@@ -142,7 +142,7 @@ public class MCMCTrueTree {
 				);
 
 		loggers[1] = new MCLogger(new TabDelimitedFormatter(System.out), logInterval, true, logInterval*2);
-		MCMCUtils.addToLogger(loggers[1], posterior, prior, likelihood, shortReadLikelihood,
+		MCMCSetupHelper.addToLogger(loggers[1], posterior, prior, likelihood, shortReadLikelihood,
 				popSize, kappa, coalescent, 
 				rootHeight
 				);
@@ -158,8 +158,7 @@ public class MCMCTrueTree {
 		
 		// MCMC
 		
-		MCMCOptions options = setMCMCOptions(logInterval);
-		
+		MCMCOptions options = MCMCSetupHelper.setMCMCOptions(logInterval);
 		MCMC mcmc = new MCMC("mcmc1");
 		mcmc.setShowOperatorAnalysis(true);
 		mcmc.setOperatorAnalysisFile(new File(operatorAnalysisFile));
@@ -197,15 +196,6 @@ public class MCMCTrueTree {
 
 	}
 
-	private static MCMCOptions setMCMCOptions(int logInterval) {
-		MCMCOptions options = new MCMCOptions();
-		options.setChainLength(logInterval * 300);;
-		options.setUseCoercion(true); // autoOptimize = true
-		options.setCoercionDelay(logInterval * 2);
-		options.setTemperature(1.0);
-		options.setFullEvaluationCount(logInterval*0);
 
-		return options;
-	}
 
 }

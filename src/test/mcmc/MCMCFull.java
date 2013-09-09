@@ -87,13 +87,11 @@ public class MCMCFull {
 		// coalescent
 		Parameter popSize = new Parameter.Default(ConstantPopulationModelParser.POPULATION_SIZE, 3000.0, 100, 100000.0);
 
-//		 Random treeModel
+		//	Random treeModel
 		ConstantPopulationModel startingTree = new ConstantPopulationModel(popSize, Units.Type.YEARS);
-		ConstantPopulation constant = (ConstantPopulation) startingTree.getDemographicFunction();
-		CoalescentSimulator simulator = new CoalescentSimulator();
-		Tree tree = simulator.simulateTree(haplotypeModel, constant);
-		TreeModel treeModel = new TreeModel(tree);// treeModel
+		TreeModel treeModel = MCMCSetupHelper.setupRandomTreeModel(startingTree, haplotypeModel, Units.Type.YEARS);
 
+		// Coalescent likelihood
 		CoalescentLikelihood coalescent = new CoalescentLikelihood(treeModel,null, new ArrayList<TaxonList>(), startingTree);
 		coalescent.setId("coalescent");
 
@@ -101,19 +99,20 @@ public class MCMCFull {
 		// clock model
 		Parameter rateParameter = new Parameter.Default(StrictClockBranchRates.RATE, 1e-5, 0, 1);
 		StrictClockBranchRates branchRateModel = new StrictClockBranchRates(rateParameter);
+		
 		// sub model
 		Parameter freqs = new Parameter.Default("frequency", haplotypeModel.getStateFrequencies());
 		
 		// treeLikelihood
 		Parameter kappa = new Parameter.Default(HKYParser.KAPPA, 1.0, 0, 100.0);
-		TreeLikelihoodExt treeLikelihood = MCMCUtils.setupTreeLikelihood(kappa, freqs,
+		TreeLikelihoodExt treeLikelihood = MCMCSetupHelper.setupTreeLikelihood(kappa, freqs,
 				haplotypeModel, treeModel, branchRateModel);
 
 		// ShortReadLikelihood
 		ShortReadLikelihood srpLikelihood = new ShortReadLikelihood(haplotypeModel);
 
 		// CompoundLikelihood
-		HashMap<String, Likelihood> compoundlikelihoods = MCMCUtils.setupCompoundLikelihood(
+		HashMap<String, Likelihood> compoundlikelihoods = MCMCSetupHelper.setupCompoundLikelihood(
 				popSize, kappa, coalescent, treeLikelihood, srpLikelihood);
 		
 		Likelihood prior = compoundlikelihoods.get(CompoundLikelihoodParser.PRIOR);
@@ -123,9 +122,9 @@ public class MCMCFull {
 		
 		// Operators
 		OperatorSchedule schedule = new SimpleOperatorSchedule();
-		ArrayList<MCMCOperator> defalutOperatorsList = MCMCUtils.defalutOperators(haplotypeModel, freqs, kappa, popSize);
+		List<MCMCOperator> defalutOperatorsList = MCMCSetupHelper.defalutOperators(haplotypeModel, freqs, kappa, popSize);
 		schedule.addOperators(defalutOperatorsList);
-		schedule.addOperators(MCMCUtils.defalutTreeOperators(treeModel));
+		schedule.addOperators(MCMCSetupHelper.defalutTreeOperators(treeModel));
 		Parameter rootHeight = treeModel.getRootHeightParameter();
 		
 		int total = 0;
@@ -140,7 +139,7 @@ public class MCMCFull {
 		MCLogger[] loggers = new MCLogger[4];
 		
 		loggers[0] = new MCLogger(logTracerName, logInterval, false, 0);
-		MCMCUtils.addToLogger(loggers[0], posterior, prior, likelihood, shortReadLikelihood,
+		MCMCSetupHelper.addToLogger(loggers[0], posterior, prior, likelihood, shortReadLikelihood,
 				rootHeight, 
 				//rateParameter,
 				popSize, kappa, coalescent,
@@ -148,7 +147,7 @@ public class MCMCFull {
 				);
 
 		loggers[1] = new MCLogger(new TabDelimitedFormatter(System.out), logInterval, true, logInterval*2);
-		MCMCUtils.addToLogger(loggers[1], posterior, prior, likelihood, shortReadLikelihood,
+		MCMCSetupHelper.addToLogger(loggers[1], posterior, prior, likelihood, shortReadLikelihood,
 				popSize, kappa, coalescent, 
 				rootHeight
 				);
@@ -163,7 +162,7 @@ public class MCMCFull {
 		loggers[3] = new HaplotypeLoggerWithTrueHaplotype(haplotypeModel, trueAlignment, logHaplotypeName, logInterval*10);
 		
 		// MCMC
-		MCMCOptions options = setMCMCOptions(logInterval);
+		MCMCOptions options = MCMCSetupHelper.setMCMCOptions(logInterval);
 		
 		MCMC mcmc = new MCMC("mcmc1");
 		mcmc.setShowOperatorAnalysis(true);
@@ -175,17 +174,6 @@ public class MCMCFull {
 		System.out.println(mcmc.getTimer().toString());
 		
 
-	}
-
-	private static MCMCOptions setMCMCOptions(int logInterval) {
-		MCMCOptions options = new MCMCOptions();
-		options.setChainLength(logInterval * 500);;
-		options.setUseCoercion(false); // autoOptimize = true
-		options.setCoercionDelay(logInterval * 2);
-		options.setTemperature(1.0);
-		options.setFullEvaluationCount(logInterval*0);
-
-		return options;
 	}
 
 }

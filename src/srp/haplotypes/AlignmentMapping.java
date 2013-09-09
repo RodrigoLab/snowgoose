@@ -260,8 +260,6 @@ public class AlignmentMapping {
 //	}
 //	
 
-	private int[] posChar = new int[2];
-
 	public int[] getNextBaseEmpirical() {
 
 		posChar[0] = MathUtils.nextInt(haplotypeLength);
@@ -276,4 +274,8 @@ public class AlignmentMapping {
 		posChar[1] = GAP;
 		return posChar;
 	}
+	
+
+	private int[] posChar = new int[2];
+
 }

@@ -10,7 +10,7 @@ import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.HaplotypeLoggerWithTrueHaplotype;
 import srp.haplotypes.HaplotypeModel;
 import srp.likelihood.ShortReadLikelihood;
-import test.mcmc.MCMCUtils;
+import test.mcmc.MCMCSetupHelper;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.coalescent.CoalescentSimulator;
 import dr.evolution.coalescent.ConstantPopulation;
@@ -44,26 +44,28 @@ public class MainMCMCFull {
 //		int totalSamples = 5;
 //		int logInterval = 1000;
 		String dataDir = args[0];
-		int index = Integer.parseInt(args[1]);
+		int runIndex = Integer.parseInt(args[1]);
 		int totalSamples = Integer.parseInt(args[2]);
 		int logInterval = Integer.parseInt(args[3]);
+		int noOfHaplotype = Integer.parseInt(args[4]);
 		
-		String shortReadFile = "H7_"+index+"_Srp.fasta";
-		String trueHaplotypeFile = "H7_"+index+"_Srp_fullHaplotype.fasta";
+		String hapRunIndex = "H"+noOfHaplotype+"_"+runIndex;
+		String shortReadFile = hapRunIndex +"_Srp.fasta";
+		String trueHaplotypeFile = hapRunIndex +"_Srp_fullHaplotype.fasta";
 		
-		String prefix = dataDir+"FullTree_H7_"+index;
+		String prefix = dataDir+"FullTree_"+hapRunIndex;
 		String logTracerName = prefix+".log";
 		String logTreeName = prefix+".trees";
 		String logHaplotypeName = prefix+".haplatype";
 		String operatorAnalysisFile = prefix+"_operatorAnalysisFile.txt";
 		
-		int numberOfHaplotype = 7;
+		
 		
 		DataImporter dataImporter = new DataImporter(dataDir);
 
 		Alignment shortReads = dataImporter.importAlignment(shortReadFile);
 		AlignmentMapping alignmentMapping = new AlignmentMapping(shortReads);
-		HaplotypeModel haplotypeModel = new HaplotypeModel(alignmentMapping, numberOfHaplotype);
+		HaplotypeModel haplotypeModel = new HaplotypeModel(alignmentMapping, noOfHaplotype);
 
 		// coalescent
 		Parameter popSize = new Parameter.Default(ConstantPopulationModelParser.POPULATION_SIZE, 3000.0, 100, 100000.0);
@@ -87,14 +89,14 @@ public class MainMCMCFull {
 		
 		// treeLikelihood
 		Parameter kappa = new Parameter.Default(HKYParser.KAPPA, 1.0, 0, 100.0);
-		TreeLikelihoodExt treeLikelihood = MCMCUtils.setupTreeLikelihood(kappa, freqs,
+		TreeLikelihoodExt treeLikelihood = MCMCSetupHelper.setupTreeLikelihood(kappa, freqs,
 				haplotypeModel, treeModel, branchRateModel);
 
 		// ShortReadLikelihood
 		ShortReadLikelihood srpLikelihood = new ShortReadLikelihood(haplotypeModel);
 
 		// CompoundLikelihood
-		HashMap<String, Likelihood> compoundlikelihoods = MCMCUtils.setupCompoundLikelihood(
+		HashMap<String, Likelihood> compoundlikelihoods = MCMCSetupHelper.setupCompoundLikelihood(
 				popSize, kappa, coalescent, treeLikelihood, srpLikelihood);
 		
 		Likelihood prior = compoundlikelihoods.get(CompoundLikelihoodParser.PRIOR);
@@ -104,9 +106,9 @@ public class MainMCMCFull {
 		
 		// Operators
 		OperatorSchedule schedule = new SimpleOperatorSchedule();
-		ArrayList<MCMCOperator> defalutOperatorsList = MCMCUtils.defalutOperators(haplotypeModel, freqs, kappa, popSize);
+		ArrayList<MCMCOperator> defalutOperatorsList = MCMCSetupHelper.defalutOperators(haplotypeModel, freqs, kappa, popSize);
 		schedule.addOperators(defalutOperatorsList);
-		schedule.addOperators(MCMCUtils.defalutTreeOperators(treeModel));
+		schedule.addOperators(MCMCSetupHelper.defalutTreeOperators(treeModel));
 		Parameter rootHeight = treeModel.getRootHeightParameter();
 		
 		int total = 0;
@@ -121,7 +123,7 @@ public class MainMCMCFull {
 		MCLogger[] loggers = new MCLogger[4];
 		
 		loggers[0] = new MCLogger(logTracerName, logInterval, false, 0);
-		MCMCUtils.addToLogger(loggers[0], posterior, prior, likelihood, shortReadLikelihood,
+		MCMCSetupHelper.addToLogger(loggers[0], posterior, prior, likelihood, shortReadLikelihood,
 				rootHeight, 
 				//rateParameter,
 				popSize, kappa, coalescent,
@@ -129,7 +131,7 @@ public class MainMCMCFull {
 				);
 
 		loggers[1] = new MCLogger(new TabDelimitedFormatter(System.out), logInterval, true, logInterval*2);
-		MCMCUtils.addToLogger(loggers[1], posterior, prior, likelihood, shortReadLikelihood,
+		MCMCSetupHelper.addToLogger(loggers[1], posterior, prior, likelihood, shortReadLikelihood,
 				popSize, kappa, coalescent, 
 				rootHeight
 				);

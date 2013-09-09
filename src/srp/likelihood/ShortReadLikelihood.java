@@ -115,12 +115,6 @@ public class ShortReadLikelihood extends AbstractModelLikelihood {
 		eachSrpLikelihood = new double[srpCount];
 		storedEachSrpLikelihood = new double[srpCount];
 
-		
-
-
-
-		
-
 		logBinomialDesnity = new HashMap<Integer, double[]>();
 		scaledLogBinomialDesnity = new HashMap<Integer, double[]>();
 		
@@ -176,10 +170,10 @@ public class ShortReadLikelihood extends AbstractModelLikelihood {
 	
 	protected double calculateLogLikelihood() {
 		Operation op = haplotypeModel.getOperation();
-		return calculateLogLikelihoodSelect(op);
-	}
-
-	public double calculateLogLikelihoodSelect(Operation op){
+//		return calculateLogLikelihoodSelect(op);
+//	}
+//
+//	public double calculateLogLikelihoodSelect(Operation op){
 
 		double logLikelihood = Double.NEGATIVE_INFINITY;
 
@@ -258,9 +252,14 @@ public class ShortReadLikelihood extends AbstractModelLikelihood {
 			eachSrpLikelihood[i] = liS.getLogLikelihood();
 			
 
-		}	
-
+		}
 		double logLikelihood = StatUtils.sum(eachSrpLikelihood);
+		
+//for (int i = 0; i < srpCount; i++) {
+//	System.out.println(Arrays.toString(allDists[i]));
+//}
+//System.out.println("==");
+
 //		double logLikelihood2 = calculateSrpLikelihoodFull();
 //		if(logLikelihood != logLikelihood2){
 //			System.out.println(logLikelihood +"\t"+ logLikelihood2 +"\t"+ (logLikelihood-logLikelihood2));
@@ -282,7 +281,7 @@ public class ShortReadLikelihood extends AbstractModelLikelihood {
 		ArrayList<Integer> mapPos = aMap.getMapToSrp(swapPos);
 		
 		for (int srpIndex : mapPos) {
-System.out.println(srpIndex +"\t"+  hapIndex+"\t"+  swapPos+"\t"+  newChar+"\t"+  oldChar);
+
 			calLikeliSrpHapSingle(srpIndex, hapIndex, swapPos, newChar, oldChar);
 		}	
 //		}
@@ -399,21 +398,6 @@ System.out.println(srpIndex +"\t"+  hapIndex+"\t"+  swapPos+"\t"+  newChar+"\t"+
 		return logLikelihood;
 	}
 	
-	private static int calculateDeltaDist(int srpChar, int newChar, int oldChar){//, boolean isHapEqualNew){
-
-		int deltaDist = 0;
-		if(newChar!= oldChar){ // if(newChar!= oldChar && isHapEqualNew)
-			if (srpChar==newChar){
-				deltaDist = -1;
-			}
-			else if(srpChar==oldChar){
-				deltaDist = 1;
-			}
-		}
-		return deltaDist;
-		
-	}
-
 	private void calLikeliSrpHapSingle(int srpIndex, int hapIndex, int swapPos, 
 			int newChar, int oldChar){
 
@@ -424,13 +408,14 @@ System.out.println(srpIndex +"\t"+  hapIndex+"\t"+  swapPos+"\t"+  newChar+"\t"+
 
 		ShortRead srp = aMap.getShortRead(srpIndex);
 		int srpChar = srp.getFullSrpCharAt(swapPos);
+//		System.out.println(srpIndex +"\t"+  hapIndex+"\t"+  swapPos+"\t"+  srpChar +"\t"+newChar+"\t"+  oldChar );
 		int deltaDist = calculateDeltaDist(srpChar, newChar, oldChar);
 
 		if (deltaDist!= 0){
 			double[] logPD = scaledLogBinomialDesnity.get(srp.getLength());
 
 			int newDist = storedAllDists[srpIndex][hapIndex] + deltaDist;
-	
+//			System.out.println(storedAllDists[srpIndex][hapIndex] +"\t"+ deltaDist +"\t"+ newChar +"\t"+ oldChar +"\t"+ srpChar);
 			allDists[srpIndex][hapIndex] = newDist;
 	
 			liS.reset();		
@@ -444,6 +429,23 @@ System.out.println(srpIndex +"\t"+  hapIndex+"\t"+  swapPos+"\t"+  newChar+"\t"+
 	}
 	
 	
+	private static int calculateDeltaDist(int srpChar, int newChar, int oldChar){//, boolean isHapEqualNew){
+	
+		int deltaDist = 0;
+	
+		if(newChar!= oldChar){ // if(newChar!= oldChar && isHapEqualNew)
+			if (srpChar==newChar){
+				deltaDist = -1;
+			}
+			else if(srpChar==oldChar){
+				deltaDist = 1;
+			}
+		}
+//		System.out.println(deltaDist +"\t"+ newChar +"\t"+ oldChar +"\t"+ srpChar);
+		return deltaDist;
+		
+	}
+
 	@Override
 	protected void handleModelChangedEvent(Model model, Object object, int index) {
         if (model == haplotypeModel) {

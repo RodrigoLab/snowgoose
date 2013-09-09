@@ -17,7 +17,7 @@ public class SwapBasesEmpiricalOperator extends AbstractSwapBasesOperator {
 
 
 	public final static String OPERATOR_NAME = SwapBasesEmpiricalOperator.class.getSimpleName();
-	public final static Operation OP = Operation.SWAPMULTI;
+	
 
 	
 
@@ -46,31 +46,21 @@ public class SwapBasesEmpiricalOperator extends AbstractSwapBasesOperator {
 		return OPERATOR_NAME;
 	}
 
-
 	@Override
 	public double doOperation() throws OperatorFailedException {
 
 		haplotypeModel.startHaplotypeOperation();
+		resetAllPosChars();
 
-		for (int i = 0; i < allPosChars.length; i++) {
-			Arrays.fill(allPosChars[i], -1);
-		}
 		for (int i = 0; i < swapLength; i++) {
 			int[] posChar = alignmentMapping.getNextBaseEmpirical();
 			allPosChars[0][posChar[0]] = posChar[1];
 		}
-		
-		int hapIndex = MathUtils.nextInt(haplotypeCount);
-		haplotypeModel.swapHaplotypeMultiBases(hapIndex, allPosChars[0], allPosChars[1]);
-
-		haplotypeModel.storeOperationRecord(OP, hapIndex, allPosChars);
+		haplotypeModel.swapHaplotypeMultiBases(OP, allPosChars);
 
 		haplotypeModel.endHaplotypeOperation();
-		
-		
 
-		
-		
 		return 0.0;
 	}
+
 }

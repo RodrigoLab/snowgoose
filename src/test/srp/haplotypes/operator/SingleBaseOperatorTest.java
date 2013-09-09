@@ -72,7 +72,7 @@ public class SingleBaseOperatorTest {
 	}
 
 	@Test
-	public void testDoOperation() throws OperatorFailedException {
+	public void testDoOperationReject() throws OperatorFailedException {
 		String[] seqs = new String[]{
 				"GGGGGGGGGGGGG.....",
 				".....CCCCCCCCCCCCCCCCCCCCCCCCCCC....",
@@ -107,6 +107,7 @@ public class SingleBaseOperatorTest {
 		}
 
 	}
+
 	@Test
 	public void testDoOperationMCMC() {
 		String[] seqs = new String[]{

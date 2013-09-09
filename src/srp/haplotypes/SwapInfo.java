@@ -12,20 +12,15 @@ public class SwapInfo {
 	*/
 
 	private Operation operation;
+	private int hapIndex;
 	
 	private int[] swapBase;// hapIndex, posIndex, newChar, oldChar
-
 	private int[] swapHaplotypeRecord;
-
-	private int hapIndex;
 	private int[][] allPosChars;
 	
 	public SwapInfo() {
 		operation = Operation.NONE;
-//		Operation a = Operation.SWAPBASE;
-//		Operation swapbase = Operation.SWAPBASE;
-//		Oper
-//		Operation.valueOf(arg0)
+
 	}
 	
 	public Operation getOperation(){

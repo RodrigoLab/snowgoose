@@ -17,7 +17,7 @@ public class SwapBasesMultiOperator extends AbstractSwapBasesOperator {
 
 
 	public final static String OPERATOR_NAME = SwapBasesMultiOperator.class.getSimpleName();
-	public final static Operation OP = Operation.SWAPMULTI;
+//	public final static Operation OP = Operation.SWAPMULTI;
 
 	
 
@@ -50,21 +50,17 @@ public class SwapBasesMultiOperator extends AbstractSwapBasesOperator {
 	public double doOperation() throws OperatorFailedException {
 
 		haplotypeModel.startHaplotypeOperation();
-
-		for (int i = 0; i < allPosChars.length; i++) {
-			Arrays.fill(allPosChars[i], -1);
-		}
+		resetAllPosChars();
+		
 		for (int i = 0; i < swapLength; i++) {
 			int[] posChar = alignmentMapping.getNextBase();
 			allPosChars[0][posChar[0]] = posChar[1];
 		}
-		
-		int hapIndex = MathUtils.nextInt(haplotypeCount);
-		haplotypeModel.swapHaplotypeMultiBases(hapIndex, allPosChars[0], allPosChars[1]);
-
-		haplotypeModel.storeOperationRecord(OP, hapIndex, allPosChars);
+		haplotypeModel.swapHaplotypeMultiBases(OP, allPosChars);
 
 		haplotypeModel.endHaplotypeOperation();
+
 		return 0.0;
 	}
+
 }

@@ -1,12 +1,17 @@
 package srp.haplotypes.operator;
 
+import java.util.Arrays;
+
 import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.HaplotypeModel;
+import srp.haplotypes.Operation;
 import dr.inference.operators.AbstractCoercableOperator;
 import dr.inference.operators.CoercionMode;
 
 public abstract class AbstractSwapBasesOperator  extends AbstractCoercableOperator {
 
+	public final static Operation OP = Operation.SWAPMULTI;
+	
 	protected final int haplotypeLength;
 	protected final int haplotypeCount;
 
@@ -78,5 +83,11 @@ public abstract class AbstractSwapBasesOperator  extends AbstractCoercableOperat
 			swapLength = haplotypeLength;
 		}
 	}
+	protected void resetAllPosChars() {
+		for (int i = 0; i < allPosChars.length; i++) {
+			Arrays.fill(allPosChars[i], -1);
+		}
+	}
+	
 
 }

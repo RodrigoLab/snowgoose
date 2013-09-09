@@ -16,7 +16,9 @@ import srp.core.DataImporter;
 import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.HaplotypeModel;
 import srp.haplotypes.HaplotypeModelUtils;
+import srp.haplotypes.Operation;
 import srp.haplotypes.operator.SingleBaseOperator;
+import srp.haplotypes.operator.SwapBasesUniformOperator;
 import srp.likelihood.ShortReadLikelihood;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.SitePatterns;
@@ -41,6 +43,8 @@ import dr.ext.SitePatternsExt;
 import dr.ext.TreeLikelihoodExt;
 import dr.inference.mcmc.MCMCCriterion;
 import dr.inference.model.Parameter;
+import dr.inference.operators.CoercionMode;
+import dr.inference.operators.SimpleMCMCOperator;
 
 public class TreeLikelihoodExtTest {
 
@@ -104,7 +108,7 @@ public class TreeLikelihoodExtTest {
 		
 		HaplotypeModel haplotypeModel = new HaplotypeModel(aMap, alignment);
 		ShortReadLikelihood srpLikelihood = new ShortReadLikelihood(haplotypeModel);
-		ShortReadLikelihood srpLikelihoodUpdate = new ShortReadLikelihood(haplotypeModel);
+//		ShortReadLikelihood srpLikelihoodUpdate = new ShortReadLikelihood(haplotypeModel);
 		
 		TreeModel treeModel = new TreeModel(TreeModel.TREE_MODEL, truePhylogeny, false, false);
 
@@ -118,33 +122,37 @@ public class TreeLikelihoodExtTest {
         TreeLikelihoodExt treeLikelihoodExt = new TreeLikelihoodExt(haplotypeModel, treeModel, siteModel, branchRateModel, null,
     			false, false, false, false, false);
 		// end
-    	
 
         assertEquals(treeLikelihood.getLogLikelihood(), treeLikelihoodExt.getLogLikelihood(), 0);
 		
 		
 		srpLikelihood = new ShortReadLikelihood(haplotypeModel);
 
-		SingleBaseOperator op = new SingleBaseOperator(haplotypeModel, 0);
-        for (int i = 0; i < 100; i++) {
-			op.doOperation();
+		SimpleMCMCOperator op = new SwapBasesUniformOperator(haplotypeModel, 100, CoercionMode.COERCION_OFF);
 
-//			patternsExt.updateAlignment(haplotypeModel);
-//			treeLikelihoodExt.updatePatternList(patternsExt);
+        for (int i = 0; i < 100; i++) {
+        	srpLikelihood.storeModelState();
+        	op.doOperation();
 					
-			treeLikelihoodExt.updatePatternList(haplotypeModel);
-			
-			srpLikelihoodUpdate = new ShortReadLikelihood(haplotypeModel);
-			assertEquals(srpLikelihood.getLogLikelihood(), srpLikelihoodUpdate.getLogLikelihood(), 0);
+			double likelihood = srpLikelihood.getLogLikelihood();
+			srpLikelihood.acceptModelState();
+
+			haplotypeModel.getSwapInfo().storeOperation(Operation.NONE);
+			ShortReadLikelihood srpLikelihoodUpdate = new ShortReadLikelihood(haplotypeModel);
+			double fullEvalution = srpLikelihoodUpdate.getLogLikelihood(); 
+			assertEquals(likelihood, fullEvalution, 0);
 			
 			//treeLikelihood
+			treeLikelihoodExt.updatePatternList(haplotypeModel);
 	    	patterns = new SitePatterns(haplotypeModel, null, 0, -1, 1, true);
 	    	treeLikelihood = new TreeLikelihood(patterns, treeModel, siteModel, branchRateModel, null,
 	    			false, false, true, false, false);
 
     		assertEquals(treeLikelihood.getLogLikelihood(), treeLikelihoodExt.getLogLikelihood(), 1e-8);
-		}
-        
+
+
+        }
+
 
         long time1, time2;
 		time1 = System.currentTimeMillis();
@@ -165,8 +173,6 @@ public class TreeLikelihoodExtTest {
 
 
 
-        
-        
         for (int i = 0; i < 500; i++) {
         	op.doOperation();
         }
@@ -183,22 +189,19 @@ public class TreeLikelihoodExtTest {
     			false, false, true, false, false);
 
 		assertEquals(treeLikelihood.getLogLikelihood(), treeLikelihoodExt.getLogLikelihood(), 1e-8);
-	      	
-//		srpLikelihoodUpdate = new ShortReadLikelihood(aMap, haplotypeModel);
-		//Fail atm, should pass after get ride of matrix[][]
-//		assertEquals(srpLikelihood.getLogLikelihood(), srpLikelihoodUpdate.getLogLikelihood(), 0);
-		
+	      
+	
 	}
 	
-
+	@Test
 	public void testUpdatePatternList2() throws Exception {
 		
 		
 		String dataDir = "/home/sw167/workspace/ABI/unittest/";
 
-		String trueAlignmentFile = "1110_10_org_6.phyml";
-		String phylogenyFile = "1110_10_org_6.phyml_phyml_tree.txt";
-		String shortReadFile = "1110_10_align_100.fasta";//"1110_10_align_2.fasta";
+		String trueAlignmentFile = "H6_haplotypes.phyml";
+		String phylogenyFile = "H6_haplotypes.tree";
+		String shortReadFile = "H6_srp_300.fasta";
 		
 		DataImporter dataImporter = new DataImporter(dataDir);
 		
