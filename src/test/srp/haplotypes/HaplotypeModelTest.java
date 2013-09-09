@@ -188,8 +188,11 @@ public class HaplotypeModelTest {
 			assertNotSame(haplotypeModel.getHaplotypeString(i), srpAlignment.getSequence(i));
 			assertNotEquals(haplotypeModel.getHaplotypeString(i), expectedSequences[0] );
 			assertNotSame(haplotypeModel.getHaplotypeString(i), expectedSequences[0]);
-		}	
 		
+			assertNotSame(haplotypeModel.getHaplotypeString(i), srpAlignment.getSequence(i));
+			assertNotEquals(haplotypeModel.getHaplotypeString(i), expectedSequences[0] );
+			assertNotSame(haplotypeModel.getHaplotypeString(i), expectedSequences[0]);
+		}	
 	}
 
 	

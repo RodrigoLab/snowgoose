@@ -36,7 +36,6 @@ public class Haplotype extends Sequence {
 	public void setCharAt(int index, char newChar) {
 
 		sequenceString.setCharAt(index, newChar);
-	}
 
 	public char replaceCharAt(int index, int newChar){
 		char oldChar = getChar(index);
