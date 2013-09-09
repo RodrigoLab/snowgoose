@@ -6,9 +6,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import javax.swing.text.TabableView;
+
 import dr.evolution.alignment.Alignment;
 import dr.evolution.datatype.Nucleotides;
 import dr.evolution.sequence.Sequence;
+import dr.inference.model.Parameter;
 import dr.math.MathUtils;
 
 public class AlignmentMapping {
@@ -265,6 +268,8 @@ public class AlignmentMapping {
 		posChar[0] = MathUtils.nextInt(haplotypeLength);
 		
 		double d = MathUtils.nextDouble();
+//		System.out.println("Default"+"\t"+ Arrays.toString(cumFreq));
+
 		for (int i = 0; i < cumFreq.length; i++) {
 			if (d <= cumFreq[i]) {
 				posChar[1] = VALID_CHARS[i];
@@ -277,5 +282,28 @@ public class AlignmentMapping {
 	
 
 	private int[] posChar = new int[2];
+
+
+	public int[] getNextBaseFrequency(Parameter freqs) {
+		// TODO Auto-generated method stub
+
+		posChar[0] = MathUtils.nextInt(haplotypeLength);
+		
+		double d = MathUtils.nextDouble();
+		double[] freqsValue = freqs.getParameterValues();
+		double sumFreq = 0;
+		for (int i = 0; i < freqsValue.length; i++) {
+			sumFreq += freqsValue[i];
+			if (d <= sumFreq) {
+				posChar[1] = VALID_CHARS[i];
+//				System.out.println(d +"\t"+ posChar[1] +"\t"+  sumFreq +"\t"+ Arrays.toString(freqsValue)				);
+				return posChar;
+			}
+			
+		}
+		posChar[1] = GAP;
+		return posChar;
+
+	}
 
 }

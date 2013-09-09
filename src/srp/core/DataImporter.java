@@ -2,10 +2,13 @@ package srp.core;
 
 import java.io.BufferedReader;
 import java.io.EOFException;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
+
+import com.google.common.io.Files;
 
 import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.SimpleAlignment;
@@ -30,12 +33,15 @@ public class DataImporter {
 	private String dataDir;
 	
 	public DataImporter(String dataDir){
+		if(dataDir.lastIndexOf(File.separator)!= dataDir.length()){
+			dataDir += File.separator;
+		}
 		this.dataDir = dataDir;
 	}
 	
-	public DataImporter() {
-		this.dataDir = "";
-	}
+//	public DataImporter() {
+//		this.dataDir = "";
+//	}
 
 	public Alignment importAlignment(String fileName) throws Exception{
 		

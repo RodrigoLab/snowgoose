@@ -48,17 +48,39 @@ public class HaplotypeModelUtils {
 		return sps;
 	}
 
-	private static int[][] calculateSPSCore(Alignment h1, Alignment h2){
-			int hapCount = h1.getSequenceCount();
-			int seqLength = h1.getSiteCount();
-			int sps[][] = new int[hapCount][hapCount];
-			if (seqLength != h2.getSiteCount()){
-				System.err.println("Incompariable alignments lenght: "+seqLength +" and "+  h2.getSiteCount());
+	private static int[][] calculateSPSCore(Alignment h1, Alignment h2) {
+		int sps[][];
+		int hapCount = h1.getSequenceCount();
+		int hapCount2 = h2.getSequenceCount();
+		int seqLength = h1.getSiteCount();
+
+		if (seqLength != h2.getSiteCount()) {
+			System.err.println("Incompariable alignments lenght: " + seqLength
+					+ " and " + h2.getSiteCount());
+			System.exit(-1);
+		}
+		
+		if (hapCount != hapCount2) {
+			
+			String[] s1 = new String[hapCount];
+			String[] s2 = new String[hapCount2];
+			
+			for (int i = 0; i < s1.length; i++) {
+				s1[i] = h1.getAlignedSequenceString(i);
 			}
-			if (hapCount != h2.getSequenceCount()){
-				System.err.println("Different number of haplotypes: "+hapCount +" and "+  h2.getSequenceCount());
+			for (int i = 0; i < s2.length; i++) {
+				s2[i] = h2.getAlignedSequenceString(i);
 			}
-	
+			
+			sps = new int[hapCount][hapCount2];
+			for (int i = 0; i < s1.length; i++) {
+				for (int j = 0; j < s2.length; j++) {
+					sps[i][j] = caluclateSPSSingle(s1[i], s2[j]);
+				}
+			}
+
+		} else {
+			sps = new int[hapCount][hapCount];
 			String[] s1 = new String[hapCount];
 			String[] s2 = new String[hapCount];
 			for (int i = 0; i < hapCount; i++) {
@@ -70,7 +92,8 @@ public class HaplotypeModelUtils {
 					sps[i][j] = caluclateSPSSingle(s1[i], s2[j]);
 				}
 			}
-			return sps;
-			
+
+		}
+		return sps;
 	}
 }

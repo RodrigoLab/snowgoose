@@ -1,15 +1,19 @@
 package srp.haplotypes.operator;
 
 import srp.haplotypes.HaplotypeModel;
+import dr.inference.model.Parameter;
 import dr.inference.operators.OperatorFailedException;
 
-public class SingleBaseUniformOperator extends AbstractSingleBaseOperator {
+public class SingleBaseFrequencyOperator extends AbstractSingleBaseOperator {
 
-	public final static String OPERATOR_NAME = SingleBaseUniformOperator.class.getSimpleName();
+	public final static String OPERATOR_NAME = SingleBaseFrequencyOperator.class.getSimpleName();
+	private Parameter frequency;
 
-	public SingleBaseUniformOperator(HaplotypeModel haplotypeModel, int nothing) {
+	public SingleBaseFrequencyOperator(HaplotypeModel haplotypeModel,
+			Parameter freqs) {
+
 		super(haplotypeModel);
-
+		this.frequency = freqs;
 	}
 
 	@Override
@@ -23,7 +27,7 @@ public class SingleBaseUniformOperator extends AbstractSingleBaseOperator {
 
 		haplotypeModel.startHaplotypeOperation();
 
-		int[] posChar = alignmentMapping.getNextBaseUniform();
+		int[] posChar = alignmentMapping.getNextBaseFrequency(frequency);
 		haplotypeModel.swapHaplotypeSingleBase(OP, posChar);
 
 		haplotypeModel.endHaplotypeOperation();

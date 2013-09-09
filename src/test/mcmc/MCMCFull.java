@@ -42,7 +42,7 @@ import dr.inference.operators.MCMCOperator;
 import dr.inference.operators.OperatorSchedule;
 import dr.inference.operators.SimpleOperatorSchedule;
 import dr.inferencexml.model.CompoundLikelihoodParser;
-
+@Deprecated
 public class MCMCFull {
 
 	@BeforeClass
@@ -64,12 +64,12 @@ public class MCMCFull {
 	@Test
 	public void testMCMCFull() throws Exception {
 
-		String dataDir = "/home/sw167/workspace/ABI/data/";
+		String dataDir = "/home/sw167/workspace/ABI/unittest/testData/";
 
-		String shortReadFile = "H7Srp.fasta";
+		String shortReadFile = "H7_Srp.fasta";
 		String trueHaplotypeFile = "H7Srp_fullHaplotype.fasta";
 		
-		String prefix = "FullTree_H7";
+		String prefix = dataDir+"FullTree_H7";
 		String logTracerName = prefix+".log";
 		String logTreeName = prefix+".trees";
 		String logHaplotypeName = prefix+"_haplatype.hap";
@@ -162,7 +162,7 @@ public class MCMCFull {
 		loggers[3] = new HaplotypeLoggerWithTrueHaplotype(haplotypeModel, trueAlignment, logHaplotypeName, logInterval*10);
 		
 		// MCMC
-		MCMCOptions options = MCMCSetupHelper.setMCMCOptions(logInterval);
+		MCMCOptions options = MCMCSetupHelper.setMCMCOptions(logInterval, 100);
 		
 		MCMC mcmc = new MCMC("mcmc1");
 		mcmc.setShowOperatorAnalysis(true);

@@ -141,26 +141,20 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 	
 
 	
-	public int[] swapHaplotypeSingleBase(int hapIndex, int[] posChar){
+	public void swapHaplotypeSingleBase(Operation op, int[] posChar){
 		
-		int[] swapRecord = new int[4];
-		swapRecord[0] = hapIndex;
-		swapRecord[1] = posChar[0];
-		swapRecord[2] = posChar[1];
-//		swapRecord[3] = swapHaplotypeCharAt(hapIndex, posChar[0], posChar[1]);
+		int[] swapInfoArray = new int[4];
+		swapInfoArray[1] = posChar[0];
+		swapInfoArray[2] = posChar[1];
 		
-		Haplotype haplotype = haplotypes.get(hapIndex);
-		swapRecord[3] = haplotype.replaceCharAt(posChar[0], posChar[1]);
+		swapInfoArray[0] = MathUtils.nextInt(getHaplotypeCount());
+		
+		Haplotype haplotype = haplotypes.get(swapInfoArray[0]);
+		
+		swapInfoArray[3] = haplotype.replaceCharAt(posChar[0], posChar[1]);
+		
+		storeOperationRecord(op, swapInfoArray);
 
-//		swapRecord[3] = haplotype.getChar(posChar[0]);
-//		setCharAt(pos, (char) newChar);
-		
-		
-//		System.out.println(Arrays.toString(swapRecord));
-//		System.out.println(getHaplotype(hapIndex).charAt(posChar[0]));
-
-//		swapInfoArray[2] = replaceHaplotypeCharAt(hapIndex, posChar);
-		return swapRecord;
 	}
 
 

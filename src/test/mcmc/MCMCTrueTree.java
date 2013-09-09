@@ -62,16 +62,16 @@ public class MCMCTrueTree {
 
 	@Test
 	public void testMCMCFixTree() throws Exception {
-		String dataDir = "/home/sw167/workspace/ABI/data/";
+		String dataDir = "/home/sw167/workspace/ABI/unittest/testData/";
 //		String truePhylogenyFile = "H6_005_true_tree.trees";
 //		String shortReadFile = "H6_srp.fasta";
 //		
 //		String dataDir = "/home/sw167/workspace/ABI/data/H7/";
-		String truePhylogenyFile = "H7Srp.tree";
-		String shortReadFile = "H7Srp.fasta";
-		String trueHaplotypeFile = "H7Srp_fullHaplotype.fasta";
+		String truePhylogenyFile = "H7_1_Srp.tree";
+		String shortReadFile = "H7_1_Srp.fasta";
+		String trueHaplotypeFile = "H7_1_SrpFullHaplotype.fasta";
 		
-		String prefix = "FixTree_H7";
+		String prefix = dataDir+"FixTree_H7";
 		String logTracerName = prefix+".log";
 		String logTreeName = prefix+".trees";
 		String logHaplotypeName = prefix+"_haplatype.hap";
@@ -158,7 +158,7 @@ public class MCMCTrueTree {
 		
 		// MCMC
 		
-		MCMCOptions options = MCMCSetupHelper.setMCMCOptions(logInterval);
+		MCMCOptions options = MCMCSetupHelper.setMCMCOptions(logInterval, 500);
 		MCMC mcmc = new MCMC("mcmc1");
 		mcmc.setShowOperatorAnalysis(true);
 		mcmc.setOperatorAnalysisFile(new File(operatorAnalysisFile));
