@@ -18,7 +18,8 @@ public class AlignmentMapping {
 
 	private static final int GAP = '-';
 	private static final char[] VALID_CHARS = Nucleotides.INSTANCE.getValidChars();
-
+	private static final double[] EQUAL_FREQ = new double[]{0.25, 0.5, 0.75, 1};
+	
 	private ArrayList<Integer>[] mapToSrp; // each [] = position, each ArrayList
 											// = map to which read
 	private HashMap<String, Integer> seqNameToSeqID; // map sequence_name >xxxto int
@@ -30,6 +31,9 @@ public class AlignmentMapping {
 	private int haplotypeLength;
 	private Integer srpCount;
 	private double[] cumFreq;
+	
+
+	private int[] posChar = new int[2];
 	
 	
 	private void init(int l) {
@@ -263,25 +267,45 @@ public class AlignmentMapping {
 //	}
 //	
 
+//	private int[] getNextBaseEqualFreq() {
+//
+//		posChar[0] = MathUtils.nextInt(haplotypeLength);
+//		posChar[1] = nextDNAFromCumFreq(EQUAL_FREQ );
+//		return posChar;
+//	}
 	public int[] getNextBaseEmpirical() {
 
 		posChar[0] = MathUtils.nextInt(haplotypeLength);
 		
-		double d = MathUtils.nextDouble();
-//		System.out.println("Default"+"\t"+ Arrays.toString(cumFreq));
-
-		for (int i = 0; i < cumFreq.length; i++) {
-			if (d <= cumFreq[i]) {
-				posChar[1] = VALID_CHARS[i];
-				return posChar;
-			}
-		}
-		posChar[1] = GAP;
+//		double d = MathUtils.nextDouble();
+//
+//		for (int i = 0; i < cumFreq.length; i++) {
+//			if (d <= cumFreq[i]) {
+//				posChar[1] = VALID_CHARS[i];
+//				return posChar;
+//			}
+//		}
+//		posChar[1] = GAP;
+		posChar[1] = nextDNAFromCumFreq(cumFreq);
 		return posChar;
 	}
 	
+	public int nextBaseEqualFreq(){
+		return nextDNAFromCumFreq(EQUAL_FREQ);
+	}
+	
+	private static int nextDNAFromCumFreq(double[] cumFreq){
+		
+		double d = MathUtils.nextDouble();
+		for (int i = 0; i < cumFreq.length; i++) {
+			if (d <= cumFreq[i]) {
+				return VALID_CHARS[i]; 
+			}
+		}
+		return GAP;
+	}
+	
 
-	private int[] posChar = new int[2];
 
 
 	public int[] getNextBaseFrequency(Parameter freqs) {
@@ -306,4 +330,5 @@ public class AlignmentMapping {
 
 	}
 
+	
 }

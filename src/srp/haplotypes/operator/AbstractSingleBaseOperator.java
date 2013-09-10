@@ -3,6 +3,7 @@ package srp.haplotypes.operator;
 import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.HaplotypeModel;
 import srp.haplotypes.Operation;
+import dr.inference.operators.OperatorFailedException;
 import dr.inference.operators.SimpleMCMCOperator;
 
 public abstract class AbstractSingleBaseOperator extends SimpleMCMCOperator {
@@ -21,7 +22,12 @@ public abstract class AbstractSingleBaseOperator extends SimpleMCMCOperator {
 
 	@Override
 	public String getPerformanceSuggestion() {
-		return "getPerformanceSuggestion";
+		return "";
+	}
+
+	@Override
+	public double doOperation() throws OperatorFailedException {
+		return 0.0;
 	}
 
 }

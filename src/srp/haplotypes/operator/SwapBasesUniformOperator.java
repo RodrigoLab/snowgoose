@@ -31,11 +31,11 @@ public class SwapBasesUniformOperator extends AbstractSwapBasesOperator{
 	@Override
 	public String getPerformanceSuggestion() {
 
-		return "getPerformanceSuggestion";
+		return "";
 	}
+	
 	@Override
 	public String getOperatorName() {
-
 		return OPERATOR_NAME;
 	}
 

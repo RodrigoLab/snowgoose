@@ -84,7 +84,7 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 			super(MODEL_NAME);
 	//		setupData(aMap);
 			this.aMap = aMap;
-			this.haplotypesLength = this.aMap.getLength();
+			haplotypesLength = this.aMap.getLength();
 			
 			haplotypes = new ArrayList<Haplotype>();
 			setDataType(Nucleotides.INSTANCE);
@@ -117,9 +117,11 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 	private void randomHaplotype(int hapIndex) {
 		Haplotype haplotype = haplotypes.get(hapIndex);
 		for (int i = 0; i < haplotypesLength; i++) {
+			//TODO: Which is the "good" starting point
 			char newChar = (char) aMap.nextBaseAt(i);
+//			char newChar = (char) aMap.nextBaseEqualFreq();
 			haplotype.setCharAt(i, newChar);
-	
+			
 		}
 	}
 	

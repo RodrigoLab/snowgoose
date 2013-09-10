@@ -25,9 +25,12 @@ public class SingleBaseFrequencyOperator extends AbstractSingleBaseOperator {
 	@Override
 	public double doOperation() throws OperatorFailedException {
 
+		int[] posChar = alignmentMapping.getNextBaseFrequency(frequency);
+
+		
 		haplotypeModel.startHaplotypeOperation();
 
-		int[] posChar = alignmentMapping.getNextBaseFrequency(frequency);
+		
 		haplotypeModel.swapHaplotypeSingleBase(OP, posChar);
 
 		haplotypeModel.endHaplotypeOperation();

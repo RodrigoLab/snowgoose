@@ -41,24 +41,24 @@ public class MainMCMCFull {
 
 	public static void main(String[] args) throws Exception {
 
-		String dataDir = "/home/sw167/workspace/ABI/unittest/testData/";
-		int runIndex = 1;
-		int totalSamples = 100;
-		int logInterval = 100;
-		int noOfTrueHaplotype = 7;
-		int noOfRecoveredHaplotype=20;
+//		String dataDir = "/home/sw167/workspaceSrp/ABI/unittest/testData/";
+//		int runIndex = 1;
+//		int totalSamples = 100;
+//		int logInterval = 1000;
+//		int noOfTrueHaplotype = 7;
+//		int noOfRecoveredHaplotype=10;
 		
-//		String dataDir = args[0];
-//		int runIndex = Integer.parseInt(args[1]);
-//		int totalSamples = Integer.parseInt(args[2]);
-//		int logInterval = Integer.parseInt(args[3]);
-//		int noOfTrueHaplotype = Integer.parseInt(args[4]);
-//		int noOfRecoveredHaplotype= Integer.parseInt(args[5]);
+		String dataDir = args[0];
+		int runIndex = Integer.parseInt(args[1]);
+		int totalSamples = Integer.parseInt(args[2]);
+		int logInterval = Integer.parseInt(args[3]);
+		int noOfTrueHaplotype = Integer.parseInt(args[4]);
+		int noOfRecoveredHaplotype= Integer.parseInt(args[5]);
 
 		
 		String hapRunIndex = "H"+noOfTrueHaplotype+"_"+runIndex;
 		String shortReadFile = hapRunIndex +"_Srp.fasta";
-		String trueHaplotypeFile = hapRunIndex +"_SrpFullHaplotype.fasta";
+		String trueHaplotypeFile = hapRunIndex +"_Srp_fullHaplotype.fasta";
 		
 		String prefix = dataDir+"FullTree_"+hapRunIndex;
 		String logTracerName = prefix+".log";
@@ -109,12 +109,13 @@ public class MainMCMCFull {
 		
 		// Operators
 		OperatorSchedule schedule = new SimpleOperatorSchedule();
-		ArrayList<MCMCOperator> defalutOperatorsList = MCMCSetupHelper.testOperators(haplotypeModel, 
+		ArrayList<MCMCOperator> defalutOperatorsList = MCMCSetupHelper.defalutOperators(haplotypeModel, 
 				freqs, popSize, kappa );
 		schedule.addOperators(defalutOperatorsList);
 
-//		schedule.addOperators(MCMCSetupHelper.defalutTreeOperators(treeModel));
+		schedule.addOperators(MCMCSetupHelper.defalutTreeOperators(treeModel));
 		Parameter rootHeight = treeModel.getRootHeightParameter();
+		rootHeight.setId("rootHeight");
 		
 		double total = 0;
 		for (int i = 0; i < schedule.getOperatorCount(); i++) {

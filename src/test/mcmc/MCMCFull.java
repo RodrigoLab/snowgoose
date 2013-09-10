@@ -64,10 +64,10 @@ public class MCMCFull {
 	@Test
 	public void testMCMCFull() throws Exception {
 
-		String dataDir = "/home/sw167/workspace/ABI/unittest/testData/";
+		String dataDir = "/home/sw167/workspaceSrp/ABI/unittest/testData/";
 
-		String shortReadFile = "H7_Srp.fasta";
-		String trueHaplotypeFile = "H7Srp_fullHaplotype.fasta";
+		String shortReadFile = "H7_1_Srp.fasta";
+		String trueHaplotypeFile = "H7_1_SrpfullHaplotype.fasta";
 		
 		String prefix = dataDir+"FullTree_H7";
 		String logTracerName = prefix+".log";

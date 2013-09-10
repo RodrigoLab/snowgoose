@@ -37,7 +37,7 @@ public class SwapBasesMultiOperator extends AbstractSwapBasesOperator {
 	@Override
 	public String getPerformanceSuggestion() {
 
-		return "getPerformanceSuggestion";
+		return "";
 	}
 	@Override
 	public String getOperatorName() {

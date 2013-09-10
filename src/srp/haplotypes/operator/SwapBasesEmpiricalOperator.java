@@ -18,10 +18,6 @@ public class SwapBasesEmpiricalOperator extends AbstractSwapBasesOperator {
 
 	public final static String OPERATOR_NAME = SwapBasesEmpiricalOperator.class.getSimpleName();
 	
-
-	
-
-	
 	public SwapBasesEmpiricalOperator(HaplotypeModel haplotypeModel, int length, CoercionMode mode) {
 		super(haplotypeModel, length, mode);
 		
@@ -38,7 +34,7 @@ public class SwapBasesEmpiricalOperator extends AbstractSwapBasesOperator {
 	@Override
 	public String getPerformanceSuggestion() {
 
-		return "getPerformanceSuggestion";
+		return "";
 	}
 	@Override
 	public String getOperatorName() {

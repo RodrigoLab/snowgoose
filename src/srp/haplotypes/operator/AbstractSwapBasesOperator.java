@@ -8,12 +8,12 @@ import srp.haplotypes.Operation;
 import dr.inference.operators.AbstractCoercableOperator;
 import dr.inference.operators.CoercionMode;
 
-public abstract class AbstractSwapBasesOperator  extends AbstractCoercableOperator {
+public abstract class AbstractSwapBasesOperator extends AbstractCoercableOperator {
 
 	public final static Operation OP = Operation.SWAPMULTI;
 	
 	protected final int haplotypeLength;
-	protected final int haplotypeCount;
+//	protected final int haplotypeCount;
 
 	protected HaplotypeModel haplotypeModel;
 	
@@ -29,7 +29,7 @@ public abstract class AbstractSwapBasesOperator  extends AbstractCoercableOperat
 		
 		this.haplotypeModel = haplotypeModel;
 		haplotypeLength = this.haplotypeModel.getHaplotypeLength();
-		haplotypeCount  = this.haplotypeModel.getHaplotypeCount();
+//		haplotypeCount  = this.haplotypeModel.getHaplotypeCount();
 		alignmentMapping = this.haplotypeModel.getAlignmentMapping();
 		
 		allPosChars = new int[2][haplotypeLength];

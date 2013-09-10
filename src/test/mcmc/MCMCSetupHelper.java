@@ -153,9 +153,9 @@ public class MCMCSetupHelper {
 //		operator.setWeight(opSmall);
 //		OperatorList.add(operator);
 
-		operator = new SingleBaseEmpiricalOperator(haplotypeModel, 0);
-		operator.setWeight(opLarge);
-		OperatorList.add(operator);
+//		operator = new SingleBaseEmpiricalOperator(haplotypeModel, 0);
+//		operator.setWeight(opLarge);
+//		OperatorList.add(operator);
 
 //		operator = new SwapBasesMultiOperator(haplotypeModel, 12, CoercionMode.COERCION_ON);
 //		operator.setWeight(opLarge);
@@ -165,9 +165,9 @@ public class MCMCSetupHelper {
 //		operator.setWeight(opLarge);
 //		OperatorList.add(operator);
 //
-		operator = new SwapBasesEmpiricalOperator(haplotypeModel, 3, CoercionMode.COERCION_ON);
-		operator.setWeight(opLarge);
-		OperatorList.add(operator);
+//		operator = new SwapBasesEmpiricalOperator(haplotypeModel, 3, CoercionMode.COERCION_ON);
+//		operator.setWeight(opLarge);
+//		OperatorList.add(operator);
 
 //		operator = new HaplotypeRecombinationOperator(haplotypeModel, 12);
 //		operator.setWeight(3.0);
@@ -309,7 +309,14 @@ public class MCMCSetupHelper {
 //		operator.setWeight(opLarge);
 //		OperatorList.add(operator);
 //
-//		operator = new SwapBasesEmpiricalOperator(haplotypeModel, 3, CoercionMode.COERCION_ON);
+		operator = new SwapBasesEmpiricalOperator(haplotypeModel, 3, CoercionMode.COERCION_ON);
+		operator.setWeight(opLarge);
+		OperatorList.add(operator);
+
+//		operator = new SwapBasesEmpiricalOperator(haplotypeModel, 2, CoercionMode.COERCION_OFF);
+//		operator.setWeight(opLarge);
+//		OperatorList.add(operator);
+//		operator = new SwapBasesEmpiricalOperator(haplotypeModel, 1, CoercionMode.COERCION_OFF);
 //		operator.setWeight(opLarge);
 //		OperatorList.add(operator);
 
@@ -327,7 +334,7 @@ public class MCMCSetupHelper {
 			if("kappa".equals(parameterName)){
 				operator = new ScaleOperator(parameter, 0.75);
 				operator.setWeight(opTiny);
-//				OperatorList.add(operator);
+				OperatorList.add(operator);
 			}
 			else if("frequency".equals(parameterName)){
 				operator = new DeltaExchangeOperator(parameter, new int[] { 1,
