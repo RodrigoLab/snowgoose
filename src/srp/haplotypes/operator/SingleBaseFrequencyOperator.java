@@ -17,25 +17,24 @@ public class SingleBaseFrequencyOperator extends AbstractSingleBaseOperator {
 	}
 
 	@Override
-	public String getOperatorName() {
-	
-		return OPERATOR_NAME;
-	}
-
-	@Override
 	public double doOperation() throws OperatorFailedException {
 
 		int[] posChar = alignmentMapping.getNextBaseFrequency(frequency);
 
 		
 		haplotypeModel.startHaplotypeOperation();
-
 		
 		haplotypeModel.swapHaplotypeSingleBase(OP, posChar);
 
 		haplotypeModel.endHaplotypeOperation();
 
 		return 0.0;
+	}
+
+	@Override
+	public String getOperatorName() {
+	
+		return OPERATOR_NAME;
 	}
 
 }

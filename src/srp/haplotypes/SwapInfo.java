@@ -15,8 +15,10 @@ public class SwapInfo {
 	private int hapIndex;
 	
 	private int[] swapBase;// hapIndex, posIndex, newChar, oldChar
-	private int[] swapHaplotypeRecord;
+	private int[] swapHaplotypeSectoinRecord;
 	private int[][] allPosChars;
+	private int[] allOldChars;
+	private int[] posChars;
 	
 	public SwapInfo() {
 		operation = Operation.NONE;
@@ -26,46 +28,92 @@ public class SwapInfo {
 	public Operation getOperation(){
 		return operation;
 	}
-
-	public void storeOperation(Operation op, Object... swapRecord){
+	/*
+	public void storeOperation(Operation op, int[] swapRecord){
+		
 		this.operation = op;
 
 		switch (operation) {
 			case NONE:
 				break;
 			case SWAPSINGLE:
-				swapBase = (int[]) swapRecord[0];
+				swapBase = swapRecord;
 				break;
+
+//			case SWAPMULTI:
+//				hapIndex = (Integer) swapRecord[0];
+//				allPosChars = (int[][]) swapRecord[1];
+//
+//				break;
+			case SWAPSECTION:
+				swapHaplotypeRecord = swapRecord;
+				break;
+//			case SWAPCOLUMN:
+//				posChars = (int[]) swapRecord[0];
+//				allOldChars = (int[]) swapRecord[1];
+			default:
+				throw new IllegalArgumentException("Unknown operation type: "+op);
+			}
+		
+	}
+	*/
+	
+	
+	public void storeOperation(Operation op, int[]... swapRecord){
+		
+		this.operation = op;
+
+		switch (operation) {
+			case NONE:
+				break;
+			case SWAPSINGLE:
+				swapBase = swapRecord[0];
+				break;
+
+//			case SWAPMULTI:
+//				hapIndex = (Integer) swapRecord[0];
+//				allPosChars = (int[][]) swapRecord[1];
+//
+//				break;
+			case SWAPSECTION:
+				swapHaplotypeSectoinRecord = swapRecord[0];
+				break;
+			case SWAPCOLUMN:
+				posChars = swapRecord[0];
+				allOldChars = swapRecord[1];
+				break;
+			default:
+				throw new IllegalArgumentException("Unknown operation type: "+op);
+			}
+		
+	}
+	
+	public void storeOperation(Operation op, Object... swapRecord){
+		this.operation = op;
+
+		switch (operation) {
+			case NONE:
+				break;
+//			case SWAPSINGLE:
+//				swapBase = (int[]) swapRecord[0];
+//				break;
 
 			case SWAPMULTI:
 				hapIndex = (Integer) swapRecord[0];
 				allPosChars = (int[][]) swapRecord[1];
 
-//				int[] allNewChars = (int[]) swapRecord[2];
-				
-//				System.out.println(Arrays.toString(allNewChars));
-//				if (swapRecord==null){
-//					swapMulti = new ArrayDeque<int[]>(); 
-////					swapMulti = new ArrayList<int[]>();
-//				}
-//				else{
-////					tempIntArray = new int[4];
-//					tempIntArray = (int[]) swapRecord[0];
-////					for (int i = 0; i < tempIntArray.length; i++) {
-////						tempIntArray[i] = (Integer) swapInfo[i];
-////					}
-//					swapMulti.add( tempIntArray);
-//				}
 				break;
-			case SWAPSECTION:
-				swapHaplotypeRecord = (int[]) swapRecord[0];
-				break;
-
+//			case SWAPSECTION:
+//				swapHaplotypeRecord = (int[]) swapRecord[0];
+//				break;
+//			case SWAPCOLUMN:
+//				posChars = (int[]) swapRecord[0];
+//				allOldChars = (int[]) swapRecord[1];
 			default:
 				throw new IllegalArgumentException("Unknown operation type: "+op);
 			}
 		
-		}
+	}
 
 	public int[] getSwapInfoSWAPBASE(){
 		return swapBase;
@@ -77,6 +125,16 @@ public class SwapInfo {
 	}
 
 	
+	public int[][] getSwapInfoSWAPCOLUMN() {
+		int[][] record = new int[][]{posChars,	allOldChars}; 
+		return record;
+	}
+
+	public int[] getSwapInfoSWAPSECTION() {
+		
+		return swapHaplotypeSectoinRecord;
+	}
+
 	public int getHapIndex(){
 		return hapIndex;
 	}
@@ -84,14 +142,14 @@ public class SwapInfo {
 
 	public class InvalidOperationException extends Exception {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		public InvalidOperationException(String message) {
 			super(message);
 		}
-	}
-
-	public int[] getSwapHaplotypeRecord() {
-		
-		return swapHaplotypeRecord;
 	}	
 }
 	

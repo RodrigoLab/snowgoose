@@ -12,12 +12,6 @@ public class SingleBaseOperator extends AbstractSingleBaseOperator {
 	}
 
 	@Override
-	public String getOperatorName() {
-	
-		return OPERATOR_NAME;
-	}
-
-	@Override
 	public double doOperation() throws OperatorFailedException {
 
 		haplotypeModel.startHaplotypeOperation();
@@ -28,6 +22,12 @@ public class SingleBaseOperator extends AbstractSingleBaseOperator {
 		haplotypeModel.endHaplotypeOperation();
 
 		return 0.0;
+	}
+
+	@Override
+	public String getOperatorName() {
+	
+		return OPERATOR_NAME;
 	}
 
 }

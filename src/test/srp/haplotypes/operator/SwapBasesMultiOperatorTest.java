@@ -74,6 +74,8 @@ public class SwapBasesMultiOperatorTest {
     	assertEquals(operator.getOperatorName(), "SwapBasesMultiOperator");
     	assertEquals(operator.getRawParameter(), nBases, 0);
     	assertEquals(operator.getCoercableParameter(), Math.log(nBases-1), 1e-10); 
+    	
+    	assertEquals(operator.getPerformanceSuggestion(), "");
 	}
 
 	
@@ -213,7 +215,5 @@ public class SwapBasesMultiOperatorTest {
 //			System.out.println(trace.getTraceT9ype());
 			
 	}
-
-
 
 }

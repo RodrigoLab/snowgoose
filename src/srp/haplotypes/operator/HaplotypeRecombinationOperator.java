@@ -13,7 +13,7 @@ import dr.math.MathUtils;
 
 public class HaplotypeRecombinationOperator extends SimpleMCMCOperator {
 
-	public final static String OPERATOR_NAME = "HaplotypeRecombinationOperator";
+	public final static String OPERATOR_NAME = HaplotypeRecombinationOperator.class.getSimpleName();
 	public final static Operation OP = Operation.SWAPSECTION;
 
 	@Deprecated
@@ -37,8 +37,7 @@ public class HaplotypeRecombinationOperator extends SimpleMCMCOperator {
 	@Override
 	public String getPerformanceSuggestion() {
 
-//		System.err.println("getPero");
-		return "getPerformanceSuggestion";
+		return "";
 	}
 
 	@Override

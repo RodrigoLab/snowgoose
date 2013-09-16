@@ -4,7 +4,6 @@ package test.srp.haplotypes.operator;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-
 import org.apache.commons.lang3.StringUtils;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -12,9 +11,11 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.AlignmentUtils;
 import srp.haplotypes.HaplotypeModel;
 import srp.haplotypes.operator.HaplotypeRecombinationOperator;
+import dr.inference.operators.SimpleMCMCOperator;
 
 
 public class HaplotypeRecombinationOperatorTest {
@@ -35,7 +36,26 @@ public class HaplotypeRecombinationOperatorTest {
 	public void tearDown() throws Exception {
 	}
 	
+	@Test
+	public void testGetOperatorName() {
+		String[] seqs = new String[]{
+				"AAAAAAAAATGTGTTTT....",
+				".....CCCCCCCCCCCCCCCCCCCTTTTCCCC....",
+				"..........GGGGGGGGGGGGGGCGCGTATAGGGG",
+				"...............TTTTTTTTTACACTATA....",
+				"CCCCCTTTTTAAAAAGGGGGTCGATGCAGTAGCTAG"
+				};
+		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
+		
+		HaplotypeModel haplotypeModel = new HaplotypeModel(aMap, 3);
 
+		SimpleMCMCOperator operator = new HaplotypeRecombinationOperator(haplotypeModel, 0);
+    	assertEquals(operator.getOperatorName(), "HaplotypeRecombinationOperator");
+    	assertEquals(operator.getPerformanceSuggestion(), "");
+    	
+	}
+
+	
 	@Test
 	public void testDoOperation() throws Exception {
 		

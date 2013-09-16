@@ -31,6 +31,7 @@ import dr.inference.operators.MCMCOperator;
 import dr.inference.operators.OperatorFailedException;
 import dr.inference.operators.OperatorSchedule;
 import dr.inference.operators.ScaleOperator;
+import dr.inference.operators.SimpleMCMCOperator;
 import dr.inference.operators.SimpleOperatorSchedule;
 import dr.inference.trace.ArrayTraceList;
 import dr.inference.trace.Trace;
@@ -67,8 +68,9 @@ public class SingleBaseOperatorTest {
 		
 		HaplotypeModel haplotypeModel = new HaplotypeModel(aMap, 3);
 
-		MCMCOperator operator = new SingleBaseOperator(haplotypeModel, 0);
+		SimpleMCMCOperator operator = new SingleBaseOperator(haplotypeModel, 0);
     	assertEquals(operator.getOperatorName(), "SingleBaseOperator");
+    	assertEquals(operator.getPerformanceSuggestion(), "");
 	}
 
 	@Test

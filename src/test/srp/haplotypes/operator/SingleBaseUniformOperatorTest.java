@@ -1,10 +1,9 @@
 package test.srp.haplotypes.operator;
 
+
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.After;
@@ -16,24 +15,20 @@ import org.junit.Test;
 import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.AlignmentUtils;
 import srp.haplotypes.HaplotypeModel;
-import srp.haplotypes.operator.SwapBasesEmpiricalOperator;
+import srp.haplotypes.operator.SingleBaseUniformOperator;
 import srp.likelihood.ShortReadLikelihood;
+import test.TestUtils;
 import dr.evolution.alignment.SimpleAlignment;
 import dr.inference.loggers.ArrayLogFormatter;
 import dr.inference.loggers.MCLogger;
 import dr.inference.mcmc.MCMC;
-import dr.inference.mcmc.MCMCOptions;
-import dr.inference.model.CompoundLikelihood;
-import dr.inference.model.Likelihood;
-import dr.inference.operators.CoercableMCMCOperator;
-import dr.inference.operators.CoercionMode;
 import dr.inference.operators.MCMCOperator;
 import dr.inference.operators.OperatorFailedException;
 import dr.inference.operators.OperatorSchedule;
-import dr.inference.operators.SimpleOperatorSchedule;
+import dr.inference.operators.SimpleMCMCOperator;
 import dr.inference.trace.Trace;
 
-public class SwapBasesEmpiricalOperatorTest {
+public class SingleBaseUniformOperatorTest {
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -51,6 +46,7 @@ public class SwapBasesEmpiricalOperatorTest {
 	public void tearDown() throws Exception {
 	}
 
+
 	@Test
 	public void testGetOperatorName() {
 		String[] seqs = new String[]{
@@ -63,23 +59,29 @@ public class SwapBasesEmpiricalOperatorTest {
 		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
 		
 		HaplotypeModel haplotypeModel = new HaplotypeModel(aMap, 3);
+		
 
-		int nBases = 10;
-		CoercableMCMCOperator operator = new SwapBasesEmpiricalOperator(haplotypeModel, nBases, CoercionMode.COERCION_OFF);
-    	assertEquals(operator.getOperatorName(), "SwapBasesEmpiricalOperator");
-    	assertEquals(operator.getRawParameter(), nBases, 0);
-    	assertEquals(operator.getCoercableParameter(), Math.log(nBases-1), 1e-10); 
-    	
+		SimpleMCMCOperator operator = new SingleBaseUniformOperator(haplotypeModel, 0);
+    	assertEquals(operator.getOperatorName(), "SingleBaseUniformOperator");
     	assertEquals(operator.getPerformanceSuggestion(), "");
 	}
 
-	
 	@Test
 	public void testDoOperation() throws OperatorFailedException {
 		String[] seqs = new String[]{
-				"GGGGGGGGGGGGG.....",
-				".....CCCCCCCCCCCCCCCCCCCCCCCCCCC....",
-				"..........GGGGGGGGGGGGGGCGCGGGGGGGGG",
+				"GGGGGGGGGGGGG.......................",
+				".....CCCCCCCCCCCCCCCCCCCC...........",
+				"CCCCC",
+				".........................CCCCCCCCCCC",
+				".............GGGGGGGGGGGCGCGGGGGGGGG",
+				".....GGGGGGGGGGGGGGCGCGGGGGG........",
+				"........................GGGGCGCGGGGG",
+				"........................GGGGCGCGGGGG",
+				"........................GGGGCGCGGGGG",
+				"GGGGGGGGGGGG...",
+				"GGGGGGGGGGGG...",
+				"GGGGGGGGGGGG...",
+				"GGGGGGGGGGGG...",
 //				"CCCCCTTTTTAAAAAGGGGGTCGATGCAGTAGCTAG"
 //				 AAAAACCCCCGCGCCTTCGGTCGTTTTCTATAGGGG"
 //				 AAAAACCCCCGCGCCTTCGGTCGTTTTCTATAGGGG
@@ -92,20 +94,45 @@ public class SwapBasesEmpiricalOperatorTest {
 				};
 		
 		HaplotypeModel haplotypeModel = AlignmentUtils.createHaplotypeModel(seqs, haps);
-    	SwapBasesEmpiricalOperator operator = new SwapBasesEmpiricalOperator(haplotypeModel, 5, CoercionMode.COERCION_OFF);
+		SimpleMCMCOperator operator = new SingleBaseUniformOperator(haplotypeModel, 0);
     	
-    	
+		int[] count = new int['T'+1]; 
     	for (int i = 0; i < 100; i++) {
     		operator.doOperation();
+    		
+    		int newChar = haplotypeModel.getSwapInfo().getSwapInfoSWAPBASE()[2];
+    		count[newChar]++;
+
 			String newHap = haplotypeModel.getHaplotypeString(0);
-			assertNotEquals(haps[0], newHap);
 			assertTrue( newHap.contains("C") || newHap.contains("G"));
-//			haps[0] = newHap;
+			assertTrue(! newHap.contains("T"));
 			haplotypeModel.reject();
 			newHap = haplotypeModel.getHaplotypeString(0);
 			assertEquals(haps[0], newHap);
 
 		}
+    	TestUtils.assertExpectationRange(count['C'], 50, 10);
+    	TestUtils.assertExpectationRange(count['G'], 50, 10);
+    	
+//    	
+//		count = new int['T'+1]; 
+//    	for (int i = 0; i < 100; i++) {
+//    		operator.doOperation();
+//    		
+//    		int newChar = haplotypeModel.getSwapInfo().getSwapInfoSWAPBASE()[2];
+//    		count[newChar]++;
+//    		
+//			String newHap = haplotypeModel.getHaplotypeString(0);
+//			assertTrue( newHap.contains("G") || newHap.contains("T"));
+//			haplotypeModel.reject();
+//			newHap = haplotypeModel.getHaplotypeString(0);
+//			assertEquals(haps[0], newHap);
+//
+//		}
+//    	TestUtils.assertExpectationRange(count['G'], 75, 10);
+//    	TestUtils.assertExpectationRange(count['T'], 25, 10);
+
+
 
 	}
 	@Test
@@ -116,87 +143,58 @@ public class SwapBasesEmpiricalOperatorTest {
 				"..........GGGGGGGGGGGGGGCGCGTATAGGGG",
 				"...............TTTTTTTTTACACTATA....",
 				"CCCCCTTTTTAAAAAGGGGGTCGATGCAGTAGCTAG"
-//				 AAAAACCCCCGCGCCTTCGGTCGTTTTCTATAGGGG"
-//				 AAAAACCCCCGCGCCTTCGGTCGTTTTCTATAGGGG
 				};
 		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
 		
 		String[] haps = new String[]{
 				"AAAAACCCCCGGGGGTTTTTACGTACACTATATATA",
 				"CCCCCTTTTTAAAAAGGGGGTCGATGCAGTAGCTAG"
-//				"AAAAAAAAAAAAAAAAAATTTTTTTTTTTTTTTTTT"
 				};
 		SimpleAlignment hapAlignment = AlignmentUtils.createAlignment(haps);
 		HaplotypeModel haplotypeModel = new HaplotypeModel(aMap, hapAlignment);
 
-		
+		SimpleMCMCOperator operator = new SingleBaseUniformOperator(haplotypeModel, 0);
     	// Operators
-    	OperatorSchedule schedule = new SimpleOperatorSchedule();
-
-    	MCMCOperator operator = new SwapBasesEmpiricalOperator(haplotypeModel, 3, CoercionMode.COERCION_OFF);
-    	operator.setWeight(3.0);
-    	schedule.addOperator(operator);
+		MCMCOperator[] operators = new MCMCOperator[]{operator};
+//    	OperatorSchedule schedule = new SimpleOperatorSchedule();
+//    	schedule.addOperator(operator);
     	
     	//CompoundLikelihood
-    	List<Likelihood> likelihoods = new ArrayList<Likelihood>();        
-
         ShortReadLikelihood srpLikelihood = new ShortReadLikelihood(haplotypeModel);
-    	likelihoods.add(srpLikelihood);
-    	Likelihood shortReadlikelihood = new CompoundLikelihood(-1, likelihoods);
-//    	
-//    	
-//        likelihoods.clear();
-//        likelihoods.add(srpLikelihood);
-//        Likelihood posterior = new CompoundLikelihood(0, likelihoods);
-//        posterior.setId(CompoundLikelihoodParser.POSTERIOR);
-//        
-//    	
-		double expectedInit = shortReadlikelihood.getLogLikelihood();
-		assertEquals(expectedInit, srpLikelihood.getLogLikelihood(), 0);
-  	
-		int lengthScaler = 1;
+		double initLikelihood = srpLikelihood.getLogLikelihood();
     	
 		ArrayLogFormatter formatter = new ArrayLogFormatter(false);
     	MCLogger[] loggers = new MCLogger[1];
-    	loggers[0] = new MCLogger(formatter, lengthScaler*1, false);
+    	loggers[0] = new MCLogger(formatter, 1, false);
     	loggers[0].add(srpLikelihood );
-
+    	
     	// MCMC
+//    	MCMCOptions options = new MCMCOptions();
+//    	options.setChainLength(100);
+    	
     	MCMC mcmc = new MCMC("mcmc1");
-    	MCMCOptions options = new MCMCOptions();
-//    	options.setChainLength(10000);
-    	options.setChainLength(lengthScaler*100);
-//    	options.setUseCoercion(true); // autoOptimize = true
-//    	options.setCoercionDelay(lengthScaler*5);
-//    	options.setTemperature(1.0);
-//    	options.setFullEvaluationCount(lengthScaler*2);
-    	mcmc.setShowOperatorAnalysis(true);
-    	mcmc.init(options, srpLikelihood, schedule, loggers);
+		mcmc.init(100, srpLikelihood, operators , loggers);
+    	mcmc.setShowOperatorAnalysis(false);
     	mcmc.run();
-
-    	// time
-//    	System.out.println(mcmc.getTimer().toString());
-
-    	// Tracer
-    	List<Trace> traces = formatter.getTraces();
-//    	ArrayTraceList traceList = new ArrayTraceList("RandomLocalClockTest", traces, 0);
-//		Trace trace = traces.get(0);
-
+    	
+    	OperatorSchedule schedule = mcmc.getOperatorSchedule();
         for (int i = 0; i < schedule.getOperatorCount(); i++) {
         	MCMCOperator op = schedule.getOperator(i);
         	double acceptanceProb = MCMCOperator.Utils.getAcceptanceProbability(op);
-        	assertTrue("0 AcceptanceProb",acceptanceProb>0.01);
+        	assertTrue("~0 AcceptanceProb:"+acceptanceProb, acceptanceProb > 0.01);
+        	assertTrue("~1 AcceptanceProb:"+acceptanceProb, acceptanceProb < 0.99);
         }
+        
+    	List<Trace> traces = formatter.getTraces();
 		for (Trace<?> trace : traces) {
 			if (trace.getName().equals("ShortReadLikelihood")) {
-
 				double startValue = (Double) trace.getValue(0);
-				double endValue = (Double) trace
-						.getValue(trace.getValuesSize() - 1);
-				assertEquals(expectedInit , startValue,0);
+				double endValue = (Double) trace.getValue(trace.getValuesSize() - 1);
+				assertEquals(initLikelihood , startValue, 0);
 				assertTrue(endValue > startValue);
 			}
 		}
+
 
 	}
 

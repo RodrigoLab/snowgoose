@@ -25,9 +25,5 @@ public abstract class AbstractSingleBaseOperator extends SimpleMCMCOperator {
 		return "";
 	}
 
-	@Override
-	public double doOperation() throws OperatorFailedException {
-		return 0.0;
-	}
 
 }

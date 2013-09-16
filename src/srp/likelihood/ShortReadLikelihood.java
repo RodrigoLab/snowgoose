@@ -349,7 +349,7 @@ public class ShortReadLikelihood extends AbstractModelLikelihood {
 	private double calculateSrpLikelihoodSection() {
 		
 
-		int[] swapHapRecord = haplotypeModel.getSwapInfo().getSwapHaplotypeRecord();
+		int[] swapHapRecord = haplotypeModel.getSwapInfo().getSwapInfoSWAPSECTION();
 		int hapIndex1 = swapHapRecord[0];
 		int hapIndex2 = swapHapRecord[1];
 		

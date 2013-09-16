@@ -13,22 +13,23 @@ public class SingleBaseUniformOperator extends AbstractSingleBaseOperator {
 	}
 
 	@Override
-	public String getOperatorName() {
-	
-		return OPERATOR_NAME;
-	}
-
-	@Override
 	public double doOperation() throws OperatorFailedException {
 
 		haplotypeModel.startHaplotypeOperation();
 
 		int[] posChar = alignmentMapping.getNextBaseUniform();
+		
 		haplotypeModel.swapHaplotypeSingleBase(OP, posChar);
 
 		haplotypeModel.endHaplotypeOperation();
 
 		return 0.0;
+	}
+
+	@Override
+	public String getOperatorName() {
+	
+		return OPERATOR_NAME;
 	}
 
 }

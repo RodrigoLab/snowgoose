@@ -63,7 +63,8 @@ public class SingleBaseFrequencyOperatorTest {
 
 		SimpleMCMCOperator operator = new SingleBaseFrequencyOperator(haplotypeModel, null);
     	assertEquals(operator.getOperatorName(), "SingleBaseFrequencyOperator");
- 
+    	assertEquals(operator.getPerformanceSuggestion(), "");
+    	
 	}
 
 	
@@ -109,7 +110,8 @@ public class SingleBaseFrequencyOperatorTest {
     	freqs.setParameterValue(1, 0);
     	freqs.setParameterValue(3, 0.25);
 		count = new int['T'+1]; 
-    	for (int i = 0; i < 100; i++) {
+		int ite = 1000;
+    	for (int i = 0; i < ite; i++) {
     		operator.doOperation();
     		
     		int newChar = haplotypeModel.getSwapInfo().getSwapInfoSWAPBASE()[2];
@@ -122,10 +124,8 @@ public class SingleBaseFrequencyOperatorTest {
 			assertEquals(haps[0], newHap);
 
 		}
-    	TestUtils.assertExpectationRange(count['G'], 75, 10);
-    	TestUtils.assertExpectationRange(count['T'], 25, 10);
-    	freqs.setParameterValue(1, 0);
-    	freqs.setParameterValue(3, 0.25);
+    	TestUtils.assertExpectationRange(count['G'], 0.75*ite, 0.05*ite);
+    	TestUtils.assertExpectationRange(count['T'], 0.25*ite, 0.05*ite);
 
 
 	}
@@ -151,8 +151,9 @@ public class SingleBaseFrequencyOperatorTest {
 		HaplotypeModel haplotypeModel = new HaplotypeModel(aMap, hapAlignment);
 
 		Parameter freqs = new Parameter.Default("frequency", haplotypeModel.getStateFrequencies());
+		
 		SimpleMCMCOperator operator = new SingleBaseFrequencyOperator(haplotypeModel, freqs);
-    	
+		MCMCOperator[] operators = new MCMCOperator[]{operator};
     	// Operators
     	OperatorSchedule schedule = new SimpleOperatorSchedule();
     	schedule.addOperator(operator);
@@ -166,13 +167,14 @@ public class SingleBaseFrequencyOperatorTest {
     	loggers[0] = new MCLogger(formatter, 1, false);
     	loggers[0].add(srpLikelihood );
 
-    	// MCMC
-    	MCMCOptions options = new MCMCOptions();
-    	options.setChainLength(100);
-//    	mcmc.setShowOperatorAnalysis(true);
+//    	// MCMC
+//    	MCMCOptions options = new MCMCOptions();
+//    	options.setChainLength(100);
+////    	mcmc.setShowOperatorAnalysis(true);
     	
     	MCMC mcmc = new MCMC("mcmc1");
-    	mcmc.init(options, srpLikelihood, schedule, loggers);
+		mcmc.init(100, srpLikelihood, operators , loggers);
+    	mcmc.setShowOperatorAnalysis(false);
     	mcmc.run();
     	
         for (int i = 0; i < schedule.getOperatorCount(); i++) {

@@ -103,7 +103,7 @@ public class AlignmentMapping {
 		if (srp.getIsValid()){
 			seqNameToSeqID.put(srp.getName(), srpCount);
 			shortReads.add(srpCount, srp);
-			
+
 			for (int j = srp.getStart(); j < srp.getEnd(); j++) {
 				mapToSrp[j].add(srpCount);
 				char c = srp.getFullSrpCharAt(j);
@@ -221,7 +221,7 @@ public class AlignmentMapping {
 		posChar[0] = MathUtils.nextInt(haplotypeLength);
 		int[] chars = listOfAvailableChar2.get(  posChar[0] );
 		int size = chars.length;
-
+//		System.out.println(posChar[0] +"\t"+ Arrays.toString(chars) +"\t"+ size +"\t"+ posChar[1]);
 //		switch (size) {
 //		case 0:
 //			posChar[1] = GAP;
@@ -249,6 +249,7 @@ public class AlignmentMapping {
 		else{
 			posChar[1] = GAP;
 		}
+		
 		return posChar;
 	}
 //	 

@@ -142,24 +142,51 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 	}	
 	
 
-	
+	public void swapHaplotypeColumn(int[] posChar){
+
+		int[] allOldChars = new int[getHaplotypeCount()];
+			
+		for (int i = 0; i < getHaplotypeCount(); i++) {
+			Haplotype haplotype = haplotypes.get(i);
+			allOldChars[i] = haplotype.replaceCharAt(posChar[0], posChar[1]);
+		}
+			
+		storeOperationRecord(Operation.SWAPCOLUMN, posChar, allOldChars);
+
+
+	}
 	public void swapHaplotypeSingleBase(Operation op, int[] posChar){
 		
 		int[] swapInfoArray = new int[4];
+		swapInfoArray[0] = MathUtils.nextInt(getHaplotypeCount());
 		swapInfoArray[1] = posChar[0];
 		swapInfoArray[2] = posChar[1];
 		
-		swapInfoArray[0] = MathUtils.nextInt(getHaplotypeCount());
-		
 		Haplotype haplotype = haplotypes.get(swapInfoArray[0]);
-		
 		swapInfoArray[3] = haplotype.replaceCharAt(posChar[0], posChar[1]);
 		
 		storeOperationRecord(op, swapInfoArray);
+//		swapInfo.storeOperation(op, swapInfoArray);
 
 	}
 
 
+	public void swapHaplotypeMultiBases(Operation op, int[] allNewChars){
+		int hapIndex = MathUtils.nextInt(getHaplotypeCount());
+		
+		Haplotype haplotype = haplotypes.get(hapIndex);
+		
+		int[] allOldChars = new int[allNewChars.length];
+		for (int i = 0; i < haplotypesLength; i++) {
+			int newChar = allNewChars[i];
+			if(newChar>0){
+				allOldChars[i] = haplotype.replaceCharAt(i, newChar);
+			}
+		}
+		storeOperationRecord(op, new int[]{hapIndex}, allNewChars, allOldChars);
+//		swapInfo.storeOperation(op, new int[]{hapIndex}, allPosChars);
+		
+	}
 	public void swapHaplotypeMultiBases(Operation op, int[][] allPosChars){
 		int hapIndex = MathUtils.nextInt(getHaplotypeCount());
 		
@@ -172,12 +199,14 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 			}
 		}
 		storeOperationRecord(op, hapIndex, allPosChars);
+//		swapInfo.storeOperation(op, new int[]{hapIndex}, allPosChars);
 		
 	}
 
 	
-	
-//	private int replaceHaplotypeCharAt(int hapIndex, int pos, int newChar){
+
+
+	//	private int replaceHaplotypeCharAt(int hapIndex, int pos, int newChar){
 //		
 //		int oldChar = haplotypes.get(hapIndex).replaceCharAt(pos, (char) newChar);
 //		return oldChar;
@@ -188,9 +217,9 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 //		return oldChar;
 //		
 //	}
-	private void resetHaplotypeToOldChar(int[] swapArray){
-		Haplotype haplotype = haplotypes.get(swapArray[0]);
-		haplotype.replaceCharAt(swapArray[1], swapArray[3]);
+	private void resetHaplotypeToOldChar(int[] swapRecord){
+		Haplotype haplotype = haplotypes.get(swapRecord[0]);
+		haplotype.replaceCharAt(swapRecord[1], swapRecord[3]);
 
 //		swapHaplotypeCharAt(swapArray[0], swapArray[1], swapArray[3]);
 	}
@@ -210,10 +239,14 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 	public Operation getOperation() {
 		return swapInfo.getOperation();
 	}
-	public void storeOperationRecord(Operation op, Object... opRecord){
+	public void storeOperationRecord(Operation op, int[]... opRecord){
 		swapInfo.storeOperation(op, opRecord);
 	}
-
+	
+	private void storeOperationRecord(Operation op, int hapIndex,
+			int[][] opRecord) {
+		swapInfo.storeOperation(op, hapIndex, opRecord);		
+	}
 
 
 	
@@ -310,13 +343,14 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 	public void reject() {
 		
 		Operation op = swapInfo.getOperation();
-		int[] temp;
+//		int[] temp;
 		switch (op) {
+		
 		case NONE:
 			break;
 		case SWAPSINGLE:
 
-			temp = swapInfo.getSwapInfoSWAPBASE();
+			int[] temp = swapInfo.getSwapInfoSWAPBASE();
 			//			long time1 = System.currentTimeMillis();
 //			for (int i = 0; i < 1e9; i++) {
 			resetHaplotypeToOldChar(temp);
@@ -346,7 +380,7 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 			break;
 		
 		case SWAPSECTION:
-			temp = swapInfo.getSwapHaplotypeRecord();
+			int[] swapSection = swapInfo.getSwapInfoSWAPSECTION();
 			
 //			time1 = System.currentTimeMillis();
 ////			for (int i = 0; i < 1e8; i++) {
@@ -359,10 +393,19 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 			
 			
 			for (int i = 0; i < 2; i++) {
-				haplotypes.get(temp[i]).restoreState();
+				haplotypes.get(swapSection[i]).restoreState();
 			}
 			break;
+		case SWAPCOLUMN:
+			int[][] swapColumn = swapInfo.getSwapInfoSWAPCOLUMN();
+			int pos = swapColumn[0][0];
+			int[] allOldChars2 = swapColumn[1];
 
+			for (int i = 0; i < getHaplotypeCount(); i++) {
+				haplotype = haplotypes.get(i);
+				haplotype.replaceCharAt(pos, allOldChars2[i]);
+			}
+			break;
 		default:
 			throw new IllegalArgumentException("Unknown operation type: " + op);
 

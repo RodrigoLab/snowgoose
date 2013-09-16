@@ -28,13 +28,6 @@ public class SwapBasesMultiOperator extends AbstractSwapBasesOperator {
 	}
 
     @Override
-	public double getRawParameter() {
-		// 
-//		System.err.println("getRaw");
-		return swapLength;
-	}
-
-	@Override
 	public String getPerformanceSuggestion() {
 
 		return "";

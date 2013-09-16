@@ -10,12 +10,13 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import dr.inference.operators.CoercionMode;
-
+import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.AlignmentUtils;
 import srp.haplotypes.HaplotypeModel;
-import srp.haplotypes.operator.AbstractSwapBasesOperator;
 import srp.haplotypes.operator.HaplotypeSwapSectionOperator;
+import dr.inference.operators.CoercableMCMCOperator;
+import dr.inference.operators.CoercionMode;
+import dr.inference.operators.SimpleMCMCOperator;
 
 public class HaplotypeSwapSectionOperatorTest {
 
@@ -36,6 +37,27 @@ public class HaplotypeSwapSectionOperatorTest {
 	}
 
 	@Test
+	public void testGetOperatorName() {
+		String[] seqs = new String[]{
+				"AAAAAAAAATGTGTTTT....",
+				".....CCCCCCCCCCCCCCCCCCCTTTTCCCC....",
+				"..........GGGGGGGGGGGGGGCGCGTATAGGGG",
+				"...............TTTTTTTTTACACTATA....",
+				"CCCCCTTTTTAAAAAGGGGGTCGATGCAGTAGCTAG"
+				};
+		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
+		
+		HaplotypeModel haplotypeModel = new HaplotypeModel(aMap, 3);
+
+		int nBases = 10;
+		CoercableMCMCOperator operator = new HaplotypeSwapSectionOperator(haplotypeModel, nBases, null);
+    	assertEquals(operator.getOperatorName(), "HaplotypeSwapSectionOperator");
+    	assertEquals(operator.getPerformanceSuggestion(), "");
+    	
+    	
+    	
+	}
+	@Test
 	public void testDoOperation() throws Exception {
 		
 		String[] srp = new String[]{
@@ -51,7 +73,7 @@ public class HaplotypeSwapSectionOperatorTest {
 
 		for (int i = 1; i < 10; i++) {
 			HaplotypeModel haplotypeModel = AlignmentUtils.createHaplotypeModel(srp, haps);
-			AbstractSwapBasesOperator op = new HaplotypeSwapSectionOperator(haplotypeModel, i, CoercionMode.COERCION_OFF);
+			SimpleMCMCOperator op = new HaplotypeSwapSectionOperator(haplotypeModel, i, CoercionMode.COERCION_OFF);
 
 			for (int j = 0; j < 100; j++) {
 				op.doOperation();

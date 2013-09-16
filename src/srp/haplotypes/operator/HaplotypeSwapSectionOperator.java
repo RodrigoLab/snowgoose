@@ -17,7 +17,7 @@ import dr.math.MathUtils;
 public class HaplotypeSwapSectionOperator extends AbstractSwapBasesOperator {
 
 	
-	public final static String OPERATOR_NAME = "SwapSectionOperator";
+	public final static String OPERATOR_NAME = HaplotypeSwapSectionOperator.class.getSimpleName();
 	public final static Operation OP = Operation.SWAPSECTION;
 
 	
@@ -35,7 +35,7 @@ public class HaplotypeSwapSectionOperator extends AbstractSwapBasesOperator {
 	@Override
 	public String getPerformanceSuggestion() {
 
-		return "getPerformanceSuggestion";
+		return "";
 	}
 
 	@Override
@@ -44,11 +44,6 @@ public class HaplotypeSwapSectionOperator extends AbstractSwapBasesOperator {
 		return OPERATOR_NAME;
 	}
 
-
-    @Override
-	public double getRawParameter() {
-		return swapLength;
-	}
 
     @Override
 	public double doOperation() throws OperatorFailedException {

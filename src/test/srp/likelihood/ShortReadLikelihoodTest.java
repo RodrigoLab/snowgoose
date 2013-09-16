@@ -23,7 +23,7 @@ import srp.haplotypes.operator.SingleBaseOperator;
 import srp.haplotypes.operator.SwapBasesUniformOperator;
 import srp.likelihood.ShortReadLikelihood;
 import test.mcmc.MCMCSetupHelper;
-import test.srp.haplotypes.operator.SwapBaseUniformOperatorTest;
+import test.srp.haplotypes.operator.SwapBasesUniformOperatorTest;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.SimpleAlignment;
 import dr.inference.distribution.DistributionLikelihood;
@@ -423,7 +423,7 @@ public class ShortReadLikelihoodTest {
 
 	
 
-//	@Test
+	@Test
 	public void testCalculateLikelihoodTime() throws Exception {
 		String[] seqs = new String[]{
 				"AAAAAATTTTT.........",
@@ -453,7 +453,8 @@ public class ShortReadLikelihoodTest {
 		long time2 = System.currentTimeMillis();
 		System.out.println((time2 - time1) + "\t");
 		
-		haplotypeModel.storeOperationRecord(Operation.SWAPSINGLE, new int[]{1,1,42,42});
+//		haplotypeModel.storeOperationRecord(Operation.SWAPSINGLE, new int[]{1,1,42,42});
+		haplotypeModel.swapHaplotypeSingleBase(Operation.SWAPSINGLE, new int[]{1,42});
 		time1 = System.currentTimeMillis();
 		for (int i = 0; i < 1e6; i++) {
 			srL.makeDirty();
