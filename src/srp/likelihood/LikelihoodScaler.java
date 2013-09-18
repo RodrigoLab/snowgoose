@@ -76,4 +76,15 @@ public class LikelihoodScaler {
 		}
 		double logLikelihood = Math.log(sumLikelihood) + logScaler;
 	}
+
+	
+	public void updateScaledLogProb(double oldScaledLogProb, double newScaledLogProb) {
+		sumScaledLikelihood = sumScaledLikelihood - oldScaledLogProb + newScaledLogProb;
+		
+	}
+
+	public void setSumScaledProb(double logProb) {
+		sumScaledLikelihood = scale(logProb);
+		
+	}
 }

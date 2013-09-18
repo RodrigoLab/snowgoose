@@ -118,8 +118,8 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 		Haplotype haplotype = haplotypes.get(hapIndex);
 		for (int i = 0; i < haplotypesLength; i++) {
 			//TODO: Which is the "good" starting point
-			char newChar = (char) aMap.nextBaseAt(i);
-//			char newChar = (char) aMap.nextBaseEqualFreq();
+//			char newChar = (char) aMap.nextBaseAt(i);
+			char newChar = (char) aMap.nextBaseEqualFreq();
 			haplotype.setCharAt(i, newChar);
 			
 		}

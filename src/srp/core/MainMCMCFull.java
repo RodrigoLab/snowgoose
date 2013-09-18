@@ -41,19 +41,19 @@ public class MainMCMCFull {
 
 	public static void main(String[] args) throws Exception {
 
-//		String dataDir = "/home/sw167/workspaceSrp/ABI/unittest/testData/";
-//		int runIndex = 1;
-//		int totalSamples = 100;
-//		int logInterval = 1000;
-//		int noOfTrueHaplotype = 7;
-//		int noOfRecoveredHaplotype=10;
+		String dataDir = "/home/sw167/workspaceSrp/ABI/unittest/testData/";
+		int runIndex = 1;
+		int totalSamples = 500;
+		int logInterval = 1000;
+		int noOfTrueHaplotype = 7;
+		int noOfRecoveredHaplotype=10;
 		
-		String dataDir = args[0];
-		int runIndex = Integer.parseInt(args[1]);
-		int totalSamples = Integer.parseInt(args[2]);
-		int logInterval = Integer.parseInt(args[3]);
-		int noOfTrueHaplotype = Integer.parseInt(args[4]);
-		int noOfRecoveredHaplotype= Integer.parseInt(args[5]);
+//		String dataDir = args[0];
+//		int runIndex = Integer.parseInt(args[1]);
+//		int totalSamples = Integer.parseInt(args[2]);
+//		int logInterval = Integer.parseInt(args[3]);
+//		int noOfTrueHaplotype = Integer.parseInt(args[4]);
+//		int noOfRecoveredHaplotype= Integer.parseInt(args[5]);
 
 		
 		String hapRunIndex = "H"+noOfTrueHaplotype+"_"+runIndex;

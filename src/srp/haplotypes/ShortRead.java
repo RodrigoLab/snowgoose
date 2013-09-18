@@ -19,6 +19,10 @@ public class ShortRead {
 
 	private boolean isValid = false;
 
+	private Integer lengthInteger;
+
+//	private char[] fullSrp2;
+
 	public ShortRead(Sequence seq) {
 		this.fullSrp = seq.getSequenceString();
 		this.srpName = seq.getTaxon().getId();
@@ -36,17 +40,19 @@ public class ShortRead {
 			// System.out.println(fragmentSrp.length() +"\t"+ (end-start));
 
 		}
+//		fullSrp2 = fullSrp.toCharArray();
 	}
 
 	private void setStartEnd(int start, int end) {
 		this.start = start;
 		this.end = end;
 		this.length = this.end - this.start;
-
+		lengthInteger = length;
 	}
 
 	public char getFullSrpCharAt(int i) {
 		return fullSrp.charAt(i);
+//		return fullSrp2[i];
 	}
 
 	public boolean getIsValid() {
@@ -75,6 +81,12 @@ public class ShortRead {
 
 	public int getLength() {
 		return length;
+	}
+
+	public Integer getLengthInteger() {
+
+		return lengthInteger;
+		
 	}
 
 }

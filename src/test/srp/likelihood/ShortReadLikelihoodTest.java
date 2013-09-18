@@ -18,8 +18,19 @@ import srp.core.DataImporter;
 import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.AlignmentUtils;
 import srp.haplotypes.HaplotypeModel;
+import srp.haplotypes.HaplotypeModelUtils;
 import srp.haplotypes.Operation;
+import srp.haplotypes.operator.AbstractSingleBaseOperator;
+import srp.haplotypes.operator.AbstractSwapBasesOperator;
+import srp.haplotypes.operator.ColumnOperator;
+import srp.haplotypes.operator.HaplotypeRecombinationOperator;
+import srp.haplotypes.operator.HaplotypeSwapSectionOperator;
+import srp.haplotypes.operator.SingleBaseEmpiricalOperator;
+import srp.haplotypes.operator.SingleBaseFrequencyOperator;
 import srp.haplotypes.operator.SingleBaseOperator;
+import srp.haplotypes.operator.SingleBaseUniformOperator;
+import srp.haplotypes.operator.SwapBasesEmpiricalOperator;
+import srp.haplotypes.operator.SwapBasesMultiOperator;
 import srp.haplotypes.operator.SwapBasesUniformOperator;
 import srp.likelihood.ShortReadLikelihood;
 import test.mcmc.MCMCSetupHelper;
@@ -34,6 +45,7 @@ import dr.inference.model.CompoundLikelihood;
 import dr.inference.model.Likelihood;
 import dr.inference.model.Model;
 import dr.inference.model.OneOnXPrior;
+import dr.inference.model.Parameter;
 import dr.inference.operators.CoercableMCMCOperator;
 import dr.inference.operators.CoercionMode;
 import dr.inference.operators.GeneralOperator;
@@ -43,11 +55,13 @@ import dr.inference.operators.OperatorFailedException;
 import dr.inference.operators.OperatorSchedule;
 import dr.inference.operators.SimpleOperatorSchedule;
 import dr.inferencexml.model.CompoundLikelihoodParser;
+import dr.math.MathUtils;
 import dr.math.distributions.LogNormalDistribution;
 
 public class ShortReadLikelihoodTest {
 
-
+	
+	private HaplotypeModel haplotypeModelH4;
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 
@@ -60,8 +74,20 @@ public class ShortReadLikelihoodTest {
 	@Before
 	public void setUp() throws Exception {
 
-//		shortReads = new ArrayList<>();
-//		haplotypes = new ArrayList<>();
+
+		String dataDir = "/home/sw167/workspaceSrp/ABI/unittest/";
+	
+		String trueAlignmentFile = "H4_haplotypes.phyml";
+		String shortReadFile = "H4_srp.fasta";
+		
+		DataImporter dataImporter = new DataImporter(dataDir);
+		
+		Alignment shortReads = dataImporter.importAlignment(shortReadFile);
+		AlignmentMapping aMap = new AlignmentMapping(shortReads);
+		
+		Alignment trueAlignment = dataImporter.importAlignment(trueAlignmentFile);
+		haplotypeModelH4 = new HaplotypeModel(aMap, trueAlignment.getSequenceCount());
+	
 	}
 
 	@After
@@ -326,7 +352,7 @@ public class ShortReadLikelihoodTest {
 	@Test
 	public void testRandomQuickRun() throws Exception{
 
-		String dataDir = "/home/sw167/workspace/ABI/unittest/";
+		String dataDir = "/home/sw167/workspaceSrp/ABI/unittest/";
 
 		String trueAlignmentFile = "H4_haplotypes.phyml";
 		String shortReadFile = "H4_srp.fasta";
@@ -401,6 +427,7 @@ public class ShortReadLikelihoodTest {
 		HaplotypeModel haplotypeModel = new HaplotypeModel(aMap, hapAlignment);
 
 		ShortReadLikelihood srL = new ShortReadLikelihood(haplotypeModel);
+		
 		double logLikelihood = srL.getLogLikelihood();
 
 		
@@ -425,44 +452,180 @@ public class ShortReadLikelihoodTest {
 
 	@Test
 	public void testCalculateLikelihoodTime() throws Exception {
-		String[] seqs = new String[]{
-				"AAAAAATTTTT.........",
-				"..CCCCCCCCCCCCC.....",
-				"......GGGGGGGGGGG...",
-				"........TTTTTTTTT...",
-				"............ACGTACGT",
-				};
-		
-		String[] haps = new String[]{
 
-				"CCCCCTTTTTAAAAAGGGGG",
-				"ACGTACGTACGTACGTACGT",
-
-				};
+//		String[] seqs = new String[]{
+//				"AAAAAATTTTT.........",
+//				"..CCCCCCCCCCCCC.....",
+//				"......GGGGGGGGGGG...",
+//				"........TTTTTTTTT...",
+//				"............ACGTACGT",
+//				};
+//		
+//		String[] haps = new String[]{
+//
+//				"CCCCCTTTTTAAAAAGGGGG",
+//				"ACGTACGTACGTACGTACGT",
+//
+//				};
+//		
+//		HaplotypeModel haplotypeModel = AlignmentUtils.createHaplotypeModel(seqs, haps);
+//
+//		ShortReadLikelihood srL = new ShortReadLikelihood(haplotypeModel);
+//
 		
-		HaplotypeModel haplotypeModel = AlignmentUtils.createHaplotypeModel(seqs, haps);
+		
+
+		String dataDir = "/home/sw167/workspaceSrp/ABI/unittest/";
+
+		String trueAlignmentFile = "H4_haplotypes.phyml";
+		String shortReadFile = "H4_srp.fasta";
+		
+		
+		DataImporter dataImporter = new DataImporter(dataDir);
+		
+		Alignment shortReads = dataImporter.importAlignment(shortReadFile);
+		AlignmentMapping aMap = new AlignmentMapping(shortReads);
+		
+		Alignment trueAlignment = dataImporter.importAlignment(trueAlignmentFile);
+
+		HaplotypeModel haplotypeModel = new HaplotypeModel(aMap, trueAlignment.getSequenceCount());
 
 		ShortReadLikelihood srL = new ShortReadLikelihood(haplotypeModel);
-
+		
 		double logLikelihood = srL.getLogLikelihood();
 		long time1 = System.currentTimeMillis();
-		for (int i = 0; i < 1e6; i++) {
+		double ite =  1e3;
+		for (int i = 0; i < ite; i++) {
 			srL.makeDirty();
-			logLikelihood = srL.getLogLikelihood();
+//			logLikelihood = srL.getLogLikelihood();
 		}
 		long time2 = System.currentTimeMillis();
-		System.out.println((time2 - time1) + "\t");
+		System.out.println((time2 - time1)/ite + " ms per full calculation");
 		
-//		haplotypeModel.storeOperationRecord(Operation.SWAPSINGLE, new int[]{1,1,42,42});
-		haplotypeModel.swapHaplotypeSingleBase(Operation.SWAPSINGLE, new int[]{1,42});
+		
+		ite = 1e5;
 		time1 = System.currentTimeMillis();
-		for (int i = 0; i < 1e6; i++) {
+		long total = 0;
+		for (int i = 0; i < ite; i++) {
+
+			srL.storeModelState();
+//			haplotypeModel.swapHaplotypeSingleBase(Operation.SWAPSINGLE, new int[]{600,'T'});
+			int pos = MathUtils.nextInt(haplotypeModel.getHaplotypeLength());
+			
+			haplotypeModel.swapHaplotypeColumn(new int[]{pos, 'T'});
 			srL.makeDirty();
+
+			time1 = System.currentTimeMillis();
 			logLikelihood = srL.getLogLikelihood();
+			
+			
+			time2 = System.currentTimeMillis();
+			total += (time2-time1);
+			srL.restoreModelState();
 		}
 		time2 = System.currentTimeMillis();
 		
-		System.out.println((time2 - time1) + "\t");
+		System.out.println(total/ite + " ms per calculations");
+		
+		
+	}
+		
+	@Test
+	public void testCalculateLikelihoodColumn() throws Exception {
+		
+		Parameter freqs = new Parameter.Default("frequency", haplotypeModelH4.getStateFrequencies());
+		MCMCOperator op = new ColumnOperator(haplotypeModelH4, haplotypeModelH4.getHaplotypeCount(), freqs, null);
+		runTestCalculateSrpLikelihoodOperators(haplotypeModelH4, op, ColumnOperator.OP);
+	}
+	@Test
+	public void testCalculateLikelihoodSingleBase() throws Exception {
+		
+		MCMCOperator op = new SingleBaseOperator(haplotypeModelH4, 0);
+		runTestCalculateSrpLikelihoodOperators(haplotypeModelH4, op, AbstractSingleBaseOperator.OP);
+		
+	}
+	@Test
+	public void testCalculateLikelihoodSingleBaseUniform() throws Exception {
+		
+		MCMCOperator
+		op = new SingleBaseUniformOperator(haplotypeModelH4, 0);
+		runTestCalculateSrpLikelihoodOperators(haplotypeModelH4, op, AbstractSingleBaseOperator.OP);
+	}
+	@Test
+	public void testCalculateLikelihoodSingleBaseEmpirical() throws Exception {
+		
+		MCMCOperator op = new SingleBaseEmpiricalOperator(haplotypeModelH4, 0);
+		runTestCalculateSrpLikelihoodOperators(haplotypeModelH4, op, AbstractSingleBaseOperator.OP);
+		}
+	@Test
+	public void testCalculateLikelihoodSingleBaseFrequency() throws Exception {
+			
+
+		Parameter freqs = new Parameter.Default("frequency", haplotypeModelH4.getStateFrequencies());
+		MCMCOperator op = new SingleBaseFrequencyOperator(haplotypeModelH4, freqs);
+		runTestCalculateSrpLikelihoodOperators(haplotypeModelH4, op, AbstractSingleBaseOperator.OP);
+		
+		
+	}
+	@Test
+	public void testCalculateLikelihoodMultiBases() throws Exception {
+		
+		MCMCOperator op = new SwapBasesMultiOperator(haplotypeModelH4, 50, CoercionMode.COERCION_OFF);
+		runTestCalculateSrpLikelihoodOperators(haplotypeModelH4, op, AbstractSwapBasesOperator.OP);
+	}
+	@Test
+	public void testCalculateLikelihoodMultiBasesEmpirical() throws Exception {
+		
+		MCMCOperator op = new SwapBasesEmpiricalOperator(haplotypeModelH4, 50, CoercionMode.COERCION_OFF);
+		runTestCalculateSrpLikelihoodOperators(haplotypeModelH4, op, AbstractSwapBasesOperator.OP);
+	}
+	@Test
+	public void testCalculateLikelihoodMultiBasesUniform() throws Exception {
+		
+		MCMCOperator op = new SwapBasesUniformOperator(haplotypeModelH4, 50, CoercionMode.COERCION_OFF);
+		runTestCalculateSrpLikelihoodOperators(haplotypeModelH4, op, AbstractSwapBasesOperator.OP);
+	}
+	@Test
+	public void testCalculateLikelihoodSwapSectionRecombination() throws Exception {
+		
+		MCMCOperator op = new HaplotypeRecombinationOperator(haplotypeModelH4, 0);
+		runTestCalculateSrpLikelihoodOperators(haplotypeModelH4, op, HaplotypeRecombinationOperator.OP);
+	}
+	@Test
+	public void testCalculateLikelihoodSwapSection() throws Exception {
+		
+		MCMCOperator op = new HaplotypeSwapSectionOperator(haplotypeModelH4, 50, null);
+		runTestCalculateSrpLikelihoodOperators(haplotypeModelH4, op, HaplotypeSwapSectionOperator.OP);
+	}
+	
+	public void runTestCalculateSrpLikelihoodOperators(HaplotypeModel haplotypeModel, MCMCOperator op, Object expectedOperation) throws Exception {
+	
+		
+		ShortReadLikelihood srL = new ShortReadLikelihood(haplotypeModel);
+		assertEquals(Operation.NONE, srL.getOperation());
+		for (int i = 0; i < 100; i++) {
+	    	srL.storeModelState();
+	        op.operate();
+	
+	        double score = srL.getLogLikelihood();
+	        assertEquals(expectedOperation, srL.getOperation());
+	        
+	        HaplotypeModel duplicateHaplotypeModel = HaplotypeModelUtils.copyHaplotypeModel(haplotypeModel);
+	        ShortReadLikelihood srLFull = new ShortReadLikelihood(duplicateHaplotypeModel);
+	        double expected = srLFull.getLogLikelihood();
+	        
+	        assertEquals(Operation.NONE, srLFull.getOperation());
+	        assertEquals(expected, score, 0);
+	
+	        boolean accept = MathUtils.nextBoolean();    		
+	        if (accept) {
+	            op.accept(0);
+	            srL.acceptModelState();
+	        } else {
+	            op.reject();
+	            srL.restoreModelState();
+	        }
+	    }
 		
 		
 	}

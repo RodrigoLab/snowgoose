@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import srp.haplotypes.HaplotypeModel;
+import srp.haplotypes.operator.ColumnOperator;
 import srp.haplotypes.operator.HaplotypeRecombinationOperator;
 import srp.haplotypes.operator.HaplotypeSwapSectionOperator;
 import srp.haplotypes.operator.SingleBaseEmpiricalOperator;
@@ -191,7 +192,10 @@ public class MCMCSetupHelper {
 				operator.setWeight(opTiny);
 				OperatorList.add(operator);
 				
-
+				operator = new ColumnOperator(haplotypeModel, haplotypeModel.getHaplotypeCount(), parameter, null);
+				operator.setWeight(opSmall);
+				OperatorList.add(operator);
+				
 				operator = new SingleBaseFrequencyOperator(haplotypeModel, parameter);
 				operator.setWeight(opLarge);
 				OperatorList.add(operator);

@@ -3,6 +3,7 @@ package srp.haplotypes;
 import java.util.Arrays;
 
 import dr.evolution.alignment.Alignment;
+import dr.evolution.alignment.SimpleAlignment;
 
 public class HaplotypeModelUtils {
 
@@ -95,5 +96,18 @@ public class HaplotypeModelUtils {
 
 		}
 		return sps;
+	}
+
+	public static HaplotypeModel copyHaplotypeModel(
+			HaplotypeModel haplotypeModel) {
+		
+		
+        SimpleAlignment alignment = new SimpleAlignment();
+        for (int j = 0; j < haplotypeModel.getHaplotypeCount(); j++) {
+        	alignment.addSequence(haplotypeModel.getHaplotype(j));
+		}
+
+        HaplotypeModel copyHaplotypeModel = new HaplotypeModel(haplotypeModel.getAlignmentMapping(), alignment);
+		return copyHaplotypeModel;
 	}
 }
