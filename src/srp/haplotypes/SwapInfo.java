@@ -10,11 +10,16 @@ public class SwapInfo {
 	/*
 	 * Record how/which move/operation is performed
 	*/
-
+	public static final int SWAP_BASE_HAP_INDEX = 0;
+	public static final int SWAP_BASE_POS_INDEX = 1;
+	public static final int SWAP_BASE_NEW_CHAR_INDEX = 2;
+	public static final int SWAP_BASE_OLD_CHAR_INDEX = 3;
+	
 	private Operation operation;
 	private int hapIndex;
 	
-	private int[] swapBase;// hapIndex, posIndex, newChar, oldChar
+	private int[] swapBaseRecord;// hapIndex, posIndex, newChar, oldChar
+	
 	private int[] swapHaplotypeSectoinRecord;
 	private int[][] allPosChars;
 	private int[] allOldChars;
@@ -67,7 +72,7 @@ public class SwapInfo {
 			case NONE:
 				break;
 			case SWAPSINGLE:
-				swapBase = swapRecord[0];
+				swapBaseRecord = swapRecord[0];
 				break;
 
 //			case SWAPMULTI:
@@ -116,7 +121,7 @@ public class SwapInfo {
 	}
 
 	public int[] getSwapInfoSWAPBASE(){
-		return swapBase;
+		return swapBaseRecord;
 	
 	}
 

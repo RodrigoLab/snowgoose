@@ -1,5 +1,7 @@
 package srp.haplotypes.operator;
 
+import java.util.Arrays;
+
 import org.apache.commons.math3.stat.StatUtils;
 
 import srp.haplotypes.AlignmentMapping;
@@ -81,7 +83,8 @@ public class ColumnOperator extends AbstractCoercableOperator {
 
 		haplotypeModel.startHaplotypeOperation();
 
-		int[] posChar = alignmentMapping.getNextBaseFrequency(frequency);
+//		int[] posChar = alignmentMapping.getNextBaseFrequency(frequency);
+		int[] posChar = haplotypeModel.getNextBaseFrequency(frequency);
 		
 		haplotypeModel.swapHaplotypeColumn(posChar);
 		

@@ -11,7 +11,6 @@ import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.HaplotypeLoggerWithTrueHaplotype;
 import srp.haplotypes.HaplotypeModel;
 import srp.likelihood.ShortReadLikelihood;
-import test.mcmc.MCMCSetupHelper;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.coalescent.CoalescentSimulator;
 import dr.evolution.coalescent.ConstantPopulation;

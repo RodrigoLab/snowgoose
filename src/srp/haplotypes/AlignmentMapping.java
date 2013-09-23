@@ -17,7 +17,8 @@ import dr.math.MathUtils;
 public class AlignmentMapping {
 
 	private static final int GAP = '-';
-	private static final char[] VALID_CHARS = Nucleotides.INSTANCE.getValidChars();
+	private static final char[] VALID_CHARS = Nucleotides.NUCLEOTIDE_CHARS;
+	char[] x = Nucleotides.INSTANCE.getValidChars();
 	private static final double[] EQUAL_FREQ = new double[]{0.25, 0.5, 0.75, 1};
 	
 	private ArrayList<Integer>[] mapToSrp; // each [] = position, each ArrayList
@@ -308,27 +309,40 @@ public class AlignmentMapping {
 	
 
 
-
+	@Deprecated
 	public int[] getNextBaseFrequency(Parameter freqs) {
-		// TODO Auto-generated method stub
-
-		posChar[0] = MathUtils.nextInt(haplotypeLength);
-		
-		double d = MathUtils.nextDouble();
-		double[] freqsValue = freqs.getParameterValues();
-		double sumFreq = 0;
-		for (int i = 0; i < freqsValue.length; i++) {
-			sumFreq += freqsValue[i];
-			if (d <= sumFreq) {
-				posChar[1] = VALID_CHARS[i];
-//				System.out.println(d +"\t"+ posChar[1] +"\t"+  sumFreq +"\t"+ Arrays.toString(freqsValue)				);
-				return posChar;
-			}
-			
-		}
-		posChar[1] = GAP;
+//		// TODO Auto-generated method stub
+//
+//		posChar[0] = MathUtils.nextInt(haplotypeLength);
+//		double d = MathUtils.nextDouble();
+//		
+////		double[] freqsValue = freqs.getParameterValues();
+////		double sumFreq = 0;
+////		for (int i = 0; i < freqsValue.length; i++) {
+////			sumFreq += freqsValue[i];
+////			if (d <= sumFreq) {
+////				posChar[1] = VALID_CHARS[i];
+//////				System.out.println(d +"\t"+ posChar[1] +"\t"+  sumFreq +"\t"+ Arrays.toString(freqsValue)				);
+////				return posChar;
+////			}
+////			
+////		}
+////		
+//		
+//		double sumFreq = 0;
+//		for (int i = 0; i < freqs.getDimension(); i++) {
+//			sumFreq += freqs.getParameterValue(i);
+//			if (d <= sumFreq) {
+//				posChar[1] = VALID_CHARS[i];
+////				System.out.println(d +"\t"+ posChar[1] +"\t"+  sumFreq +"\t"+ Arrays.toString(freqsValue)				);
+//				return posChar;
+//			}
+//			
+//		}
+//		System.err.println(d +"\t"+ sumFreq);
+//		posChar[1] = GAP;
 		return posChar;
-
+//
 	}
 
 	

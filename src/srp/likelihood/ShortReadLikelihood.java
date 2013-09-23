@@ -420,6 +420,7 @@ public class ShortReadLikelihood extends AbstractModelLikelihood {
 				}
 				eachSrpLikelihood[srpIndex] = liS.getLogLikelihood();
 			}
+			
 		}
 		
 

@@ -15,6 +15,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import srp.core.DataImporter;
+import srp.core.MCMCSetupHelper;
 import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.AlignmentUtils;
 import srp.haplotypes.HaplotypeModel;
@@ -33,7 +34,6 @@ import srp.haplotypes.operator.SwapBasesEmpiricalOperator;
 import srp.haplotypes.operator.SwapBasesMultiOperator;
 import srp.haplotypes.operator.SwapBasesUniformOperator;
 import srp.likelihood.ShortReadLikelihood;
-import test.mcmc.MCMCSetupHelper;
 import test.srp.haplotypes.operator.SwapBasesUniformOperatorTest;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.SimpleAlignment;

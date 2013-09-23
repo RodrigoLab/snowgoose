@@ -1,4 +1,4 @@
-package test.mcmc;
+package srp.core;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -138,7 +138,7 @@ public class MCMCSetupHelper {
 	private static final double opSmall = 3;
 	private static final double opMed = 10;
 	private static final double opLarge = 30;
-//	private static final double opHuge = 300;
+	private static final double opHuge = 100;
 	
 	public static ArrayList<MCMCOperator> defalutOperators(HaplotypeModel haplotypeModel,
 			Parameter... parameters) {
@@ -166,7 +166,17 @@ public class MCMCSetupHelper {
 //		operator.setWeight(opLarge);
 //		OperatorList.add(operator);
 //
-//		operator = new SwapBasesEmpiricalOperator(haplotypeModel, 3, CoercionMode.COERCION_ON);
+//		operator = new SwapBasesEmpiricalOperator(haplotypeModel, 1, CoercionMode.COERCION_OFF);
+//		operator.setWeight(opLarge);
+//		OperatorList.add(operator);
+
+//		operator = new SwapBasesEmpiricalOperator(haplotypeModel, 2, CoercionMode.COERCION_OFF);
+//		operator.setWeight(opLarge);
+//		OperatorList.add(operator);
+//		operator = new SwapBasesEmpiricalOperator(haplotypeModel, 5, CoercionMode.COERCION_OFF);
+//		operator.setWeight(opLarge);
+//		OperatorList.add(operator);
+//		operator = new SwapBasesEmpiricalOperator(haplotypeModel, 5, CoercionMode.COERCION_ON);
 //		operator.setWeight(opLarge);
 //		OperatorList.add(operator);
 
@@ -192,9 +202,9 @@ public class MCMCSetupHelper {
 				operator.setWeight(opTiny);
 				OperatorList.add(operator);
 				
-				operator = new ColumnOperator(haplotypeModel, haplotypeModel.getHaplotypeCount(), parameter, null);
-				operator.setWeight(opSmall);
-				OperatorList.add(operator);
+//				operator = new ColumnOperator(haplotypeModel, haplotypeModel.getHaplotypeCount(), parameter, null);
+//				operator.setWeight(opSmall);
+//				OperatorList.add(operator);
 				
 				operator = new SingleBaseFrequencyOperator(haplotypeModel, parameter);
 				operator.setWeight(opLarge);
