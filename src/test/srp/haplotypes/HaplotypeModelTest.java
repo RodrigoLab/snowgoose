@@ -30,8 +30,11 @@ import srp.haplotypes.SwapInfo;
 import srp.haplotypes.operator.SingleBaseOperator;
 import srp.haplotypes.operator.SwapBasesMultiOperator;
 import srp.likelihood.LikelihoodUtils;
+import test.TestUtils;
 import dr.evolution.alignment.Alignment;
+import dr.evolution.alignment.SimpleAlignment;
 import dr.evolution.util.Taxon;
+import dr.inference.model.Parameter;
 import dr.inference.operators.MCMCOperator;
 
 
@@ -107,10 +110,6 @@ public class HaplotypeModelTest {
 
 	
 	
-	@Test
-	public void testHaplotypeExt() throws Exception {
-		
-	}
 	
 	@Test
 	public void testInit() throws Exception {
@@ -139,16 +138,16 @@ public class HaplotypeModelTest {
 	public void testGetAlignment() throws Exception {
 		
 	
-		String[] newHaplotypes = new String[haplotypeModel.getHaplotypeCount()];
-//		for (int i = 0; i < haplotypeModel.getHaplotypeCount(); i++) {
-//			haplotypeModel.randomSeq(i);
-////			newHaplotypes[i] = String.valueOf( haplotypeModel.getCharMatrix()[i] );
-//			assertEquals(newHaplotypes[i], );
-//		}
-//
-//		Alignment expectedAlignment = haplotypeModel.getAlignment();
+		String[] newHaplotypes = expectedSequences;
+
 		for (int i = 0; i < newHaplotypes.length; i++) {
 			assertEquals(haplotypeModel.getHaplotypeString(i), haplotypeModel.getAlignedSequenceString(i)) ;
+			assertEquals(newHaplotypes[i], haplotypeModel.getHaplotypeString(i));
+			for (int j = 0; j < newHaplotypes.length; j++) {
+				char expected = newHaplotypes[i].charAt(j); 
+				assertEquals(expected,haplotypeModel.getHaplotypeCharAt(i,j));
+			}
+			
 		}
 	}
 	@Test
@@ -195,6 +194,62 @@ public class HaplotypeModelTest {
 		}	
 	}
 
+	@Test
+	public void testHaplotypeGetNextBaseFrequency() throws Exception {
+
+
+		Parameter frequency = new Parameter.Default(new double[]{0.1,0.25,0.60,0.05});
+
+		int[] count = new int['T'+1]; 
+		int ite = 1000;
+    	for (int i = 0; i < ite; i++) {
+    		int[] posChar = haplotypeModel.getNextBaseFrequency(frequency);
+    		count[posChar[1]]++;
+		}
+    	TestUtils.assertExpectationRange(count['A'], frequency.getParameterValue(0)*ite, 0.05*ite);
+    	TestUtils.assertExpectationRange(count['C'], frequency.getParameterValue(1)*ite, 0.05*ite);
+    	TestUtils.assertExpectationRange(count['G'], frequency.getParameterValue(2)*ite, 0.05*ite);
+    	TestUtils.assertExpectationRange(count['T'], frequency.getParameterValue(3)*ite, 0.05*ite);
+
+    	
+    	
+    	double[] logFreq = new double[4];
+    	for (int i = 0; i < logFreq.length; i++) {
+			logFreq[i] = Math.log(frequency.getParameterValue(i));
+		}
+    	for (int i = 0; i < logFreq.length; i++) {
+			for (int j = 0; j < logFreq.length; j++) {
+				double expected = logFreq[i]-logFreq[j];
+				assertEquals(expected, haplotypeModel.getLogqFrequency(i,j), 0);
+			}
+		}
+    	
+    	frequency = new Parameter.Default(new double[]{0.1, 0.2, 0.3, 0.4});
+    	haplotypeModel.getNextBaseFrequency(frequency);
+     	
+    	for (int i = 0; i < logFreq.length; i++) {
+			logFreq[i] = Math.log(frequency.getParameterValue(i));
+		}
+    	for (int i = 0; i < logFreq.length; i++) {
+			for (int j = 0; j < logFreq.length; j++) {
+				double expected = logFreq[i]-logFreq[j];
+				assertEquals(expected, haplotypeModel.getLogqFrequency(i,j), 0);
+			}
+		}
+    	count = new int['T'+1]; 
+    	for (int i = 0; i < ite; i++) {
+    		int[] posChar = haplotypeModel.getNextBaseFrequency(frequency);
+    		count[posChar[1]]++;
+		}
+    	TestUtils.assertExpectationRange(count['A'], frequency.getParameterValue(0)*ite, 0.05*ite);
+    	TestUtils.assertExpectationRange(count['C'], frequency.getParameterValue(1)*ite, 0.05*ite);
+    	TestUtils.assertExpectationRange(count['G'], frequency.getParameterValue(2)*ite, 0.05*ite);
+    	TestUtils.assertExpectationRange(count['T'], frequency.getParameterValue(3)*ite, 0.05*ite);
+
+    	
+    	
+	}
+	
 	
 	@Test
 	public void testCalculateSpsSingle() {

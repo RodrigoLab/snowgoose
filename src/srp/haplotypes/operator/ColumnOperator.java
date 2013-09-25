@@ -1,20 +1,12 @@
 package srp.haplotypes.operator;
 
-import java.util.Arrays;
-
-import org.apache.commons.math3.stat.StatUtils;
-
 import srp.haplotypes.AlignmentMapping;
-import srp.haplotypes.Haplotype;
 import srp.haplotypes.HaplotypeModel;
-import srp.haplotypes.Operation;
-import dr.evolution.alignment.Alignment;
+import srp.haplotypes.SwapInfo.Operation;
 import dr.inference.model.Parameter;
 import dr.inference.operators.AbstractCoercableOperator;
 import dr.inference.operators.CoercionMode;
 import dr.inference.operators.OperatorFailedException;
-import dr.inference.operators.SimpleMCMCOperator;
-import dr.math.MathUtils;
 
 
 public class ColumnOperator extends AbstractCoercableOperator {

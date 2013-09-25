@@ -4,14 +4,14 @@ import java.util.Arrays;
 
 import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.HaplotypeModel;
-import srp.haplotypes.Operation;
+import srp.haplotypes.SwapInfo.Operation;
 import dr.inference.operators.AbstractCoercableOperator;
 import dr.inference.operators.CoercionMode;
 
 public abstract class AbstractSwapBasesOperator extends AbstractCoercableOperator {
 
 	public final static Operation OP = Operation.SWAPMULTI;
-
+	
 	protected final int haplotypeLength;
 
 	protected HaplotypeModel haplotypeModel;

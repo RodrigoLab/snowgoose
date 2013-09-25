@@ -200,6 +200,7 @@ public class MCMCSetupHelper {
 				operator = new DeltaExchangeOperator(parameter, new int[] { 1,
 						1, 1, 1 }, 0.01, 0.1, false, CoercionMode.COERCION_ON);
 				operator.setWeight(opTiny);
+				operator.setWeight(opHuge);
 				OperatorList.add(operator);
 				
 //				operator = new ColumnOperator(haplotypeModel, haplotypeModel.getHaplotypeCount(), parameter, null);

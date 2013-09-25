@@ -1,10 +1,5 @@
 package srp.haplotypes;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Deque;
-import java.util.LinkedList;
 public class SwapInfo {
 
 	/*
@@ -24,6 +19,27 @@ public class SwapInfo {
 	private int[][] allPosChars;
 	private int[] allOldChars;
 	private int[] posChars;
+	
+	public enum Operation{
+		NONE(0),
+		SWAPSINGLE(1), 
+		
+//		UNIFORMSWAPBASE(6),
+		SWAPMULTI(3),
+		 
+		SWAPCOLUMN(2), 
+		
+		SWAPSECTION(5);
+		
+		private int code;
+
+		private Operation(int i){
+			code = i;
+		}
+		public int getCode(){
+			return code;
+		}
+	}
 	
 	public SwapInfo() {
 		operation = Operation.NONE;
@@ -66,7 +82,7 @@ public class SwapInfo {
 	
 	public void storeOperation(Operation op, int[]... swapRecord){
 		
-		this.operation = op;
+		operation = op;
 
 		switch (operation) {
 			case NONE:

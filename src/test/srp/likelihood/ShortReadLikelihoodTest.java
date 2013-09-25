@@ -3,10 +3,8 @@ package test.srp.likelihood;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -15,12 +13,11 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import srp.core.DataImporter;
-import srp.core.MCMCSetupHelper;
 import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.AlignmentUtils;
 import srp.haplotypes.HaplotypeModel;
 import srp.haplotypes.HaplotypeModelUtils;
-import srp.haplotypes.Operation;
+import srp.haplotypes.SwapInfo.Operation;
 import srp.haplotypes.operator.AbstractSingleBaseOperator;
 import srp.haplotypes.operator.AbstractSwapBasesOperator;
 import srp.haplotypes.operator.ColumnOperator;
@@ -34,29 +31,20 @@ import srp.haplotypes.operator.SwapBasesEmpiricalOperator;
 import srp.haplotypes.operator.SwapBasesMultiOperator;
 import srp.haplotypes.operator.SwapBasesUniformOperator;
 import srp.likelihood.ShortReadLikelihood;
-import test.srp.haplotypes.operator.SwapBasesUniformOperatorTest;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.SimpleAlignment;
-import dr.inference.distribution.DistributionLikelihood;
 import dr.inference.mcmc.MCMC;
 import dr.inference.mcmc.MCMCCriterion;
 import dr.inference.mcmc.MCMCOptions;
 import dr.inference.model.CompoundLikelihood;
 import dr.inference.model.Likelihood;
 import dr.inference.model.Model;
-import dr.inference.model.OneOnXPrior;
 import dr.inference.model.Parameter;
-import dr.inference.operators.CoercableMCMCOperator;
 import dr.inference.operators.CoercionMode;
-import dr.inference.operators.GeneralOperator;
-import dr.inference.operators.GibbsOperator;
 import dr.inference.operators.MCMCOperator;
-import dr.inference.operators.OperatorFailedException;
 import dr.inference.operators.OperatorSchedule;
 import dr.inference.operators.SimpleOperatorSchedule;
-import dr.inferencexml.model.CompoundLikelihoodParser;
 import dr.math.MathUtils;
-import dr.math.distributions.LogNormalDistribution;
 
 public class ShortReadLikelihoodTest {
 
@@ -547,8 +535,7 @@ public class ShortReadLikelihoodTest {
 	@Test
 	public void testCalculateLikelihoodSingleBaseUniform() throws Exception {
 		
-		MCMCOperator
-		op = new SingleBaseUniformOperator(haplotypeModelH4, 0);
+		MCMCOperator op = new SingleBaseUniformOperator(haplotypeModelH4, 0);
 		runTestCalculateSrpLikelihoodOperators(haplotypeModelH4, op, AbstractSingleBaseOperator.OP);
 	}
 	@Test
@@ -556,7 +543,8 @@ public class ShortReadLikelihoodTest {
 		
 		MCMCOperator op = new SingleBaseEmpiricalOperator(haplotypeModelH4, 0);
 		runTestCalculateSrpLikelihoodOperators(haplotypeModelH4, op, AbstractSingleBaseOperator.OP);
-		}
+	}
+	
 	@Test
 	public void testCalculateLikelihoodSingleBaseFrequency() throws Exception {
 			
@@ -603,18 +591,21 @@ public class ShortReadLikelihoodTest {
 		
 		ShortReadLikelihood srL = new ShortReadLikelihood(haplotypeModel);
 		assertEquals(Operation.NONE, srL.getOperation());
+		assertEquals(Operation.NONE, haplotypeModel.getSwapInfo().getOperation());
 		for (int i = 0; i < 100; i++) {
 	    	srL.storeModelState();
 	        op.operate();
 	
 	        double score = srL.getLogLikelihood();
 	        assertEquals(expectedOperation, srL.getOperation());
+	        assertEquals(expectedOperation, haplotypeModel.getSwapInfo().getOperation());
 	        
 	        HaplotypeModel duplicateHaplotypeModel = HaplotypeModelUtils.copyHaplotypeModel(haplotypeModel);
 	        ShortReadLikelihood srLFull = new ShortReadLikelihood(duplicateHaplotypeModel);
 	        double expected = srLFull.getLogLikelihood();
 	        
 	        assertEquals(Operation.NONE, srLFull.getOperation());
+	        assertEquals(Operation.NONE, duplicateHaplotypeModel.getSwapInfo().getOperation());
 	        assertEquals(expected, score, 0);
 	
 	        boolean accept = MathUtils.nextBoolean();    		

@@ -13,9 +13,9 @@ import org.w3c.dom.Element;
 import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.Haplotype;
 import srp.haplotypes.HaplotypeModel;
-import srp.haplotypes.Operation;
 import srp.haplotypes.ShortRead;
 import srp.haplotypes.SwapInfo;
+import srp.haplotypes.SwapInfo.Operation;
 import dr.inference.model.AbstractModelLikelihood;
 import dr.inference.model.Model;
 import dr.inference.model.Variable;
@@ -66,6 +66,7 @@ public class ShortReadLikelihood extends AbstractModelLikelihood {
 	
 	@Deprecated
 	private int[] counter;
+	private Operation operation;
 	
 	
 	@Override
@@ -175,12 +176,12 @@ public class ShortReadLikelihood extends AbstractModelLikelihood {
 	}
 	
 	protected double calculateLogLikelihood() {
-		swapInfo = haplotypeModel.getSwapInfo();
-		Operation op = swapInfo.getOperation();
+		SwapInfo swapInfo = haplotypeModel.getSwapInfo();
+		operation = swapInfo.getOperation();
 
 		double logLikelihood = Double.NEGATIVE_INFINITY;
 
-		switch (op) {
+		switch (operation) {
 			case NONE:
 				logLikelihood = calculateSrpLikelihoodFull();
 				break;
@@ -189,7 +190,7 @@ public class ShortReadLikelihood extends AbstractModelLikelihood {
 				break;
 
 			case SWAPSINGLE:
-				logLikelihood = calculateSrpLikelihoodSingleBaseSwap();
+				logLikelihood = calculateSrpLikelihoodSingleBaseSwap(swapInfo);
 				break;
 //			case UNIFORMSWAPBASE:
 //				logLikelihood = calculateSrpLikelihoodSingleBaseSwap();
@@ -202,7 +203,7 @@ public class ShortReadLikelihood extends AbstractModelLikelihood {
 				break;
 	
 			default:
-				throw new IllegalArgumentException("Unknown operation type: "+op);
+				throw new IllegalArgumentException("Unknown operation type: "+operation);
 	
 			}
 //	    double logLikelihood = calculateShoreReadLikelihood4();
@@ -254,13 +255,13 @@ public class ShortReadLikelihood extends AbstractModelLikelihood {
 	}
 
 
-	private double calculateSrpLikelihoodSingleBaseSwap() {
+	private double calculateSrpLikelihoodSingleBaseSwap(SwapInfo swapInfo) {
 		
-		int[] swapInfo = haplotypeModel.getSwapInfo().getSwapInfoSWAPBASE();
-		int hapIndex = swapInfo[0];
-		int swapPos = swapInfo[1];
-		int newChar = swapInfo[2];
-		int oldChar = swapInfo[3];
+		int[] swapBaseRecord = swapInfo.getSwapInfoSWAPBASE();
+		int hapIndex = swapBaseRecord[0];
+		int swapPos = swapBaseRecord[1];
+		int newChar = swapBaseRecord[2];
+		int oldChar = swapBaseRecord[3];
 		
 		ArrayList<Integer> mapPos = aMap.getMapToSrp(swapPos);
 		
@@ -552,7 +553,7 @@ public class ShortReadLikelihood extends AbstractModelLikelihood {
 	}
 
 	public Operation getOperation(){
-		return swapInfo.getOperation();
+		return operation;
 	}
 	
 	@Override

@@ -1,5 +1,6 @@
 package test.srp.haplotypes.operator;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -129,6 +130,17 @@ public class SingleBaseFrequencyOperatorTest {
 
 
 	}
+	@Test
+	public void testDoOperationLogq() throws Exception {
+		
+//		double oldProb = frequency.getParameterValue(oldChar);
+//		double newProb = frequency.getParameterValue(newChar);
+//		double logq2 = Math.log(oldProb/newProb);
+//		double logq3 = Math.log(oldProb)-Math.log(newProb);
+//		System.out.println(newChar +"\t"+ oldChar +"\t"+ (logq==logq2) +"\t"+ (logq2==logq3)+"\t"+ logq+"\t"+ logq2 +"\t"+ logq3 +"\t"+ oldProb +"\t"+ newProb +"\t"+ Arrays.toString(swapRecord) +"\t"+  Arrays.toString(frequency.getParameterValues()));
+
+	}
+	
 	@Test
 	public void testDoOperationMCMC() {
 		String[] seqs = new String[]{

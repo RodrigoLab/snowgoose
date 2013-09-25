@@ -1,13 +1,8 @@
 package srp.haplotypes.operator;
 
-import java.util.Arrays;
-import java.util.HashMap;
-
 import srp.haplotypes.HaplotypeModel;
-import srp.haplotypes.Operation;
 import dr.inference.operators.CoercionMode;
 import dr.inference.operators.OperatorFailedException;
-import dr.math.MathUtils;
 
 public class SwapBasesUniformOperator extends AbstractSwapBasesOperator{
 

@@ -1,14 +1,16 @@
 package srp.haplotypes;
 
+
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import srp.haplotypes.SwapInfo.Operation;
 
 import dr.evolution.alignment.Alignment;
 import dr.evolution.datatype.DataType;
 import dr.evolution.datatype.Nucleotides;
 import dr.evolution.util.Taxon;
 import dr.inference.model.Model;
-import dr.inference.model.NewMatrixParameter;
 import dr.inference.model.Parameter;
 import dr.inference.model.Variable;
 import dr.inference.model.Variable.ChangeType;
@@ -65,7 +67,7 @@ import dr.util.NumberFormatter;
 
 public class HaplotypeModel extends AbstractHaplotypeModel  {
 
-	private static final char[] VALID_CHARS = Nucleotides.NUCLEOTIDE_CHARS;
+	private static final char[] VALID_CHARS = new char[4];
 	
 	public static final char GAP = '-';
 	public static final String TAXON_PREFIX = "hap_";
@@ -73,7 +75,9 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 	private static final String MODEL_NAME = "HaplotypeModel";
 	private static final long serialVersionUID = -5057514703825711955L;
 
+	private static final int INDEX_OF_LAST_VALID_CHARS = 3;
 
+	
 
 //	int haplotypesCount;
 	AlignmentMapping aMap;
@@ -82,19 +86,20 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 	
 	private boolean isEdit;
 	
-	private NewMatrixParameter FreqMatrix = new NewMatrixParameter("logq");
-	
 	
 	private HaplotypeModel(AlignmentMapping aMap){
-			super(MODEL_NAME);
-	//		setupData(aMap);
-			this.aMap = aMap;
-			haplotypesLength = this.aMap.getLength();
-			
-			haplotypes = new ArrayList<Haplotype>();
-			setDataType(Nucleotides.INSTANCE);
-			
-		}
+		super(MODEL_NAME);
+
+		this.aMap = aMap;
+		haplotypesLength = this.aMap.getLength();
+		
+		haplotypes = new ArrayList<Haplotype>();
+		setDataType(Nucleotides.INSTANCE);
+
+		System.arraycopy(Nucleotides.NUCLEOTIDE_CHARS, 0, VALID_CHARS, 0, VALID_CHARS.length);
+		storedCumSumFrequency[INDEX_OF_LAST_VALID_CHARS]=1;
+		
+	}
 
 	private void addHaplotype(Haplotype haplotype) {
 		haplotype.setDataType(getDataType());
@@ -108,27 +113,27 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 		Arrays.fill(temp, DataType.GAP_CHARACTER);
 		String tempSeq = String.valueOf(temp);
 		
-//		for (int i = 0; i < hapCount; i++) {
-//			Taxon t = new Taxon(TAXON_PREFIX+i); 
-//			Haplotype haplotype = new Haplotype(t, tempSeq);
-//			addHaplotype(haplotype);
-//			randomHaplotype(i);
-//
-//		}
+		for (int i = 0; i < hapCount; i++) {
+			Taxon t = new Taxon(TAXON_PREFIX+i); 
+			Haplotype haplotype = new Haplotype(t, tempSeq);
+			addHaplotype(haplotype);
+			randomHaplotype(i);
 
-
-
-		int i=0;
-		Taxon t = new Taxon(TAXON_PREFIX+i); 
-		Haplotype haplotype = new Haplotype(t, tempSeq);
-		addHaplotype(haplotype);
-		randomHaplotype(i);
-
-		for (i = 1; i < hapCount; i++) {
-			t = new Taxon(TAXON_PREFIX+i); 
-			Haplotype haplotype2 = new Haplotype(t, haplotype.getSequenceString());
-			addHaplotype(haplotype2);
 		}
+
+//
+//
+//		int i=0;
+//		Taxon t = new Taxon(TAXON_PREFIX+i); 
+//		Haplotype haplotype = new Haplotype(t, tempSeq);
+//		addHaplotype(haplotype);
+//		randomHaplotype(i);
+//
+//		for (i = 1; i < hapCount; i++) {
+//			t = new Taxon(TAXON_PREFIX+i); 
+//			Haplotype haplotype2 = new Haplotype(t, haplotype.getSequenceString());
+//			addHaplotype(haplotype2);
+//		}
 
 
 	}
@@ -191,7 +196,7 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 
 	}
 
-
+	@Deprecated
 	public void swapHaplotypeMultiBases(Operation op, int[] allNewChars){
 		int hapIndex = MathUtils.nextInt(getHaplotypeCount());
 		
@@ -220,6 +225,7 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 			}
 		}
 		storeOperationRecord(op, hapIndex, allPosChars);
+//		storeOperationRecord(op, new int[] {hapIndex}, allPosChars[0], allPosChars[1]);
 //		swapInfo.storeOperation(op, new int[]{hapIndex}, allPosChars);
 		
 	}
@@ -257,9 +263,9 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 	public SwapInfo getSwapInfo() {
 		return swapInfo;
 	}
-	public Operation getOperation() {
-		return swapInfo.getOperation();
-	}
+//	public Operation getOperation() {
+//		return swapInfo.getOperation();
+//	}
 	public void storeOperationRecord(Operation op, int[]... opRecord){
 		swapInfo.storeOperation(op, opRecord);
 	}
@@ -459,82 +465,114 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 		return haplotypes.get(hapIndex).getChar(charIndex);
 	}
 	
-	
-
-	@Deprecated
-	public String[] toStringArray() {
-		String[] string = new String[getHaplotypeCount()];
-		for (int i = 0; i < string.length; i++) {
-			string[i] = getHaplotypeString(i);
-		}
-		return string;
+	public double getLogqFrequency(int oldChar, int newChar){
+		return storedLogqMatrix[oldChar][newChar];
 	}
-
 	
 	public int[] getNextBaseFrequency(Parameter frequency) {
-		
+	
 		checkFrequencyParameter(frequency);
-		
-		// TODO Auto-generated method stub
-		int[] posChar = new int[2];
-		posChar[0] = MathUtils.nextInt(getHaplotypeLength());
+
+		int[] tempPosChar = new int[2];
+		tempPosChar[0] = MathUtils.nextInt(getHaplotypeLength());
+
 		double d = MathUtils.nextDouble();
-		
-//			double[] freqsValue = freqs.getParameterValues();
-//			double sumFreq = 0;
-//			for (int i = 0; i < freqsValue.length; i++) {
-//				sumFreq += freqsValue[i];
-//				if (d <= sumFreq) {
-//					posChar[1] = VALID_CHARS[i];
-////					System.out.println(d +"\t"+ posChar[1] +"\t"+  sumFreq +"\t"+ Arrays.toString(freqsValue)				);
-//					return posChar;
-//				}
-//				
-//			}
-//			
-		
-		double sumFreq = 0;
-		for (int i = 0; i < frequency.getDimension(); i++) {
-			sumFreq += frequency.getParameterValue(i);
-			if (d <= sumFreq) {
-				posChar[1] = VALID_CHARS[i];
-//					System.out.println(d +"\t"+ posChar[1] +"\t"+  sumFreq +"\t"+ Arrays.toString(freqsValue)				);
-				return posChar;
+
+		for (int i = 0; i < INDEX_OF_LAST_VALID_CHARS; i++) {
+			if (d <= storedCumSumFrequency[i]) {
+				tempPosChar[1] = VALID_CHARS[i];
+				return tempPosChar;
 			}
-			
 		}
-		System.err.println(d +"\t"+ sumFreq);
-		posChar[1] = GAP;
-		return posChar;
-
-
+		tempPosChar[1] = VALID_CHARS[INDEX_OF_LAST_VALID_CHARS];
+		return tempPosChar;
 	}
+	
 
 	private void checkFrequencyParameter(Parameter frequency) {
-		// TODO Auto-generated method stub
-		System.out.println("checking");
-		for (int i = 0; i < storeFrequency.length; i++) {
-			if(storeFrequency[i]!= frequency.getParameterValue(i)){
-				System.out.println("Different");
-				System.out.println(Arrays.toString(storeFrequency) +"\t"+ Arrays.toString(storeCumSumFrequency));
-				System.out.println(Arrays.toString(frequency.getParameterValues()));
-				storeFrequency = frequency.getParameterValues();
-				storeCumSumFrequency[0] = 0;
-				for (int j = 1; j < storeFrequency.length; j++) {
-					storeCumSumFrequency[j] += storeFrequency[j-1];
+
+		for (int i = 0; i < storedFrequency.length; i++) {
+			if(storedFrequency[i]!= frequency.getParameterValue(i)){
+
+				for (int j = i; j < storedFrequency.length; j++) {
+					storedFrequency[j] = frequency.getParameterValue(j);
+					logFreq[j] = Math.log(storedFrequency[j]);
+				}			
+				storedCumSumFrequency[0] = storedFrequency[0];
+				storedCumSumFrequency[1] = storedCumSumFrequency[0]+storedFrequency[1];
+				storedCumSumFrequency[2] = storedCumSumFrequency[1]+storedFrequency[2];
+
+				for (int j = 0; j < logFreq.length; j++) {
+					for (int k = j+1; k < logFreq.length; k++) {
+						storedLogqMatrix[j][k] = logFreq[j]-logFreq[k];
+						storedLogqMatrix[k][j] = -storedLogqMatrix[j][k];
+					}
+//					System.out.println(Arrays.toString(storedLogqMatrix[j]));
 				}
-				System.out.println("UPDATE frequency" );
-				System.out.println(Arrays.toString(storeFrequency) +"\t"+ Arrays.toString(storeCumSumFrequency));
-				System.out.println(Arrays.toString(frequency.getParameterValues()));
-				frequency.setParameterValue(0, 10);
-//						for (int i = 1; i < frequencies.length; i++) {
-//				            frequencies[i] += frequencies[i - 1];
-//				        }
+				
 				break;
 			}
 		}
 	}
-	private double[] storeFrequency = new double[4];
-	private double[] storeCumSumFrequency = new double[4];
 
+	private void checkFrequencyParameterTune(Parameter frequency) {
+
+		for (int i = 0; i < storedFrequency.length; i++) {
+			if(storedFrequency[i]!= frequency.getParameterValue(i)){
+				System.out.println(i);
+long time1 = System.currentTimeMillis();
+for (int t = 0; t < 1e7; t++) {
+	
+				for (int j = i; j < storedCumSumFrequency.length; j++) {
+					storedFrequency[j] = frequency.getParameterValue(j);
+					logFreq[j] = Math.log(storedFrequency[j]);
+				}			
+//				storedFrequency = frequency.getParameterValues();
+				storedCumSumFrequency[0] = storedFrequency[0];
+				storedCumSumFrequency[1] = storedCumSumFrequency[0]+storedFrequency[1];
+				storedCumSumFrequency[2] = storedCumSumFrequency[1]+storedFrequency[2];
+				// Too short for a loop?
+				// for (int j = 1; j < INDEX_OF_LAST_VALID_CHARS; j++) {
+				// storedCumSumFrequency[j] = storedCumSumFrequency[j - 1]
+				// + storedFrequency[j];
+				// }
+				
+//				double[] logFreq = new double[4];
+//				for (int j = 0; j < storedCumSumFrequency.length; j++) {
+//					logFreq[j] = Math.log(storedFrequency[j]);
+//				}
+//				System.err.println(Arrays.toString(storedFrequency));
+				for (int j = 0; j < storedFrequency.length; j++) {
+					for (int k = j+1; k < storedFrequency.length; k++) {
+//						storedLogqMatrix[j][k] = Math.log(storedFrequency[j]/storedFrequency[k]);
+						storedLogqMatrix[j][k] = logFreq[j]-logFreq[k];
+						storedLogqMatrix[k][j] = -storedLogqMatrix[j][k];
+					}
+//					System.out.println(Arrays.toString(storedLogqMatrix[j]));
+				}
+//				System.out.println();
+//				for (int j = 0; j < storedFrequency.length; j++) {
+//					for (int k = 0; k < storedFrequency.length; k++) {
+////						storedLogqMatrix[j][k] = Math.log(storedFrequency[j]/storedFrequency[k]);
+//						storedLogqMatrix[j][k] = logFreq[j]-logFreq[k];
+//					}
+////					System.out.println(Arrays.toString(storedLogqMatrix[j]));
+//				}
+
+//				System.out.println(i +"\t"+ Arrays.toString(storedFrequency));
+//				System.err.println(Arrays.toString(storedCumSumFrequency));
+}
+long time2 = System.currentTimeMillis();
+
+System.out.println((time2 - time1) + "\t");
+				
+				break;
+			}
+		}
+	}
+	
+	private double[] logFreq = new double[4];
+	private double[] storedFrequency = new double[4];
+	private double[] storedCumSumFrequency = new double[4];
+	private double[][] storedLogqMatrix = new double[4][4];
 }
