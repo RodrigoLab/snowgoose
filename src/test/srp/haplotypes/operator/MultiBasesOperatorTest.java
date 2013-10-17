@@ -16,7 +16,7 @@ import org.junit.Test;
 import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.AlignmentUtils;
 import srp.haplotypes.HaplotypeModel;
-import srp.haplotypes.operator.SwapBasesMultiOperator;
+import srp.haplotypes.operator.MultiBasesOperator;
 import srp.likelihood.ShortReadLikelihood;
 import dr.evolution.alignment.SimpleAlignment;
 import dr.evomodelxml.substmodel.HKYParser;
@@ -38,7 +38,7 @@ import dr.inference.trace.ArrayTraceList;
 import dr.inference.trace.Trace;
 import dr.inferencexml.model.CompoundLikelihoodParser;
 
-public class SwapBasesMultiOperatorTest {
+public class MultiBasesOperatorTest {
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -70,8 +70,8 @@ public class SwapBasesMultiOperatorTest {
 		HaplotypeModel haplotypeModel = new HaplotypeModel(aMap, 3);
 
 		int nBases = 10;
-		CoercableMCMCOperator operator = new SwapBasesMultiOperator(haplotypeModel, nBases, CoercionMode.COERCION_OFF);
-    	assertEquals(operator.getOperatorName(), "SwapBasesMultiOperator");
+		CoercableMCMCOperator operator = new MultiBasesOperator(haplotypeModel, nBases, CoercionMode.COERCION_OFF);
+    	assertEquals(operator.getOperatorName(), "MultiBasesOperator");
     	assertEquals(operator.getRawParameter(), nBases, 0);
     	assertEquals(operator.getCoercableParameter(), Math.log(nBases-1), 1e-10); 
     	
@@ -97,7 +97,7 @@ public class SwapBasesMultiOperatorTest {
 				};
 		
 		HaplotypeModel haplotypeModel = AlignmentUtils.createHaplotypeModel(seqs, haps);
-    	SwapBasesMultiOperator operator = new SwapBasesMultiOperator(haplotypeModel, 5, CoercionMode.COERCION_OFF);
+    	MultiBasesOperator operator = new MultiBasesOperator(haplotypeModel, 5, CoercionMode.COERCION_OFF);
     	
     	
     	for (int i = 0; i < 100; i++) {
@@ -138,7 +138,7 @@ public class SwapBasesMultiOperatorTest {
     	// Operators
     	OperatorSchedule schedule = new SimpleOperatorSchedule();
 
-    	MCMCOperator operator = new SwapBasesMultiOperator(haplotypeModel, 3, CoercionMode.COERCION_OFF);
+    	MCMCOperator operator = new MultiBasesOperator(haplotypeModel, 3, CoercionMode.COERCION_OFF);
     	operator.setWeight(3.0);
     	schedule.addOperator(operator);
     	

@@ -4,12 +4,12 @@ import srp.haplotypes.HaplotypeModel;
 import dr.inference.operators.CoercionMode;
 import dr.inference.operators.OperatorFailedException;
 
-public class SwapBasesEmpiricalOperator extends AbstractSwapBasesOperator {
+public class MultiBasesEmpiricalOperator extends AbstractMultiBasesOperator {
 
 
-	public final static String OPERATOR_NAME = SwapBasesEmpiricalOperator.class.getSimpleName();
+	public final static String OPERATOR_NAME = MultiBasesEmpiricalOperator.class.getSimpleName();
 	
-	public SwapBasesEmpiricalOperator(HaplotypeModel haplotypeModel, int length, CoercionMode mode) {
+	public MultiBasesEmpiricalOperator(HaplotypeModel haplotypeModel, int length, CoercionMode mode) {
 		super(haplotypeModel, length, mode);
 		
 		

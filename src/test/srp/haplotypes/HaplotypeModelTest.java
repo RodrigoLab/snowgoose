@@ -28,7 +28,7 @@ import srp.haplotypes.HaplotypeModel;
 import srp.haplotypes.HaplotypeModelUtils;
 import srp.haplotypes.SwapInfo;
 import srp.haplotypes.operator.SingleBaseOperator;
-import srp.haplotypes.operator.SwapBasesMultiOperator;
+import srp.haplotypes.operator.MultiBasesOperator;
 import srp.likelihood.LikelihoodUtils;
 import test.TestUtils;
 import dr.evolution.alignment.Alignment;
@@ -165,7 +165,7 @@ public class HaplotypeModelTest {
 			assertEquals(haplotypeModel.getAlignedSequenceString(i), srpAlignment.getAlignedSequenceString(i));
 		}
 		
-		op = new SwapBasesMultiOperator(haplotypeModel, 10, null);
+		op = new MultiBasesOperator(haplotypeModel, 10, null);
 		for (int i = 0; i < 1000; i++) {
 			op.operate();
 			op.reject();
@@ -220,7 +220,7 @@ public class HaplotypeModelTest {
     	for (int i = 0; i < logFreq.length; i++) {
 			for (int j = 0; j < logFreq.length; j++) {
 				double expected = logFreq[i]-logFreq[j];
-				assertEquals(expected, haplotypeModel.getLogqFrequency(i,j), 0);
+				assertEquals(expected, haplotypeModel.getLogqFrequencyStates(i,j), 0);
 			}
 		}
     	
@@ -233,7 +233,7 @@ public class HaplotypeModelTest {
     	for (int i = 0; i < logFreq.length; i++) {
 			for (int j = 0; j < logFreq.length; j++) {
 				double expected = logFreq[i]-logFreq[j];
-				assertEquals(expected, haplotypeModel.getLogqFrequency(i,j), 0);
+				assertEquals(expected, haplotypeModel.getLogqFrequencyStates(i,j), 0);
 			}
 		}
     	count = new int['T'+1]; 

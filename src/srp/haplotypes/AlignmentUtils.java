@@ -78,4 +78,16 @@ public class AlignmentUtils {
 		return haplotypeModel;
 		
 	}
+
+
+	public static HaplotypeModel createHaplotypeModel(AlignmentMapping aMap, Alignment trueAlignment) {
+		int noSeq = trueAlignment.getSequenceCount();
+		HaplotypeModel haplotypeModel = new HaplotypeModel(aMap, noSeq);
+		for (int i = 0; i < noSeq; i++) {
+			String sequence = trueAlignment.getSequence(i).getSequenceString();
+			haplotypeModel.getHaplotype(i).setSequenceString(sequence);
+		}
+		 
+		return haplotypeModel;
+	}
 }

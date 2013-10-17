@@ -3,13 +3,21 @@ package srp.haplotypes;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
-import srp.haplotypes.SwapInfo.Operation;
-
+import jebl.evolution.sequences.Sequence;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.datatype.DataType;
 import dr.evolution.datatype.Nucleotides;
+import dr.evolution.tree.Tree;
 import dr.evolution.util.Taxon;
+import dr.evomodel.sitemodel.GammaSiteModel;
+import dr.evomodel.sitemodel.SiteModel;
+import dr.evomodel.substmodel.HKY;
+import dr.evomodel.substmodel.SubstitutionModel;
+import dr.evomodel.tree.TreeModel;
+import dr.ext.SeqGenExt;
+import dr.ext.TreeLikelihoodExt;
 import dr.inference.model.Model;
 import dr.inference.model.Parameter;
 import dr.inference.model.Variable;
@@ -66,26 +74,30 @@ import dr.util.NumberFormatter;
 
 
 public class HaplotypeModel extends AbstractHaplotypeModel  {
-
-	private static final char[] VALID_CHARS = new char[4];
-	
-	public static final char GAP = '-';
-	public static final String TAXON_PREFIX = "hap_";
 	
 	private static final String MODEL_NAME = "HaplotypeModel";
 	private static final long serialVersionUID = -5057514703825711955L;
 
-	private static final int INDEX_OF_LAST_VALID_CHARS = 3;
-
 	
+	private static final int HAP_INDEX = SwapInfo.SWAPBASE_HAP_INDEX;
+	private static final int POS_INDEX = SwapInfo.SWAPBASE_POS_INDEX;
+	private static final int NEW_CHAR_INDEX = SwapInfo.SWAPBASE_NEW_CHAR_INDEX;
+	private static final int OLD_CHAR_INDEX = SwapInfo.SWAPBASE_OLD_CHAR_INDEX;
+
+	private static final int NUCLEOTIDE_STATES[] = Nucleotides.NUCLEOTIDE_STATES;
+	private static final char[] VALID_CHARS = initValidChars4();
+	private static final int INDEX_OF_LAST_VALID_CHARS = VALID_CHARS.length-1;
+	
+//	private static final DataType DATA_TYPE = Nucleotides.INSTANCE;
+	public static final char GAP = '-';
+	public static final String TAXON_PREFIX = "hap_";
 
 //	int haplotypesCount;
 	AlignmentMapping aMap;
 	private SwapInfo swapInfo = new SwapInfo();
 	
-	
 	private boolean isEdit;
-	
+	int[] swapBaseRecord = new int[4];
 	
 	private HaplotypeModel(AlignmentMapping aMap){
 		super(MODEL_NAME);
@@ -96,9 +108,15 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 		haplotypes = new ArrayList<Haplotype>();
 		setDataType(Nucleotides.INSTANCE);
 
-		System.arraycopy(Nucleotides.NUCLEOTIDE_CHARS, 0, VALID_CHARS, 0, VALID_CHARS.length);
-		storedCumSumFrequency[INDEX_OF_LAST_VALID_CHARS]=1;
 		
+//		storedCumSumFrequency[INDEX_OF_LAST_VALID_CHARS]=1;
+		
+	}
+
+	private static char[] initValidChars4() {
+		char[] validChar = new char[4];
+		System.arraycopy(Nucleotides.NUCLEOTIDE_CHARS, 0, validChar, 0, validChar.length);
+		return validChar;
 	}
 
 	private void addHaplotype(Haplotype haplotype) {
@@ -181,18 +199,18 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 
 	}
 	public int[] swapHaplotypeSingleBase(Operation op, int[] posChar){
-		
-		int[] swapInfoArray = new int[4];
-		swapInfoArray[0] = MathUtils.nextInt(getHaplotypeCount());
-		swapInfoArray[1] = posChar[0];
-		swapInfoArray[2] = posChar[1];
-		
-		Haplotype haplotype = haplotypes.get(swapInfoArray[0]);
-		swapInfoArray[3] = haplotype.replaceCharAt(posChar[0], posChar[1]);
-		
-		storeOperationRecord(op, swapInfoArray);
-		return swapInfoArray;
-//		swapInfo.storeOperation(op, swapInfoArray);
+
+		swapBaseRecord[POS_INDEX] = posChar[0];
+		swapBaseRecord[NEW_CHAR_INDEX] = posChar[1];
+
+		swapBaseRecord[HAP_INDEX] = MathUtils.nextInt(getHaplotypeCount());
+
+		Haplotype haplotype = haplotypes.get(swapBaseRecord[HAP_INDEX]);
+		swapBaseRecord[OLD_CHAR_INDEX] = haplotype.replaceCharAt(
+				swapBaseRecord[POS_INDEX], swapBaseRecord[NEW_CHAR_INDEX]);
+
+		storeOperationRecord(op, swapBaseRecord);
+		return swapBaseRecord;
 
 	}
 
@@ -230,8 +248,63 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 		
 	}
 
+	private char setNewCharFromFrequency(){
+		
+		double d = MathUtils.nextDouble();
+		
+		for (int i = 0; i < INDEX_OF_LAST_VALID_CHARS; i++) {
+			if (d <= storedCumSumFrequency[i]) {
+				return VALID_CHARS[i];
+			}
+		}
+		return VALID_CHARS[INDEX_OF_LAST_VALID_CHARS];
+	}
 	
+	public double swapNextDiffBaseFrequency(Operation op, Parameter frequency) {
+	
+		checkFrequencyParameter(frequency);
+		
+//		int[] swapBaseRecord = new int[4];
+		swapBaseRecord[HAP_INDEX] = MathUtils.nextInt(getHaplotypeCount());
+		swapBaseRecord[POS_INDEX] = MathUtils.nextInt(getHaplotypeLength());
 
+		Haplotype haplotype = haplotypes.get(swapBaseRecord[HAP_INDEX]);
+		swapBaseRecord[OLD_CHAR_INDEX] = haplotype.getChar(swapBaseRecord[POS_INDEX]);
+		
+		do{
+			swapBaseRecord[NEW_CHAR_INDEX] = setNewCharFromFrequency();
+		}while(swapBaseRecord[OLD_CHAR_INDEX]==swapBaseRecord[NEW_CHAR_INDEX]);
+
+		haplotype.setCharAt(swapBaseRecord[POS_INDEX], (char) swapBaseRecord[NEW_CHAR_INDEX]);
+		
+		storeOperationRecord(op, swapBaseRecord);
+//			return swapBaseRecord;
+//			swapInfo.storeOperation(op, swapInfoArray);
+//			int newChar = NUCLEOTIDE_STATES[swapRecord[NEW_CHAR_INDEX]];
+//			int oldChar = NUCLEOTIDE_STATES[swapRecord[OLD_CHAR_INDEX]];
+		double logq = getLogqFrequency(swapBaseRecord[OLD_CHAR_INDEX], swapBaseRecord[NEW_CHAR_INDEX]);
+		
+		return logq;
+	}
+
+	public int[] getNextBaseFrequency(Parameter frequency) {
+	
+		checkFrequencyParameter(frequency);
+	
+		int[] tempPosChar = new int[2];
+		tempPosChar[0] = MathUtils.nextInt(getHaplotypeLength());
+	
+		double d = MathUtils.nextDouble();
+	
+//		for (int i = 0; i < INDEX_OF_LAST_VALID_CHARS; i++) {
+//			if (d <= storedCumSumFrequency[i]) {
+//				tempPosChar[1] = VALID_CHARS[i];
+//				return tempPosChar;
+//			}
+//		}
+		tempPosChar[1] = setNewCharFromFrequency();
+		return tempPosChar;
+	}
 
 	//	private int replaceHaplotypeCharAt(int hapIndex, int pos, int newChar){
 //		
@@ -272,7 +345,8 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 	
 	private void storeOperationRecord(Operation op, int hapIndex,
 			int[][] opRecord) {
-		swapInfo.storeOperation(op, hapIndex, opRecord);		
+		swapInfo.storeOperation(op, opRecord[0], opRecord[1]);
+		swapInfo.storeHapIndex(hapIndex);
 	}
 
 
@@ -375,6 +449,8 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 		
 		case NONE:
 			break;
+		case PASS:
+			break;
 		case SWAPSINGLE:
 
 			int[] temp = swapInfo.getSwapInfoSWAPBASE();
@@ -466,29 +542,13 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 	}
 	
 	public double getLogqFrequency(int oldChar, int newChar){
-		return storedLogqMatrix[oldChar][newChar];
+		return storedLogqMatrix[NUCLEOTIDE_STATES[oldChar]][NUCLEOTIDE_STATES[newChar]];
 	}
 	
-	public int[] getNextBaseFrequency(Parameter frequency) {
-	
-		checkFrequencyParameter(frequency);
-
-		int[] tempPosChar = new int[2];
-		tempPosChar[0] = MathUtils.nextInt(getHaplotypeLength());
-
-		double d = MathUtils.nextDouble();
-
-		for (int i = 0; i < INDEX_OF_LAST_VALID_CHARS; i++) {
-			if (d <= storedCumSumFrequency[i]) {
-				tempPosChar[1] = VALID_CHARS[i];
-				return tempPosChar;
-			}
-		}
-		tempPosChar[1] = VALID_CHARS[INDEX_OF_LAST_VALID_CHARS];
-		return tempPosChar;
+	public double getLogqFrequencyStates(int oldState, int newState){
+		return storedLogqMatrix[oldState][newState];
 	}
 	
-
 	private void checkFrequencyParameter(Parameter frequency) {
 
 		for (int i = 0; i < storedFrequency.length; i++) {
@@ -501,6 +561,7 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 				storedCumSumFrequency[0] = storedFrequency[0];
 				storedCumSumFrequency[1] = storedCumSumFrequency[0]+storedFrequency[1];
 				storedCumSumFrequency[2] = storedCumSumFrequency[1]+storedFrequency[2];
+//				storedCumSumFrequency[2] = storedCumSumFrequency[1]+storedFrequency[2];
 
 				for (int j = 0; j < logFreq.length; j++) {
 					for (int k = j+1; k < logFreq.length; k++) {
@@ -573,6 +634,75 @@ System.out.println((time2 - time1) + "\t");
 	
 	private double[] logFreq = new double[4];
 	private double[] storedFrequency = new double[4];
-	private double[] storedCumSumFrequency = new double[4];
+	private double[] storedCumSumFrequency = new double[INDEX_OF_LAST_VALID_CHARS];
 	private double[][] storedLogqMatrix = new double[4][4];
+
+
+	public void simulateSequence(TreeLikelihoodExt treeLikelihood) {
+
+        double substitutionRate = 1000.1;//(getHaplotypeCount()*getHaplotypeLength()) ;
+        double damageRate = 0;
+        SiteModel siteModel = treeLikelihood.getSiteModel();
+        SubstitutionModel substitutionModel = siteModel.getSubstitutionModel();
+        
+        int[] initialSequence = aMap.getConsensusSequenceState();
+        StringBuffer buffer = new StringBuffer();
+        for (int i = 0; i < initialSequence.length; i++) {
+            buffer.append(Nucleotides.INSTANCE.getChar(    initialSequence[i] ));
+        }
+        treeLikelihood.makeDirty();
+        treeLikelihood.getLogLikelihood();
+        System.err.println(buffer.toString());
+//        sequence.setDataType(dataType);
+
+
+//    	Arrays.fill(initialSequence, 1);
+        SeqGenExt seqGen = new SeqGenExt(initialSequence, 
+                substitutionRate, substitutionModel, siteModel,
+                damageRate);
+        
+        Tree tree = treeLikelihood.getTreeModel();
+        jebl.evolution.alignments.Alignment jeblAlignment = seqGen.simulate(tree);
+        List<Sequence> sequenceList = jeblAlignment.getSequenceList();
+        for (int j = 0; j < sequenceList.size(); j++) {
+			
+
+//        	System.err.println(getHaplotypeString(j));
+			System.out.println(sequenceList.get(j).getString());
+			Haplotype haplotype = getHaplotype(j);
+			haplotype.setSequenceString(sequenceList.get(j).getString());
+			System.out.println(getHaplotypeString(j));
+			System.out.println();
+		}
+//        SimpleAlignment
+		
+		
+	}
+
+	public void simulateSequence(double errorRate, SiteModel siteModel, SubstitutionModel substitutionModel,
+			TreeModel treeModel) {
+
+        double substitutionRate = errorRate/(getHaplotypeCount()*getHaplotypeLength()) ;
+        System.err.println(substitutionRate);
+        double damageRate = 0;
+//        SiteModel siteModel = treeLikelihood.getSiteModel();
+//        SubstitutionModel substitutionModel = siteModel.getSubstitutionModel();
+        
+        int[] initialSequence = aMap.getConsensusSequenceState();
+        StringBuffer buffer = new StringBuffer();
+        for (int i = 0; i < initialSequence.length; i++) {
+            buffer.append(Nucleotides.INSTANCE.getChar(    initialSequence[i] ));
+        }
+
+        SeqGenExt seqGen = new SeqGenExt(initialSequence, 
+                substitutionRate, substitutionModel, siteModel, damageRate);
+        
+        jebl.evolution.alignments.Alignment jeblAlignment = seqGen.simulate(treeModel);
+        List<Sequence> sequenceList = jeblAlignment.getSequenceList();
+        for (int j = 0; j < sequenceList.size(); j++) {
+			Haplotype haplotype = getHaplotype(j);
+			haplotype.setSequenceString(sequenceList.get(j).getString());
+		}
+		
+	}
 }

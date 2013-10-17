@@ -16,7 +16,7 @@ import org.junit.Test;
 import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.AlignmentUtils;
 import srp.haplotypes.HaplotypeModel;
-import srp.haplotypes.operator.SwapBasesEmpiricalOperator;
+import srp.haplotypes.operator.MultiBasesEmpiricalOperator;
 import srp.likelihood.ShortReadLikelihood;
 import dr.evolution.alignment.SimpleAlignment;
 import dr.inference.loggers.ArrayLogFormatter;
@@ -33,7 +33,7 @@ import dr.inference.operators.OperatorSchedule;
 import dr.inference.operators.SimpleOperatorSchedule;
 import dr.inference.trace.Trace;
 
-public class SwapBasesEmpiricalOperatorTest {
+public class MultiBasesEmpiricalOperatorTest {
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -65,8 +65,8 @@ public class SwapBasesEmpiricalOperatorTest {
 		HaplotypeModel haplotypeModel = new HaplotypeModel(aMap, 3);
 
 		int nBases = 10;
-		CoercableMCMCOperator operator = new SwapBasesEmpiricalOperator(haplotypeModel, nBases, CoercionMode.COERCION_OFF);
-    	assertEquals(operator.getOperatorName(), "SwapBasesEmpiricalOperator");
+		CoercableMCMCOperator operator = new MultiBasesEmpiricalOperator(haplotypeModel, nBases, CoercionMode.COERCION_OFF);
+    	assertEquals(operator.getOperatorName(), "MultiBasesEmpiricalOperator");
     	assertEquals(operator.getRawParameter(), nBases, 0);
     	assertEquals(operator.getCoercableParameter(), Math.log(nBases-1), 1e-10); 
     	
@@ -92,7 +92,7 @@ public class SwapBasesEmpiricalOperatorTest {
 				};
 		
 		HaplotypeModel haplotypeModel = AlignmentUtils.createHaplotypeModel(seqs, haps);
-    	SwapBasesEmpiricalOperator operator = new SwapBasesEmpiricalOperator(haplotypeModel, 5, CoercionMode.COERCION_OFF);
+    	MultiBasesEmpiricalOperator operator = new MultiBasesEmpiricalOperator(haplotypeModel, 5, CoercionMode.COERCION_OFF);
     	
     	
     	for (int i = 0; i < 100; i++) {
@@ -133,7 +133,7 @@ public class SwapBasesEmpiricalOperatorTest {
     	// Operators
     	OperatorSchedule schedule = new SimpleOperatorSchedule();
 
-    	MCMCOperator operator = new SwapBasesEmpiricalOperator(haplotypeModel, 3, CoercionMode.COERCION_OFF);
+    	MCMCOperator operator = new MultiBasesEmpiricalOperator(haplotypeModel, 3, CoercionMode.COERCION_OFF);
     	operator.setWeight(3.0);
     	schedule.addOperator(operator);
     	

@@ -13,9 +13,9 @@ import org.w3c.dom.Element;
 import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.Haplotype;
 import srp.haplotypes.HaplotypeModel;
+import srp.haplotypes.Operation;
 import srp.haplotypes.ShortRead;
 import srp.haplotypes.SwapInfo;
-import srp.haplotypes.SwapInfo.Operation;
 import dr.inference.model.AbstractModelLikelihood;
 import dr.inference.model.Model;
 import dr.inference.model.Variable;
@@ -95,7 +95,7 @@ public class ShortReadLikelihood extends AbstractModelLikelihood {
 		this.haplotypeModel = haplotypeModel;
 		this.aMap = this.haplotypeModel.getAlignmentMapping();
 		this.swapInfo = this.haplotypeModel.getSwapInfo();
-		
+		operation = Operation.NONE;
 		preprocessLikelihoodAlignmentMap();
 		calculateSrpLikelihoodFull();
 //		calculateSrpLikelihoodFullUseCounter();
@@ -201,7 +201,9 @@ public class ShortReadLikelihood extends AbstractModelLikelihood {
 			case SWAPSECTION:
 				logLikelihood = calculateSrpLikelihoodSwapSection();
 				break;
-	
+			case PASS:
+				logLikelihood = storedLogLikelihood;
+				break;
 			default:
 				throw new IllegalArgumentException("Unknown operation type: "+operation);
 	

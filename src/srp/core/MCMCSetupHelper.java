@@ -12,10 +12,12 @@ import srp.haplotypes.operator.SingleBaseEmpiricalOperator;
 import srp.haplotypes.operator.SingleBaseFrequencyOperator;
 import srp.haplotypes.operator.SingleBaseOperator;
 import srp.haplotypes.operator.SingleBaseUniformOperator;
-import srp.haplotypes.operator.SwapBasesEmpiricalOperator;
-import srp.haplotypes.operator.SwapBasesMultiOperator;
-import srp.haplotypes.operator.SwapBasesUniformOperator;
+import srp.haplotypes.operator.MultiBasesEmpiricalOperator;
+import srp.haplotypes.operator.MultiBasesOperator;
+import srp.haplotypes.operator.MultiBasesUniformOperator;
+import srp.haplotypes.operator.SwitchBaseFrequencyOperator;
 import srp.likelihood.ShortReadLikelihood;
+import srp.rj.operator.RJTreeOperator;
 import dr.evolution.coalescent.CoalescentSimulator;
 import dr.evolution.coalescent.ConstantPopulation;
 import dr.evolution.datatype.Nucleotides;
@@ -28,8 +30,10 @@ import dr.evomodel.operators.ExchangeOperator;
 import dr.evomodel.operators.SubtreeSlideOperator;
 import dr.evomodel.operators.WilsonBalding;
 import dr.evomodel.sitemodel.GammaSiteModel;
+import dr.evomodel.sitemodel.SiteModel;
 import dr.evomodel.substmodel.FrequencyModel;
 import dr.evomodel.substmodel.HKY;
+import dr.evomodel.substmodel.SubstitutionModel;
 import dr.evomodel.tree.TreeModel;
 import dr.evomodelxml.coalescent.ConstantPopulationModelParser;
 import dr.evomodelxml.sitemodel.GammaSiteModelParser;
@@ -57,9 +61,27 @@ import dr.math.distributions.LogNormalDistribution;
 
 public class MCMCSetupHelper {
 
-	public static TreeLikelihoodExt setupTreeLikelihood(Parameter kappa,
-			Parameter freqs, HaplotypeModel haplotypeModel,
-			TreeModel treeModel, StrictClockBranchRates branchRateModel) {
+	public static TreeModel setupRandomTreeModel(ConstantPopulationModel popModel, HaplotypeModel haplotypeModel, Type years) {
+		
+		ConstantPopulation constant = (ConstantPopulation) popModel.getDemographicFunction();
+		CoalescentSimulator simulator = new CoalescentSimulator();
+		Tree tree = simulator.simulateTree(haplotypeModel, constant);
+		TreeModel treeModel = new TreeModel(tree);// treeModel
+	
+		return treeModel;
+	}
+
+	public static HashMap<String, Object> setupTreeLikelihoodHaplotypeModel(TreeModel treeModel,
+			HaplotypeModel haplotypeModel) {
+		
+		double errorRate = 0.01;
+		
+		// clock model
+		Parameter rateParameter = new Parameter.Default(StrictClockBranchRates.RATE, 1e-5, 0, 1);
+		StrictClockBranchRates branchRateModel = new StrictClockBranchRates(rateParameter);
+	
+		Parameter freqs = new Parameter.Default("frequency", new double[]{0.25, 0.25, 0.25, 0.25});
+		Parameter kappa = new Parameter.Default(HKYParser.KAPPA, 1.0, 0, 100.0);
 
 		// Sub model
 		FrequencyModel f = new FrequencyModel(Nucleotides.INSTANCE, freqs);
@@ -71,58 +93,75 @@ public class MCMCSetupHelper {
 				GammaSiteModelParser.MUTATION_RATE, 1, 0, Double.POSITIVE_INFINITY);
 		siteModel.setMutationRateParameter(mu);
 
+		// Simulate halotypes
+		if(errorRate>0){
+			haplotypeModel.simulateSequence(errorRate, siteModel, hky, treeModel);
+		}
+		
 		// treeLikelihood
-
 		TreeLikelihoodExt treeLikelihood = new TreeLikelihoodExt(
 				haplotypeModel, treeModel, siteModel, branchRateModel, null,
 				false, false, true, false, false);
 		treeLikelihood.setId(TreeLikelihoodParser.TREE_LIKELIHOOD);
-		// SitePatternsExt patterns = new SitePatternsExt(haplotypeModel, null, 0, -1, 1, true);
-		// TreeLikelihood treeLikelihood = new TreeLikelihood(patterns, treeModel, siteModel, branchRateModel, null, false, false, true, false, false);
 		
-
-		return treeLikelihood;
+		// treeLikelihood
+//		TreeLikelihoodExt treeLikelihood = MCMCSetupHelper.setupTreeLikelihood(kappa, freqs,
+//				haplotypeModel, treeModel, branchRateModel);
+//	
+		HashMap<String, Object> parameterList = new HashMap<String, Object>();
+		parameterList.put("kappa", kappa);
+		parameterList.put("freqs", freqs);
+		parameterList.put("treeLikelihood", treeLikelihood);
+		parameterList.put("branchRateModel", branchRateModel);
+		
+		return parameterList;
 	}
 
+	private static final double opTiny = 0.1;
+	private static final double opSmall = 3;
+	private static final double opMed = 10;
+	private static final double opLarge = 30;
+	private static final double opHuge = 100;
+	
 	public static HashMap<String, Likelihood> setupCompoundLikelihood(
 			Parameter popSize, Parameter kappa, Likelihood coalescent,
 			Likelihood treeLikelihood, Likelihood srpLikelihood) {
-
+	
 		// CompoundLikelihood
 		HashMap<String, Likelihood> compoundLikelihoods = new HashMap<String, Likelihood>(4);
-
+	
 		List<Likelihood> likelihoods = new ArrayList<Likelihood>();
-
+	
 		// Prior
 		OneOnXPrior oneOnX = new OneOnXPrior();
 		oneOnX.addData(popSize);
-
+	
 		DistributionLikelihood logNormalLikelihood = new DistributionLikelihood(
 				new LogNormalDistribution(1.0, 1.25), 0); // meanInRealSpace="false"
 		logNormalLikelihood.addData(kappa);
-
+	
 		likelihoods.add(oneOnX);
 		likelihoods.add(logNormalLikelihood);
 		likelihoods.add(coalescent);
 		Likelihood prior = new CompoundLikelihood(0, likelihoods);
 		prior.setId(CompoundLikelihoodParser.PRIOR);
 		compoundLikelihoods.put(CompoundLikelihoodParser.PRIOR, prior);
-
+	
 		// Likelihood
 		likelihoods.clear();
 		likelihoods.add(treeLikelihood);
 		Likelihood likelihood = new CompoundLikelihood(-1, likelihoods);
 		likelihood.setId(CompoundLikelihoodParser.LIKELIHOOD);
 		compoundLikelihoods.put(CompoundLikelihoodParser.LIKELIHOOD, likelihood);
-
+	
 		// ShortReadLikelihood
 		likelihoods.clear();
-
+	
 		likelihoods.add(srpLikelihood);
 		Likelihood shortReadlikelihood = new CompoundLikelihood(-1, likelihoods);
 		shortReadlikelihood.setId(ShortReadLikelihood.SHORT_READ_LIKELIHOOD);
 		compoundLikelihoods.put(ShortReadLikelihood.SHORT_READ_LIKELIHOOD,shortReadlikelihood);
-
+	
 		// Posterior
 		likelihoods.clear();
 		likelihoods.add(prior);
@@ -131,15 +170,11 @@ public class MCMCSetupHelper {
 		Likelihood posterior = new CompoundLikelihood(0, likelihoods);
 		posterior.setId(CompoundLikelihoodParser.POSTERIOR);
 		compoundLikelihoods.put(CompoundLikelihoodParser.POSTERIOR, posterior);
-
-		return compoundLikelihoods;
-	}
-	private static final double opTiny = 0.1;
-	private static final double opSmall = 3;
-	private static final double opMed = 10;
-	private static final double opLarge = 30;
-	private static final double opHuge = 100;
 	
+		return compoundLikelihoods;
+		
+	}
+
 	public static ArrayList<MCMCOperator> defalutOperators(HaplotypeModel haplotypeModel,
 			Parameter... parameters) {
 
@@ -180,15 +215,16 @@ public class MCMCSetupHelper {
 //		operator.setWeight(opLarge);
 //		OperatorList.add(operator);
 
-//		operator = new HaplotypeRecombinationOperator(haplotypeModel, 12);
-//		operator.setWeight(3.0);
+		operator = new HaplotypeRecombinationOperator(haplotypeModel, 12);
+		operator.setWeight(3.0);
 //		OperatorList.add(operator);
 
-//		operator = new HaplotypeSwapSectionOperator(haplotypeModel, 12, CoercionMode.COERCION_ON);
-//		operator.setWeight(opSmall);
+		operator = new HaplotypeSwapSectionOperator(haplotypeModel, 12, CoercionMode.COERCION_ON);
+		operator.setWeight(opSmall);
 //		OperatorList.add(operator);
 		
 		for (Parameter parameter : parameters) {
+
 			String parameterName = parameter.getParameterName();
 			
 			if("kappa".equals(parameterName)){
@@ -200,16 +236,25 @@ public class MCMCSetupHelper {
 				operator = new DeltaExchangeOperator(parameter, new int[] { 1,
 						1, 1, 1 }, 0.01, 0.1, false, CoercionMode.COERCION_ON);
 				operator.setWeight(opTiny);
-				operator.setWeight(opHuge);
+//				operator.setWeight(opHuge);
 				OperatorList.add(operator);
 				
 //				operator = new ColumnOperator(haplotypeModel, haplotypeModel.getHaplotypeCount(), parameter, null);
-//				operator.setWeight(opSmall);
-//				OperatorList.add(operator);
+//				operator.setWeight(opMed);
+////				OperatorList.add(operator);
 				
-				operator = new SingleBaseFrequencyOperator(haplotypeModel, parameter);
-				operator.setWeight(opLarge);
+				operator = new SwitchBaseFrequencyOperator(haplotypeModel, 0.8, 
+						parameter, CoercionMode.COERCION_ON);
+				operator.setWeight(opMed);
 				OperatorList.add(operator);
+				//good seq: low (switch) prob, most accepted with same posterior
+				//			high switchProb, low accept, but with diff posterior
+				//bad seq: high (switchProb), accept with different posterior
+				//			low switch,  accept with same post
+				
+//				operator = new SingleBaseFrequencyOperator(haplotypeModel, parameter);
+//				operator.setWeight(opMed);
+////				OperatorList.add(operator);
 			}
 			else if("populationSize".equals(parameterName)){
 				operator = new ScaleOperator(parameter, 0.75);
@@ -227,6 +272,7 @@ public class MCMCSetupHelper {
 
 		MCMCOperator operator;
 		List<MCMCOperator> OperatorList = new ArrayList<MCMCOperator>();
+		
 		
 		Parameter allInternalHeights = treeModel.createNodeHeightsParameter(true, true, false);
 		operator = new UpDownOperator(
@@ -254,11 +300,11 @@ public class MCMCSetupHelper {
 
 		operator = new ExchangeOperator(ExchangeOperator.NARROW, treeModel, 15.0);
 		operator.setWeight(opMed);
-		OperatorList.add(operator);
+//		OperatorList.add(operator);
 
 		operator = new ExchangeOperator(ExchangeOperator.WIDE, treeModel, 3.0);
 		operator.setWeight(opSmall);
-		OperatorList.add(operator);
+//		OperatorList.add(operator);
 
 		operator = new WilsonBalding(treeModel, 3.0);
 		operator.setWeight(opSmall);
@@ -276,23 +322,13 @@ public class MCMCSetupHelper {
 
 	}
 
-	public static TreeModel setupRandomTreeModel(ConstantPopulationModel startingTree, HaplotypeModel haplotypeModel, Type years) {
-		
-		ConstantPopulation constant = (ConstantPopulation) startingTree.getDemographicFunction();
-		CoalescentSimulator simulator = new CoalescentSimulator();
-		Tree tree = simulator.simulateTree(haplotypeModel, constant);
-		TreeModel treeModel = new TreeModel(tree);// treeModel
-
-		return treeModel;
-	}
-
 	public static MCMCOptions setMCMCOptions(int logInterval, int totalSamples) {
 		MCMCOptions options = new MCMCOptions();
 		options.setChainLength(logInterval * totalSamples);
 		options.setUseCoercion(false); // autoOptimize = true
-		options.setCoercionDelay(logInterval * 2);
+		options.setCoercionDelay((int) (logInterval * 0.01));
 		options.setTemperature(1.0);
-		options.setFullEvaluationCount(logInterval*0);
+		options.setFullEvaluationCount((int) (logInterval*0.01));
 	
 		return options;
 	}
@@ -324,7 +360,7 @@ public class MCMCSetupHelper {
 //		operator.setWeight(opLarge);
 //		OperatorList.add(operator);
 //
-		operator = new SwapBasesEmpiricalOperator(haplotypeModel, 3, CoercionMode.COERCION_ON);
+		operator = new MultiBasesEmpiricalOperator(haplotypeModel, 3, CoercionMode.COERCION_ON);
 		operator.setWeight(opLarge);
 		OperatorList.add(operator);
 
@@ -372,6 +408,38 @@ public class MCMCSetupHelper {
 		}
 		
 		return OperatorList;
+	}
+
+	public static TreeLikelihoodExt setupTreeLikelihood(Parameter kappa,
+			Parameter freqs, HaplotypeModel haplotypeModel,
+			TreeModel treeModel, StrictClockBranchRates branchRateModel) {
+	
+		// Sub model
+		FrequencyModel f = new FrequencyModel(Nucleotides.INSTANCE, freqs);
+		HKY hky = new HKY(kappa, f);
+	
+		// siteModel
+		GammaSiteModel siteModel = new GammaSiteModel(hky);
+		Parameter mu = new Parameter.Default(
+				GammaSiteModelParser.MUTATION_RATE, 1, 0, Double.POSITIVE_INFINITY);
+		siteModel.setMutationRateParameter(mu);
+	
+		// treeLikelihood
+	
+		TreeLikelihoodExt treeLikelihood = new TreeLikelihoodExt(
+				haplotypeModel, treeModel, siteModel, branchRateModel, null,
+				false, false, true, false, false);
+		haplotypeModel.simulateSequence(treeLikelihood);
+		treeLikelihood = new TreeLikelihoodExt(
+				haplotypeModel, treeModel, siteModel, branchRateModel, null,
+				false, false, true, false, false);
+		
+		treeLikelihood.setId(TreeLikelihoodParser.TREE_LIKELIHOOD);
+		// SitePatternsExt patterns = new SitePatternsExt(haplotypeModel, null, 0, -1, 1, true);
+		// TreeLikelihood treeLikelihood = new TreeLikelihood(patterns, treeModel, siteModel, branchRateModel, null, false, false, true, false, false);
+		
+	
+		return treeLikelihood;
 	}
 
 	

@@ -68,7 +68,7 @@ public class MCMCFull {
 		String dataDir = "/home/sw167/workspaceSrp/ABI/unittest/testData/";
 
 		String shortReadFile = "H7_1_Srp.fasta";
-		String trueHaplotypeFile = "H7_1_SrpfullHaplotype.fasta";
+		String trueHaplotypeFile = "H7_1_Srp_fullHaplotype.fasta";
 		
 		String prefix = dataDir+"FullTree_H7";
 		String logTracerName = prefix+".log";

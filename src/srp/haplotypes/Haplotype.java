@@ -32,9 +32,11 @@ public class Haplotype extends Sequence {
 		setSequenceString(sequence);
 	}
 
+	public void setCharAt(int index, int newChar) {
+		sequenceString.setCharAt(index, (char) newChar);
+	}
 	
 	public void setCharAt(int index, char newChar) {
-
 		sequenceString.setCharAt(index, newChar);
 	}
 

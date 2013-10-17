@@ -17,19 +17,19 @@ import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.AlignmentUtils;
 import srp.haplotypes.HaplotypeModel;
 import srp.haplotypes.HaplotypeModelUtils;
-import srp.haplotypes.SwapInfo.Operation;
+import srp.haplotypes.Operation;
+import srp.haplotypes.operator.AbstractMultiBasesOperator;
 import srp.haplotypes.operator.AbstractSingleBaseOperator;
-import srp.haplotypes.operator.AbstractSwapBasesOperator;
 import srp.haplotypes.operator.ColumnOperator;
 import srp.haplotypes.operator.HaplotypeRecombinationOperator;
 import srp.haplotypes.operator.HaplotypeSwapSectionOperator;
+import srp.haplotypes.operator.MultiBasesEmpiricalOperator;
+import srp.haplotypes.operator.MultiBasesOperator;
+import srp.haplotypes.operator.MultiBasesUniformOperator;
 import srp.haplotypes.operator.SingleBaseEmpiricalOperator;
 import srp.haplotypes.operator.SingleBaseFrequencyOperator;
 import srp.haplotypes.operator.SingleBaseOperator;
 import srp.haplotypes.operator.SingleBaseUniformOperator;
-import srp.haplotypes.operator.SwapBasesEmpiricalOperator;
-import srp.haplotypes.operator.SwapBasesMultiOperator;
-import srp.haplotypes.operator.SwapBasesUniformOperator;
 import srp.likelihood.ShortReadLikelihood;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.SimpleAlignment;
@@ -558,20 +558,20 @@ public class ShortReadLikelihoodTest {
 	@Test
 	public void testCalculateLikelihoodMultiBases() throws Exception {
 		
-		MCMCOperator op = new SwapBasesMultiOperator(haplotypeModelH4, 50, CoercionMode.COERCION_OFF);
-		runTestCalculateSrpLikelihoodOperators(haplotypeModelH4, op, AbstractSwapBasesOperator.OP);
+		MCMCOperator op = new MultiBasesOperator(haplotypeModelH4, 50, CoercionMode.COERCION_OFF);
+		runTestCalculateSrpLikelihoodOperators(haplotypeModelH4, op, AbstractMultiBasesOperator.OP);
 	}
 	@Test
 	public void testCalculateLikelihoodMultiBasesEmpirical() throws Exception {
 		
-		MCMCOperator op = new SwapBasesEmpiricalOperator(haplotypeModelH4, 50, CoercionMode.COERCION_OFF);
-		runTestCalculateSrpLikelihoodOperators(haplotypeModelH4, op, AbstractSwapBasesOperator.OP);
+		MCMCOperator op = new MultiBasesEmpiricalOperator(haplotypeModelH4, 50, CoercionMode.COERCION_OFF);
+		runTestCalculateSrpLikelihoodOperators(haplotypeModelH4, op, AbstractMultiBasesOperator.OP);
 	}
 	@Test
 	public void testCalculateLikelihoodMultiBasesUniform() throws Exception {
 		
-		MCMCOperator op = new SwapBasesUniformOperator(haplotypeModelH4, 50, CoercionMode.COERCION_OFF);
-		runTestCalculateSrpLikelihoodOperators(haplotypeModelH4, op, AbstractSwapBasesOperator.OP);
+		MCMCOperator op = new MultiBasesUniformOperator(haplotypeModelH4, 50, CoercionMode.COERCION_OFF);
+		runTestCalculateSrpLikelihoodOperators(haplotypeModelH4, op, AbstractMultiBasesOperator.OP);
 	}
 	@Test
 	public void testCalculateLikelihoodSwapSectionRecombination() throws Exception {

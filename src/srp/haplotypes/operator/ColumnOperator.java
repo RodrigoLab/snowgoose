@@ -2,7 +2,7 @@ package srp.haplotypes.operator;
 
 import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.HaplotypeModel;
-import srp.haplotypes.SwapInfo.Operation;
+import srp.haplotypes.Operation;
 import dr.inference.model.Parameter;
 import dr.inference.operators.AbstractCoercableOperator;
 import dr.inference.operators.CoercionMode;

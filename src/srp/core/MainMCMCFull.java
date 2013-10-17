@@ -1,29 +1,54 @@
 package srp.core;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.List;
+
+import jebl.evolution.io.NexusExporter;
+import jebl.evolution.sequences.Sequence;
 
 import srp.haplotypes.AlignmentMapping;
+import srp.haplotypes.AlignmentUtils;
 import srp.haplotypes.HaplotypeLoggerWithTrueHaplotype;
 import srp.haplotypes.HaplotypeModel;
+import srp.haplotypes.HaplotypeModelUtils;
 import srp.likelihood.ShortReadLikelihood;
+import srp.rj.operator.RJTreeOperator;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.coalescent.CoalescentSimulator;
 import dr.evolution.coalescent.ConstantPopulation;
+import dr.evolution.datatype.Nucleotides;
+import dr.evolution.io.Importer;
+import dr.evolution.io.NexusImporter;
+import dr.evolution.io.TreeImporter;
+import dr.evolution.tree.NodeRef;
 import dr.evolution.tree.Tree;
 import dr.evolution.util.TaxonList;
 import dr.evolution.util.Units;
 import dr.evomodel.branchratemodel.StrictClockBranchRates;
 import dr.evomodel.coalescent.CoalescentLikelihood;
 import dr.evomodel.coalescent.ConstantPopulationModel;
+import dr.evomodel.sitemodel.GammaSiteModel;
+import dr.evomodel.sitemodel.SiteModel;
+import dr.evomodel.substmodel.FrequencyModel;
+import dr.evomodel.substmodel.HKY;
+import dr.evomodel.substmodel.SubstitutionModel;
 import dr.evomodel.tree.TreeLogger;
 import dr.evomodel.tree.TreeModel;
 import dr.evomodelxml.coalescent.ConstantPopulationModelParser;
+import dr.evomodelxml.sitemodel.GammaSiteModelParser;
 import dr.evomodelxml.substmodel.HKYParser;
+import dr.evomodelxml.treelikelihood.TreeLikelihoodParser;
+import dr.ext.SeqGenExt;
 import dr.ext.TreeLikelihoodExt;
 import dr.inference.loggers.MCLogger;
 import dr.inference.loggers.TabDelimitedFormatter;
@@ -32,9 +57,11 @@ import dr.inference.mcmc.MCMCOptions;
 import dr.inference.model.Likelihood;
 import dr.inference.model.Parameter;
 import dr.inference.operators.MCMCOperator;
+import dr.inference.operators.OperatorFailedException;
 import dr.inference.operators.OperatorSchedule;
 import dr.inference.operators.SimpleOperatorSchedule;
 import dr.inferencexml.model.CompoundLikelihoodParser;
+import dr.math.MathUtils;
 
 public class MainMCMCFull {
 
@@ -42,10 +69,10 @@ public class MainMCMCFull {
 
 		String dataDir = "/home/sw167/workspaceSrp/ABI/unittest/testData/";
 		int runIndex = 1;
-		int totalSamples = 500;
+		int totalSamples = 1000;
 		int logInterval = 1000;
 		int noOfTrueHaplotype = 7;
-		int noOfRecoveredHaplotype=10;
+		int noOfRecoveredHaplotype=7;
 		
 //		String dataDir = args[0];
 //		int runIndex = Integer.parseInt(args[1]);
@@ -53,7 +80,6 @@ public class MainMCMCFull {
 //		int logInterval = Integer.parseInt(args[3]);
 //		int noOfTrueHaplotype = Integer.parseInt(args[4]);
 //		int noOfRecoveredHaplotype= Integer.parseInt(args[5]);
-
 		
 		String hapRunIndex = "H"+noOfTrueHaplotype+"_"+runIndex;
 		String shortReadFile = hapRunIndex +"_Srp.fasta";
@@ -65,42 +91,40 @@ public class MainMCMCFull {
 		String logHaplotypeName = prefix+".haplatype";
 		String operatorAnalysisFile = prefix+"_operatorAnalysisFile.txt";
 		
-		
 		DataImporter dataImporter = new DataImporter(dataDir);
 
 		Alignment shortReads = dataImporter.importAlignment(shortReadFile);
 		AlignmentMapping alignmentMapping = new AlignmentMapping(shortReads);
 		HaplotypeModel haplotypeModel = new HaplotypeModel(alignmentMapping, noOfRecoveredHaplotype);
 
+		Alignment trueAlignment = dataImporter.importAlignment(trueHaplotypeFile);
+//		haplotypeModel = new HaplotypeModel(alignmentMapping, trueAlignment);
+//		ShortReadLikelihood shortReadLikelihood  = new ShortReadLikelihood(haplotypeModel);
+		
 		// coalescent
 		Parameter popSize = new Parameter.Default(ConstantPopulationModelParser.POPULATION_SIZE, 3000.0, 100, 100000.0);
 
 		// Random treeModel
-		ConstantPopulationModel startingTree = new ConstantPopulationModel(popSize, Units.Type.YEARS);
-		TreeModel treeModel = MCMCSetupHelper.setupRandomTreeModel(startingTree, haplotypeModel, Units.Type.YEARS);
-
-		CoalescentLikelihood coalescent = new CoalescentLikelihood(treeModel,null, new ArrayList<TaxonList>(), startingTree);
+		ConstantPopulationModel popModel = new ConstantPopulationModel(popSize, Units.Type.YEARS);
+		TreeModel treeModel = MCMCSetupHelper.setupRandomTreeModel(popModel, haplotypeModel, Units.Type.YEARS);
+		
+		// Coalescent likelihood
+		CoalescentLikelihood coalescent = new CoalescentLikelihood(treeModel,null, new ArrayList<TaxonList>(), popModel);
 		coalescent.setId("coalescent");
 
+		// Simulate haplotypes, treeLikelihood
+		HashMap<String, Object> parameterList = MCMCSetupHelper.setupTreeLikelihoodHaplotypeModel(treeModel, haplotypeModel);
+		Parameter kappa = (Parameter) parameterList.get("kappa");
+		Parameter freqs = (Parameter) parameterList.get("freqs");
+		StrictClockBranchRates branchRateModel = (StrictClockBranchRates) parameterList.get("branchRateModel");
+		TreeLikelihoodExt treeLikelihood = (TreeLikelihoodExt) parameterList.get("treeLikelihood");
 		
-		// clock model
-		Parameter rateParameter = new Parameter.Default(StrictClockBranchRates.RATE, 1e-5, 0, 1);
-		StrictClockBranchRates branchRateModel = new StrictClockBranchRates(rateParameter);
-
-		Parameter freqs = new Parameter.Default("frequency", haplotypeModel.getStateFrequencies());
-		Parameter kappa = new Parameter.Default(HKYParser.KAPPA, 1.0, 0, 100.0);
-
-		// treeLikelihood
-		TreeLikelihoodExt treeLikelihood = MCMCSetupHelper.setupTreeLikelihood(kappa, freqs,
-				haplotypeModel, treeModel, branchRateModel);
-
 		// ShortReadLikelihood
 		ShortReadLikelihood srpLikelihood = new ShortReadLikelihood(haplotypeModel);
 
 		// CompoundLikelihood
 		HashMap<String, Likelihood> compoundlikelihoods = MCMCSetupHelper.setupCompoundLikelihood(
 				popSize, kappa, coalescent, treeLikelihood, srpLikelihood);
-		
 		Likelihood prior = compoundlikelihoods.get(CompoundLikelihoodParser.PRIOR);
 		Likelihood likelihood = compoundlikelihoods.get(CompoundLikelihoodParser.LIKELIHOOD);
 		Likelihood shortReadLikelihood = compoundlikelihoods.get(ShortReadLikelihood.SHORT_READ_LIKELIHOOD);
@@ -108,18 +132,23 @@ public class MainMCMCFull {
 		
 		// Operators
 		OperatorSchedule schedule = new SimpleOperatorSchedule();
-		ArrayList<MCMCOperator> defalutOperatorsList = MCMCSetupHelper.defalutOperators(haplotypeModel, 
-				freqs, popSize, kappa );
-		schedule.addOperators(defalutOperatorsList);
-
+//		ArrayList<MCMCOperator> defalutOperatorsList = 
+		schedule.addOperators(MCMCSetupHelper.defalutOperators(haplotypeModel, freqs, popSize, kappa));
 		schedule.addOperators(MCMCSetupHelper.defalutTreeOperators(treeModel));
+		
+		
+		MCMCOperator operator;
+		operator = new RJTreeOperator(haplotypeModel, treeModel);
+		operator.setWeight(100);
+		schedule.addOperator(operator);
+		
 		Parameter rootHeight = treeModel.getRootHeightParameter();
 		rootHeight.setId("rootHeight");
 		
 		double total = 0;
 		for (int i = 0; i < schedule.getOperatorCount(); i++) {
-			MCMCOperator operator = schedule.getOperator(i);
-			total += operator.getWeight() ;
+			MCMCOperator op= schedule.getOperator(i);
+			total += op.getWeight() ;
 		}
 		System.out.println("totalWeight: "+total);
 		
@@ -148,7 +177,9 @@ public class MainMCMCFull {
 		loggers[2] = new TreeLogger(treeModel, branchRateModel, null, null,
 				treeFormatter, logInterval, true, true, true, null, null);
 		// log Haplotype
-		Alignment trueAlignment = dataImporter.importAlignment(trueHaplotypeFile);
+//		Alignment trueAlignment = dataImporter.importAlignment(trueHaplotypeFile);
+		ShortReadLikelihood trueSrp = new ShortReadLikelihood(new HaplotypeModel(alignmentMapping, trueAlignment));
+		System.err.println("\'trueShortReadLikelihood\': "+trueSrp.getLogLikelihood());
 		loggers[3] = new HaplotypeLoggerWithTrueHaplotype(haplotypeModel, trueAlignment, logHaplotypeName, logInterval*10);
 		
 		// MCMC

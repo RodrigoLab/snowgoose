@@ -2,13 +2,13 @@ package srp.haplotypes.operator;
 
 import srp.haplotypes.Haplotype;
 import srp.haplotypes.HaplotypeModel;
-import srp.haplotypes.SwapInfo.Operation;
+import srp.haplotypes.Operation;
 import dr.inference.operators.CoercionMode;
 import dr.inference.operators.OperatorFailedException;
 import dr.math.MathUtils;
 
 
-public class HaplotypeSwapSectionOperator extends AbstractSwapBasesOperator {
+public class HaplotypeSwapSectionOperator extends AbstractMultiBasesOperator {
 
 	
 	public final static String OPERATOR_NAME = HaplotypeSwapSectionOperator.class.getSimpleName();

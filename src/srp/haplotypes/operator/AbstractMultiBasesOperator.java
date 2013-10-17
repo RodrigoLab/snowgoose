@@ -4,11 +4,11 @@ import java.util.Arrays;
 
 import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.HaplotypeModel;
-import srp.haplotypes.SwapInfo.Operation;
+import srp.haplotypes.Operation;
 import dr.inference.operators.AbstractCoercableOperator;
 import dr.inference.operators.CoercionMode;
 
-public abstract class AbstractSwapBasesOperator extends AbstractCoercableOperator {
+public abstract class AbstractMultiBasesOperator extends AbstractCoercableOperator {
 
 	public final static Operation OP = Operation.SWAPMULTI;
 	
@@ -24,7 +24,7 @@ public abstract class AbstractSwapBasesOperator extends AbstractCoercableOperato
 	private double autoOptimize;
 	private double scaleFactor;
 	
-	public AbstractSwapBasesOperator(HaplotypeModel haplotypeModel, int swapLength, CoercionMode mode) {
+	public AbstractMultiBasesOperator(HaplotypeModel haplotypeModel, int swapLength, CoercionMode mode) {
 		super(mode);
 		
 		this.haplotypeModel = haplotypeModel;

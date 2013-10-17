@@ -4,8 +4,11 @@ import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Logger;
 
+import org.apache.commons.math3.stat.StatUtils;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -15,6 +18,7 @@ import org.junit.Test;
 import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.AlignmentUtils;
 import srp.haplotypes.HaplotypeModel;
+import srp.haplotypes.SwapInfo;
 import srp.haplotypes.operator.SingleBaseFrequencyOperator;
 import srp.likelihood.ShortReadLikelihood;
 import test.TestUtils;
@@ -23,7 +27,13 @@ import dr.inference.loggers.ArrayLogFormatter;
 import dr.inference.loggers.MCLogger;
 import dr.inference.mcmc.MCMC;
 import dr.inference.mcmc.MCMCOptions;
+import dr.inference.model.CompoundLikelihood;
+import dr.inference.model.Likelihood;
 import dr.inference.model.Parameter;
+import dr.inference.operators.CoercionMode;
+import dr.inference.operators.DeltaExchangeOperator;
+import dr.inference.operators.GeneralOperator;
+import dr.inference.operators.GibbsOperator;
 import dr.inference.operators.MCMCOperator;
 import dr.inference.operators.OperatorFailedException;
 import dr.inference.operators.OperatorSchedule;
@@ -133,12 +143,87 @@ public class SingleBaseFrequencyOperatorTest {
 	@Test
 	public void testDoOperationLogq() throws Exception {
 		
-//		double oldProb = frequency.getParameterValue(oldChar);
-//		double newProb = frequency.getParameterValue(newChar);
-//		double logq2 = Math.log(oldProb/newProb);
-//		double logq3 = Math.log(oldProb)-Math.log(newProb);
-//		System.out.println(newChar +"\t"+ oldChar +"\t"+ (logq==logq2) +"\t"+ (logq2==logq3)+"\t"+ logq+"\t"+ logq2 +"\t"+ logq3 +"\t"+ oldProb +"\t"+ newProb +"\t"+ Arrays.toString(swapRecord) +"\t"+  Arrays.toString(frequency.getParameterValues()));
+		String[] seqs = new String[]{
+				"GGGG....",
+				"..CCCC..",
+				"....GGGG",
+				};
+		
+		String[] haps = new String[]{
+				"ACGTACGT"
+				};
+		
+		HaplotypeModel haplotypeModel = AlignmentUtils.createHaplotypeModel(seqs, haps);
+		Parameter freqs = new Parameter.Default("frequency", new double[] {0.1,0.2,0.3,0.4});
+		freqs.addBounds(new Parameter.DefaultBounds(1.0, 0.0, freqs.getDimension()));
+		     
+		SimpleMCMCOperator operator = new SingleBaseFrequencyOperator(haplotypeModel, freqs);
+    	
+		double[] prob = new double['T'+1];
+		prob['A'] = freqs.getParameterValue(0);
+		prob['C'] = freqs.getParameterValue(1);
+		prob['G'] = freqs.getParameterValue(2);
+		prob['T'] = freqs.getParameterValue(3);
+		
+    	for (int i = 0; i < 100; i++) {
+    		double logq = operator.doOperation();
+    		
+    		int[] swapRecord = haplotypeModel.getSwapInfo().getSwapInfoSWAPBASE();
+    		
+    		double expectedLogq = Math.log(
+    				prob[swapRecord[SwapInfo.SWAPBASE_OLD_CHAR_INDEX]]/ 
+    	    		prob[swapRecord[SwapInfo.SWAPBASE_NEW_CHAR_INDEX]]);
+    		assertEquals(expectedLogq, logq, 1e-10);
+//    		System.out.println(prob[swapRecord[SwapInfo.SWAP_BASE_OLD_CHAR_INDEX]]/ 
+//    		prob[swapRecord[SwapInfo.SWAP_BASE_NEW_CHAR_INDEX]] +"\t"+ Arrays.toString(swapRecord));
+			
 
+		}
+		SimpleMCMCOperator freqOperator = new DeltaExchangeOperator(freqs, new int[] { 1,
+				1, 1, 1 }, 0.05, 0.1, false, CoercionMode.COERCION_OFF);
+    	for (int i = 0; i < 100; i++) {
+            boolean operatorSucceeded = false;
+            double[] oldFreqs = freqs.getParameterValues();
+            do{
+	            try {
+	                freqOperator.doOperation();
+	                operatorSucceeded = true;
+
+	            } catch (OperatorFailedException e) {
+	            	operatorSucceeded = false;
+//	            	System.err.println(i +"\t"+ Arrays.toString(freqs.getParameterValues()));
+//	            	System.err.println(StatUtils.sum(oldFreqs));
+	            }
+            }while(!operatorSucceeded);
+            
+            if (operatorSucceeded) {
+	//        	freqOperator.doOperation();
+            	boolean allEqual = true;
+            	for (int j = 0; j < oldFreqs.length; j++) {
+					allEqual = allEqual && (oldFreqs[j]==freqs.getParameterValue(j));
+				}
+            	assertFalse(allEqual);
+	    		prob['A'] = freqs.getParameterValue(0);
+	    		prob['C'] = freqs.getParameterValue(1);
+	    		prob['G'] = freqs.getParameterValue(2);
+	    		prob['T'] = freqs.getParameterValue(3);
+	    		
+	    		double logq = operator.doOperation();
+	    		
+	    		int[] swapRecord = haplotypeModel.getSwapInfo().getSwapInfoSWAPBASE();
+	    		
+	    		double expectedLogq = Math.log(
+	    				prob[swapRecord[SwapInfo.SWAPBASE_OLD_CHAR_INDEX]]/ 
+	    	    		prob[swapRecord[SwapInfo.SWAPBASE_NEW_CHAR_INDEX]]);
+	    		assertEquals(expectedLogq, logq, 1e-10);
+//	    		System.out.println(i +"\t"+ Arrays.toString(freqs.getParameterValues()));
+				
+
+
+            }
+
+		}
+    	
 	}
 	
 	@Test

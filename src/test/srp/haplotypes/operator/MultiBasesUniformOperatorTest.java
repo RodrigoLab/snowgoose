@@ -17,7 +17,7 @@ import org.junit.Test;
 import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.AlignmentUtils;
 import srp.haplotypes.HaplotypeModel;
-import srp.haplotypes.operator.SwapBasesUniformOperator;
+import srp.haplotypes.operator.MultiBasesUniformOperator;
 import srp.likelihood.ShortReadLikelihood;
 import dr.evolution.alignment.SimpleAlignment;
 import dr.inference.loggers.ArrayLogFormatter;
@@ -37,7 +37,7 @@ import dr.inference.trace.ArrayTraceList;
 import dr.inference.trace.Trace;
 import dr.inferencexml.model.CompoundLikelihoodParser;
 
-public class SwapBasesUniformOperatorTest {
+public class MultiBasesUniformOperatorTest {
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -70,8 +70,8 @@ public class SwapBasesUniformOperatorTest {
 		HaplotypeModel haplotypeModel = new HaplotypeModel(aMap, 3);
 		
 		int nBases = 10;
-		CoercableMCMCOperator operator = new SwapBasesUniformOperator(haplotypeModel, nBases, null);
-    	assertEquals(operator.getOperatorName(), "SwapBasesUniformOperator");
+		CoercableMCMCOperator operator = new MultiBasesUniformOperator(haplotypeModel, nBases, null);
+    	assertEquals(operator.getOperatorName(), "MultiBasesUniformOperator");
     	assertEquals(operator.getPerformanceSuggestion(), "");
 	}
 
@@ -94,7 +94,7 @@ public class SwapBasesUniformOperatorTest {
 				};
 		
 		HaplotypeModel haplotypeModel = AlignmentUtils.createHaplotypeModel(seqs, haps);
-    	SimpleMCMCOperator operator = new SwapBasesUniformOperator(haplotypeModel, 5, CoercionMode.COERCION_OFF);
+    	SimpleMCMCOperator operator = new MultiBasesUniformOperator(haplotypeModel, 5, CoercionMode.COERCION_OFF);
     	
     	
     	for (int i = 0; i < 100; i++) {
@@ -135,7 +135,7 @@ public class SwapBasesUniformOperatorTest {
     	// Operators
     	OperatorSchedule schedule = new SimpleOperatorSchedule();
 
-    	MCMCOperator operator = new SwapBasesUniformOperator(haplotypeModel, 3, CoercionMode.COERCION_OFF);
+    	MCMCOperator operator = new MultiBasesUniformOperator(haplotypeModel, 3, CoercionMode.COERCION_OFF);
     	operator.setWeight(3.0);
     	schedule.addOperator(operator);
     	

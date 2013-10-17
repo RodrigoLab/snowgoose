@@ -16,9 +16,9 @@ import srp.core.DataImporter;
 import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.HaplotypeModel;
 import srp.haplotypes.HaplotypeModelUtils;
-import srp.haplotypes.SwapInfo.Operation;
+import srp.haplotypes.Operation;
+import srp.haplotypes.operator.MultiBasesUniformOperator;
 import srp.haplotypes.operator.SingleBaseOperator;
-import srp.haplotypes.operator.SwapBasesUniformOperator;
 import srp.likelihood.ShortReadLikelihood;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.SitePatterns;
@@ -126,7 +126,7 @@ public class TreeLikelihoodExtTest {
 		
 		srpLikelihood = new ShortReadLikelihood(haplotypeModel);
 
-		SimpleMCMCOperator op = new SwapBasesUniformOperator(haplotypeModel, 100, CoercionMode.COERCION_OFF);
+		SimpleMCMCOperator op = new MultiBasesUniformOperator(haplotypeModel, 100, CoercionMode.COERCION_OFF);
 
         for (int i = 0; i < 100; i++) {
         	srpLikelihood.storeModelState();

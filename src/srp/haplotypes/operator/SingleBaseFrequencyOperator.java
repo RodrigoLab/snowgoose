@@ -12,8 +12,8 @@ public class SingleBaseFrequencyOperator extends AbstractSingleBaseOperator {
 	public final static String OPERATOR_NAME = SingleBaseFrequencyOperator.class.getSimpleName();
 	
 	private static final int NUCLEOTIDE_STATES[] = Nucleotides.NUCLEOTIDE_STATES;
-	private static final int NEW_CHAR_INDEX = SwapInfo.SWAP_BASE_NEW_CHAR_INDEX;
-	private static final int OLD_CHAR_INDEX = SwapInfo.SWAP_BASE_OLD_CHAR_INDEX;
+	private static final int NEW_CHAR_INDEX = SwapInfo.SWAPBASE_NEW_CHAR_INDEX;
+	private static final int OLD_CHAR_INDEX = SwapInfo.SWAPBASE_OLD_CHAR_INDEX;
 	
 	private Parameter frequency;
 
@@ -42,9 +42,9 @@ public class SingleBaseFrequencyOperator extends AbstractSingleBaseOperator {
 		double logq = 0.0;
 		if(swapRecord[OLD_CHAR_INDEX]!=swapRecord[NEW_CHAR_INDEX]){
 
-			int newChar = NUCLEOTIDE_STATES[swapRecord[NEW_CHAR_INDEX]];
-			int oldChar = NUCLEOTIDE_STATES[swapRecord[OLD_CHAR_INDEX]];
-			logq = haplotypeModel.getLogqFrequency(oldChar, newChar);
+//			int newChar = NUCLEOTIDE_STATES[swapRecord[NEW_CHAR_INDEX]];
+//			int oldChar = NUCLEOTIDE_STATES[swapRecord[OLD_CHAR_INDEX]];
+			logq = haplotypeModel.getLogqFrequency(swapRecord[OLD_CHAR_INDEX], swapRecord[NEW_CHAR_INDEX]);
 
 		}
 		return logq;

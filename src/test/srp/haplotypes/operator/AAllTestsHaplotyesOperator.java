@@ -6,7 +6,9 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({ 
-	AbstractSwapBasesOperatorTest.class,
+	AbstractMultiBasesOperatorTest.class,
+	
+	ColumnOperatorTest.class,
 	
 	HaplotypeRecombinationOperatorTest.class,
 	HaplotypeSwapSectionOperatorTest.class,
@@ -15,11 +17,11 @@ import org.junit.runners.Suite.SuiteClasses;
 	SingleBaseOperatorTest.class, 
 	SingleBaseUniformOperatorTest.class,
 
-	SwapBasesEmpiricalOperatorTest.class,
-	SwapBasesMultiOperatorTest.class,
-	SwapBasesUniformOperatorTest.class,
+	MultiBasesEmpiricalOperatorTest.class,
+	MultiBasesOperatorTest.class,
+	MultiBasesUniformOperatorTest.class,
 
 })
-public class AllTestsHaplotyesOperator {
+public class AAllTestsHaplotyesOperator {
 
 }

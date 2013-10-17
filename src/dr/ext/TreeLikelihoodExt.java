@@ -218,5 +218,7 @@ public class TreeLikelihoodExt extends TreeLikelihood {
 		updatePatternListExt(haplotypeModel);
 	}
 
-
+	public SiteModel getSiteModel(){
+		return siteModel;
+	}
 }

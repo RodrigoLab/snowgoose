@@ -1,24 +1,23 @@
 package srp.haplotypes;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import javax.swing.text.TabableView;
-
 import dr.evolution.alignment.Alignment;
+import dr.evolution.datatype.DataType;
 import dr.evolution.datatype.Nucleotides;
 import dr.evolution.sequence.Sequence;
+import dr.evolution.util.Taxon;
 import dr.inference.model.Parameter;
 import dr.math.MathUtils;
 
 public class AlignmentMapping {
 
 	private static final int GAP = '-';
-	private static final char[] VALID_CHARS = Nucleotides.NUCLEOTIDE_CHARS;
-	char[] x = Nucleotides.INSTANCE.getValidChars();
+	private static final DataType dataType =Nucleotides.INSTANCE;
+//	private static final char[] VALID_CHARS = Nucleotides.NUCLEOTIDE_CHARS;
+//	char[] x = Nucleotides.INSTANCE.getValidChars();
 	private static final double[] EQUAL_FREQ = new double[]{0.25, 0.5, 0.75, 1};
 	
 	private ArrayList<Integer>[] mapToSrp; // each [] = position, each ArrayList
@@ -35,7 +34,7 @@ public class AlignmentMapping {
 	
 
 	private int[] posChar = new int[2];
-	
+	private int[] consensus;
 	
 	private void init(int l) {
 		haplotypeLength = l;
@@ -60,16 +59,21 @@ public class AlignmentMapping {
 		
 		@SuppressWarnings("unchecked")
 		HashSet<Character>[] setsOfAvailableChar = new HashSet[haplotypeLength];
+
+		
+        int[][] frequencies = new int[haplotypeLength][dataType.getAmbiguousStateCount()];
+
 		for (int i = 0; i < setsOfAvailableChar.length; i++) {
 			setsOfAvailableChar[i] = new HashSet<Character>();
 		}
 
 		for (int i = 0; i < srpAlignment.getSequenceCount(); i++) {
-			
 			Sequence s = srpAlignment.getSequence(i);
-			addSequence(s, setsOfAvailableChar);
+			addSequence(s, setsOfAvailableChar, frequencies);
 		}
-		
+
+		createConsensusSequence(frequencies);
+    
 		for (int i = 0; i < haplotypeLength; i++) {
 			listOfAvailableChar[i] = new ArrayList<Character>(setsOfAvailableChar[i]);
 
@@ -97,9 +101,45 @@ public class AlignmentMapping {
 	}
 
 
-	private void addSequence(Sequence s,
-			HashSet<Character>[] setsOfAvailableChar) {
+	private void createConsensusSequence(int[][] frequencies) {
 
+        int[] counts;
+        
+        counts = new int[getLength()];
+        consensus = new int[getLength()];
+        for (int i = 0; i < frequencies.length; i++) {
+            int maxState = 0;
+            int maxFreq = frequencies[i][0];
+            for (int j = 1; j < frequencies[i].length; j++) {
+                int freq = frequencies[i][j];
+                if (freq > maxFreq) {
+                    maxState = j;
+                    maxFreq = freq;
+                }
+            }
+            consensus[i] = maxState;
+            counts[i] = maxFreq;
+        }
+
+        StringBuffer buffer = new StringBuffer();
+        for (int i = 0; i < consensus.length; i++) {
+            buffer.append(dataType.getChar(    consensus[i] ));
+        }
+        Sequence sequence = new Sequence(new Taxon("con"),buffer.toString());
+        sequence.setDataType(dataType);
+//        System.out.println();
+//        System.err.println(sequence.getSequenceString());
+//        System.out.println();
+		
+	}
+	public int[] getConsensusSequenceState(){
+		return consensus;
+	}
+
+	private void addSequence(Sequence s,
+			HashSet<Character>[] setsOfAvailableChar, 
+			int[][] frequencies) {
+		
 		ShortRead srp = new ShortRead(s);
 		if (srp.getIsValid()){
 			seqNameToSeqID.put(srp.getName(), srpCount);
@@ -108,14 +148,17 @@ public class AlignmentMapping {
 			for (int j = srp.getStart(); j < srp.getEnd(); j++) {
 				mapToSrp[j].add(srpCount);
 				char c = srp.getFullSrpCharAt(j);
+				int state = dataType.getState(c);
 				if (c!= GAP){
 					setsOfAvailableChar[j].add(c);
+					frequencies[j][state] += 1;
 					cumFreq[c]++;
-					
 				}
 			}
 			srpCount++;
 		}
+		
+
 
 	}
 
@@ -301,7 +344,7 @@ public class AlignmentMapping {
 		double d = MathUtils.nextDouble();
 		for (int i = 0; i < cumFreq.length; i++) {
 			if (d <= cumFreq[i]) {
-				return VALID_CHARS[i]; 
+				return dataType.getChar(i); //TODO: test
 			}
 		}
 		return GAP;
