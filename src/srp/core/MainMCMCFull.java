@@ -1,54 +1,26 @@
 package srp.core;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
-
-import jebl.evolution.io.NexusExporter;
-import jebl.evolution.sequences.Sequence;
 
 import srp.haplotypes.AlignmentMapping;
-import srp.haplotypes.AlignmentUtils;
 import srp.haplotypes.HaplotypeLoggerWithTrueHaplotype;
 import srp.haplotypes.HaplotypeModel;
 import srp.haplotypes.HaplotypeModelUtils;
 import srp.likelihood.ShortReadLikelihood;
 import srp.rj.operator.RJTreeOperator;
 import dr.evolution.alignment.Alignment;
-import dr.evolution.coalescent.CoalescentSimulator;
-import dr.evolution.coalescent.ConstantPopulation;
-import dr.evolution.datatype.Nucleotides;
-import dr.evolution.io.Importer;
-import dr.evolution.io.NexusImporter;
-import dr.evolution.io.TreeImporter;
-import dr.evolution.tree.NodeRef;
-import dr.evolution.tree.Tree;
 import dr.evolution.util.TaxonList;
 import dr.evolution.util.Units;
 import dr.evomodel.branchratemodel.StrictClockBranchRates;
 import dr.evomodel.coalescent.CoalescentLikelihood;
 import dr.evomodel.coalescent.ConstantPopulationModel;
-import dr.evomodel.sitemodel.GammaSiteModel;
-import dr.evomodel.sitemodel.SiteModel;
-import dr.evomodel.substmodel.FrequencyModel;
-import dr.evomodel.substmodel.HKY;
-import dr.evomodel.substmodel.SubstitutionModel;
 import dr.evomodel.tree.TreeLogger;
 import dr.evomodel.tree.TreeModel;
 import dr.evomodelxml.coalescent.ConstantPopulationModelParser;
-import dr.evomodelxml.sitemodel.GammaSiteModelParser;
-import dr.evomodelxml.substmodel.HKYParser;
-import dr.evomodelxml.treelikelihood.TreeLikelihoodParser;
-import dr.ext.SeqGenExt;
 import dr.ext.TreeLikelihoodExt;
 import dr.inference.loggers.MCLogger;
 import dr.inference.loggers.TabDelimitedFormatter;
@@ -57,11 +29,9 @@ import dr.inference.mcmc.MCMCOptions;
 import dr.inference.model.Likelihood;
 import dr.inference.model.Parameter;
 import dr.inference.operators.MCMCOperator;
-import dr.inference.operators.OperatorFailedException;
 import dr.inference.operators.OperatorSchedule;
 import dr.inference.operators.SimpleOperatorSchedule;
 import dr.inferencexml.model.CompoundLikelihoodParser;
-import dr.math.MathUtils;
 
 public class MainMCMCFull {
 
@@ -72,7 +42,7 @@ public class MainMCMCFull {
 		int totalSamples = 1000;
 		int logInterval = 1000;
 		int noOfTrueHaplotype = 7;
-		int noOfRecoveredHaplotype=7;
+		int noOfRecoveredHaplotype=4;
 		
 //		String dataDir = args[0];
 //		int runIndex = Integer.parseInt(args[1]);
@@ -94,8 +64,7 @@ public class MainMCMCFull {
 		DataImporter dataImporter = new DataImporter(dataDir);
 
 		Alignment shortReads = dataImporter.importAlignment(shortReadFile);
-		AlignmentMapping alignmentMapping = new AlignmentMapping(shortReads);
-		HaplotypeModel haplotypeModel = new HaplotypeModel(alignmentMapping, noOfRecoveredHaplotype);
+		HaplotypeModel haplotypeModel = new HaplotypeModel(shortReads, noOfRecoveredHaplotype);
 
 		Alignment trueAlignment = dataImporter.importAlignment(trueHaplotypeFile);
 //		haplotypeModel = new HaplotypeModel(alignmentMapping, trueAlignment);
@@ -176,9 +145,11 @@ public class MainMCMCFull {
 
 		loggers[2] = new TreeLogger(treeModel, branchRateModel, null, null,
 				treeFormatter, logInterval, true, true, true, null, null);
+
 		// log Haplotype
 //		Alignment trueAlignment = dataImporter.importAlignment(trueHaplotypeFile);
-		ShortReadLikelihood trueSrp = new ShortReadLikelihood(new HaplotypeModel(alignmentMapping, trueAlignment));
+//		AlignmentMapping alignmentMapping = new AlignmentMapping(shortReads);
+		ShortReadLikelihood trueSrp = new ShortReadLikelihood(HaplotypeModelUtils.factory(shortReads, trueAlignment));
 		System.err.println("\'trueShortReadLikelihood\': "+trueSrp.getLogLikelihood());
 		loggers[3] = new HaplotypeLoggerWithTrueHaplotype(haplotypeModel, trueAlignment, logHaplotypeName, logInterval*10);
 		
@@ -192,6 +163,7 @@ public class MainMCMCFull {
 		mcmc.init(options, posterior, schedule, loggers);
 		mcmc.run();
 
+		
 		System.out.println(mcmc.getTimer().toString());
 		
 	}

@@ -9,7 +9,8 @@ import org.junit.runners.Suite.SuiteClasses;
 	AbstractHaplotypeModelTest.class,
 	AlignmentMappingTest.class, 
 	AlignmentUtilsTest.class,
-	HaplotypeModelTest.class, 
+	HaplotypeModelTest.class,
+	HaplotypeModelUtilsTest.class, 
 	ShortReadTest.class })
 public class AAllTestsHaplotypes {
 

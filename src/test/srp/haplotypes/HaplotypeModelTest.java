@@ -143,7 +143,7 @@ public class HaplotypeModelTest {
 		for (int i = 0; i < newHaplotypes.length; i++) {
 			assertEquals(haplotypeModel.getHaplotypeString(i), haplotypeModel.getAlignedSequenceString(i)) ;
 			assertEquals(newHaplotypes[i], haplotypeModel.getHaplotypeString(i));
-			for (int j = 0; j < newHaplotypes.length; j++) {
+			for (int j = 0; j < newHaplotypes[i].length(); j++) {
 				char expected = newHaplotypes[i].charAt(j); 
 				assertEquals(expected,haplotypeModel.getHaplotypeCharAt(i,j));
 			}

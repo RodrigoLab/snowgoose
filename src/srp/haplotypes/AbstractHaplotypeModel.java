@@ -431,4 +431,8 @@ public abstract class AbstractHaplotypeModel extends AbstractModel implements Al
             return attributes.getAttributeNames();
     }
 
+	public char getHaplotypeCharAt(int hapIndex, int charIndex) {
+		return haplotypes.get(hapIndex).getChar(charIndex);
+	}
+
 }

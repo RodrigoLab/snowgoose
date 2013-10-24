@@ -110,4 +110,12 @@ public class HaplotypeModelUtils {
         HaplotypeModel copyHaplotypeModel = new HaplotypeModel(haplotypeModel.getAlignmentMapping(), alignment);
 		return copyHaplotypeModel;
 	}
+
+	public static HaplotypeModel factory(Alignment shortReads, Alignment trueAlignment){
+		
+		AlignmentMapping alignmentMapping = new AlignmentMapping(shortReads);
+		HaplotypeModel haplotypeModel = new HaplotypeModel(alignmentMapping, trueAlignment);
+		return haplotypeModel;
+	}
+
 }

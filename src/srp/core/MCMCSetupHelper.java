@@ -58,6 +58,7 @@ import dr.inference.operators.UniformOperator;
 import dr.inference.operators.UpDownOperator;
 import dr.inferencexml.model.CompoundLikelihoodParser;
 import dr.math.distributions.LogNormalDistribution;
+import dr.rj.RJTreeModel;
 
 public class MCMCSetupHelper {
 

@@ -126,6 +126,10 @@ public class AbstractHaplotypeModelTest {
 			
 			assertEquals(haplotypeModel.getSequence(i), haplotypeModel.getHaplotype(i));
 //			expectedMatrix[i] = matrixS[i].toCharArray();
+			for (int j = 0; j < expectedSequences[i].length(); j++) {
+				char expected = expectedSequences[i].charAt(j); 
+				assertEquals(expected,haplotypeModel.getHaplotypeCharAt(i,j));
+			}
 		}
 //		assertArrayEquals(expectedMatrix, haplotypeModel.getCharMatrix());
 		
@@ -279,17 +283,7 @@ public class AbstractHaplotypeModelTest {
 		assertArrayEquals(expectedArray, haplotypeModel.getSitePattern(101));
 		
 		
-		expectedArray = new int[5];
-		Arrays.fill(expectedArray, 1);
-		assertArrayEquals(expectedArray, haplotypeModelRandom.getSitePattern(0));
-		Arrays.fill(expectedArray, 0);
-		assertArrayEquals(expectedArray, haplotypeModelRandom.getSitePattern(2));
-		Arrays.fill(expectedArray, 2);
-		assertArrayEquals(expectedArray, haplotypeModelRandom.getSitePattern(3));
-		Arrays.fill(expectedArray, 17);
-		assertArrayEquals(expectedArray, haplotypeModelRandom.getSitePattern(5));
-		assertArrayEquals(expectedArray, haplotypeModelRandom.getSitePattern(101));
-		
+
 		
 		// getState(int, int)
 		for (int h = 0; h < haplotypeModelRandom.getHaplotypeCount(); h++) {

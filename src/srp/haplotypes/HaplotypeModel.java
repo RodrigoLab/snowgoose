@@ -110,8 +110,11 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 
 		
 //		storedCumSumFrequency[INDEX_OF_LAST_VALID_CHARS]=1;
-		
 	}
+	private HaplotypeModel(Alignment shortReads) {
+		this(new AlignmentMapping(shortReads));
+	}
+
 
 	private static char[] initValidChars4() {
 		char[] validChar = new char[4];
@@ -181,10 +184,15 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 			Haplotype haplotype = new Haplotype(trueAlignment.getSequence(i));
 			addHaplotype(haplotype);
 		}
+	}
+	
+	public HaplotypeModel(Alignment shortReads, int hapCount) {
+		this(new AlignmentMapping(shortReads), hapCount);
 
 	}	
 	
 
+	
 	public void swapHaplotypeColumn(int[] posChar){
 
 		int[] allOldChars = new int[getHaplotypeCount()];
@@ -398,13 +406,13 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 
     
 	
-	@Override
-		public void fireModelChanged(){
-	//		for (TreeChangedEvent treeChangedEvent : treeChangedEvents) {
-			listenerHelper.fireModelChanged(this);//, treeChangedEvent);
-	//		}
-	//		treeChangedEvents.clear();
-		}
+//	@Override
+//	public void fireModelChanged(){
+////		for (TreeChangedEvent treeChangedEvent : treeChangedEvents) {
+//		listenerHelper.fireModelChanged(this);//, treeChangedEvent);
+////		}
+////		treeChangedEvents.clear();
+//	}
 
 	@Override
 	protected void handleModelChangedEvent(Model model, Object object, int index) {
@@ -418,6 +426,10 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 		System.err.println("Call handleVariableChangedEvent");
 	}
 
+	@Override
+	protected void acceptState() {
+		//Do nothing
+	}
 	@Override
 	protected void storeState() {
 
@@ -517,11 +529,6 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 
 	}
 
-	@Override
-	protected void acceptState() {
-		//Do nothing
-	}
-
 	public void startHaplotypeOperation(){
 		isEdit = true;
 	}
@@ -537,10 +544,6 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 		return aMap;
 	}
 
-	public char getHaplotypeCharAt(int hapIndex, int charIndex) {
-		return haplotypes.get(hapIndex).getChar(charIndex);
-	}
-	
 	public double getLogqFrequency(int oldChar, int newChar){
 		return storedLogqMatrix[NUCLEOTIDE_STATES[oldChar]][NUCLEOTIDE_STATES[newChar]];
 	}
@@ -705,4 +708,6 @@ System.out.println((time2 - time1) + "\t");
 		}
 		
 	}
+	
+	
 }
