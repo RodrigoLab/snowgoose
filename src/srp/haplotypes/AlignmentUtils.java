@@ -1,5 +1,6 @@
 package srp.haplotypes;
 
+import srp.evolution.datatype.ShortReads;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.SimpleAlignment;
 import dr.evolution.datatype.DataType;
@@ -38,7 +39,7 @@ public class AlignmentUtils {
 	public static SimpleAlignment createAlignment(String[] sequences){
 
         SimpleAlignment alignment = new SimpleAlignment();
-        alignment.setDataType(Nucleotides.INSTANCE);
+        alignment.setDataType(ShortReads.INSTANCE);
 
         Taxon[] taxa = new Taxon[sequences.length]; 
         for (int i=0; i < sequences.length; i++) {

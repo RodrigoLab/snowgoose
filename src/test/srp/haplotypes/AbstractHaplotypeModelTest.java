@@ -34,6 +34,8 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import srp.core.DataImporter;
+import srp.evolution.alignment.ShortReadFragmentsAlignment;
+import srp.evolution.datatype.ShortReads;
 import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.AlignmentUtils;
 import srp.haplotypes.Haplotype;
@@ -64,7 +66,7 @@ public class AbstractHaplotypeModelTest {
 	public static void setUpBeforeClass() throws Exception {
 
 		String dir = System.getProperty("user.dir")+File.separatorChar+"unittest"+File.separator;
-		srpAlignment = DataImporter.importAlignment(dir, "HaplotypeModelTest_10.fasta");
+		srpAlignment = DataImporter.importShortReads(dir, "HaplotypeModelTest_10_srp.fasta");
 		aMap = new AlignmentMapping(srpAlignment);
 		
 
@@ -213,6 +215,7 @@ public class AbstractHaplotypeModelTest {
 		}
 		
 		SimpleAlignment alignmentNoTaxon = new SimpleAlignment();
+		alignmentNoTaxon.setDataType(ShortReads.INSTANCE);
 		Haplotype h;
 		for (int i = 0; i < 5; i++) {
 			if (i == 0) {

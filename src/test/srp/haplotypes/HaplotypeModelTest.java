@@ -59,7 +59,7 @@ public class HaplotypeModelTest {
 	public static void setUpBeforeClass() throws Exception {
 
 		String dir = System.getProperty("user.dir")+File.separatorChar+"unittest"+File.separator;
-		srpAlignment = DataImporter.importAlignment(dir, "HaplotypeModelTest_10.fasta");
+		srpAlignment = DataImporter.importShortReads(dir, "HaplotypeModelTest_10_srp.fasta");
 		aMap = new AlignmentMapping(srpAlignment);
 		
 
@@ -75,7 +75,7 @@ public class HaplotypeModelTest {
 				"........................................................CACGAGAGCAACACGTA*GGCGTTG*TCAATTCTAGTTCT....",
 				"..........CAGTCCGCGCCTTGTCA*GGCTCAAAAT*CTG..........................................................",
 		};
-		expectedTaxons = new Taxon[10];
+		expectedTaxons = new Taxon[expectedSequences.length];
 //		char[][] expectedMatrix = new char[matrixS.length][matrixS[0].length()];
 		expectedList = new ArrayList<Haplotype>();
 		for (int i = 0; i < expectedSequences.length; i++) {

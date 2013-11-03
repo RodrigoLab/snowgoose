@@ -75,7 +75,7 @@ public class AbstractSpectrumAlignmentModelTest {
 	public static void setUpBeforeClass() throws Exception {
 
 		String dir = System.getProperty("user.dir")+File.separatorChar+"unittest"+File.separator;
-		srpAlignment = DataImporter.importAlignment(dir, "HaplotypeModelTest_10.fasta");
+		srpAlignment = DataImporter.importShortReads(dir, "HaplotypeModelTest_10_srp.fasta");
 		aMap = new AlignmentMapping(srpAlignment);
 		
 
@@ -193,7 +193,7 @@ public class AbstractSpectrumAlignmentModelTest {
 		
 		List<Taxon> expectedList = new ArrayList<Taxon>();
 		for (int i = 0; i < haplotypeModelRandom.getTaxonCount(); i++) {
-			String expectedID = HaplotypeModel.TAXON_PREFIX+i;
+			String expectedID = SpectrumAlignmentModel.TAXON_PREFIX+i;
 			Taxon expectedTaxon = new Taxon(expectedID);
 			expectedList.add(expectedTaxon);
 			assertEquals(expectedTaxon, haplotypeModelRandom.getTaxon(i));
@@ -224,18 +224,18 @@ public class AbstractSpectrumAlignmentModelTest {
 		}
 		
 		SimpleAlignment alignmentNoTaxon = new SimpleAlignment();
-		Haplotype h;
+		Sequence h;
 		for (int i = 0; i < 5; i++) {
-			if (i == 0) {
-				h = AbstractHaplotypeModelTest.expectedList.get(0);
-			} else {
-				h = new Haplotype(expectedSequences[i]);
-			}
+//			if (i == 0) {
+//				h = AbstractSpectrumAlignmentModelTest.expectedList.get(0);
+//			} else {
+				h = new Sequence(expectedSequences[i]);
+//			}/
 
 			alignmentNoTaxon.addSequence(h);
 
 		}
-		haplotypeModelRandom = new HaplotypeModel(aMap, alignmentNoTaxon);
+		haplotypeModelRandom = new SpectrumAlignmentModel(aMap, alignmentNoTaxon);
 		assertEquals(5, haplotypeModelRandom.getTaxonCount());
 		for (int i = 1; i < haplotypeModelRandom.getTaxonCount(); i++) {
 			

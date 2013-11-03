@@ -34,8 +34,8 @@ public class AlignmentMappingTest {
 	public static void setUpBeforeClass() throws Exception {
 		
 		String dir = System.getProperty("user.dir")+File.separatorChar+"unittest"+File.separator;
-		String srpFileName = "AlignmentMappingTest_4.fasta";
-		shortReads = DataImporter.importAlignment(dir, srpFileName);
+		String srpFileName = "AlignmentMappingTest_4_srp.fasta";
+		shortReads = DataImporter.importShortReads(dir, srpFileName);
 	}
 
 	@AfterClass

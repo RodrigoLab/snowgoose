@@ -88,7 +88,7 @@ public class TreeLikelihoodExtTest {
 	public void testUpdatePatternList() throws Exception {
 		
 //		-Djava.library.path=/home/sw167/PostdocLarge/Software/BEAST/BEASTv1.7.1/lib -Xms128m -Xmx256m
-		String dataDir = "/home/sw167/workspace/ABI/unittest/";
+		String dataDir = "/home/sw167/workspaceSrp/ABI/unittest/";
 
 		String trueAlignmentFile = "H4_haplotypes.phyml";
 		String phylogenyFile = "H4_haplotypes.tree";
@@ -101,14 +101,14 @@ public class TreeLikelihoodExtTest {
 		
 		Tree truePhylogeny = dataImporter.importTree(phylogenyFile);
 		
-		Alignment shortReads = dataImporter.importAlignment(shortReadFile);
+		Alignment shortReads = dataImporter.importShortReads(shortReadFile);
 		AlignmentMapping aMap = new AlignmentMapping(shortReads);
 		
 		HaplotypeModel haplotypeModel = new HaplotypeModel(aMap, alignment);
 		ShortReadLikelihood srpLikelihood = new ShortReadLikelihood(haplotypeModel);
 //		ShortReadLikelihood srpLikelihoodUpdate = new ShortReadLikelihood(haplotypeModel);
 		
-		TreeModel treeModel = new TreeModel(TreeModel.TREE_MODEL, truePhylogeny, false, false);
+		TreeModel treeModel = new TreeModel(TreeModel.TREE_MODEL, truePhylogeny, false);
 
     	//treeLikelihood
     	SitePatterns patterns = new SitePatterns(trueAlignment, null, 0, -1, 1, true);
@@ -195,7 +195,7 @@ public class TreeLikelihoodExtTest {
 	public void testUpdatePatternList2() throws Exception {
 		
 		
-		String dataDir = "/home/sw167/workspace/ABI/unittest/";
+		String dataDir = "/home/sw167/workspaceSrp/ABI/unittest/";
 
 		String trueAlignmentFile = "H6_haplotypes.phyml";
 		String phylogenyFile = "H6_haplotypes.tree";
@@ -208,7 +208,7 @@ public class TreeLikelihoodExtTest {
 		
 		Tree truePhylogeny = dataImporter.importTree(phylogenyFile);
 		
-		Alignment shortReads = dataImporter.importAlignment(shortReadFile);
+		Alignment shortReads = dataImporter.importShortReads(shortReadFile);
 		AlignmentMapping aMap = new AlignmentMapping(shortReads);
 		
 		HaplotypeModel trueHaplotypes = new HaplotypeModel(aMap, trueAlignment);
@@ -231,7 +231,7 @@ public class TreeLikelihoodExtTest {
 //					System.out.println(Arrays.toString(sps[i]));
 //			}
 		
-		TreeModel treeModel = new TreeModel(TreeModel.TREE_MODEL, truePhylogeny, false, false);
+		TreeModel treeModel = new TreeModel(TreeModel.TREE_MODEL, truePhylogeny, false);
 		
 
 //			LikelihoodCalculation likelihoodModel = new LikelihoodCalculation(treeModel, aMap, trueHaplotypes);

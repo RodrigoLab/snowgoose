@@ -46,7 +46,7 @@ public class SSTreeModelTest {
 				
 		DataImporter dataImporter = new DataImporter(dataDir);
 		truePhylogeny = dataImporter.importTree(treeFile);
-		TreeModel treeModel = new TreeModel(TreeModel.TREE_MODEL, truePhylogeny, false, false);
+		TreeModel treeModel = new TreeModel(TreeModel.TREE_MODEL, truePhylogeny, false);
 		
 		shortReads = dataImporter.importAlignment(shortReadFile);
 		HaplotypeModel haplotypeModel = new HaplotypeModel(shortReads, noOfRecoveredHaplotype);

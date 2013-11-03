@@ -13,7 +13,7 @@ import dr.inference.model.AbstractModel;
 import dr.util.Attributable;
 
 public abstract class AbstractSpectrumAlignmentModel extends AbstractModel implements Alignment {
-
+//maybe only can implements TaxonList
 	
 	public AbstractSpectrumAlignmentModel(String name) {
 		super(name);
@@ -63,6 +63,7 @@ public abstract class AbstractSpectrumAlignmentModel extends AbstractModel imple
 
 	@Override
 	public Sequence getSequence(int i) {
+		//TODO Fail
 		throw new IllegalArgumentException("getSequence() is not implemented for AbstractSpectrumModel");
 	}
 
@@ -212,6 +213,7 @@ public abstract class AbstractSpectrumAlignmentModel extends AbstractModel imple
      */
     @Override
 	public int[] getSitePattern(int siteIndex) {
+    	//TODO FAIL
     	throw new IllegalArgumentException("getSitePattern() is not implemented for AbstractSpectrumModel");
 //
 //    	int n = getHaplotypeCount();
@@ -243,7 +245,7 @@ public abstract class AbstractSpectrumAlignmentModel extends AbstractModel imple
      */
     @Override
 	public int getState(int taxonIndex, int siteIndex) {
-    	
+    	//TODO FAIL
     	throw new IllegalArgumentException("getState() is not implemented for AbstractSpectrumModel");
 //        Haplotype hap = getHaplotype(taxonIndex);
 //
@@ -306,8 +308,9 @@ public abstract class AbstractSpectrumAlignmentModel extends AbstractModel imple
      */
     @Override
 	public int[] getPattern(int patternIndex) {
-
-        return getSitePattern(patternIndex);
+		//TODO Fail
+		throw new IllegalArgumentException("Not implemented for AbstractSpectrumModel");
+//        return getSitePattern(patternIndex);
     }
 
     /**
@@ -318,7 +321,9 @@ public abstract class AbstractSpectrumAlignmentModel extends AbstractModel imple
     	//TODO might have to implement this for current likelihood core to work
 //    	Spectrum spectrum = getSpectrum(taxonIndex);???
 //    	double frequency = spectrum.getFrequency(patternIndex);???
-    	return getState(taxonIndex, patternIndex);
+		//TODO Fail
+		throw new IllegalArgumentException("Not implemented for AbstractSpectrumModel");
+//    	return getState(taxonIndex, patternIndex);
     }
 
     /**
@@ -346,7 +351,10 @@ public abstract class AbstractSpectrumAlignmentModel extends AbstractModel imple
      */
     @Override
 	public double[] getStateFrequencies() {
-        return PatternList.Utils.empiricalStateFrequencies(this);
+		//TODO Fail
+		throw new IllegalArgumentException("Not implemented for AbstractSpectrumModel");
+//
+//        return PatternList.Utils.empiricalStateFrequencies(this);
     }
 
 	@Override
@@ -369,8 +377,10 @@ public abstract class AbstractSpectrumAlignmentModel extends AbstractModel imple
 	 */
 	@Override
 	public String getAlignedSequenceString(int sequenceIndex) {
-		
-		return getSpectrumString(sequenceIndex);
+		//TODO Fail
+		throw new IllegalArgumentException("Not implemented for AbstractSpectrumModel");
+
+//		return getSpectrumString(sequenceIndex);
 	}
 
 	/**
@@ -378,8 +388,10 @@ public abstract class AbstractSpectrumAlignmentModel extends AbstractModel imple
 	 */
 	@Override
 	public String getUnalignedSequenceString(int sequenceIndex) {
-		
-		return getSpectrumString(sequenceIndex);
+		//TODO Fail
+		throw new IllegalArgumentException("Not implemented for AbstractSpectrumModel");
+
+//		return getSpectrumString(sequenceIndex);
 	}
 	
     // **************************************************************

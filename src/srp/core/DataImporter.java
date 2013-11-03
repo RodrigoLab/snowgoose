@@ -8,6 +8,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
 
+import srp.evolution.datatype.ShortReads;
+import srp.evolution.io.ShortReadImporter;
+
 import com.google.common.io.Files;
 
 import dr.evolution.alignment.Alignment;
@@ -42,7 +45,12 @@ public class DataImporter {
 //	public DataImporter() {
 //		this.dataDir = "";
 //	}
-
+	public Alignment importShortReads(String fileName) throws Exception{
+		
+		Alignment alignment = importShortReads(dataDir, fileName);
+		return alignment;
+	}
+	
 	public Alignment importAlignment(String fileName) throws Exception{
 		
 		Alignment alignment = importAlignment(dataDir, fileName);
@@ -103,7 +111,16 @@ public class DataImporter {
 		FastaImporter importer = new FastaImporter(in, Nucleotides.INSTANCE);
 		Alignment alignment = importer.importAlignment();
 
+		return alignment;
+	}
+	
+	public static Alignment importShortReads(String dataDir, String fileName) throws Exception{
 		
+		String filePath = dataDir+fileName;
+		
+		BufferedReader in = new BufferedReader(new FileReader(filePath));
+		ShortReadImporter importer = new ShortReadImporter(in, ShortReads.INSTANCE);
+		Alignment alignment = importer.importAlignment();
 
 		return alignment;
 	}

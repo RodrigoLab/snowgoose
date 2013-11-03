@@ -85,9 +85,9 @@ public class MCMCTrueTree {
 		
 		DataImporter dataImporter = new DataImporter(dataDir);
 		Tree truePhylogeny = dataImporter.importTree(truePhylogenyFile);
-		TreeModel treeModel = new TreeModel(TreeModel.TREE_MODEL, truePhylogeny, false, false);
+		TreeModel treeModel = new TreeModel(TreeModel.TREE_MODEL, truePhylogeny, false);
 
-		Alignment shortReads = dataImporter.importAlignment(shortReadFile);
+		Alignment shortReads = dataImporter.importShortReads(shortReadFile);
 		AlignmentMapping alignmentMapping = new AlignmentMapping(shortReads);
 		HaplotypeModel haplotypeModel = new HaplotypeModel(alignmentMapping, numberOfHaplotype);
 

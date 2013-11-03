@@ -9,7 +9,8 @@ import org.junit.runners.Suite.SuiteClasses;
 
 	LikelihoodScalerTest.class,
 	LikelihoodUtilsTest.class, 
-	ShortReadLikelihoodTest.class
+	ShortReadLikelihoodTest.class,
+	ShortReadLikelihoodWithOperatorTest.class
 })
 public class AllTestsLikelihood {
 

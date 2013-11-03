@@ -173,9 +173,9 @@ public class MultiBasesOperatorTest {
 
     	// MCMC
     	MCMC mcmc = new MCMC("mcmc1");
-    	MCMCOptions options = new MCMCOptions();
+    	MCMCOptions options = new MCMCOptions(lengthScaler*100);
 //    	options.setChainLength(10000);
-    	options.setChainLength(lengthScaler*100);
+//    	options.setChainLength(lengthScaler*100);
 //    	options.setUseCoercion(true); // autoOptimize = true
 //    	options.setCoercionDelay(lengthScaler*5);
 //    	options.setTemperature(1.0);

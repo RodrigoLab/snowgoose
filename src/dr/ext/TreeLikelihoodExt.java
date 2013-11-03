@@ -6,6 +6,8 @@ import srp.haplotypes.HaplotypeModel;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.PatternList;
 import dr.evolution.datatype.DataType;
+import dr.evolution.tree.NodeRef;
+import dr.evolution.tree.Tree;
 import dr.evolution.util.Taxon;
 import dr.evolution.util.TaxonList;
 import dr.evomodel.branchratemodel.BranchRateModel;
@@ -98,7 +100,8 @@ public class TreeLikelihoodExt extends TreeLikelihood {
         likelihoodKnown = false;
 		
         patternLogLikelihoods = new double[patternCount];
-        resetRootPartials();
+        resetRootPartials(); //TODO chechk Changes in which version 
+//        getRootPartials();
 //        rootPartials = new double[patternCount * stateCount];
 
 //	}
@@ -221,4 +224,114 @@ public class TreeLikelihoodExt extends TreeLikelihood {
 	public SiteModel getSiteModel(){
 		return siteModel;
 	}
+	
+
+	@Override
+	protected boolean traverse(Tree tree, NodeRef node) {
+
+        boolean update = false;
+
+        int nodeNum = node.getNumber();
+
+        NodeRef parent = tree.getParent(node);
+
+        // First update the transition probability matrix(ices) for this branch
+        if (parent != null && updateNode[nodeNum]) {
+
+            final double branchRate = branchRateModel.getBranchRate(tree, node);
+
+            // Get the operational time of the branch
+            final double branchTime = branchRate * (tree.getNodeHeight(parent) - tree.getNodeHeight(node));
+
+            if (branchTime < 0.0) {
+                throw new RuntimeException("Negative branch length: " + branchTime);
+            }
+
+            likelihoodCore.setNodeMatrixForUpdate(nodeNum);
+
+            for (int i = 0; i < categoryCount; i++) {
+
+                double branchLength = siteModel.getRateForCategory(i) * branchTime;
+                siteModel.getSubstitutionModel().getTransitionProbabilities(branchLength, probabilities);
+                likelihoodCore.setNodeMatrix(nodeNum, i, probabilities);
+            }
+
+            update = true;
+        }
+
+        // If the node is internal, update the partial likelihoods.
+        if (!tree.isExternal(node)) {
+
+            // Traverse down the two child nodes
+            NodeRef child1 = tree.getChild(node, 0);
+            final boolean update1 = traverse(tree, child1);
+
+            NodeRef child2 = tree.getChild(node, 1);
+            final boolean update2 = traverse(tree, child2);
+
+            // If either child node was updated then update this node too
+            if (update1 || update2) {
+
+                final int childNum1 = child1.getNumber();
+                final int childNum2 = child2.getNumber();
+
+                likelihoodCore.setNodePartialsForUpdate(nodeNum);
+
+                if (integrateAcrossCategories) {
+                    likelihoodCore.calculatePartials(childNum1, childNum2, nodeNum);
+                } else {
+                    likelihoodCore.calculatePartials(childNum1, childNum2, nodeNum, siteCategories);
+                }
+
+                if (COUNT_TOTAL_OPERATIONS) {
+                    totalOperationCount ++;
+                }
+
+                if (parent == null) {
+                    // No parent this is the root of the tree -
+                    // calculate the pattern likelihoods
+                    double[] frequencies = frequencyModel.getFrequencies();
+
+                    double[] partials = getRootPartialsExt(); //TODO deal with private final
+
+                    likelihoodCore.calculateLogLikelihoods(partials, frequencies, patternLogLikelihoods);
+                }
+
+                update = true;
+            }
+        }
+
+        return update;
+
+    }
+
+    public final double[] getRootPartialsExt() {
+        if (rootPartials == null) {
+            rootPartials = new double[patternCount * stateCount];
+        }
+
+        int nodeNum = treeModel.getRoot().getNumber();
+        if (integrateAcrossCategories) {
+
+            // moved this call to here, because non-integrating siteModels don't need to support it - AD
+            double[] proportions = siteModel.getCategoryProportions();
+            likelihoodCore.integratePartials(nodeNum, proportions, rootPartials);
+        } else {
+            likelihoodCore.getPartials(nodeNum, rootPartials);
+        }
+
+        return rootPartials;
+    }
+
+    /**
+     * the root partial likelihoods (a temporary array that is used
+     * to fetch the partials - it should not be examined directly -
+     * use getRootPartials() instead).
+     */
+    private double[] rootPartials = null;
+	
+	private void resetRootPartials() {
+		rootPartials = null;		
+	}
+	
 }

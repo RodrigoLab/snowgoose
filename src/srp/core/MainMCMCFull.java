@@ -63,7 +63,7 @@ public class MainMCMCFull {
 		
 		DataImporter dataImporter = new DataImporter(dataDir);
 
-		Alignment shortReads = dataImporter.importAlignment(shortReadFile);
+		Alignment shortReads = dataImporter.importShortReads(shortReadFile);
 		HaplotypeModel haplotypeModel = new HaplotypeModel(shortReads, noOfRecoveredHaplotype);
 
 		Alignment trueAlignment = dataImporter.importAlignment(trueHaplotypeFile);

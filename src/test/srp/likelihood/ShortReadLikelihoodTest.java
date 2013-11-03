@@ -70,7 +70,7 @@ public class ShortReadLikelihoodTest {
 		
 		DataImporter dataImporter = new DataImporter(dataDir);
 		
-		Alignment shortReads = dataImporter.importAlignment(shortReadFile);
+		Alignment shortReads = dataImporter.importShortReads(shortReadFile);
 		AlignmentMapping aMap = new AlignmentMapping(shortReads);
 		
 		Alignment trueAlignment = dataImporter.importAlignment(trueAlignmentFile);
@@ -106,7 +106,7 @@ public class ShortReadLikelihoodTest {
 				".....AACCGGTT.......",
 				};
 		aMap = AlignmentUtils.createAlignmentMapping(seqs);
-		seqs = new String[]{"XXXXXAACCGGTTYYYYYYYY"};
+		seqs = new String[]{"WWWWWAACCGGTTYYYYYYYY"};
 		SimpleAlignment alignment = AlignmentUtils.createAlignment(seqs);
 		
 		haplotypeModel = new HaplotypeModel(aMap, alignment);
@@ -154,10 +154,10 @@ public class ShortReadLikelihoodTest {
 		schedule.addOperator(op);
         
 		int length = 1000;
-		MCMCOptions options = new MCMCOptions();
-		options.setChainLength(length);
+		MCMCOptions options = new MCMCOptions(length);
+//		options.setChainLength(length);
 //		options.setUseCoercion(false); // autoOptimize = true
-		options.setFullEvaluationCount(length);
+//		options.setFullEvaluationCount(length);
 
 		MCMC mcmc = new MCMC("mcmc1");
 		mcmc.init(options, shortReadlikelihood, schedule, null);
@@ -348,7 +348,7 @@ public class ShortReadLikelihoodTest {
 		
 		DataImporter dataImporter = new DataImporter(dataDir);
 		
-		Alignment shortReads = dataImporter.importAlignment(shortReadFile);
+		Alignment shortReads = dataImporter.importShortReads(shortReadFile);
 		AlignmentMapping aMap = new AlignmentMapping(shortReads);
 		
 		Alignment trueAlignment = dataImporter.importAlignment(trueAlignmentFile);
@@ -471,7 +471,7 @@ public class ShortReadLikelihoodTest {
 		
 		DataImporter dataImporter = new DataImporter(dataDir);
 		
-		Alignment shortReads = dataImporter.importAlignment(shortReadFile);
+		Alignment shortReads = dataImporter.importShortReads(shortReadFile);
 		AlignmentMapping aMap = new AlignmentMapping(shortReads);
 		
 		Alignment trueAlignment = dataImporter.importAlignment(trueAlignmentFile);
@@ -517,107 +517,5 @@ public class ShortReadLikelihoodTest {
 		
 		
 	}
-		
-	@Test
-	public void testCalculateLikelihoodColumn() throws Exception {
-		
-		Parameter freqs = new Parameter.Default("frequency", haplotypeModelH4.getStateFrequencies());
-		MCMCOperator op = new ColumnOperator(haplotypeModelH4, haplotypeModelH4.getHaplotypeCount(), freqs, null);
-		runTestCalculateSrpLikelihoodOperators(haplotypeModelH4, op, ColumnOperator.OP);
-	}
-	@Test
-	public void testCalculateLikelihoodSingleBase() throws Exception {
-		
-		MCMCOperator op = new SingleBaseOperator(haplotypeModelH4, 0);
-		runTestCalculateSrpLikelihoodOperators(haplotypeModelH4, op, AbstractSingleBaseOperator.OP);
-		
-	}
-	@Test
-	public void testCalculateLikelihoodSingleBaseUniform() throws Exception {
-		
-		MCMCOperator op = new SingleBaseUniformOperator(haplotypeModelH4, 0);
-		runTestCalculateSrpLikelihoodOperators(haplotypeModelH4, op, AbstractSingleBaseOperator.OP);
-	}
-	@Test
-	public void testCalculateLikelihoodSingleBaseEmpirical() throws Exception {
-		
-		MCMCOperator op = new SingleBaseEmpiricalOperator(haplotypeModelH4, 0);
-		runTestCalculateSrpLikelihoodOperators(haplotypeModelH4, op, AbstractSingleBaseOperator.OP);
-	}
-	
-	@Test
-	public void testCalculateLikelihoodSingleBaseFrequency() throws Exception {
-			
 
-		Parameter freqs = new Parameter.Default("frequency", haplotypeModelH4.getStateFrequencies());
-		MCMCOperator op = new SingleBaseFrequencyOperator(haplotypeModelH4, freqs);
-		runTestCalculateSrpLikelihoodOperators(haplotypeModelH4, op, AbstractSingleBaseOperator.OP);
-		
-		
-	}
-	@Test
-	public void testCalculateLikelihoodMultiBases() throws Exception {
-		
-		MCMCOperator op = new MultiBasesOperator(haplotypeModelH4, 50, CoercionMode.COERCION_OFF);
-		runTestCalculateSrpLikelihoodOperators(haplotypeModelH4, op, AbstractMultiBasesOperator.OP);
-	}
-	@Test
-	public void testCalculateLikelihoodMultiBasesEmpirical() throws Exception {
-		
-		MCMCOperator op = new MultiBasesEmpiricalOperator(haplotypeModelH4, 50, CoercionMode.COERCION_OFF);
-		runTestCalculateSrpLikelihoodOperators(haplotypeModelH4, op, AbstractMultiBasesOperator.OP);
-	}
-	@Test
-	public void testCalculateLikelihoodMultiBasesUniform() throws Exception {
-		
-		MCMCOperator op = new MultiBasesUniformOperator(haplotypeModelH4, 50, CoercionMode.COERCION_OFF);
-		runTestCalculateSrpLikelihoodOperators(haplotypeModelH4, op, AbstractMultiBasesOperator.OP);
-	}
-	@Test
-	public void testCalculateLikelihoodSwapSectionRecombination() throws Exception {
-		
-		MCMCOperator op = new HaplotypeRecombinationOperator(haplotypeModelH4, 0);
-		runTestCalculateSrpLikelihoodOperators(haplotypeModelH4, op, HaplotypeRecombinationOperator.OP);
-	}
-	@Test
-	public void testCalculateLikelihoodSwapSection() throws Exception {
-		
-		MCMCOperator op = new HaplotypeSwapSectionOperator(haplotypeModelH4, 50, null);
-		runTestCalculateSrpLikelihoodOperators(haplotypeModelH4, op, HaplotypeSwapSectionOperator.OP);
-	}
-	
-	public void runTestCalculateSrpLikelihoodOperators(HaplotypeModel haplotypeModel, MCMCOperator op, Object expectedOperation) throws Exception {
-	
-		
-		ShortReadLikelihood srL = new ShortReadLikelihood(haplotypeModel);
-		assertEquals(Operation.NONE, srL.getOperation());
-		assertEquals(Operation.NONE, haplotypeModel.getSwapInfo().getOperation());
-		for (int i = 0; i < 100; i++) {
-	    	srL.storeModelState();
-	        op.operate();
-	
-	        double score = srL.getLogLikelihood();
-	        assertEquals(expectedOperation, srL.getOperation());
-	        assertEquals(expectedOperation, haplotypeModel.getSwapInfo().getOperation());
-	        
-	        HaplotypeModel duplicateHaplotypeModel = HaplotypeModelUtils.copyHaplotypeModel(haplotypeModel);
-	        ShortReadLikelihood srLFull = new ShortReadLikelihood(duplicateHaplotypeModel);
-	        double expected = srLFull.getLogLikelihood();
-	        
-	        assertEquals(Operation.NONE, srLFull.getOperation());
-	        assertEquals(Operation.NONE, duplicateHaplotypeModel.getSwapInfo().getOperation());
-	        assertEquals(expected, score, 0);
-	
-	        boolean accept = MathUtils.nextBoolean();    		
-	        if (accept) {
-	            op.accept(0);
-	            srL.acceptModelState();
-	        } else {
-	            op.reject();
-	            srL.restoreModelState();
-	        }
-	    }
-		
-		
-	}
 }

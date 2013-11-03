@@ -43,6 +43,7 @@ import dr.ext.TreeLikelihoodExt;
 import dr.inference.distribution.DistributionLikelihood;
 import dr.inference.loggers.Loggable;
 import dr.inference.loggers.MCLogger;
+import dr.inference.markovchain.MarkovChain;
 import dr.inference.mcmc.MCMCOptions;
 import dr.inference.model.CompoundLikelihood;
 import dr.inference.model.Likelihood;
@@ -322,16 +323,27 @@ public class MCMCSetupHelper {
 		return mcLogger;
 
 	}
-
-	public static MCMCOptions setMCMCOptions(int logInterval, int totalSamples) {
-		MCMCOptions options = new MCMCOptions();
-		options.setChainLength(logInterval * totalSamples);
-		options.setUseCoercion(false); // autoOptimize = true
-		options.setCoercionDelay((int) (logInterval * 0.01));
-		options.setTemperature(1.0);
-		options.setFullEvaluationCount((int) (logInterval*0.01));
 	
+	public static MCMCOptions setMCMCOptions(int logInterval, int totalSamples) {
+//		MCMCOptions options = new MCMCOptions();
+//		options.setChainLength(logInterval * totalSamples);
+//		options.setUseCoercion(false); // autoOptimize = true
+//		options.setCoercionDelay((int) (logInterval * 0.01));
+//		options.setTemperature(1.0);
+//		options.setFullEvaluationCount((int) (logInterval*0.01));
+	
+		
+		MCMCOptions options = new MCMCOptions(logInterval * totalSamples, 2000,
+				1, MarkovChain.EVALUATION_TEST_THRESHOLD, true, 0, 1.0);
+		//		MCMCOptions(long chainLength, 
+//				long fullEvaluationCount, 
+//				int minOperatorCountForFullEvaluation, 
+//				double evaluationTestThreshold, 
+//				boolean coercion, 
+//				long coercionDelay, 
+//				double temperature) 
 		return options;
+	    
 	}
 
 

@@ -301,6 +301,7 @@ public Spectrum(int length){
      * @return the taxon for this sequences.
      */
     public Taxon getTaxon() {
+
         return taxon;
     }
 
@@ -359,7 +360,7 @@ public Spectrum(int length){
 	@Override
 	protected void handleVariableChangedEvent(Variable variable, int index,
 			ChangeType type) {
-		System.err.println("Call handleVariableChangedEvent");
+		System.err.println("Call handleVariableChangedEvent Specturm");
 		
 	}
 

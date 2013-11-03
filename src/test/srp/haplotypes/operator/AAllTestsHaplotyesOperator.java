@@ -13,13 +13,14 @@ import org.junit.runners.Suite.SuiteClasses;
 	HaplotypeRecombinationOperatorTest.class,
 	HaplotypeSwapSectionOperatorTest.class,
 	
+	MultiBasesEmpiricalOperatorTest.class,
+	MultiBasesOperatorTest.class,
+	MultiBasesUniformOperatorTest.class,
+	
 	SingleBaseFrequencyOperatorTest.class,
 	SingleBaseOperatorTest.class, 
 	SingleBaseUniformOperatorTest.class,
 
-	MultiBasesEmpiricalOperatorTest.class,
-	MultiBasesOperatorTest.class,
-	MultiBasesUniformOperatorTest.class,
 
 })
 public class AAllTestsHaplotyesOperator {
