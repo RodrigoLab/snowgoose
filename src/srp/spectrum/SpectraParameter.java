@@ -46,7 +46,14 @@ public class SpectraParameter extends Parameter.Default{
     public void setFrequency(int i, double value) {
     	setParameterValue(i, value);
     }
-
+    
+    public void setFrequencies(double[] values){
+    	for (int i = 0; i < values.length; i++) {
+    		setParameterValueQuietly(i, values[i]);
+		}
+//    	System.arraycopy(values, 0, this.values, 0, values.length);
+    }
+    
     public double getFrequency(int i) {
         return getParameterValue(i);
     }

@@ -8,6 +8,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import srp.haplotypes.AlignmentMapping;
+import srp.haplotypes.AlignmentUtils;
+import srp.spectrum.SpectrumAlignmentModel;
 import srp.spectrum.likelihood.SpectrumTreeLikelihood;
 
 import dr.evolution.alignment.Alignment;
@@ -75,13 +78,62 @@ public class SpectrumTreeLikelihoodTest {
 		alignment.addSequence(new Sequence(taxa[2], "C"));
 		alignment.addSequence(new Sequence(taxa[3], "C"));
 		SitePatterns patterns = new SitePatterns(alignment, null, 0, -1, 1, true);
+//		SpectrumAlignmentModel specturmModel = new SpectrumAlignmentModel(shortReads, hapCount)
 		TreeModel treeModel = createTreeModel(taxa);
-		SpectrumTreeLikelihood treeLikelihood = new SpectrumTreeLikelihood(patterns, treeModel,
-				siteModel, null, false, false, true, false, false);
+		TreeLikelihood treeLikelihood = new TreeLikelihood(patterns, treeModel,
+				siteModel, null, null, false, false, true, false, false);
 		System.out.println(treeLikelihood.getLogLikelihood());
 
 	}
 
+	@Test
+	public void testSpectrumModel() throws Exception {
+		// Sub model
+		Parameter freqs = new Parameter.Default(new double[] { 0.25, 0.25,
+				0.25, 0.25 });
+		Parameter kappa = new Parameter.Default(HKYParser.KAPPA, 1.0, 0, 100);
+
+		FrequencyModel f = new FrequencyModel(Nucleotides.INSTANCE, freqs);
+		HKY hky = new HKY(kappa, f);
+
+		// siteModel
+		GammaSiteModel siteModel = new GammaSiteModel(hky);
+		Parameter mu = new Parameter.Default(
+				GammaSiteModelParser.MUTATION_RATE, 1.0, 0,
+				Double.POSITIVE_INFINITY);
+		siteModel.setMutationRateParameter(mu);
+
+		// treeLikelihood
+		int taxaCount = 4;
+		Taxon[] taxa = new Taxon[taxaCount];
+		for (int i = 0; i < taxa.length; i++) {
+			taxa[i] = new Taxon("taxa_"+i);
+		}
+		SimpleAlignment alignment = new SimpleAlignment();
+		alignment.addSequence(new Sequence(taxa[0], "R"));
+		alignment.addSequence(new Sequence(taxa[1], "K"));
+		alignment.addSequence(new Sequence(taxa[2], "C"));
+		alignment.addSequence(new Sequence(taxa[3], "C"));
+		
+		
+		TreeModel treeModel = createTreeModel(taxa);
+		
+
+		String[] seqs = new String[] {
+			"A***AAA...",
+			".C**AAA...",
+			"..G*AAA...",
+			"...TTGC..."};
+		
+		AlignmentMapping aMap = new AlignmentMapping(AlignmentUtils.createAlignment(seqs));
+				
+		
+		SpectrumAlignmentModel specturmModel = new SpectrumAlignmentModel(aMap, taxaCount);
+		SpectrumTreeLikelihood treeLikelihood = new SpectrumTreeLikelihood(specturmModel, treeModel,
+				siteModel, null, false, false, true, false, false);
+		System.out.println(treeLikelihood.getLogLikelihood());
+
+	}
 	private static TreeModel createTreeModel(Taxon[] taxa) {
 
 		SimpleNode[] nodes = new SimpleNode[taxa.length*2-1];

@@ -34,8 +34,8 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import srp.core.DataImporter;
-import srp.evolution.alignment.ShortReadFragmentsAlignment;
-import srp.evolution.datatype.ShortReads;
+import srp.dr.evolution.alignment.ShortReadFragmentsAlignment;
+import srp.dr.evolution.datatype.ShortReads;
 import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.AlignmentUtils;
 import srp.haplotypes.Haplotype;

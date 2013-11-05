@@ -50,7 +50,7 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 	
 //	private static final DataType DATA_TYPE = Nucleotides.INSTANCE;
 	public static final char GAP = '-';
-	public static final String TAXON_PREFIX = "hap_";
+	public static final String TAXON_PREFIX = "taxa_";
 
 //	int haplotypesCount;
 	AlignmentMapping aMap;
@@ -98,6 +98,7 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 		for (int i = 0; i < hapCount; i++) {
 			Taxon t = new Taxon(TAXON_PREFIX+i); 
 			Spectrum spectrum = new Spectrum(spectrumLength);
+			spectrum.setTaxon(t);
 			addSpectrum(spectrum);
 //			randomHaplotype(i);
 
@@ -387,11 +388,11 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 
 	}
 
-	public void startHaplotypeOperation(){
+	public void startSpectrumOperation(){
 		isEdit = true;
 	}
 
-	public void endHaplotypeOperation(){
+	public void endSpectrumOperation(){
 		isEdit = false;
 		fireModelChanged();
 	}
@@ -441,6 +442,16 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 	private double[] storedFrequency = new double[4];
 	private double[] storedCumSumFrequency = new double[INDEX_OF_LAST_VALID_CHARS];
 	private double[][] storedLogqMatrix = new double[4][4];
+
+	public double[] getSpecturmFrequencies(int sequenceIndex, int i) {
+//		Spectrum spectrum = getSpectrum(sequenceIndex);
+		
+		return getSpectrum(sequenceIndex).getFrequencies(i);
+	}
+	public void setSpectrum(int index, Spectrum spectrum) {
+		// TODO Auto-generated method stub
+		spectrumList.set(index, spectrum);
+	}
 
 
 	

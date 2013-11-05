@@ -1,4 +1,4 @@
-package srp.evolution.datatype;
+package srp.dr.evolution.datatype;
 
 import dr.evolution.datatype.Nucleotides;
 

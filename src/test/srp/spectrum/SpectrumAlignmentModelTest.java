@@ -28,7 +28,7 @@ public class SpectrumAlignmentModelTest {
 	public void createSpectrumAlignmentModel() throws Exception {
 
 		String dir = System.getProperty("user.dir")+File.separatorChar+"unittest"+File.separator;
-		Alignment srpAlignment = DataImporter.importShortReads(dir, "HaplotypeModelTest_10.fasta");
+		Alignment srpAlignment = DataImporter.importShortReads(dir, "HaplotypeModelTest_10_srp.fasta");
 		aMap = new AlignmentMapping(srpAlignment);
 		
 

@@ -1,6 +1,6 @@
 package srp.haplotypes;
 
-import srp.evolution.datatype.ShortReads;
+import srp.dr.evolution.datatype.ShortReads;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.SimpleAlignment;
 import dr.evolution.datatype.DataType;

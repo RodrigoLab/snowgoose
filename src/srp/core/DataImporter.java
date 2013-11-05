@@ -8,8 +8,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
 
-import srp.evolution.datatype.ShortReads;
-import srp.evolution.io.ShortReadImporter;
+import srp.dr.evolution.datatype.ShortReads;
+import srp.dr.evolution.io.ShortReadImporter;
 
 import com.google.common.io.Files;
 

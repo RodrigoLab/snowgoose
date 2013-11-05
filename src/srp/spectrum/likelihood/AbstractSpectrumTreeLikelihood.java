@@ -25,11 +25,8 @@
 
 package srp.spectrum.likelihood;
 
-import java.util.Arrays;
-
-import org.apache.commons.math3.stat.StatUtils;
-
-import dr.evolution.alignment.PatternList;
+//import dr.evolution.alignment.PatternList;
+import srp.spectrum.SpectrumAlignmentModel;
 import dr.evolution.datatype.DataType;
 import dr.evolution.tree.NodeRef;
 import dr.evomodel.tree.TreeModel;
@@ -51,18 +48,21 @@ public abstract class AbstractSpectrumTreeLikelihood extends AbstractModelLikeli
 
     protected static final boolean COUNT_TOTAL_OPERATIONS = true;
 
-	public AbstractSpectrumTreeLikelihood(String name, 
-			PatternList patternList,//TODO to delete
-			TreeModel treeModel) {
+	private SpectrumAlignmentModel spectrumModel;
+
+    public AbstractSpectrumTreeLikelihood(String name, 
+    		SpectrumAlignmentModel spectrumModel,
+//    		PatternList patternList,
+                                  TreeModel treeModel) {
 
         super(name);
 
-        this.patternList = patternList;
-        this.dataType = patternList.getDataType();
-        patternCount = patternList.getPatternCount();
+        this.spectrumModel = spectrumModel;
+        this.dataType = spectrumModel.getDataType();
+        patternCount = spectrumModel.getPatternCount();
         stateCount = dataType.getStateCount();
 
-        patternWeights = patternList.getPatternWeights();
+        patternWeights = spectrumModel.getPatternWeights();
 
         this.treeModel = treeModel;
         addModel(treeModel);
@@ -78,32 +78,32 @@ public abstract class AbstractSpectrumTreeLikelihood extends AbstractModelLikeli
 
     }
 
+//    /**
+//     * Sets the partials from a sequence in an alignment.
+//     */
+//    protected final void setStates(LikelihoodCore likelihoodCore, PatternList patternList,
+//                                   int sequenceIndex, int nodeIndex) {
+//        int i;
+//
+//        int[] states = new int[patternCount];
+//
+//        for (i = 0; i < patternCount; i++) {
+//
+//            states[i] = patternList.getPatternState(sequenceIndex, i);
+//        }
+//
+//        likelihoodCore.setNodeStates(nodeIndex, states);
+//    }
+
     public TreeModel getTreeModel() {
-	    return treeModel;
-	}
-
-	/**
-     * Sets the partials from a sequence in an alignment.
-     */
-    protected final void setStates(LikelihoodCore likelihoodCore, PatternList patternList,
-                                   int sequenceIndex, int nodeIndex) {
-        int i;
-
-        int[] states = new int[patternCount];
-
-        for (i = 0; i < patternCount; i++) {
-
-            states[i] = patternList.getPatternState(sequenceIndex, i);
-        }
-        System.out.println(Arrays.toString(states));
-        likelihoodCore.setNodeStates(nodeIndex, states);
+        return treeModel;
     }
 
     /**
      * Sets the partials from a sequence in an alignment.
      */
-    protected final void setPartials(LikelihoodCore likelihoodCore, PatternList patternList,
-                                     int categoryCount,
+    protected final void setPartials(LikelihoodCore likelihoodCore, SpectrumAlignmentModel spectrumModel,
+//                                     int categoryCount,
                                      int sequenceIndex, int nodeIndex) {
         double[] partials = new double[patternCount * stateCount];
 
@@ -111,56 +111,53 @@ public abstract class AbstractSpectrumTreeLikelihood extends AbstractModelLikeli
 
         int v = 0;
         for (int i = 0; i < patternCount; i++) {
-
-            int state = patternList.getPatternState(sequenceIndex, i);
-            stateSet = dataType.getStateSet(state);
+        	//TODO implement here
+            double[] frequencies = spectrumModel.getSpecturmFrequencies(sequenceIndex, i);
+//            stateSet = dataType.getStateSet(state);
 
             for (int j = 0; j < stateCount; j++) {
-                if (stateSet[j]) {
-                    partials[v] = 1.0;
-                } else {
-                    partials[v] = 0.0;
-                }
-                v++;
-            }
-//			double sum = StatUtils.sum(partials);
-//			for (int j = 0; j < partials.length; j++) {
-//				partials[j] /= sum;
-//			}
-        }
-
-        likelihoodCore.setNodePartials(nodeIndex, partials);
-    }
-
-    /**
-     * Sets the partials from a sequence in an alignment.
-     */
-    protected final void setMissingStates(LikelihoodCore likelihoodCore, int nodeIndex) {
-        int[] states = new int[patternCount];
-
-        for (int i = 0; i < patternCount; i++) {
-            states[i] = dataType.getGapState();
-        }
-
-        likelihoodCore.setNodeStates(nodeIndex, states);
-    }
-
-    /**
-     * Sets the partials from a sequence in an alignment.
-     */
-    protected final void setMissingPartials(LikelihoodCore likelihoodCore, int nodeIndex) {
-        double[] partials = new double[patternCount * stateCount];
-
-        int v = 0;
-        for (int i = 0; i < patternCount; i++) {
-            for (int j = 0; j < stateCount; j++) {
-                partials[v] = 1.0;
+//                if (stateSet[j]) {
+//                    partials[v] = 1.0;
+//                } else {
+//                    partials[v] = 0.0;
+//                }
+            	partials[v] = frequencies[j];
                 v++;
             }
         }
 
         likelihoodCore.setNodePartials(nodeIndex, partials);
     }
+
+//    /**
+//     * Sets the partials from a sequence in an alignment.
+//     */
+//    protected final void setMissingStates(LikelihoodCore likelihoodCore, int nodeIndex) {
+//        int[] states = new int[patternCount];
+//
+//        for (int i = 0; i < patternCount; i++) {
+//            states[i] = dataType.getGapState();
+//        }
+//
+//        likelihoodCore.setNodeStates(nodeIndex, states);
+//    }
+//
+//    /**
+//     * Sets the partials from a sequence in an alignment.
+//     */
+//    protected final void setMissingPartials(LikelihoodCore likelihoodCore, int nodeIndex) {
+//        double[] partials = new double[patternCount * stateCount];
+//
+//        int v = 0;
+//        for (int i = 0; i < patternCount; i++) {
+//            for (int j = 0; j < stateCount; j++) {
+//                partials[v] = 1.0;
+//                v++;
+//            }
+//        }
+//
+//        likelihoodCore.setNodePartials(nodeIndex, partials);
+//    }
 
     /**
      * Set update flag for a node and its children
@@ -283,13 +280,12 @@ public abstract class AbstractSpectrumTreeLikelihood extends AbstractModelLikeli
         return this;
     }
 
-    public final PatternList getPatternList() {
-        return patternList;
+    public final SpectrumAlignmentModel getSpectrumModel() {
+        return spectrumModel;
     }
 
     public final double getLogLikelihood() {
         if (!likelihoodKnown) {
-//        	System.out.print(logLikelihood +"\t");//TODO REMOVE
             logLikelihood = calculateLogLikelihood();
             likelihoodKnown = true;
         }
@@ -325,7 +321,7 @@ public abstract class AbstractSpectrumTreeLikelihood extends AbstractModelLikeli
     /**
      * the patternList
      */
-    protected PatternList patternList = null;
+//    protected PatternList patternList = null;
 
     protected DataType dataType = null;
 

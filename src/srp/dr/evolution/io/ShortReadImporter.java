@@ -1,11 +1,11 @@
-package srp.evolution.io;
+package srp.dr.evolution.io;
 
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 
-import srp.evolution.datatype.ShortReads;
+import srp.dr.evolution.datatype.ShortReads;
 
 import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.SimpleAlignment;

@@ -25,6 +25,10 @@
 
 package srp.spectrum.likelihood;
 
+import java.util.logging.Logger;
+
+import srp.spectrum.SpectrumAlignmentModel;
+
 import dr.evolution.alignment.AscertainedSitePatterns;
 import dr.evolution.alignment.PatternList;
 import dr.evolution.alignment.SitePatterns;
@@ -38,17 +42,18 @@ import dr.evomodel.branchratemodel.DefaultBranchRateModel;
 import dr.evomodel.sitemodel.SiteModel;
 import dr.evomodel.substmodel.FrequencyModel;
 import dr.evomodel.tree.TreeModel;
+import dr.evomodel.treelikelihood.AbstractTreeLikelihood;
+import dr.evomodel.treelikelihood.AminoAcidLikelihoodCore;
+import dr.evomodel.treelikelihood.GeneralLikelihoodCore;
 import dr.evomodel.treelikelihood.LikelihoodCore;
+import dr.evomodel.treelikelihood.NativeAminoAcidLikelihoodCore;
+import dr.evomodel.treelikelihood.NativeGeneralLikelihoodCore;
+import dr.evomodel.treelikelihood.NativeNucleotideLikelihoodCore;
+import dr.evomodel.treelikelihood.NucleotideLikelihoodCore;
+import dr.evomodel.treelikelihood.TipStatesModel;
 import dr.evomodelxml.treelikelihood.TreeLikelihoodParser;
 import dr.inference.model.Model;
 import dr.inference.model.Statistic;
-
-import java.util.Arrays;
-import java.util.logging.Logger;
-
-import javax.swing.text.TabableView;
-
-import srp.spectrum.SpectrumAlignmentModel;
 
 /**
  * TreeLikelihoodModel - implements a Likelihood Function for sequences on a tree.
@@ -59,11 +64,14 @@ import srp.spectrum.SpectrumAlignmentModel;
  */
 
 public class SpectrumTreeLikelihood extends AbstractSpectrumTreeLikelihood {
+    private static final boolean DEBUG = false;
+
     /**
      * Constructor.
      */
     public SpectrumTreeLikelihood(
-    		PatternList patternList,
+//    		PatternList patternList,
+    		SpectrumAlignmentModel spectrumModel,
                           TreeModel treeModel,
                           SiteModel siteModel,
                           BranchRateModel branchRateModel,
@@ -74,12 +82,8 @@ public class SpectrumTreeLikelihood extends AbstractSpectrumTreeLikelihood {
                           boolean forceJavaCore,
                           boolean forceRescaling) {
 
-        super(TreeLikelihoodParser.TREE_LIKELIHOOD, patternList, treeModel);
-//    	useAmbiguities = false;
-//    	allowMissingTaxa = false;
-//    	storePartials = true;
-//    	forceJavaCore = false;
-//    	forceRescaling =false;
+        super(TreeLikelihoodParser.TREE_LIKELIHOOD, spectrumModel, treeModel);
+
         this.storePartials = storePartials;
 
         try {
@@ -89,43 +93,74 @@ public class SpectrumTreeLikelihood extends AbstractSpectrumTreeLikelihood {
             this.frequencyModel = siteModel.getFrequencyModel();
             addModel(frequencyModel);
 
-//            integrateAcrossCategories = true;//siteModel.integrateAcrossCategories();
+//            this.tipStatesModel = tipStatesModel;
+
+            integrateAcrossCategories = siteModel.integrateAcrossCategories();
 
             this.categoryCount = siteModel.getCategoryCount();
 
             final Logger logger = Logger.getLogger("dr.evomodel");
-//            String coreName = "Java general";
-//            final DataType dataType = patternList.getDataType();
-
-//            String coreName = "Java nucleotide";
+            final DataType dataType = spectrumModel.getDataType();
             
+            String coreName = "Java general";
+            coreName = "Java spectrumnucleotide";
             likelihoodCore = new SpectrumNucleotideLikelihoodCore();
-
-//            if (dataType instanceof dr.evolution.datatype.Nucleotides) {
-////                    if (!forceJavaCore && NativeNucleotideLikelihoodCore.isAvailable()) {
-////                        coreName = "native nucleotide";
-////                        likelihoodCore = new NativeNucleotideLikelihoodCore();
-////                    } else {
-////                        coreName = "Java nucleotide";
-////                        likelihoodCore = new SpectrumNucleotideLikelihoodCore();
-////                    }
-//            } 
-//            else{
-//            	throw new IllegalArgumentException("Unknown likelihoodCore");
-//            }
-
-//TODO add/remove/change/surpress later            
-//            {
-//              final String id = getId();
-//              logger.info("TreeLikelihood(" + ((id != null) ? id : treeModel.getId()) + ") using " + coreName + " likelihood core");
+//            if (integrateAcrossCategories) {
 //
-//              logger.info("  " + (useAmbiguities ? "Using" : "Ignoring") + " ambiguities in tree likelihood.");
-//              logger.info("  With " + patternList.getPatternCount() + " unique site patterns.");
+//                final DataType dataType = patternList.getDataType();
+//
+//                if (dataType instanceof dr.evolution.datatype.Nucleotides) {
+//
+//                    if (!forceJavaCore && NativeNucleotideLikelihoodCore.isAvailable()) {
+//                        coreName = "native nucleotide";
+//                        likelihoodCore = new NativeNucleotideLikelihoodCore();
+//                    } else {
+//                        coreName = "Java nucleotide";
+//                        likelihoodCore = new NucleotideLikelihoodCore();
+//                    }
+//
+//                } else if (dataType instanceof dr.evolution.datatype.AminoAcids) {
+//                    if (!forceJavaCore && NativeAminoAcidLikelihoodCore.isAvailable()) {
+//                        coreName = "native amino acid";
+//                        likelihoodCore = new NativeAminoAcidLikelihoodCore();
+//                    } else {
+//                        coreName = "Java amino acid";
+//                        likelihoodCore = new AminoAcidLikelihoodCore();
+//                    }
+//
+//                    // The codon core was out of date and did nothing more than the general core...
+//                } else if (dataType instanceof dr.evolution.datatype.Codons) {
+//                    if (!forceJavaCore && NativeGeneralLikelihoodCore.isAvailable()) {
+//                        coreName = "native general";
+//                        likelihoodCore = new NativeGeneralLikelihoodCore(patternList.getStateCount());
+//                    } else {
+//                        coreName = "Java general";
+//                        likelihoodCore = new GeneralLikelihoodCore(patternList.getStateCount());
+//                    }
+//                    useAmbiguities = true;
+//                } else {
+//                    if (!forceJavaCore && NativeGeneralLikelihoodCore.isAvailable()) {
+//                        coreName = "native general";
+//                        likelihoodCore = new NativeGeneralLikelihoodCore(patternList.getStateCount());
+//                    } else {
+//                        coreName = "Java general";
+//                        likelihoodCore = new GeneralLikelihoodCore(patternList.getStateCount());
+//                    }
+//                }
+//            } else {
+//                likelihoodCore = new GeneralLikelihoodCore(patternList.getStateCount());
 //            }
+            {
+              final String id = getId();
+              logger.info("TreeLikelihood(" + ((id != null) ? id : treeModel.getId()) + ") using " + coreName + " likelihood core");
+
+              logger.info("  " + (useAmbiguities ? "Using" : "Ignoring") + " ambiguities in tree likelihood.");
+              logger.info("  With " + spectrumModel.getPatternCount() + " unique site patterns.");
+            }
 
             if (branchRateModel != null) {
                 this.branchRateModel = branchRateModel;
-//                logger.info("Branch rate model used: " + branchRateModel.getModelName());
+                logger.info("Branch rate model used: " + branchRateModel.getModelName());
             } else {
                 this.branchRateModel = new DefaultBranchRateModel();
             }
@@ -158,38 +193,36 @@ public class SpectrumTreeLikelihood extends AbstractSpectrumTreeLikelihood {
 //                }
 //
 //                addModel(tipStatesModel);
-//                //useAmbiguities = true;
 //            } else {
                 for (int i = 0; i < extNodeCount; i++) {
                     // Find the id of tip i in the patternList
                     String id = treeModel.getTaxonId(i);
-                    int index = patternList.getTaxonIndex(id);
-//                	public int getTaxonIndex(String id) {
-//                		for (int i = 0, n = getTaxonCount(); i < n; i++) {
-//                			if (getTaxonId(i).equals(id))
-//                				return i;
-//                		}
-//                		return -1;
-//                	}
+                    int index = spectrumModel.getTaxonIndex(id);
                     if (index == -1) {
-                        if (!allowMissingTaxa) {
-                            throw new TaxonList.MissingTaxonException("Taxon, " + id + ", in tree, " + treeModel.getId() +
-                                    ", is not found in patternList, " + patternList.getId());
-                        }
-                        if (useAmbiguities) {
-                            setMissingPartials(likelihoodCore, i);
-                        } else {
-                            setMissingStates(likelihoodCore, i);
-                        }
-                    } else {
-                    	useAmbiguities = true;
-                        if (useAmbiguities) {
-                            setPartials(likelihoodCore, patternList, categoryCount, index, i);
-                        } else {
-                            setStates(likelihoodCore, patternList, index, i);
-                        }
+                          throw new TaxonList.MissingTaxonException("Taxon, " + id + ", in tree, " + treeModel.getId() +
+                                  ", is not found in patternList, " + spectrumModel.getId());
                     }
+                    setPartials(likelihoodCore, spectrumModel, index, i);
                 }
+                    //                    if (index == -1) {
+//                        if (!allowMissingTaxa) {
+//                            throw new TaxonList.MissingTaxonException("Taxon, " + id + ", in tree, " + treeModel.getId() +
+//                                    ", is not found in patternList, " + patternList.getId());
+//                        }
+//                        if (useAmbiguities) {
+//                            setMissingPartials(likelihoodCore, i);
+//                        } else {
+//                            setMissingStates(likelihoodCore, i);
+//                        }
+//                    } 
+//                    else {
+//                        if (useAmbiguities) {
+//
+//                        } else {
+//                            setStates(likelihoodCore, spectrumModel, index, i);
+//                        }
+//                    }
+//                }
 //            }
             for (int i = 0; i < intNodeCount; i++) {
                 likelihoodCore.createNodePartials(extNodeCount + i);
@@ -204,103 +237,9 @@ public class SpectrumTreeLikelihood extends AbstractSpectrumTreeLikelihood {
             throw new RuntimeException(mte.toString());
         }
 
-        addStatistic(new SiteLikelihoodsStatistic());
+//        addStatistic(new SiteLikelihoodsStatistic());
     }
 
-    public SpectrumTreeLikelihood(
-    		SpectrumAlignmentModel spectrumAlignmentModel,
-                          TreeModel treeModel,
-                          SiteModel siteModel,
-                          BranchRateModel branchRateModel,
-//                          TipStatesModel tipStatesModel,
-                          boolean useAmbiguities,
-                          boolean allowMissingTaxa,
-                          boolean storePartials,
-                          boolean forceJavaCore,
-                          boolean forceRescaling) {
-
-        super(TreeLikelihoodParser.TREE_LIKELIHOOD, null, treeModel);
-//
-
-//
-        this.patternList = patternList;
-        this.dataType = spectrumAlignmentModel.getDataType();
-        patternCount = spectrumAlignmentModel.getPatternCount();
-        stateCount = spectrumAlignmentModel.getStateCount();
-
-        patternWeights = spectrumAlignmentModel.getPatternWeights();
-
-        this.treeModel = treeModel;
-        addModel(treeModel);
-
-        nodeCount = treeModel.getNodeCount();
-        updateNode = new boolean[nodeCount];
-        for (int i = 0; i < nodeCount; i++) {
-            updateNode[i] = true;
-        }
-
-        likelihoodKnown = false;
-
-        
-        
-//    	useAmbiguities = false;
-//    	allowMissingTaxa = false;
-//    	storePartials = true;
-//    	forceJavaCore = false;
-//    	forceRescaling =false;
-//        integrateAcrossCategories = true;
-        this.storePartials = storePartials;
-
-        this.siteModel = siteModel;
-		addModel(siteModel);
-
-		this.frequencyModel = siteModel.getFrequencyModel();
-		addModel(frequencyModel);
-
-		this.categoryCount = siteModel.getCategoryCount();
-		
-		likelihoodCore = new SpectrumNucleotideLikelihoodCore();
-
-		if (branchRateModel != null) {
-		    this.branchRateModel = branchRateModel;
-		} else {
-		    this.branchRateModel = new DefaultBranchRateModel();
-		}
-		addModel(this.branchRateModel);
-
-		probabilities = new double[stateCount * stateCount];
-
-		likelihoodCore.initialize(nodeCount, patternCount, categoryCount, integrateAcrossCategories);
-
-		int extNodeCount = treeModel.getExternalNodeCount();
-		int intNodeCount = treeModel.getInternalNodeCount();
-
-		for (int i = 0; i < extNodeCount; i++) {
-		    // Find the id of tip i in the patternList
-		    String id = treeModel.getTaxonId(i);
-		    int index = patternList.getTaxonIndex(id);
-
-		    useAmbiguities = true;
-		    if (useAmbiguities) {
-		        setPartials(likelihoodCore, patternList, categoryCount, index, i);
-		    } else {
-		        setStates(likelihoodCore, patternList, index, i);
-		        
-		    }
-		}
-
-		for (int i = 0; i < intNodeCount; i++) {
-		    likelihoodCore.createNodePartials(extNodeCount + i);
-		}
-
-		if (forceRescaling) {
-		    likelihoodCore.setUseScaling(true);
-		}
-
-    }
-
-
-    
     public final LikelihoodCore getLikelihoodCore() {
         return likelihoodCore;
     }
@@ -338,6 +277,11 @@ public class SpectrumTreeLikelihood extends AbstractSpectrumTreeLikelihood {
             if (index == -1) {
                 updateAllNodes();
             } else {
+                if (DEBUG) {
+                if (index >= treeModel.getNodeCount()) {
+                    throw new IllegalArgumentException("Node index out of bounds");
+                }
+                }
                 updateNode(treeModel.getNode(index));
             }
 
@@ -345,9 +289,16 @@ public class SpectrumTreeLikelihood extends AbstractSpectrumTreeLikelihood {
 
             updateAllNodes();
 
-        } 
-//REMOVED tipStatesModel
-        else if (model instanceof SiteModel) {
+//        } else if (model == tipStatesModel) {
+//        	if(object instanceof Taxon)
+//        	{
+//        		for(int i=0; i<treeModel.getNodeCount(); i++)
+//        			if(treeModel.getNodeTaxon(treeModel.getNode(i))!=null && treeModel.getNodeTaxon(treeModel.getNode(i)).getId().equalsIgnoreCase(((Taxon)object).getId()))
+//        				updateNode(treeModel.getNode(i));
+//        	}else
+//        		updateAllNodes();
+
+        } else if (model instanceof SiteModel) {
 
             updateAllNodes();
 
@@ -404,15 +355,15 @@ public class SpectrumTreeLikelihood extends AbstractSpectrumTreeLikelihood {
         if (patternLogLikelihoods == null) {
             patternLogLikelihoods = new double[patternCount];
         }
-//        
-//        if (!integrateAcrossCategories) {
-//            if (siteCategories == null) {
-//                siteCategories = new int[patternCount];
-//            }
-//            for (int i = 0; i < patternCount; i++) {
-//                siteCategories[i] = siteModel.getCategoryOfSite(i);
-//            }
-//        }
+
+        if (!integrateAcrossCategories) {
+            if (siteCategories == null) {
+                siteCategories = new int[patternCount];
+            }
+            for (int i = 0; i < patternCount; i++) {
+                siteCategories[i] = siteModel.getCategoryOfSite(i);
+            }
+        }
 
 //        if (tipStatesModel != null) {
 //            int extNodeCount = treeModel.getExternalNodeCount();
@@ -423,19 +374,16 @@ public class SpectrumTreeLikelihood extends AbstractSpectrumTreeLikelihood {
 //                    likelihoodCore.setCurrentNodePartials(index, tipPartials);
 //                }
 //            }
-//
 //        }
+
 
         final NodeRef root = treeModel.getRoot();
         traverse(treeModel, root);
 
         double logL = 0.0;
         double ascertainmentCorrection = getAscertainmentCorrection(patternLogLikelihoods);
-//        System.out.println("Correc\t"+ ascertainmentCorrection);
         for (int i = 0; i < patternCount; i++) {
             logL += (patternLogLikelihoods[i] - ascertainmentCorrection) * patternWeights[i];
-//            System.out.println(patternLogLikelihoods[i] +"\t"+  logL +"\t"+ patternWeights[i]);
-            
         }
 
         if (logL == Double.NEGATIVE_INFINITY) {
@@ -463,7 +411,6 @@ public class SpectrumTreeLikelihood extends AbstractSpectrumTreeLikelihood {
             updateNode[i] = false;
         }
         //********************************************************************
-//        System.out.println("Evalute TreeLikelihood"+"\t"+ logL);//TODO REMOVE
 
         return logL;
     }
@@ -480,6 +427,18 @@ public class SpectrumTreeLikelihood extends AbstractSpectrumTreeLikelihood {
             }
         }
         return out;
+    }
+
+    /* Calculate ascertainment correction if working off of AscertainedSitePatterns
+    @param patternLogProbs log pattern probabilities
+    @return the log total probability for a pattern.
+    */
+    protected double getAscertainmentCorrection(double[] patternLogProbs) {
+//        if (patternList instanceof AscertainedSitePatterns) {
+//            return ((AscertainedSitePatterns) patternList).getAscertainmentCorrection(patternLogProbs);
+//        } else {
+            return 0.0;
+//        }
     }
 
     /**
@@ -562,8 +521,11 @@ public class SpectrumTreeLikelihood extends AbstractSpectrumTreeLikelihood {
 
                 likelihoodCore.setNodePartialsForUpdate(nodeNum);
 
-                likelihoodCore.calculatePartials(childNum1, childNum2, nodeNum);
-
+                if (integrateAcrossCategories) {
+                    likelihoodCore.calculatePartials(childNum1, childNum2, nodeNum);
+                } else {
+                    likelihoodCore.calculatePartials(childNum1, childNum2, nodeNum, siteCategories);
+                }
 
                 if (COUNT_TOTAL_OPERATIONS) {
                     totalOperationCount ++;
@@ -601,7 +563,6 @@ public class SpectrumTreeLikelihood extends AbstractSpectrumTreeLikelihood {
         } else {
             likelihoodCore.getPartials(nodeNum, rootPartials);
         }
-//System.out.println("rootPartial" +"\t"+ Arrays.toString(rootPartials));
 
         return rootPartials;
     }
@@ -612,36 +573,19 @@ public class SpectrumTreeLikelihood extends AbstractSpectrumTreeLikelihood {
      * use getRootPartials() instead).
      */
     private double[] rootPartials = null;
-    
-    public void resetRootPartials(){
-    	rootPartials= null;
-    }
-    
-    /* Calculate ascertainment correction if working off of AscertainedSitePatterns
-	    @param patternLogProbs log pattern probabilities
-	    @return the log total probability for a pattern.
-	    */
-    protected double getAscertainmentCorrection(double[] patternLogProbs) {
-	//        if (patternList instanceof AscertainedSitePatterns) {
-	//            return ((AscertainedSitePatterns) patternList).getAscertainmentCorrection(patternLogProbs);
-	//        } else {
-    	return 0.0;
-	//        }
-    }
-
-	public class SiteLikelihoodsStatistic extends Statistic.Abstract {
+/*
+    public class SiteLikelihoodsStatistic extends Statistic.Abstract {
 
         public SiteLikelihoodsStatistic() {
             super("siteLikelihoods");
         }
 
         public int getDimension() {
-//            if (patternList instanceof SitePatterns) {
-//                return ((SitePatterns)patternList).getSiteCount();
-//            } else {
-//                return patternList.getPatternCount();
-//            }
-        	return 0;
+            if (patternList instanceof SitePatterns) {
+                return ((SitePatterns)patternList).getSiteCount();
+            } else {
+                return patternList.getPatternCount();
+            }
         }
 
         public String getDimensionName(int dim) {
@@ -650,22 +594,21 @@ public class SpectrumTreeLikelihood extends AbstractSpectrumTreeLikelihood {
 
         public double getStatisticValue(int i) {
 
-//            if (patternList instanceof SitePatterns) {
-//                int index = ((SitePatterns)patternList).getPatternIndex(i);
-//                if( index >= 0 ) {
-//                    return patternLogLikelihoods[index] / patternWeights[index];
-//                } else {
-//                    return 0.0;
-//                }
-//            } else {
-//                return patternList.getPatternCount();
-//            }
-        	return 0.0;
+            if (patternList instanceof SitePatterns) {
+                int index = ((SitePatterns)patternList).getPatternIndex(i);
+                if( index >= 0 ) {
+                    return patternLogLikelihoods[index] / patternWeights[index];
+                } else {
+                    return 0.0;
+                }
+            } else {
+                return patternList.getPatternCount();
+            }
         }
 
     }
 
-    // **************************************************************
+*/    // **************************************************************
     // INSTANCE VARIABLES
     // **************************************************************
 
@@ -691,12 +634,12 @@ public class SpectrumTreeLikelihood extends AbstractSpectrumTreeLikelihood {
 
     private final boolean storePartials;
 
-    protected final boolean integrateAcrossCategories = true;
+    protected final boolean integrateAcrossCategories;
 
-//    /**
-//     * the categories for each site
-//     */
-//    protected int[] siteCategories = null;
+    /**
+     * the categories for each site
+     */
+    protected int[] siteCategories = null;
 
 
     /**
@@ -715,9 +658,9 @@ public class SpectrumTreeLikelihood extends AbstractSpectrumTreeLikelihood {
     protected double[] probabilities;
 
 
-//    /**
-//     * an array used to transfer tip partials
-//     */
+    /**
+     * an array used to transfer tip partials
+     */
 //    protected double[] tipPartials;
 
     /**

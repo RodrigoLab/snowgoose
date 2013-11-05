@@ -27,7 +27,7 @@ public class Spectrum extends AbstractModel implements Attributable {
     protected Taxon taxon = null;
 //    private StringBuffer sequenceString = null;
     protected DataType dataType = null;
-    
+    protected int stateCount;
 
 //	public Spectra() {
 //		sequenceString = new StringBuilder();
@@ -76,18 +76,22 @@ public Spectrum(int length){
 			spectrum.add(spectra);
 		}
 		dataType = Nucleotides.INSTANCE;
-		
+		stateCount = dataType.getStateCount();
 	}
 	
 	public Spectrum(Sequence sequence) {
 			this(sequence.getLength());
 	//		setDataType(sequence.getDataType());
 	//		super("Spectrum");
+			dataType = Nucleotides.INSTANCE;
+			stateCount = dataType.getStateCount();
 			for (int site = 0; site < sequence.getLength(); site++) {
 				char c = sequence.getChar(site);
 				int state = dataType.getState(c);
-				if(state<3){
-					setFrequencyAt(site, state, 1);
+				if (state < stateCount) {
+					double[] newFreq = new double[stateCount];
+					newFreq[state]=1;
+					setFrequencies(site, newFreq);
 				}
 				else{
 					setFrequencyAt(site, 0, 0.25);
@@ -117,19 +121,21 @@ public Spectrum(int length){
 		spectrum.get(site).setFrequency(state, value);
 		fireModelChanged(this);//TODO check?
 	}
-	
+	public void setFrequencies(int site, double[] values){
+		spectrum.get(site).setFrequencies(values);
+	}
 	public double getFrequency(int site, int state) {
 	    return spectrum.get(site).getFrequency(state);
-	}
-	
-	public SpectraParameter getSpecturm(int site) {
-	    return spectrum.get(site);
 	}
 	
 	public double[] getFrequencies(int site) {
 		return getSpecturm(site).getFrequencies();
 	}
 
+	public SpectraParameter getSpecturm(int site) {
+	    return spectrum.get(site);
+	}
+	
 	@Override
 	public String toString(){
 		StringBuffer sb = new StringBuffer();

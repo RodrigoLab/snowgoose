@@ -25,8 +25,6 @@
 
 package srp.spectrum.likelihood;
 
-import java.util.Arrays;
-
 import dr.evomodel.treelikelihood.LikelihoodCore;
 
 /**
@@ -153,7 +151,6 @@ public abstract class AbstractSpectrumLikelihoodCore implements LikelihoodCore {
 
         this.partials[0][nodeIndex] = new double[partialsSize];
         this.partials[1][nodeIndex] = new double[partialsSize];
-
     }
 
     /**
@@ -172,7 +169,6 @@ public abstract class AbstractSpectrumLikelihoodCore implements LikelihoodCore {
             }
         } else {
             System.arraycopy(partials, 0, this.partials[0][nodeIndex], 0, partials.length);
-            
         }
     }
 
@@ -228,22 +224,20 @@ public abstract class AbstractSpectrumLikelihoodCore implements LikelihoodCore {
         currentPartialsIndices[nodeIndex] = 1 - currentPartialsIndices[nodeIndex];
     }
 
-//    /**
-//     * Sets the currently updating node partials for node nodeIndex. This may
-//     * need to repeatedly copy the partials for the different category partitions
-//     */
+    /**
+     * Sets the currently updating node partials for node nodeIndex. This may
+     * need to repeatedly copy the partials for the different category partitions
+     */
     public void setCurrentNodePartials(int nodeIndex, double[] partials) {
-//    	Only used in tipStateModel, likelihoodCore.setCurrentNodePartials(index, tipPartials);
-    	throw new RuntimeException("setCurrentNodePartials should be only used with tipStatesModel!!");
-    	//        if (partials.length < partialsSize) {
-//            int k = 0;
-//            for (int i = 0; i < matrixCount; i++) {
-//                System.arraycopy(partials, 0, this.partials[currentPartialsIndices[nodeIndex]][nodeIndex], k, partials.length);
-//                k += partials.length;
-//            }
-//        } else {
-//            System.arraycopy(partials, 0, this.partials[currentPartialsIndices[nodeIndex]][nodeIndex], 0, partials.length);
-//        }
+        if (partials.length < partialsSize) {
+            int k = 0;
+            for (int i = 0; i < matrixCount; i++) {
+                System.arraycopy(partials, 0, this.partials[currentPartialsIndices[nodeIndex]][nodeIndex], k, partials.length);
+                k += partials.length;
+            }
+        } else {
+            System.arraycopy(partials, 0, this.partials[currentPartialsIndices[nodeIndex]][nodeIndex], 0, partials.length);
+        }
     }
 
     /**
@@ -254,9 +248,6 @@ public abstract class AbstractSpectrumLikelihoodCore implements LikelihoodCore {
      * @param nodeIndex3 the 'parent' node
      */
     public void calculatePartials(int nodeIndex1, int nodeIndex2, int nodeIndex3) {
-    	System.out.println("calculatePartial\t"+nodeIndex1 +"\t"+ nodeIndex2 +"\t"+ nodeIndex3
-    			+"\t"+ Arrays.toString(states[nodeIndex1]) +"\t"+ Arrays.toString(states[nodeIndex2]));
-
         if (states[nodeIndex1] != null) {
             if (states[nodeIndex2] != null) {
                 calculateStatesStatesPruning(

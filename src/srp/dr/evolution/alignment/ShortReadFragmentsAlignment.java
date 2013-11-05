@@ -1,6 +1,6 @@
-package srp.evolution.alignment;
+package srp.dr.evolution.alignment;
 
-import srp.evolution.datatype.ShortReads;
+import srp.dr.evolution.datatype.ShortReads;
 import dr.evolution.alignment.SimpleAlignment;
 import dr.evolution.datatype.DataType;
 
