@@ -14,7 +14,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import srp.core.DataImporter;
-import srp.core.MCMCSetupHelper;
+import srp.core.MCMCSetupHelperHaplotype;
 import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.HaplotypeLoggerWithTrueHaplotype;
 import srp.haplotypes.HaplotypeModel;
@@ -90,7 +90,7 @@ public class MCMCFull {
 
 		//	Random treeModel
 		ConstantPopulationModel startingTree = new ConstantPopulationModel(popSize, Units.Type.YEARS);
-		TreeModel treeModel = MCMCSetupHelper.setupRandomTreeModel(startingTree, haplotypeModel, Units.Type.YEARS);
+		TreeModel treeModel = MCMCSetupHelperHaplotype.setupRandomTreeModel(startingTree, haplotypeModel, Units.Type.YEARS);
 
 		// Coalescent likelihood
 		CoalescentLikelihood coalescent = new CoalescentLikelihood(treeModel,null, new ArrayList<TaxonList>(), startingTree);
@@ -106,14 +106,14 @@ public class MCMCFull {
 		
 		// treeLikelihood
 		Parameter kappa = new Parameter.Default(HKYParser.KAPPA, 1.0, 0, 100.0);
-		TreeLikelihoodExt treeLikelihood = MCMCSetupHelper.setupTreeLikelihood(kappa, freqs,
+		TreeLikelihoodExt treeLikelihood = MCMCSetupHelperHaplotype.setupTreeLikelihood(kappa, freqs,
 				haplotypeModel, treeModel, branchRateModel);
 
 		// ShortReadLikelihood
 		ShortReadLikelihood srpLikelihood = new ShortReadLikelihood(haplotypeModel);
 
 		// CompoundLikelihood
-		HashMap<String, Likelihood> compoundlikelihoods = MCMCSetupHelper.setupCompoundLikelihood(
+		HashMap<String, Likelihood> compoundlikelihoods = MCMCSetupHelperHaplotype.setupCompoundLikelihood(
 				popSize, kappa, coalescent, treeLikelihood, srpLikelihood);
 		
 		Likelihood prior = compoundlikelihoods.get(CompoundLikelihoodParser.PRIOR);
@@ -123,9 +123,9 @@ public class MCMCFull {
 		
 		// Operators
 		OperatorSchedule schedule = new SimpleOperatorSchedule();
-		List<MCMCOperator> defalutOperatorsList = MCMCSetupHelper.defalutOperators(haplotypeModel, freqs, kappa, popSize);
+		List<MCMCOperator> defalutOperatorsList = MCMCSetupHelperHaplotype.defalutOperators(haplotypeModel, freqs, kappa, popSize);
 		schedule.addOperators(defalutOperatorsList);
-		schedule.addOperators(MCMCSetupHelper.defalutTreeOperators(treeModel));
+		schedule.addOperators(MCMCSetupHelperHaplotype.defalutTreeOperators(treeModel));
 		Parameter rootHeight = treeModel.getRootHeightParameter();
 		
 		int total = 0;
@@ -140,7 +140,7 @@ public class MCMCFull {
 		MCLogger[] loggers = new MCLogger[4];
 		
 		loggers[0] = new MCLogger(logTracerName, logInterval, false, 0);
-		MCMCSetupHelper.addToLogger(loggers[0], posterior, prior, likelihood, shortReadLikelihood,
+		MCMCSetupHelperHaplotype.addToLogger(loggers[0], posterior, prior, likelihood, shortReadLikelihood,
 				rootHeight, 
 				//rateParameter,
 				popSize, kappa, coalescent,
@@ -148,7 +148,7 @@ public class MCMCFull {
 				);
 
 		loggers[1] = new MCLogger(new TabDelimitedFormatter(System.out), logInterval, true, logInterval*2);
-		MCMCSetupHelper.addToLogger(loggers[1], posterior, prior, likelihood, shortReadLikelihood,
+		MCMCSetupHelperHaplotype.addToLogger(loggers[1], posterior, prior, likelihood, shortReadLikelihood,
 				popSize, kappa, coalescent, 
 				rootHeight
 				);
@@ -163,7 +163,7 @@ public class MCMCFull {
 		loggers[3] = new HaplotypeLoggerWithTrueHaplotype(haplotypeModel, trueAlignment, logHaplotypeName, logInterval*10);
 		
 		// MCMC
-		MCMCOptions options = MCMCSetupHelper.setMCMCOptions(logInterval, 100);
+		MCMCOptions options = MCMCSetupHelperHaplotype.setMCMCOptions(logInterval, 100);
 		
 		MCMC mcmc = new MCMC("mcmc1");
 		mcmc.setShowOperatorAnalysis(true);

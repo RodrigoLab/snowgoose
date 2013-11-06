@@ -15,6 +15,7 @@ public class SpectraParameter extends Parameter.Default{
 
     public SpectraParameter(double[] frequencies) {
     	super(frequencies);
+    	setId("spectraSSS");
     	
 
         double sum = getSumOfFrequencies(frequencies);
@@ -43,11 +44,14 @@ public class SpectraParameter extends Parameter.Default{
         return total;
     }
 
+    @Deprecated
     public void setFrequency(int i, double value) {
+    	System.err.println("setFrequency in SpectraParameter "+i +"\t"+ value);
     	setParameterValue(i, value);
     }
     
-    public void setFrequencies(double[] values){
+    //Sets the value of the parameter without firing a changed event.
+    protected void setFrequenciesQuietly(double[] values){
     	for (int i = 0; i < values.length; i++) {
     		setParameterValueQuietly(i, values[i]);
 		}
@@ -67,11 +71,12 @@ public class SpectraParameter extends Parameter.Default{
 //    }
 
     public double[] getFrequencies() {
-        double[] frequencies = new double[getFrequencyCount()];
-        for (int i = 0; i < frequencies.length; i++) {
-            frequencies[i] = getFrequency(i);
-        }
-        return frequencies;
+    	
+//        double[] frequencies = new double[getFrequencyCount()];
+//        for (int i = 0; i < frequencies.length; i++) {
+//            frequencies[i] = getFrequency(i);
+//        }
+        return getParameterValues();
     }
 
     public double[] getCumulativeFrequencies() {
@@ -81,5 +86,14 @@ public class SpectraParameter extends Parameter.Default{
         }
         return frequencies;
     }
+    
+    protected void storeState() {
+//    	System.err.println("storeState Spectra");
+    	super.storeValues();
+	}
+    protected void restoreState() {
+//    	System.err.println("restoreState Spectra");
+    	super.restoreValues();
+	}
 
 }

@@ -51,15 +51,15 @@ public class SpectrumTest {
 	}
 	
 	@Test
-	public void testSetFrequencies() throws Exception {
-		Spectrum spectrum = new Spectrum(5);
-		for (int i = 0; i < 4; i++) {
-			spectrum.setFrequencyAt(i, i, (i+1)/10.0);
+		public void testResetFrequencies() throws Exception {
+			Spectrum spectrum = new Spectrum(5);
+			for (int i = 0; i < 4; i++) {
+				spectrum.setFrequencyAt(i, i, (i+1)/10.0);
+			}
+			assertEquals(0.1, spectrum.getFrequency(0, 0), 0);
+			assertEquals(0.2, spectrum.getFrequency(1, 1), 0);
+			assertEquals(0.3, spectrum.getFrequency(2, 2), 0);
+			assertEquals(0.4, spectrum.getFrequency(3, 3), 0);
+			
 		}
-		assertEquals(0.1, spectrum.getFrequency(0, 0), 0);
-		assertEquals(0.2, spectrum.getFrequency(1, 1), 0);
-		assertEquals(0.3, spectrum.getFrequency(2, 2), 0);
-		assertEquals(0.4, spectrum.getFrequency(3, 3), 0);
-		
-	}
 }

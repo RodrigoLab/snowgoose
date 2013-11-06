@@ -134,10 +134,10 @@ public class ShortReadsSpectrumLikelihoodTest {
 		Spectrum spectrum = spectrumModel.getSpectrum(0);
 		for (int i = 0; i < spectrum.getLength(); i++) {
 			double[] freqs = new double[]{1-(0.1*i*3), 0.1*i, 0.1*i, 0.1*i};
-			spectrum.setFrequencies(i, freqs);
+			spectrum.resetFrequencies(i, freqs);
 			System.out.println("SITE: "+i +"\t"+  Arrays.toString(spectrum.getFrequencies(i)));
 		}
-		spectrumModel.setSpectrum(0, spectrum);
+//		spectrumModel.setSpectrum(0, spectrum);
 		
 		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
 		

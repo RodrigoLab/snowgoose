@@ -15,7 +15,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import srp.core.DataImporter;
-import srp.core.MCMCSetupHelper;
+import srp.core.MCMCSetupHelperHaplotype;
 import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.HaplotypeLoggerWithTrueHaplotype;
 import srp.haplotypes.HaplotypeModel;
@@ -108,14 +108,14 @@ public class MCMCTrueTree {
 		
 		// treeLikelihood
 		Parameter kappa = new Parameter.Default(HKYParser.KAPPA, 1.0, 0, 100.0);
-		TreeLikelihoodExt treeLikelihood = MCMCSetupHelper.setupTreeLikelihood(kappa, freqs,
+		TreeLikelihoodExt treeLikelihood = MCMCSetupHelperHaplotype.setupTreeLikelihood(kappa, freqs,
 				haplotypeModel, treeModel, branchRateModel);
 
 		// ShortReadLikelihood
 		ShortReadLikelihood srpLikelihood = new ShortReadLikelihood(haplotypeModel);
 
 		// CompoundLikelihood
-		HashMap<String, Likelihood> compoundlikelihoods = MCMCSetupHelper.setupCompoundLikelihood(
+		HashMap<String, Likelihood> compoundlikelihoods = MCMCSetupHelperHaplotype.setupCompoundLikelihood(
 				popSize, kappa, coalescent, treeLikelihood, srpLikelihood);
 		
 		Likelihood prior = compoundlikelihoods.get(CompoundLikelihoodParser.PRIOR);
@@ -125,7 +125,7 @@ public class MCMCTrueTree {
 		
 		// Operators
 		OperatorSchedule schedule = new SimpleOperatorSchedule();
-		schedule.addOperators(MCMCSetupHelper.defalutOperators(haplotypeModel, freqs, kappa, popSize));
+		schedule.addOperators(MCMCSetupHelperHaplotype.defalutOperators(haplotypeModel, freqs, kappa, popSize));
 //		schedule = defalutTreeOperators(schedule, treeModel);
 		Parameter rootHeight = treeModel.getRootHeightParameter();
 		
@@ -137,7 +137,7 @@ public class MCMCTrueTree {
 //		loggers[0] = new MCLogger(formatter, logInterval, false);
 		
 		loggers[0] = new MCLogger(logTracerName, logInterval, false, 0);
-		MCMCSetupHelper.addToLogger(loggers[0], posterior, prior, likelihood, shortReadLikelihood,
+		MCMCSetupHelperHaplotype.addToLogger(loggers[0], posterior, prior, likelihood, shortReadLikelihood,
 				rootHeight, 
 				//rateParameter,
 				popSize, kappa, coalescent,
@@ -145,7 +145,7 @@ public class MCMCTrueTree {
 				);
 
 		loggers[1] = new MCLogger(new TabDelimitedFormatter(System.out), logInterval, true, logInterval*2);
-		MCMCSetupHelper.addToLogger(loggers[1], posterior, prior, likelihood, shortReadLikelihood,
+		MCMCSetupHelperHaplotype.addToLogger(loggers[1], posterior, prior, likelihood, shortReadLikelihood,
 				popSize, kappa, coalescent, 
 				rootHeight
 				);
@@ -161,7 +161,7 @@ public class MCMCTrueTree {
 		
 		// MCMC
 		
-		MCMCOptions options = MCMCSetupHelper.setMCMCOptions(logInterval, 500);
+		MCMCOptions options = MCMCSetupHelperHaplotype.setMCMCOptions(logInterval, 500);
 		MCMC mcmc = new MCMC("mcmc1");
 		mcmc.setShowOperatorAnalysis(true);
 		mcmc.setOperatorAnalysisFile(new File(operatorAnalysisFile));

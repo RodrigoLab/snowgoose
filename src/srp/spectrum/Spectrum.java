@@ -80,26 +80,59 @@ public Spectrum(int length){
 	}
 	
 	public Spectrum(Sequence sequence) {
-			this(sequence.getLength());
+		super("Spectrum");
+		
+		dataType = Nucleotides.INSTANCE;
+		stateCount = dataType.getStateCount();
+		
+		spectrum = new ArrayList<SpectraParameter>();
+		SpectraParameter spectra;
+		for (int i = 0; i < sequence.getLength(); i++) {
+			char c = sequence.getChar(i);
+			int state = dataType.getState(c);
+			if (state < stateCount) {
+				double[] newFreq = new double[stateCount];
+				newFreq[state]=1;
+				spectra = new SpectraParameter(newFreq);
+//				setFrequencies(site, newFreq);
+			}
+			else{
+				spectra = new SpectraParameter(SpectraParameter.EQUAL_FREQ);
+			}
+			
+//			SpectraParameter spectra = new SpectraParameter(initFreq);
+			addVariable(spectra);
+			spectrum.add(spectra);
+		}
+//		dataType = Nucleotides.INSTANCE;
+//		stateCount = dataType.getStateCount();
+		
+		
+		
+		
+		
+		
+		
+//			this(sequence.getLength());
 	//		setDataType(sequence.getDataType());
 	//		super("Spectrum");
-			dataType = Nucleotides.INSTANCE;
-			stateCount = dataType.getStateCount();
-			for (int site = 0; site < sequence.getLength(); site++) {
-				char c = sequence.getChar(site);
-				int state = dataType.getState(c);
-				if (state < stateCount) {
-					double[] newFreq = new double[stateCount];
-					newFreq[state]=1;
-					setFrequencies(site, newFreq);
-				}
-				else{
-					setFrequencyAt(site, 0, 0.25);
-					setFrequencyAt(site, 1, 0.25);
-					setFrequencyAt(site, 2, 0.25);
-					setFrequencyAt(site, 3, 0.25);
-				}
-			}
+//			dataType = Nucleotides.INSTANCE;
+//			stateCount = dataType.getStateCount();
+//			for (int site = 0; site < sequence.getLength(); site++) {
+//				char c = sequence.getChar(site);
+//				int state = dataType.getState(c);
+//				if (state < stateCount) {
+//					double[] newFreq = new double[stateCount];
+//					newFreq[state]=1;
+//					setFrequencies(site, newFreq);
+//				}
+//				else{
+//					setFrequencyAt(site, 0, 0.25);
+//					setFrequencyAt(site, 1, 0.25);
+//					setFrequencyAt(site, 2, 0.25);
+//					setFrequencyAt(site, 3, 0.25);
+//				}
+//			}
 		
 		}
 
@@ -117,22 +150,23 @@ public Spectrum(int length){
 	public int getLength(){
 		return spectrum.size();
 	}
+	@Deprecated
 	public void setFrequencyAt(int site, int state, double value) {
 		spectrum.get(site).setFrequency(state, value);
-		fireModelChanged(this);//TODO check?
+//		fireModelChanged(this);//TODO check?
 	}
-	public void setFrequencies(int site, double[] values){
-		spectrum.get(site).setFrequencies(values);
+	public void resetFrequencies(int site, double[] values){
+		spectrum.get(site).setFrequenciesQuietly(values);
 	}
 	public double getFrequency(int site, int state) {
 	    return spectrum.get(site).getFrequency(state);
 	}
 	
 	public double[] getFrequencies(int site) {
-		return getSpecturm(site).getFrequencies();
+		return getSpectra(site).getFrequencies();
 	}
 
-	public SpectraParameter getSpecturm(int site) {
+	public SpectraParameter getSpectra(int site) {
 	    return spectrum.get(site);
 	}
 	
@@ -360,30 +394,39 @@ public Spectrum(int length){
 	@Override
 	protected void handleModelChangedEvent(Model model, Object object, int index) {
 		System.err.println("Call handleModelChangedEvent");
-		
+		//TODO implement
 	}
 
 	@Override
 	protected void handleVariableChangedEvent(Variable variable, int index,
 			ChangeType type) {
-		System.err.println("Call handleVariableChangedEvent Specturm");
+//		System.err.println("Call handleVariableChangedEvent Specturm\t"+variable.getVariableName() +"\t"+ index);
+		//TODO implement when secptra changed
+	}
+
+	private int storeSideIndex;
+	public void setStoreSiteIndex(int s){
+		storeSideIndex = s;
+	}
+	@Override
+	protected void storeState() {
+//		System.err.println("storeState Specturm");
+		//TODO maybe don't need to copy everything
 		
+//		for (int i = 0; i < spectrum.size(); i++) {
+//			storeSpectrum.set(i, spectrum.get(i));
+			spectrum.get(storeSideIndex).storeState();
+//		}
 	}
 
 	@Override
-	public void storeState() {
+	protected void restoreState(){
+//		System.err.println("restoreState Spectrum");
+		spectrum.get(storeSideIndex).restoreState();
 		//TODO don't need to copy everything
-		for (int i = 0; i < spectrum.size(); i++) {
-			storeSpectrum.set(i, spectrum.get(i));
-		}
-	}
-
-	@Override
-	public void restoreState(){
-		//TODO don't need to copy everything
-		for (int i = 0; i < spectrum.size(); i++) {
-			spectrum.set(i, storeSpectrum.get(i));
-		}
+//		for (int i = 0; i < spectrum.size(); i++) {
+//			spectrum.set(i, storeSpectrum.get(i));
+//		}
 
 	}
 

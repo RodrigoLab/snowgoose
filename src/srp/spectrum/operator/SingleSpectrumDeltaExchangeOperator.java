@@ -6,6 +6,7 @@ import srp.haplotypes.HaplotypeModel;
 import srp.spectrum.SpectraParameter;
 import srp.spectrum.Spectrum;
 import srp.spectrum.SpectrumAlignmentModel;
+import srp.spectrum.SpectrumOperation;
 import dr.inference.model.Bounds;
 import dr.inference.model.Parameter;
 import dr.inference.operators.AbstractCoercableOperator;
@@ -17,8 +18,8 @@ import dr.math.MathUtils;
 
 public class SingleSpectrumDeltaExchangeOperator extends AbstractSpectrumOperator {
 
-	public final static String OPERATOR_NAME = SingleSpectrumDeltaExchangeOperator.class.getSimpleName();
-
+	public static final String OPERATOR_NAME = SingleSpectrumDeltaExchangeOperator.class.getSimpleName();
+	public static final SpectrumOperation OP = SpectrumOperation.DELTASINGLE;
 //    private Parameter parameter = null;
     private final int[] parameterWeights;
     private double delta = 0.02;
@@ -48,12 +49,13 @@ public class SingleSpectrumDeltaExchangeOperator extends AbstractSpectrumOperato
 //		int[] posChar = alignmentMapping.getNextBase();
 //		spectrumModel.swapHaplotypeSingleBase(OP, posChar);
 		int spectrumIndex = MathUtils.nextInt(spectrumCount);
-		int site = MathUtils.nextInt(spectrumLength);
+		int siteIndex = MathUtils.nextInt(spectrumLength);
 		
-		System.err.println(spectrumIndex +"\t"+ site);
+		
+//		System.err.println(spectrumIndex +"\t"+ siteIndex);
 		
 		Spectrum spectrum = spectrumModel.getSpectrum(spectrumIndex);
-		SpectraParameter parameter = spectrum.getSpecturm(site);
+		SpectraParameter parameter = spectrum.getSpectra(siteIndex);
         // get two dimensions
         final int dim = parameter.getDimension();
         final int dim1 = MathUtils.nextInt(dim);
@@ -64,7 +66,7 @@ public class SingleSpectrumDeltaExchangeOperator extends AbstractSpectrumOperato
 
         double scalar1 = parameter.getParameterValue(dim1);
         double scalar2 = parameter.getParameterValue(dim2);
-
+//        System.err.println("OLD:\t"+dim1 +":"+ scalar1 +"\t"+ dim2 +":"+ scalar2);
 //        if (isIntegerOperator) {
 //            int d = MathUtils.nextInt((int) Math.round(delta)) + 1;
 //
@@ -91,7 +93,8 @@ public class SingleSpectrumDeltaExchangeOperator extends AbstractSpectrumOperato
                 scalar2 > bounds.getUpperLimit(dim2)) {
             throw new OperatorFailedException("proposed values out of range!");
         }
-        System.out.println(scalar1 +"\t"+ scalar2);
+//        parameter.storeParameterValues();
+//        System.err.println("NEW:\t"+dim1 +":"+ scalar1 +"\t"+ dim2 +":"+ scalar2);
         parameter.setParameterValue(dim1, scalar1);
         parameter.setParameterValue(dim2, scalar2);
 
@@ -99,7 +102,8 @@ public class SingleSpectrumDeltaExchangeOperator extends AbstractSpectrumOperato
 //        spectrum = spectrumModel.getSpectrum(spectrumIndex);
 //        parameter = spectrum.getSpecturm(site);
 //		System.out.println(Arrays.toString(parameter.getFrequencies()));
-		
+        
+		spectrumModel.setSpectrumOperationRecord(OP, spectrumIndex, siteIndex, d);
 		
 		
 		

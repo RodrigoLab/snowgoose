@@ -24,6 +24,7 @@ public abstract class AbstractSpectrumAlignmentModel extends AbstractModel imple
 
 	protected int spectrumLength;
 	protected ArrayList<Spectrum> spectrumList;
+	protected ArrayList<Spectrum> storedSpectrumList;
 
 	public String getSpectrumString(int i) {
 		return spectrumList.get(i).toString();
@@ -379,7 +380,7 @@ public abstract class AbstractSpectrumAlignmentModel extends AbstractModel imple
 	public String getAlignedSequenceString(int sequenceIndex) {
 		//TODO Fail
 		throw new IllegalArgumentException("Not implemented for AbstractSpectrumModel");
-
+//		return "?";
 //		return getSpectrumString(sequenceIndex);
 	}
 

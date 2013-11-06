@@ -59,6 +59,7 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 	private boolean isEdit;
 	
 	int[] swapBaseRecord = new int[4];
+	private SpectrumOperationRecord spectrumOperationRecord;
 	
 	private SpectrumAlignmentModel(AlignmentMapping aMap){
 		super(MODEL_NAME);
@@ -67,8 +68,9 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 		spectrumLength = this.aMap.getLength();
 		
 		spectrumList = new ArrayList<Spectrum>();
+		storedSpectrumList = new ArrayList<Spectrum>();
 		setDataType(Nucleotides.INSTANCE);
-
+		spectrumOperationRecord = new SpectrumOperationRecord();
 		
 //		storedCumSumFrequency[INDEX_OF_LAST_VALID_CHARS]=1;
 	}
@@ -85,7 +87,13 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 
 	private void addSpectrum(Spectrum spectrum) {
 		spectrum.setDataType(getDataType());
+		for (int i = 0; i < spectrumLength; i++) {
+			spectrum.setStoreSiteIndex(i);
+			spectrum.storeState();
+		}
+//		spectrum.storeState()
 	    spectrumList.add(spectrum);
+//	    storedSpectrumList.add(new Spectrum(spectrum));
 	
 	}
 
@@ -153,9 +161,171 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 
 	}	
 	
-
+	public AlignmentMapping getAlignmentMapping() {
+		return aMap;
+	}
 	
+	public void setSpectrumOperationRecord(SpectrumOperation op, int spectrumIndex,
+			int siteIndex, double... delta){
 
+		spectrumOperationRecord.setRecord(op, spectrumIndex, siteIndex, delta);
+	}
+	
+	public SpectrumOperationRecord getSpectrumOperationRecord(){
+		return spectrumOperationRecord;
+	}
+	
+	public double[] getSpecturmFrequencies(int sequenceIndex, int i) {
+	//		Spectrum spectrum = getSpectrum(sequenceIndex);
+			
+			return getSpectrum(sequenceIndex).getFrequencies(i);
+	}
+	@Deprecated
+	private void setSpectrum(int index, Spectrum spectrum) {
+		// TODO Auto-generated method stub
+		spectrumList.set(index, spectrum);
+	}
+
+	@Override
+	public void fireModelChanged(){
+	//		for (TreeChangedEvent treeChangedEvent : treeChangedEvents) {
+			listenerHelper.fireModelChanged(this);//, treeChangedEvent);
+	//		}
+	//		treeChangedEvents.clear();
+		}
+	@Override
+	protected void handleModelChangedEvent(Model model, Object object, int index) {
+		System.err.println("Call handleModelChangedEvent in SpectrumAlignmentModel");
+		
+	}
+	@Override
+	protected void handleVariableChangedEvent(Variable variable, int index,
+			ChangeType type) {
+		System.err.println("Call handleVariableChangedEvent in SpectrumAlignmentModel");
+	}
+	@Override
+	protected void acceptState() {
+		//Do nothing
+	}
+	@Override
+	protected void storeState() {
+	
+//		 System.err.println("Call storeState: spectrumAlignmentModel");
+		 int spectrumIndex = spectrumOperationRecord.getSpectrumIndex(); 
+		 int siteIndex = spectrumOperationRecord.getSiteIndex();
+		 
+		 Spectrum spectrum = getSpectrum(spectrumIndex);
+		 spectrum.setStoreSiteIndex(siteIndex);
+		 spectrum.storeState();
+//		swapInfo.storeOperation(Operation.NONE);
+	}
+	@Override
+	protected void restoreState() {
+//		System.err.println("Call restoreState - spectrumAlignmentModel");
+		reject();
+//		swapInfo.storeOperation(Operation.NONE);
+	}
+	//	private int swapHaplotypeCharAt(int hapIndex, int[] posChar){
+		//		int oldChar = getHaplotype(hapIndex).getChar(posChar[0]); 
+		//		getHaplotype(hapIndex).setCharAt(posChar[0], (char) posChar[1]);
+		//		return oldChar;
+		//		
+		//	}
+		//	
+		//	
+	
+		public void reject() {
+			//TODO redo
+			SpectrumOperation op = spectrumOperationRecord.getOperation();
+	//		int[] temp;
+			switch (op) {
+			
+			case NONE:
+				break;
+			case PASS:
+				break;
+			case DELTASINGLE:
+				int spectrumIndex = spectrumOperationRecord.getSpectrumIndex();
+				int siteIndex = spectrumOperationRecord.getSiteIndex();
+	
+				Spectrum spectrum = getSpectrum(spectrumIndex);
+				spectrum.setStoreSiteIndex(siteIndex);
+				spectrum.restoreState();
+	//
+	//			int[] temp = swapInfo.getSwapInfoSWAPBASE();
+	//			//			long time1 = System.currentTimeMillis();
+	////			for (int i = 0; i < 1e9; i++) {
+	//			resetHaplotypeToOldChar(temp);
+	////		replaceHaplotypeCharAt(haplotypes.get(temp[0]), temp[2], temp[3]);
+	////			}
+	////			long time2 = System.currentTimeMillis();
+	////
+	////			System.out.println("Single: "+(time2 - time1) + "\t");
+	////			System.exit(0);
+				break;
+	
+	//		case SWAPMULTI:
+	//			
+	//			int hapIndex = swapInfo.getHapIndex();
+	//			int[][] swapMulti = swapInfo.getSwapInfoSWAPMULTI();
+	////			int[] allNewChars = swapMulti[0];
+	//			int[] allOldChars = swapMulti[1];
+	//			
+	//			
+	//			Haplotype haplotype = spectrumList.get(hapIndex);
+	//			for (int i = 0; i < allOldChars.length; i++) {
+	//				int oldChar = allOldChars[i];
+	//				if(oldChar>0){
+	//					haplotype.replaceCharAt(i, oldChar);
+	//				}
+	//			}
+	//			break;
+	//		
+	//		case SWAPSECTION:
+	//			int[] swapSection = swapInfo.getSwapInfoSWAPSECTION();
+	//			
+	////			time1 = System.currentTimeMillis();
+	//////			for (int i = 0; i < 1e8; i++) {
+	////				haplotypes.get(temp[0]).restoreState();
+	//////			}
+	////			time2 = System.currentTimeMillis();
+	//
+	////			System.out.println("Multi: "+(time2 - time1) + "\t");
+	//
+	//			
+	//			
+	//			for (int i = 0; i < 2; i++) {
+	//				spectrumList.get(swapSection[i]).restoreState();
+	//			}
+	//			break;
+	//		case SWAPCOLUMN:
+	//			int[][] swapColumn = swapInfo.getSwapInfoSWAPCOLUMN();
+	//			int pos = swapColumn[0][0];
+	//			int[] allOldChars2 = swapColumn[1];
+	//
+	//			for (int i = 0; i < getHaplotypeCount(); i++) {
+	//				haplotype = spectrumList.get(i);
+	//				haplotype.replaceCharAt(pos, allOldChars2[i]);
+	//			}
+	//			break;
+			default:
+				throw new IllegalArgumentException("Unknown operation type: " + op);
+	
+			}
+	
+	
+		}
+	public void startSpectrumOperation(){
+//		System.err.println("\n!!!startSpectrumOperation");
+		isEdit = true;
+	}
+	public void endSpectrumOperation(){
+		isEdit = false;
+//		System.err.println("!!!!!!!endSpectrumOperation, fireModelCHanged");
+		fireModelChanged();
+	}
+//////////////////////////////////////////////////////////////////////////
+	@Deprecated
 	private char setNewCharFromFrequency(){
 		
 		double d = MathUtils.nextDouble();
@@ -168,7 +338,7 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 		return VALID_CHARS[INDEX_OF_LAST_VALID_CHARS];
 	}
 	
-
+	@Deprecated
 	public int[] getNextBaseFrequency(Parameter frequency) {
 	
 		checkFrequencyParameter(frequency);
@@ -199,6 +369,7 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 //		return oldChar;
 //		
 //	}
+	@Deprecated
 	private void resetHaplotypeToOldChar(int[] swapRecord){
 //		Haplotype haplotype = spectrumList.get(swapRecord[0]);
 //		haplotype.replaceCharAt(swapRecord[1], swapRecord[3]);
@@ -214,17 +385,18 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 //	}
 //	
 //	
-
+	@Deprecated
 	public SwapInfo getSwapInfo() {
 		return swapInfo;
 	}
 //	public Operation getOperation() {
 //		return swapInfo.getOperation();
 //	}
+	@Deprecated
 	public void storeOperationRecord(Operation op, int[]... opRecord){
 		swapInfo.storeOperation(op, opRecord);
 	}
-	
+	@Deprecated
 	private void storeOperationRecord(Operation op, int hapIndex,
 			int[][] opRecord) {
 		swapInfo.storeOperation(op, opRecord[0], opRecord[1]);
@@ -253,7 +425,7 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
         for (int i = 0; i < getSpectrumCount(); i++) {
             String name = formatter.formatToFieldWidth(getTaxon(i).getId(), 10);
             buffer.append(">" + name + "\n");
-            buffer.append(getAlignedSequenceString(i) + "\n");
+//            buffer.append(getAlignedSequenceString(i) + "\n");
         }
 
         return buffer.toString();
@@ -265,152 +437,15 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 
     
 	
-	@Override
-		public void fireModelChanged(){
-	//		for (TreeChangedEvent treeChangedEvent : treeChangedEvents) {
-			listenerHelper.fireModelChanged(this);//, treeChangedEvent);
-	//		}
-	//		treeChangedEvents.clear();
-		}
-
-	@Override
-	protected void handleModelChangedEvent(Model model, Object object, int index) {
-		System.err.println("Call handleModelChangedEvent");
-		
-	}
-
-	@Override
-	protected void handleVariableChangedEvent(Variable variable, int index,
-			ChangeType type) {
-		System.err.println("Call handleVariableChangedEvent");
-	}
-
-	@Override
-	protected void acceptState() {
-		//Do nothing
-	}
-	@Override
-	protected void storeState() {
-
-		// System.err.println("Call storeState");
-		swapInfo.storeOperation(Operation.NONE);
-	}
-
-	@Override
-	protected void restoreState() {
-		// System.err.println("Call restoreState - haplotypeModel");
-		reject();
-		swapInfo.storeOperation(Operation.NONE);
-	}
-
-	//	private int swapHaplotypeCharAt(int hapIndex, int[] posChar){
-	//		int oldChar = getHaplotype(hapIndex).getChar(posChar[0]); 
-	//		getHaplotype(hapIndex).setCharAt(posChar[0], (char) posChar[1]);
-	//		return oldChar;
-	//		
-	//	}
-	//	
-	//	
-
-	public void reject() {
-		//TODO redo
-		Operation op = swapInfo.getOperation();
-//		int[] temp;
-		switch (op) {
-		
-		case NONE:
-			break;
-		case PASS:
-			break;
-//		case SWAPSINGLE:
-//
-//			int[] temp = swapInfo.getSwapInfoSWAPBASE();
-//			//			long time1 = System.currentTimeMillis();
-////			for (int i = 0; i < 1e9; i++) {
-//			resetHaplotypeToOldChar(temp);
-////		replaceHaplotypeCharAt(haplotypes.get(temp[0]), temp[2], temp[3]);
-////			}
-////			long time2 = System.currentTimeMillis();
-////
-////			System.out.println("Single: "+(time2 - time1) + "\t");
-////			System.exit(0);
-//			break;
-
-//		case SWAPMULTI:
-//			
-//			int hapIndex = swapInfo.getHapIndex();
-//			int[][] swapMulti = swapInfo.getSwapInfoSWAPMULTI();
-////			int[] allNewChars = swapMulti[0];
-//			int[] allOldChars = swapMulti[1];
-//			
-//			
-//			Haplotype haplotype = spectrumList.get(hapIndex);
-//			for (int i = 0; i < allOldChars.length; i++) {
-//				int oldChar = allOldChars[i];
-//				if(oldChar>0){
-//					haplotype.replaceCharAt(i, oldChar);
-//				}
-//			}
-//			break;
-//		
-//		case SWAPSECTION:
-//			int[] swapSection = swapInfo.getSwapInfoSWAPSECTION();
-//			
-////			time1 = System.currentTimeMillis();
-//////			for (int i = 0; i < 1e8; i++) {
-////				haplotypes.get(temp[0]).restoreState();
-//////			}
-////			time2 = System.currentTimeMillis();
-//
-////			System.out.println("Multi: "+(time2 - time1) + "\t");
-//
-//			
-//			
-//			for (int i = 0; i < 2; i++) {
-//				spectrumList.get(swapSection[i]).restoreState();
-//			}
-//			break;
-//		case SWAPCOLUMN:
-//			int[][] swapColumn = swapInfo.getSwapInfoSWAPCOLUMN();
-//			int pos = swapColumn[0][0];
-//			int[] allOldChars2 = swapColumn[1];
-//
-//			for (int i = 0; i < getHaplotypeCount(); i++) {
-//				haplotype = spectrumList.get(i);
-//				haplotype.replaceCharAt(pos, allOldChars2[i]);
-//			}
-//			break;
-		default:
-			throw new IllegalArgumentException("Unknown operation type: " + op);
-
-		}
-
-
-	}
-
-	public void startSpectrumOperation(){
-		isEdit = true;
-	}
-
-	public void endSpectrumOperation(){
-		isEdit = false;
-		fireModelChanged();
-	}
-
-
-	
-	public AlignmentMapping getAlignmentMapping() {
-		return aMap;
-	}
-
+	@Deprecated
 	public double getLogqFrequency(int oldChar, int newChar){
 		return storedLogqMatrix[NUCLEOTIDE_STATES[oldChar]][NUCLEOTIDE_STATES[newChar]];
 	}
-	
+	@Deprecated
 	public double getLogqFrequencyStates(int oldState, int newState){
 		return storedLogqMatrix[oldState][newState];
 	}
-	
+	@Deprecated
 	private void checkFrequencyParameter(Parameter frequency) {
 
 		for (int i = 0; i < storedFrequency.length; i++) {
@@ -442,16 +477,6 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 	private double[] storedFrequency = new double[4];
 	private double[] storedCumSumFrequency = new double[INDEX_OF_LAST_VALID_CHARS];
 	private double[][] storedLogqMatrix = new double[4][4];
-
-	public double[] getSpecturmFrequencies(int sequenceIndex, int i) {
-//		Spectrum spectrum = getSpectrum(sequenceIndex);
-		
-		return getSpectrum(sequenceIndex).getFrequencies(i);
-	}
-	public void setSpectrum(int index, Spectrum spectrum) {
-		// TODO Auto-generated method stub
-		spectrumList.set(index, spectrum);
-	}
 
 
 	

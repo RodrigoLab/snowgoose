@@ -55,11 +55,10 @@ public class SpectrumNucleotideLikelihoodCore extends AbstractSpectrumLikelihood
 												int[] states2, double[] matrices2,
 												double[] partials3)
 	{
+		
 		int v = 0;
 		int u = 0;
-		System.out.println("StatesStatesPruning");
-		System.out.println(Arrays.toString(states1));
-		System.out.println(Arrays.toString(states2));
+		
 		for (int j = 0; j < matrixCount; j++) {
 
 			for (int k = 0; k < patternCount; k++) {
@@ -118,7 +117,7 @@ public class SpectrumNucleotideLikelihoodCore extends AbstractSpectrumLikelihood
 
 			u += matrixSize;
 		}
-		System.out.println(Arrays.toString(partials3));
+		throw new IllegalArgumentException("Should never call this method StatesStatesPruning");
 	}
 
 	/**
@@ -131,9 +130,7 @@ public class SpectrumNucleotideLikelihoodCore extends AbstractSpectrumLikelihood
 		int u = 0;
 		int v = 0;
 		int w = 0;
-		System.out.println("StatesPartialPruning");
-		System.out.println(Arrays.toString(states1));
-		System.out.println(Arrays.toString(partials2));
+
 		for (int l = 0; l < matrixCount; l++) {
 			for (int k = 0; k < patternCount; k++) {
 
@@ -204,6 +201,7 @@ public class SpectrumNucleotideLikelihoodCore extends AbstractSpectrumLikelihood
 
 			w += matrixSize;
 		}
+		throw new IllegalArgumentException("Should never call this method StatesPartialsPruning");
 	}
 
 	/**
@@ -215,9 +213,9 @@ public class SpectrumNucleotideLikelihoodCore extends AbstractSpectrumLikelihood
 	{
 
 		double sum1, sum2;
-		System.out.println("PartialPartialPruning");
-		System.out.println(Arrays.toString(partials1));
-		System.out.println(Arrays.toString(partials2));
+//		System.out.println("PartialPartialPruning");
+//		System.out.println(Arrays.toString(partials1));
+//		System.out.println(Arrays.toString(partials2));
 		int u = 0;
 		int v = 0;
 		int w = 0;

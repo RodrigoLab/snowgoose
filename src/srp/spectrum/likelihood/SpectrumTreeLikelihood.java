@@ -56,15 +56,18 @@ import dr.inference.model.Model;
 import dr.inference.model.Statistic;
 
 /**
- * TreeLikelihoodModel - implements a Likelihood Function for sequences on a tree.
+ * SpectrumTreeLikelihood - implements a Likelihood Function for specturms on a tree.
  *
- * @author Andrew Rambaut
- * @author Alexei Drummond
- * @version $Id: TreeLikelihood.java,v 1.31 2006/08/30 16:02:42 rambaut Exp $
+ * @author Steven Wu
  */
 
 public class SpectrumTreeLikelihood extends AbstractSpectrumTreeLikelihood {
-    private static final boolean DEBUG = false;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -5701472737013978020L;
+
+	private static final boolean DEBUG = false;
 
     /**
      * Constructor.
@@ -87,6 +90,7 @@ public class SpectrumTreeLikelihood extends AbstractSpectrumTreeLikelihood {
         this.storePartials = storePartials;
 
         try {
+        	
             this.siteModel = siteModel;
             addModel(siteModel);
 
@@ -302,7 +306,29 @@ public class SpectrumTreeLikelihood extends AbstractSpectrumTreeLikelihood {
 
             updateAllNodes();
 
-        } else {
+        } 
+        
+        
+//        protected void handleModelChangedEvent(Model model, Object object, int index) {
+        else if (model == spectrumModel){
+        	spectrumModel.getSpectrumOperationRecord().getSpectrumIndex();
+        	
+            updateAllNodes();
+            //TODO fix this later, don't need update everything
+//        		System.out.println("GOOD here");
+//        		sitePatternExt.updateAlignment(haplotypeModel);
+//        		updatePatternListExt(sitePatternExt);
+//        		likelihoodKnown = false;
+//        	}
+//        	else{
+//        		super.handleModelChangedEvent(model, object, index);
+//        	}
+        }
+        
+        
+        
+        
+        else {
 
             throw new RuntimeException("Unknown componentChangedEvent");
         }

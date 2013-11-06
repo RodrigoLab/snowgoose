@@ -48,7 +48,7 @@ public abstract class AbstractSpectrumTreeLikelihood extends AbstractModelLikeli
 
     protected static final boolean COUNT_TOTAL_OPERATIONS = true;
 
-	private SpectrumAlignmentModel spectrumModel;
+	protected SpectrumAlignmentModel spectrumModel;
 
     public AbstractSpectrumTreeLikelihood(String name, 
     		SpectrumAlignmentModel spectrumModel,
@@ -58,6 +58,7 @@ public abstract class AbstractSpectrumTreeLikelihood extends AbstractModelLikeli
         super(name);
 
         this.spectrumModel = spectrumModel;
+        addModel(spectrumModel);
         this.dataType = spectrumModel.getDataType();
         patternCount = spectrumModel.getPatternCount();
         stateCount = dataType.getStateCount();
@@ -240,7 +241,7 @@ public abstract class AbstractSpectrumTreeLikelihood extends AbstractModelLikeli
     // **************************************************************
 
     protected void handleVariableChangedEvent(Variable variable, int index, Parameter.ChangeType type) {
-        // do nothing
+        System.err.println("handleVariableChangedEvent in AbstractSpectrumLikelihood");
     }
 
     // **************************************************************

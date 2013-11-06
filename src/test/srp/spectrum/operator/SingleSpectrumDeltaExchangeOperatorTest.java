@@ -12,11 +12,14 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import dr.inference.operators.CoercionMode;
+import dr.inference.operators.OperatorFailedException;
 
 import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.AlignmentUtils;
+import srp.spectrum.SpectraParameter;
 import srp.spectrum.Spectrum;
 import srp.spectrum.SpectrumAlignmentModel;
+import srp.spectrum.SpectrumOperationRecord;
 import srp.spectrum.likelihood.ShortReadsSpectrumLikelihood;
 import srp.spectrum.operator.SingleSpectrumDeltaExchangeOperator;
 
@@ -46,26 +49,43 @@ public class SingleSpectrumDeltaExchangeOperatorTest {
 				"ACGT"
 				};
 		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
-		
 		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 1);
-//		Spectrum spectrum = spectrumModel.getSpectrum(0);
-//		for (int i = 0; i < spectrum.getLength(); i++) {
-//			double[] freqs = new double[]{1-(0.1*i*3), 0.1*i, 0.1*i, 0.1*i};
-//			spectrum.setFrequencies(i, freqs);
-//			System.out.println("SITE: "+i +"\t"+  Arrays.toString(spectrum.getFrequencies(i)));
-//		}
-//		spectrumModel.setSpectrum(0, spectrum);
-		
 		SingleSpectrumDeltaExchangeOperator op = new SingleSpectrumDeltaExchangeOperator(
 				spectrumModel, 0.1, CoercionMode.COERCION_OFF);
-		
-		op.doOperation();
+
+		double[][] storedFrequencies = new double[spectrumModel.getSiteCount()][4];
 		Spectrum spectrum = spectrumModel.getSpectrum(0);
-		for (int i = 0; i < spectrum.getLength(); i++) {
-//			double[] freqs = new double[]{1-(0.1*i*3), 0.1*i, 0.1*i, 0.1*i};
-//			spectrum.setFrequencies(i, freqs);
-			System.out.println("SITE: "+i +"\t"+  Arrays.toString(spectrum.getFrequencies(i)));
+		for (int i = 0; i < storedFrequencies.length; i++) {
+			storedFrequencies[i] = spectrum.getFrequencies(i);
 		}
+		
+		for (int o = 0; o < 100; o++) {
+			try {
+				op.doOperation();
+				
+				SpectrumOperationRecord opRecord = spectrumModel.getSpectrumOperationRecord();
+				int spectrumIndex = opRecord.getSpectrumIndex();
+				int siteIndex = opRecord.getSiteIndex();
+				double delta = opRecord.getDelta()[0];
+				
+				spectrum = spectrumModel.getSpectrum(spectrumIndex);
+				double[] frequencies = spectrum.getFrequencies(siteIndex);
+				
+				int count = 0;
+				for (int f = 0; f < frequencies.length; f++) {
+					if(frequencies[f]!= storedFrequencies[siteIndex][f]){
+						count++;
+						double absDelta = Math.abs(frequencies[f]-storedFrequencies[siteIndex][f]);
+						assertEquals(delta, absDelta, 1e-8);
+					}
+					storedFrequencies[siteIndex][f] = frequencies[f];
+				}
+				assertEquals(2, count);
+			} catch (OperatorFailedException e) {
+//				e.printStackTrace();
+			}	
+		}
+
 	}
 
 	
@@ -73,21 +93,49 @@ public class SingleSpectrumDeltaExchangeOperatorTest {
 	@Test
 	public void testDoOperator2() throws Exception {
 		String[] seqs = new String[]{
-				"AAAC",
-				"AACT",
-				"ACGT"
+				"AAACGT",
 				};
 		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
-		
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 1);
-		Spectrum spectrum = spectrumModel.getSpectrum(0);
-		for (int i = 0; i < spectrum.getLength(); i++) {
-			double[] freqs = new double[]{1-(0.1*i*3), 0.1*i, 0.1*i, 0.1*i};
-			spectrum.setFrequencies(i, freqs);
-			System.out.println("SITE: "+i +"\t"+  Arrays.toString(spectrum.getFrequencies(i)));
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 5);
+		SingleSpectrumDeltaExchangeOperator op = new SingleSpectrumDeltaExchangeOperator(
+				spectrumModel, 0.1, CoercionMode.COERCION_OFF);
+
+		double[][][] storedFrequencies = new double[spectrumModel
+				.getSpectrumCount()][spectrumModel.getSiteCount()][4];
+		for (int s = 0; s < storedFrequencies.length; s++) {
+			
+			Spectrum spectrum = spectrumModel.getSpectrum(s);
+			for (int l = 0; l < storedFrequencies[s].length; l++) {
+				storedFrequencies[s][l] = spectrum.getFrequencies(l);
+			}
 		}
-		spectrumModel.setSpectrum(0, spectrum);
-		
+		for (int o = 0; o < 10000; o++) {
+			try {
+				op.doOperation();
+				
+				SpectrumOperationRecord opRecord = spectrumModel.getSpectrumOperationRecord();
+				int spectrumIndex = opRecord.getSpectrumIndex();
+				int siteIndex = opRecord.getSiteIndex();
+				double delta = opRecord.getDelta()[0];
+				
+				Spectrum spectrum = spectrumModel.getSpectrum(spectrumIndex);
+				double[] frequencies = spectrum.getFrequencies(siteIndex);
+				
+				int count = 0;
+				double[] spectraFrequencies = storedFrequencies[spectrumIndex][siteIndex];
+				for (int f = 0; f < frequencies.length; f++) {
+					if(frequencies[f]!= spectraFrequencies[f]){
+						count++;
+						double absDelta = Math.abs(frequencies[f]-spectraFrequencies[f]);
+						assertEquals(delta, absDelta, 1e-8);
+					}
+					spectraFrequencies[f] = frequencies[f];
+				}
+				assertEquals(2, count);
+			} catch (OperatorFailedException e) {
+//				e.printStackTrace();
+			}	
+		}		
 		
 	}
 
