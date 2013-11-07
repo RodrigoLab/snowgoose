@@ -11,14 +11,20 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import srp.core.DataImporter;
 import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.AlignmentUtils;
 import srp.haplotypes.HaplotypeModel;
 import srp.likelihood.ShortReadLikelihood;
 import srp.spectrum.Spectrum;
 import srp.spectrum.SpectrumAlignmentModel;
+import srp.spectrum.SpectrumOperation;
+import srp.spectrum.SpectrumOperationRecord;
 import srp.spectrum.likelihood.ShortReadsSpectrumLikelihood;
+import srp.spectrum.operator.SingleSpectrumDeltaExchangeOperator;
+import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.SimpleAlignment;
+import dr.math.MathUtils;
 
 public class ShortReadsSpectrumLikelihoodTest {
 
@@ -56,7 +62,7 @@ public class ShortReadsSpectrumLikelihoodTest {
 		
 		double logLikelihood = likelihood.getLogLikelihood();
 		double expected = Math.log(1*NOT_ERROR+0*ERROR)*8;
-		System.out.println((0.25*NOT_ERROR+0.75*ERROR) +"\t"+ Math.log(1*NOT_ERROR+0*ERROR) );
+//		System.out.println((0.25*NOT_ERROR+0.75*ERROR) +"\t"+ Math.log(1*NOT_ERROR+0*ERROR) );
 		assertEquals("0 mismatch",expected, logLikelihood, 1e-10);
 	}
 	
@@ -76,7 +82,7 @@ public class ShortReadsSpectrumLikelihoodTest {
 		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
 		
 		double[] eachLikelihood = likelihood.getEachLikelihood();
-		System.out.println(Arrays.toString(eachLikelihood));
+//		System.out.println(Arrays.toString(eachLikelihood));
 		double[] expecteds = new double[]{ 
 				0+Math.log(1*NOT_ERROR+0*ERROR)*2,
 				0+Math.log(1*NOT_ERROR+0*ERROR)*1+Math.log(0*NOT_ERROR+1*ERROR)*1,
@@ -88,18 +94,18 @@ public class ShortReadsSpectrumLikelihoodTest {
 	
 	@Test
 	public void testCalculateLikelihoodSpectrum() {
-			String[] seqs = new String[]{
-					".AA",
-					".AC",
-					".GT"
-					};
-			AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
+		String[] seqs = new String[]{
+				".AA",
+				".AC",
+				".GT"
+				};
+		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
 			
 		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 1);
 		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
 		
 		double[] eachLikelihood = likelihood.getEachLikelihood();
-		System.out.println(Arrays.toString(eachLikelihood));
+//		System.out.println(Arrays.toString(eachLikelihood));
 		double[] expecteds = new double[]{ 
 				0+Math.log(0.25*NOT_ERROR+0.75*ERROR)*2,
 				0+Math.log(0.25*NOT_ERROR+0.75*ERROR)*1+Math.log(0.25*NOT_ERROR+0.75*ERROR)*1,
@@ -135,14 +141,14 @@ public class ShortReadsSpectrumLikelihoodTest {
 		for (int i = 0; i < spectrum.getLength(); i++) {
 			double[] freqs = new double[]{1-(0.1*i*3), 0.1*i, 0.1*i, 0.1*i};
 			spectrum.resetFrequencies(i, freqs);
-			System.out.println("SITE: "+i +"\t"+  Arrays.toString(spectrum.getFrequencies(i)));
+//			System.out.println("SITE: "+i +"\t"+  Arrays.toString(spectrum.getFrequencies(i)));
 		}
 //		spectrumModel.setSpectrum(0, spectrum);
 		
 		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
 		
 		double[] eachLikelihood = likelihood.getEachLikelihood();
-		System.out.println(Arrays.toString(eachLikelihood));
+//		System.out.println(Arrays.toString(eachLikelihood));
 		//Site1: 1, 0, 0, 0
 		//Site2: 0.7, 0.1, 0.1, 0.1
 		//Site3: 0.4, 0.2, 0.2, 0.2
@@ -163,6 +169,190 @@ public class ShortReadsSpectrumLikelihoodTest {
 			};
 		assertArrayEquals(expecteds, eachLikelihood, 1e-8);
 		
+
+	}
+	
+	@Test
+	public void testFullvsSingle() throws Exception {
+	
+		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/ABI/unittest/", "HaplotypeModelTest_10_srp.fasta");
+		AlignmentMapping aMap = new AlignmentMapping(alignment);
+			
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 4);
+		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
+		
+		SpectrumOperationRecord record = spectrumModel.getSpectrumOperationRecord();
+		SingleSpectrumDeltaExchangeOperator op = new SingleSpectrumDeltaExchangeOperator(spectrumModel, 0.25, null);
+		
+		for (int i = 0; i < 1e4; i++) {
+			try {
+				op.doOperation();
+				double logLikelihoodSingle = likelihood.getLogLikelihood();
+				assertEquals(SpectrumOperation.DELTASINGLE, likelihood.getOperation());
+				record.setOperation(SpectrumOperation.NONE);
+				likelihood.makeDirty();
+				double logLikelihoodFull = likelihood.getLogLikelihood();
+				assertEquals(SpectrumOperation.NONE, likelihood.getOperation());
+				assertEquals(logLikelihoodFull, logLikelihoodSingle, 1e-8);
+				
+			} catch (Exception e) {
+			}
+		}
+	}
+
+	@Test
+	public void testFullvsSingleStoreRestore() throws Exception {
+	
+		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/ABI/unittest/", "HaplotypeModelTest_10_srp.fasta");
+		AlignmentMapping aMap = new AlignmentMapping(alignment);
+			
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 4);
+		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
+		
+		SingleSpectrumDeltaExchangeOperator op = new SingleSpectrumDeltaExchangeOperator(spectrumModel, 0.25, null);
+		
+		double logLikelihoodSingle;
+		double logLikelihoodFull;
+		
+		for (int i = 0; i < 1e4; i++) {
+			try {
+				likelihood.storeModelState();
+				op.doOperation();
+				likelihood.makeDirty();
+				logLikelihoodSingle = likelihood.getLogLikelihood();
+
+				SpectrumAlignmentModel spectrumModelFull = SpectrumAlignmentModel.duplicateSpectrumAlignmentModel(spectrumModel);
+				ShortReadsSpectrumLikelihood likelihoodFull = new ShortReadsSpectrumLikelihood(spectrumModelFull);
+				logLikelihoodFull = likelihoodFull.getLogLikelihood();
+				assertEquals(SpectrumOperation.NONE, likelihoodFull.getOperation());
+				assertEquals(logLikelihoodFull, logLikelihoodSingle, 1e-8);
+
+				double rand = MathUtils.nextDouble();
+				if(rand>0.5){
+					likelihood.acceptModelState();
+				}
+				else{
+					likelihood.restoreModelState();
+				}
+			} catch (Exception e) {
+			}
+		}
+	}
+
+	@Test
+	public void testTimeTrialFull() throws Exception {
+
+		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/ABI/unittest/", "H4_srp.fasta");
+		AlignmentMapping aMap = new AlignmentMapping(alignment);
+			
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 4);
+		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
+		
+		double trial = 100;
+		long time1 = System.currentTimeMillis();
+		for (int t = 0; t < trial; t++) {
+			likelihood.makeDirty();
+			likelihood.getLogLikelihood();
+		}
+		long totalTime = System.currentTimeMillis() - time1;
+		System.out.println("timeTrialFull:  \t"+ totalTime +"\t"+ totalTime/trial +"/calculation");
+		
+	}
+
+	@Test
+	public void testTimeTrialSingle() throws Exception {
+
+		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/ABI/unittest/", "H4_srp.fasta");
+		AlignmentMapping aMap = new AlignmentMapping(alignment);
+			
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 4);
+		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
+
+		SingleSpectrumDeltaExchangeOperator op = new SingleSpectrumDeltaExchangeOperator(spectrumModel, 0.1, null);
+
+		double trial = 1e4;
+		long totalTime = 0;
+		int count = 0;
+		do{
+			try {
+				op.doOperation();
+				
+				long time1 = System.currentTimeMillis();
+				likelihood.makeDirty();
+				likelihood.getLogLikelihood();
+				totalTime += (System.currentTimeMillis()-time1);
+				count++;
+				
+			} catch (Exception e) {
+			}
+		}while(count< trial);
+		System.out.println("timeTrialSingle:\t"+ totalTime +"\t"+ totalTime/trial +"/calculation");
+	}
+
+
+	@Test
+	public void testTimeTrialSingleCombine() throws Exception {
+
+		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/ABI/unittest/", "H4_srp.fasta");
+		AlignmentMapping aMap = new AlignmentMapping(alignment);
+			
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 4);
+		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
+	
+		SingleSpectrumDeltaExchangeOperator op = new SingleSpectrumDeltaExchangeOperator(spectrumModel, 0.1, null);
+		double trial = 1e4;
+		long totalTime = 0;
+		int count = 0;
+		do{
+			try {
+				op.doOperation();
+				
+				long time1 = System.currentTimeMillis();
+
+				likelihood.storeModelState();
+				op.doOperation();
+				likelihood.makeDirty();
+				likelihood.getLogLikelihood();
+
+				double rand = MathUtils.nextDouble();
+				if(rand>0.5){
+					likelihood.acceptModelState();
+				}
+				else{
+					likelihood.restoreModelState();
+				}
+				totalTime += (System.currentTimeMillis()-time1);
+
+				count++;
+			} catch (Exception e) {
+			}
+		}while(count< trial);
+
+		System.out.println("timeTrialSingleCombined:\t"+ totalTime +"\t"+ totalTime/trial +"/calculation");
+
+	}
+
+	@Test
+	public void testTimeTrialStoreState() throws Exception {
+
+		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/ABI/unittest/", "H4_srp.fasta");
+		AlignmentMapping aMap = new AlignmentMapping(alignment);
+			
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 4);
+		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
+		
+		SingleSpectrumDeltaExchangeOperator op = new SingleSpectrumDeltaExchangeOperator(spectrumModel, 0.1, null);
+		
+		double trial = 1e5;
+		long totalTime = 0;
+		for (int t = 0; t < trial; t++) {
+			long time1 = System.currentTimeMillis();
+			likelihood.storeModelState();
+			likelihood.restoreModelState();
+			totalTime += (System.currentTimeMillis()-time1);
+
+		}
+		System.out.println("timeTrialStoreRestoreState:\t"+ totalTime +"\t"+ totalTime/trial +"/calculation");
 
 	}
 

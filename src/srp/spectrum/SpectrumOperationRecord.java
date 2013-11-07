@@ -13,7 +13,7 @@ public class SpectrumOperationRecord {
 	public static final int SWAPBASE_OLD_CHAR_INDEX = 3;
 	
 //	private Operations data = new Operations();
-	private int hapIndex;
+//	private int hapIndex;
 	
 	private int[] swapBaseRecord;// hapIndex, posIndex, newChar, oldChar
 	
@@ -129,11 +129,11 @@ public class SpectrumOperationRecord {
 		
 	}
 	
-	public void storeHapIndex(int hapIndex2) {
-		hapIndex = hapIndex2;
-	
-		
-	}
+//	public void storeHapIndex(int hapIndex2) {
+//		hapIndex = hapIndex2;
+//	
+//		
+//	}
 
 	public int[] getSwapInfoSWAPBASE(){
 		return swapBaseRecord;
@@ -155,9 +155,9 @@ public class SpectrumOperationRecord {
 		return swapHaplotypeSectoinRecord;
 	}
 
-	public int getHapIndex(){
-		return hapIndex;
-	}
+//	public int getHapIndex(){
+//		return hapIndex;
+//	}
 
 	
 	public class InvalidOperationException extends Exception {
@@ -204,6 +204,12 @@ public class SpectrumOperationRecord {
 
 	public double[] getDelta() {
 		return delta;
+	}
+
+
+	public void setOperation(SpectrumOperation operation) {
+		this.operation = operation;
+		
 	}
 
 

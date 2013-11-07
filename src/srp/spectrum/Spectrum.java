@@ -33,39 +33,12 @@ public class Spectrum extends AbstractModel implements Attributable {
 //		sequenceString = new StringBuilder();
 //	}
 
-public Spectrum(int length){
-			this(length, SpectraParameter.EQUAL_FREQ);
-	//		spectrum = new ArrayList<Spectra>();
-	//		for (int i = 0; i < length; i++) {
-	//			Spectra f = new Spectra();
-	//			spectrum.add(f);
-	//		}
-	//	    double sum = getSumOfFrequencies(frequencyParameter);
-	//	
-	//	    if (Math.abs(sum - 1.0) > 1e-8) {
-	//	        throw new IllegalArgumentException("Frequencies do not sum to 1, they sum to " + sum);
-	//	    }
-	//	
-	//	    this.frequencyParameter = frequencyParameter;
-	//	    addVariable(frequencyParameter);
-	//	    frequencyParameter.addBounds(new Parameter.DefaultBounds(1.0, 0.0, frequencyParameter.getDimension()));
-		    
-		}
+	public Spectrum(int length) {
+		this(length, SpectraParameter.EQUAL_FREQ);
 
-	//	public Spectra(String sequence) {
-//		this();
-//		setSequenceString(sequence.toUpperCase());
-//	}
-//
-//	public Spectra(Sequence sequence) {
-//		this(sequence.getTaxon(), sequence.getSequenceString());
-//	}
-//
-//	public Spectra(Taxon taxon, String sequence) {
-//		this();
-//		setTaxon(taxon);
-//		setSequenceString(sequence);
-//	}
+	}
+
+
 	public Spectrum(int length, double[] initFreq){
 		
 		super("Spectrum");
@@ -136,6 +109,24 @@ public Spectrum(int length){
 		
 		}
 
+	public static Spectrum duplicateSpectrum(Spectrum oldSpectrum) {
+
+//		super("Spectrum");
+		Spectrum newSpectrum = new Spectrum(oldSpectrum.getLength());
+//		spectrum = new ArrayList<SpectraParameter>();
+		for (int i = 0; i < oldSpectrum.getLength(); i++) {
+			double[] frequencies = oldSpectrum.getFrequencies(i);
+			newSpectrum.resetFrequencies(i, frequencies);
+//			SpectraParameter spectra = new SpectraParameter(frequencies);
+//			addVariable(spectra);
+//			spectrum.add(spectra);
+		}
+		return newSpectrum;
+//		dataType = Nucleotides.INSTANCE;
+//		stateCount = dataType.getStateCount();
+	}
+
+
 	//	/**
 //	 * @param frequencies the frequencies
 //	 * @return return the sum of frequencies
@@ -152,14 +143,14 @@ public Spectrum(int length){
 	}
 	@Deprecated
 	public void setFrequencyAt(int site, int state, double value) {
-		spectrum.get(site).setFrequency(state, value);
+		getSpectra(site).setFrequency(state, value);
 //		fireModelChanged(this);//TODO check?
 	}
 	public void resetFrequencies(int site, double[] values){
-		spectrum.get(site).setFrequenciesQuietly(values);
+		getSpectra(site).setFrequenciesQuietly(values);
 	}
 	public double getFrequency(int site, int state) {
-	    return spectrum.get(site).getFrequency(state);
+	    return getSpectra(site).getFrequency(state);
 	}
 	
 	public double[] getFrequencies(int site) {
@@ -404,9 +395,9 @@ public Spectrum(int length){
 		//TODO implement when secptra changed
 	}
 
-	private int storeSideIndex;
+	private int storeSiteIndex;
 	public void setStoreSiteIndex(int s){
-		storeSideIndex = s;
+		storeSiteIndex = s;
 	}
 	@Override
 	protected void storeState() {
@@ -415,14 +406,14 @@ public Spectrum(int length){
 		
 //		for (int i = 0; i < spectrum.size(); i++) {
 //			storeSpectrum.set(i, spectrum.get(i));
-			spectrum.get(storeSideIndex).storeState();
+		getSpectra(storeSiteIndex).storeState();
 //		}
 	}
 
 	@Override
 	protected void restoreState(){
 //		System.err.println("restoreState Spectrum");
-		spectrum.get(storeSideIndex).restoreState();
+		getSpectra(storeSiteIndex).restoreState();
 		//TODO don't need to copy everything
 //		for (int i = 0; i < spectrum.size(); i++) {
 //			spectrum.set(i, storeSpectrum.get(i));

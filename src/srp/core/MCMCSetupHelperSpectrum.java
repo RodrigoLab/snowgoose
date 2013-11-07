@@ -157,16 +157,10 @@ public class MCMCSetupHelperSpectrum extends MCMCSetupHelper {
 
 
 		MCMCOperator operator;
-//		ArrayList<MCMCOperator> operatorList = new ArrayList<MCMCOperator>();
 		
-		
-		operator = new SingleSpectrumDeltaExchangeOperator(spectrumModel, 0.05, CoercionMode.COERCION_OFF);
+		operator = new SingleSpectrumDeltaExchangeOperator(spectrumModel, 0.5, CoercionMode.COERCION_OFF);
 		operator.setWeight(opLarge);
 		schedule.addOperator(operator);
-
-//		operator = new HaplotypeSwapSectionOperator(haplotypeModel, 12, CoercionMode.COERCION_ON);
-//		operator.setWeight(opSmall);
-//		OperatorList.add(operator);
 		
 		for (Parameter parameter : parameters) {
 
@@ -184,22 +178,6 @@ public class MCMCSetupHelperSpectrum extends MCMCSetupHelper {
 //				operator.setWeight(opHuge);
 				schedule.addOperator(operator);
 				
-//				operator = new ColumnOperator(haplotypeModel, haplotypeModel.getHaplotypeCount(), parameter, null);
-//				operator.setWeight(opMed);
-////				OperatorList.add(operator);
-				
-//				operator = new SwitchBaseFrequencyOperator(haplotypeModel, 0.8, 
-//						parameter, CoercionMode.COERCION_ON);
-//				operator.setWeight(opMed);
-//				OperatorList.add(operator);
-				//good seq: low (switch) prob, most accepted with same posterior
-				//			high switchProb, low accept, but with diff posterior
-				//bad seq: high (switchProb), accept with different posterior
-				//			low switch,  accept with same post
-				
-//				operator = new SingleBaseFrequencyOperator(haplotypeModel, parameter);
-//				operator.setWeight(opMed);
-////				OperatorList.add(operator);
 			}
 			else if("populationSize".equals(parameterName)){
 				operator = new ScaleOperator(parameter, 0.75);

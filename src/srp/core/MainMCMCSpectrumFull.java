@@ -41,8 +41,8 @@ public class MainMCMCSpectrumFull {
 
 		String dataDir = "/home/sw167/workspaceSrp/ABI/unittest/testData/";
 		int runIndex = 1;
-		int totalSamples = 500;
-		int logInterval = 100;
+		int totalSamples = 1000;
+		int logInterval = 10000;
 		int noOfTrueHaplotype = 7;
 		int noOfRecoveredHaplotype=7;
 		
@@ -68,14 +68,14 @@ public class MainMCMCSpectrumFull {
 		Alignment shortReads = dataImporter.importShortReads(shortReadFile);
 		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(shortReads, noOfRecoveredHaplotype);
 
-		SingleSpectrumDeltaExchangeOperator sop = new SingleSpectrumDeltaExchangeOperator(spectrumModel, 0.25, CoercionMode.COERCION_OFF);
-		for (int i = 0; i < 100; i++) {
-			try {
-				sop.doOperation();	
-			} catch (Exception e) {
-				// TODO: handle exception
-			}
-		}
+//		SingleSpectrumDeltaExchangeOperator sop = new SingleSpectrumDeltaExchangeOperator(spectrumModel, 0.25, CoercionMode.COERCION_OFF);
+//		for (int i = 0; i < 100; i++) {
+//			try {
+//				sop.doOperation();	
+//			} catch (Exception e) {
+//				// TODO: handle exception
+//			}
+//		}
 		Alignment trueAlignment = dataImporter.importAlignment(trueHaplotypeFile);
 //		haplotypeModel = new HaplotypeModel(alignmentMapping, trueAlignment);
 //		ShortReadLikelihood shortReadLikelihood  = new ShortReadLikelihood(haplotypeModel);
@@ -108,7 +108,7 @@ public class MainMCMCSpectrumFull {
 		Likelihood likelihood = compoundlikelihoods.get(CompoundLikelihoodParser.LIKELIHOOD);
 		Likelihood shortReadLikelihood = compoundlikelihoods.get(ShortReadsSpectrumLikelihood.SHORT_READ_LIKELIHOOD);
 		Likelihood posterior = compoundlikelihoods.get(CompoundLikelihoodParser.POSTERIOR);
-		
+
 		// Operators
 		OperatorSchedule schedule = new SimpleOperatorSchedule();
 //		ArrayList<MCMCOperator> defalutOperatorsList = 
@@ -127,7 +127,7 @@ public class MainMCMCSpectrumFull {
 		double total = 0;
 		for (int i = 0; i < schedule.getOperatorCount(); i++) {
 			MCMCOperator op= schedule.getOperator(i);
-			System.out.println(op.getOperatorName());
+//			System.out.println(op.getOperatorName());
 			total += op.getWeight() ;
 		}
 		System.out.println("totalWeight: "+total);

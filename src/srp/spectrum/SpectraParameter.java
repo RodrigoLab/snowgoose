@@ -88,12 +88,15 @@ public class SpectraParameter extends Parameter.Default{
     }
     
     protected void storeState() {
-//    	System.err.println("storeState Spectra");
+//    	System.err.println("storeState in Spectra");
     	super.storeValues();
 	}
     protected void restoreState() {
-//    	System.err.println("restoreState Spectra");
+//    	System.err.println("restoreState in Spectra");
     	super.restoreValues();
 	}
+    public String diagnostic(){
+    	return super.diagnostic();
+    }
 
 }

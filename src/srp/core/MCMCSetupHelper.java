@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import srp.likelihood.ShortReadLikelihood;
+import srp.spectrum.likelihood.ShortReadsSpectrumLikelihood;
 import dr.evolution.coalescent.CoalescentSimulator;
 import dr.evolution.coalescent.ConstantPopulation;
 import dr.evolution.tree.Tree;
@@ -72,8 +73,8 @@ public class MCMCSetupHelper {
 			
 				likelihoods.add(srpLikelihood);
 				Likelihood shortReadlikelihood = new CompoundLikelihood(-1, likelihoods);
-				shortReadlikelihood.setId(ShortReadLikelihood.SHORT_READ_LIKELIHOOD);
-				compoundLikelihoods.put(ShortReadLikelihood.SHORT_READ_LIKELIHOOD,shortReadlikelihood);
+				shortReadlikelihood.setId(ShortReadsSpectrumLikelihood.SHORT_READ_LIKELIHOOD);
+				compoundLikelihoods.put(ShortReadsSpectrumLikelihood.SHORT_READ_LIKELIHOOD, shortReadlikelihood);
 			
 				// Posterior
 				likelihoods.clear();

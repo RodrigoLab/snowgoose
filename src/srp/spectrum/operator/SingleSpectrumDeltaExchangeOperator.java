@@ -7,6 +7,7 @@ import srp.spectrum.SpectraParameter;
 import srp.spectrum.Spectrum;
 import srp.spectrum.SpectrumAlignmentModel;
 import srp.spectrum.SpectrumOperation;
+import srp.spectrum.SpectrumOperationRecord;
 import dr.inference.model.Bounds;
 import dr.inference.model.Parameter;
 import dr.inference.operators.AbstractCoercableOperator;
@@ -41,6 +42,7 @@ public class SingleSpectrumDeltaExchangeOperator extends AbstractSpectrumOperato
 
 	}
 
+	private double[] debugList = new double[8];
 	@Override
 	public double doOperation() throws OperatorFailedException {
 
@@ -66,6 +68,10 @@ public class SingleSpectrumDeltaExchangeOperator extends AbstractSpectrumOperato
 
         double scalar1 = parameter.getParameterValue(dim1);
         double scalar2 = parameter.getParameterValue(dim2);
+        debugList[0] = dim1;
+        debugList[1] = scalar1;
+        debugList[3] = dim2;
+        debugList[4] = scalar2;
 //        System.err.println("OLD:\t"+dim1 +":"+ scalar1 +"\t"+ dim2 +":"+ scalar2);
 //        if (isIntegerOperator) {
 //            int d = MathUtils.nextInt((int) Math.round(delta)) + 1;
@@ -95,6 +101,11 @@ public class SingleSpectrumDeltaExchangeOperator extends AbstractSpectrumOperato
         }
 //        parameter.storeParameterValues();
 //        System.err.println("NEW:\t"+dim1 +":"+ scalar1 +"\t"+ dim2 +":"+ scalar2);
+        debugList[2] = scalar1;
+        debugList[5] = scalar2;
+        debugList[6] = spectrumIndex;
+        debugList[7] = siteIndex;
+        
         parameter.setParameterValue(dim1, scalar1);
         parameter.setParameterValue(dim2, scalar2);
 
@@ -137,18 +148,24 @@ public class SingleSpectrumDeltaExchangeOperator extends AbstractSpectrumOperato
     }
 
     public final String getPerformanceSuggestion() {
-
-        double prob = MCMCOperator.Utils.getAcceptanceProbability(this);
-        double targetProb = getTargetAcceptanceProbability();
-
-//        double d = OperatorUtils.optimizeWindowSize(delta, parameter.getParameterValue(0) * 2.0, prob, targetProb);
-        double d = OperatorUtils.optimizeWindowSize(delta, 0.25 , prob, targetProb);
-
-        if (prob < getMinimumGoodAcceptanceLevel()) {
-            return "Try decreasing delta to about " + d;
-        } else if (prob > getMaximumGoodAcceptanceLevel()) {
-            return "Try increasing delta to about " + d;
-        } else return "";
+		SpectrumOperationRecord record = spectrumModel.getSpectrumOperationRecord();
+		String s = record.getSpectrumIndex() +"\t"+ record.getSiteIndex() +"\n";
+		s+= spectrumModel.diagnostic() +"\n";
+		s += Arrays.toString(debugList);
+		spectrumModel.restoreModelState();
+    	return s;
+    	
+//        double prob = MCMCOperator.Utils.getAcceptanceProbability(this);
+//        double targetProb = getTargetAcceptanceProbability();
+//
+////        double d = OperatorUtils.optimizeWindowSize(delta, parameter.getParameterValue(0) * 2.0, prob, targetProb);
+//        double d = OperatorUtils.optimizeWindowSize(delta, 0.25 , prob, targetProb);
+//
+//        if (prob < getMinimumGoodAcceptanceLevel()) {
+//            return "Try decreasing delta to about " + d;
+//        } else if (prob > getMaximumGoodAcceptanceLevel()) {
+//            return "Try increasing delta to about " + d;
+//        } else return "";
     }
 
     public String toString() {
@@ -292,6 +309,7 @@ class DeltaExchangeOperator {//extends AbstractCoercableOperator {
 
     // Private instance variables
 
+    
     private Parameter parameter = null;
     private final int[] parameterWeights;
     private double delta = 0.02;

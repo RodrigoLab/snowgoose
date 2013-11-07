@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.swing.JTabbedPane;
+
 import srp.haplotypes.AbstractHaplotypeModel;
 import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.Haplotype;
@@ -159,7 +161,20 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 	public SpectrumAlignmentModel(Alignment shortReads, int hapCount) {
 		this(new AlignmentMapping(shortReads), hapCount);
 
-	}	
+	}
+	
+	public static SpectrumAlignmentModel duplicateSpectrumAlignmentModel(SpectrumAlignmentModel oldModel){
+		
+		SpectrumAlignmentModel newSpectrumModel = new SpectrumAlignmentModel(oldModel.getAlignmentMapping());
+
+		for (int i = 0; i < oldModel.getSpectrumCount(); i++) {
+			Spectrum spectrum = Spectrum.duplicateSpectrum(oldModel.getSpectrum(i));
+			newSpectrumModel.addSpectrum(spectrum);
+		}
+		
+		
+		return newSpectrumModel;
+	}
 	
 	public AlignmentMapping getAlignmentMapping() {
 		return aMap;
@@ -175,10 +190,10 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 		return spectrumOperationRecord;
 	}
 	
-	public double[] getSpecturmFrequencies(int sequenceIndex, int i) {
+	public double[] getSpecturmFrequencies(int spectrumIndex, int i) {
 	//		Spectrum spectrum = getSpectrum(sequenceIndex);
 			
-			return getSpectrum(sequenceIndex).getFrequencies(i);
+			return getSpectrum(spectrumIndex).getFrequencies(i);
 	}
 	@Deprecated
 	private void setSpectrum(int index, Spectrum spectrum) {
@@ -209,7 +224,7 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 	}
 	@Override
 	protected void storeState() {
-	
+
 //		 System.err.println("Call storeState: spectrumAlignmentModel");
 		 int spectrumIndex = spectrumOperationRecord.getSpectrumIndex(); 
 		 int siteIndex = spectrumOperationRecord.getSiteIndex();
@@ -217,6 +232,9 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 		 Spectrum spectrum = getSpectrum(spectrumIndex);
 		 spectrum.setStoreSiteIndex(siteIndex);
 		 spectrum.storeState();
+			
+		 
+		 
 //		swapInfo.storeOperation(Operation.NONE);
 	}
 	@Override
@@ -237,7 +255,8 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 		public void reject() {
 			//TODO redo
 			SpectrumOperation op = spectrumOperationRecord.getOperation();
-	//		int[] temp;
+
+//			System.out.println(op);
 			switch (op) {
 			
 			case NONE:
@@ -247,67 +266,16 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 			case DELTASINGLE:
 				int spectrumIndex = spectrumOperationRecord.getSpectrumIndex();
 				int siteIndex = spectrumOperationRecord.getSiteIndex();
-	
+//				System.err.println(spectrumIndex +"\t"+ siteIndex +"\t"+ Arrays.toString(getSpecturmFrequencies(spectrumIndex,
+//						siteIndex)));
 				Spectrum spectrum = getSpectrum(spectrumIndex);
 				spectrum.setStoreSiteIndex(siteIndex);
 				spectrum.restoreState();
-	//
-	//			int[] temp = swapInfo.getSwapInfoSWAPBASE();
-	//			//			long time1 = System.currentTimeMillis();
-	////			for (int i = 0; i < 1e9; i++) {
-	//			resetHaplotypeToOldChar(temp);
-	////		replaceHaplotypeCharAt(haplotypes.get(temp[0]), temp[2], temp[3]);
-	////			}
-	////			long time2 = System.currentTimeMillis();
-	////
-	////			System.out.println("Single: "+(time2 - time1) + "\t");
-	////			System.exit(0);
+//				System.err.println("after restore\t"+spectrumIndex +"\t"+ siteIndex +"\t"+ Arrays.toString(getSpecturmFrequencies(spectrumIndex,
+//						siteIndex)));
 				break;
 	
-	//		case SWAPMULTI:
-	//			
-	//			int hapIndex = swapInfo.getHapIndex();
-	//			int[][] swapMulti = swapInfo.getSwapInfoSWAPMULTI();
-	////			int[] allNewChars = swapMulti[0];
-	//			int[] allOldChars = swapMulti[1];
-	//			
-	//			
-	//			Haplotype haplotype = spectrumList.get(hapIndex);
-	//			for (int i = 0; i < allOldChars.length; i++) {
-	//				int oldChar = allOldChars[i];
-	//				if(oldChar>0){
-	//					haplotype.replaceCharAt(i, oldChar);
-	//				}
-	//			}
-	//			break;
-	//		
-	//		case SWAPSECTION:
-	//			int[] swapSection = swapInfo.getSwapInfoSWAPSECTION();
-	//			
-	////			time1 = System.currentTimeMillis();
-	//////			for (int i = 0; i < 1e8; i++) {
-	////				haplotypes.get(temp[0]).restoreState();
-	//////			}
-	////			time2 = System.currentTimeMillis();
-	//
-	////			System.out.println("Multi: "+(time2 - time1) + "\t");
-	//
-	//			
-	//			
-	//			for (int i = 0; i < 2; i++) {
-	//				spectrumList.get(swapSection[i]).restoreState();
-	//			}
-	//			break;
-	//		case SWAPCOLUMN:
-	//			int[][] swapColumn = swapInfo.getSwapInfoSWAPCOLUMN();
-	//			int pos = swapColumn[0][0];
-	//			int[] allOldChars2 = swapColumn[1];
-	//
-	//			for (int i = 0; i < getHaplotypeCount(); i++) {
-	//				haplotype = spectrumList.get(i);
-	//				haplotype.replaceCharAt(pos, allOldChars2[i]);
-	//			}
-	//			break;
+
 			default:
 				throw new IllegalArgumentException("Unknown operation type: " + op);
 	
@@ -479,6 +447,45 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 	private double[][] storedLogqMatrix = new double[4][4];
 
 
+	public String diagnostic(){
+
+		int spectrumIndex = spectrumOperationRecord.getSpectrumIndex();
+		int siteIndex = spectrumOperationRecord.getSiteIndex();
+
+		Spectrum spectrum = getSpectrum(spectrumIndex);
+		spectrum.setStoreSiteIndex(siteIndex);
+		SpectraParameter spectra = spectrum.getSpectra(siteIndex);
+		return siteIndex +"\t"+ spectrumIndex +"\t"+ spectra.diagnostic();
+//		.restoreState();
+	}
 	
+	public static void compareTwoSpectrumModel(
+			SpectrumAlignmentModel spectrumModel,
+			SpectrumAlignmentModel spectrumModel2) {
+
+
+		for (int i = 0; i < spectrumModel.getSpectrumCount(); i++) {
+			Spectrum spectrum = spectrumModel.getSpectrum(i);
+			Spectrum newSpectrum = spectrumModel2.getSpectrum(i);
+			for (int j = 0; j < spectrum.getLength(); j++) {
+				double[] frequencies = spectrum.getFrequencies(j);
+				for (int k = 0; k < frequencies.length; k++) {
+					if(frequencies[k] != newSpectrum.getFrequency(j, k)){
+						System.err.println("DIFFMODEL"+i +"\t"+ j +"\t"+ k +"\t"+ Arrays.toString(frequencies) +"\t"+ Arrays.toString(newSpectrum.getFrequencies(j)));
+					}
+				}
+			}
+			
+		}
+		SpectrumOperationRecord record = spectrumModel.getSpectrumOperationRecord();
+		int spec = record.getSpectrumIndex();
+		int site = record.getSiteIndex();
+		System.out.println("compare two models");
+		System.out.println(Arrays.toString(spectrumModel.getSpectrum(spec).getFrequencies(
+				site)));
+		System.out.println(Arrays.toString(spectrumModel2.getSpectrum(spec).getFrequencies(
+				site)));
+		
+	}
 	
 }

@@ -65,8 +65,8 @@ public class AbstractSpectrumAlignmentModelTest {
 	private static ArrayList<Spectrum> expectedList;
 	private static HashMap<Character, Integer> charToState;
 	
-	private SpectrumAlignmentModel haplotypeModel;
-	private SpectrumAlignmentModel haplotypeModelRandom;
+	private SpectrumAlignmentModel spectrumModel;
+	private SpectrumAlignmentModel spectrumModelRandom;
 
 	
 	
@@ -116,8 +116,8 @@ public class AbstractSpectrumAlignmentModelTest {
 
 	@Before
 	public void setUp() throws Exception {
-		haplotypeModel = new SpectrumAlignmentModel(aMap, srpAlignment);
-		haplotypeModelRandom = new SpectrumAlignmentModel(aMap, 5);
+		spectrumModel = new SpectrumAlignmentModel(aMap, srpAlignment);
+		spectrumModelRandom = new SpectrumAlignmentModel(aMap, 5);
 	}
 
 	@After
@@ -130,16 +130,16 @@ public class AbstractSpectrumAlignmentModelTest {
 		
 		for (int i = 0; i < expectedList.size(); i++) {
 		
-			assertEquals(expectedSequences[i], haplotypeModel.getAlignedSequenceString(i));
-			assertEquals(expectedSequences[i], haplotypeModel.getUnalignedSequenceString(i));
-			assertEquals(expectedSequences[i], haplotypeModel.getHaplotype(i).getSequenceString());
-			assertEquals(expectedTaxons[i], haplotypeModel.getHaplotype(i).getTaxon());
+			assertEquals(expectedSequences[i], spectrumModel.getAlignedSequenceString(i));
+			assertEquals(expectedSequences[i], spectrumModel.getUnalignedSequenceString(i));
+//			assertEquals(expectedSequences[i], haplotypeModel.getHaplotype(i).getSequenceString());
+			assertEquals(expectedTaxons[i], spectrumModel.getSpectrum(i).getTaxon());
 			
-			assertEquals(haplotypeModel.getSequence(i), haplotypeModel.getHaplotype(i));
+//			assertEquals(haplotypeModel.getSequence(i), haplotypeModel.getHaplotype(i));
 //				expectedMatrix[i] = matrixS[i].toCharArray();
 			for (int j = 0; j < expectedSequences[i].length(); j++) {
 				char expected = expectedSequences[i].charAt(j); 
-				assertEquals(expected,haplotypeModel.getHaplotypeCharAt(i,j));
+//				assertEquals(expected,haplotypeModel.getHaplotypeCharAt(i,j));
 			}
 		}
 //			assertArrayEquals(expectedMatrix, haplotypeModel.getCharMatrix());
@@ -157,13 +157,13 @@ public class AbstractSpectrumAlignmentModelTest {
 		
 		// getSequenceAttribute(int, String)
 		// setSequenceAttribute(int, String, Object)
-		for (int i = 0; i < haplotypeModel.getSequenceCount(); i++) {
-			assertNull(haplotypeModel.getSequenceAttribute(i, "NULL"));
-			haplotypeModel.setSequenceAttribute(i, "NAME", expectedTaxons[i].getId());
+		for (int i = 0; i < spectrumModel.getSequenceCount(); i++) {
+			assertNull(spectrumModel.getSequenceAttribute(i, "NULL"));
+			spectrumModel.setSequenceAttribute(i, "NAME", expectedTaxons[i].getId());
 		}
-		for (int i = 0; i < haplotypeModel.getSequenceCount(); i++) {
-			assertEquals(("r"+(i+1)+".1"), haplotypeModel.getSequenceAttribute(i, "NAME"));
-			assertNull(haplotypeModel.getSequenceAttribute(i, "NULL"));
+		for (int i = 0; i < spectrumModel.getSequenceCount(); i++) {
+			assertEquals(("r"+(i+1)+".1"), spectrumModel.getSequenceAttribute(i, "NAME"));
+			assertNull(spectrumModel.getSequenceAttribute(i, "NULL"));
 		}
 		
 	}
@@ -171,55 +171,55 @@ public class AbstractSpectrumAlignmentModelTest {
 	public void testTaxonList() throws Exception {
 
 		// getTaxonCount()
-		assertEquals(10, haplotypeModel.getTaxonCount());
-		assertEquals(5, haplotypeModelRandom.getTaxonCount());
+		assertEquals(10, spectrumModel.getTaxonCount());
+		assertEquals(5, spectrumModelRandom.getTaxonCount());
 
 		// getTaxon(int)
 		// getTaxonId(int)
 		// getTaxonIndex(String)
 		// getTaxonIndex(Taxon)
 		
-		for (int i = 0; i < expectedTaxons.length; i++) {
-			String expectedID = expectedTaxons[i].getId();
-			assertEquals(expectedTaxons[i], haplotypeModel.getTaxon(i));
-			assertEquals(expectedID, haplotypeModel.getTaxonId(i));
-			assertEquals(i, haplotypeModel.getTaxonIndex(expectedID));
-			assertEquals(i, haplotypeModel.getTaxonIndex(haplotypeModel.getTaxon(i)));
-			
-		}
-		assertEquals(-1, haplotypeModel.getTaxonIndex("EMPTY"));
-		assertEquals(-1, haplotypeModel.getTaxonIndex(new Taxon("E")));
-		assertEquals(-1, haplotypeModel.getTaxonIndex(expectedTaxons[0]));
+//		for (int i = 0; i < expectedTaxons.length; i++) {
+//			String expectedID = expectedTaxons[i].getId();
+//			assertEquals(expectedTaxons[i], spectrumModel.getTaxon(i));
+//			assertEquals(expectedID, spectrumModel.getTaxonId(i));
+//			assertEquals(i, spectrumModel.getTaxonIndex(expectedID));
+//			assertEquals(i, spectrumModel.getTaxonIndex(spectrumModel.getTaxon(i)));
+//			
+//		}
+//		assertEquals(-1, spectrumModel.getTaxonIndex("EMPTY"));
+		assertEquals(-1, spectrumModel.getTaxonIndex(new Taxon("E")));
+		assertEquals(-1, spectrumModel.getTaxonIndex(expectedTaxons[0]));
 		
 		List<Taxon> expectedList = new ArrayList<Taxon>();
-		for (int i = 0; i < haplotypeModelRandom.getTaxonCount(); i++) {
+		for (int i = 0; i < spectrumModelRandom.getTaxonCount(); i++) {
 			String expectedID = SpectrumAlignmentModel.TAXON_PREFIX+i;
 			Taxon expectedTaxon = new Taxon(expectedID);
 			expectedList.add(expectedTaxon);
-			assertEquals(expectedTaxon, haplotypeModelRandom.getTaxon(i));
-			assertEquals(expectedID, haplotypeModelRandom.getTaxonId(i));
-			assertEquals(i, haplotypeModelRandom.getTaxonIndex(expectedID));
-			assertEquals(i, haplotypeModelRandom.getTaxonIndex(haplotypeModelRandom.getTaxon(i)));
+			assertEquals(expectedTaxon, spectrumModelRandom.getTaxon(i));
+			assertEquals(expectedID, spectrumModelRandom.getTaxonId(i));
+			assertEquals(i, spectrumModelRandom.getTaxonIndex(expectedID));
+			assertEquals(i, spectrumModelRandom.getTaxonIndex(spectrumModelRandom.getTaxon(i)));
 		}
-		assertEquals(-1, haplotypeModelRandom.getTaxonIndex("EMPTY"));
-		assertEquals(-1, haplotypeModelRandom.getTaxonIndex(expectedTaxons[0]));
+		assertEquals(-1, spectrumModelRandom.getTaxonIndex("EMPTY"));
+		assertEquals(-1, spectrumModelRandom.getTaxonIndex(expectedTaxons[0]));
 		
 		
 		// asList()		
-		assertEquals(Arrays.asList(expectedTaxons), haplotypeModel.asList());
-		assertEquals(expectedList, haplotypeModelRandom.asList());
+//		assertEquals(Arrays.asList(expectedTaxons), spectrumModel.asList());
+		assertEquals(expectedList, spectrumModelRandom.asList());
 
 		
 		// getTaxonAttribute(int, String)
-		for (int i = 0; i < haplotypeModelRandom.getTaxonCount(); i++) {
-			Taxon taxon = haplotypeModelRandom.getTaxon(i);
+		for (int i = 0; i < spectrumModelRandom.getTaxonCount(); i++) {
+			Taxon taxon = spectrumModelRandom.getTaxon(i);
 			taxon.setAttribute("NAME", expectedTaxons[i].getId());
 			taxon.setAttribute("INDEX", i);
 		}
-		for (int i = 0; i < haplotypeModelRandom.getTaxonCount(); i++) {
-			assertEquals(("r"+(i+1)+".1"), haplotypeModelRandom.getTaxonAttribute(i, "NAME"));
-			assertEquals(i, haplotypeModelRandom.getTaxonAttribute(i, "INDEX"));
-			assertNull(haplotypeModelRandom.getTaxonAttribute(i, "NULL"));
+		for (int i = 0; i < spectrumModelRandom.getTaxonCount(); i++) {
+			assertEquals(("r"+(i+1)+".1"), spectrumModelRandom.getTaxonAttribute(i, "NAME"));
+			assertEquals(i, spectrumModelRandom.getTaxonAttribute(i, "INDEX"));
+			assertNull(spectrumModelRandom.getTaxonAttribute(i, "NULL"));
 			
 		}
 		
@@ -235,24 +235,24 @@ public class AbstractSpectrumAlignmentModelTest {
 			alignmentNoTaxon.addSequence(h);
 
 		}
-		haplotypeModelRandom = new SpectrumAlignmentModel(aMap, alignmentNoTaxon);
-		assertEquals(5, haplotypeModelRandom.getTaxonCount());
-		for (int i = 1; i < haplotypeModelRandom.getTaxonCount(); i++) {
+		spectrumModelRandom = new SpectrumAlignmentModel(aMap, alignmentNoTaxon);
+		assertEquals(5, spectrumModelRandom.getTaxonCount());
+		for (int i = 1; i < spectrumModelRandom.getTaxonCount(); i++) {
 			
-			assertNull(haplotypeModelRandom.getTaxon(i));
+			assertNull(spectrumModelRandom.getTaxon(i));
 			
-			assertNull(haplotypeModelRandom.getTaxonAttribute(i, "INDEX"));
-			haplotypeModelRandom.setSequenceAttribute(i, "INDEX", i+i);
+			assertNull(spectrumModelRandom.getTaxonAttribute(i, "INDEX"));
+			spectrumModelRandom.setSequenceAttribute(i, "INDEX", i+i);
 			
-			assertEquals(i+i, haplotypeModelRandom.getSequenceAttribute(i,"INDEX"));
-			assertEquals(i+i, haplotypeModelRandom.getTaxonAttribute(i, "INDEX"));
+			assertEquals(i+i, spectrumModelRandom.getSequenceAttribute(i,"INDEX"));
+			assertEquals(i+i, spectrumModelRandom.getTaxonAttribute(i, "INDEX"));
 			
 		}
 		
-		for (int i = 0; i < haplotypeModelRandom.getTaxonCount(); i++) {
+		for (int i = 0; i < spectrumModelRandom.getTaxonCount(); i++) {
 
 			try {
-				haplotypeModelRandom.getTaxonId(i);
+				spectrumModelRandom.getTaxonId(i);
 				
 			} catch (IllegalArgumentException e) {
 		        assertThat(e.getMessage(), CoreMatchers.startsWith("Illegal taxon index"));
@@ -273,13 +273,13 @@ public class AbstractSpectrumAlignmentModelTest {
 		Random rand = new Random();
 		for (int i = 0; i < 10; i++) {
 			int expected = rand.nextInt(100);
-			assertEquals(expected, haplotypeModel.getPatternIndex(expected));
-			assertEquals(expected, haplotypeModelRandom.getPatternIndex(expected));
+			assertEquals(expected, spectrumModel.getPatternIndex(expected));
+			assertEquals(expected, spectrumModelRandom.getPatternIndex(expected));
 		}
 		
 		// getSiteCount()
-		assertEquals(100, haplotypeModel.getSiteCount());
-		assertEquals(100, haplotypeModelRandom.getSiteCount());
+		assertEquals(100, spectrumModel.getSiteCount());
+		assertEquals(100, spectrumModelRandom.getSiteCount());
 		
 		// getSitePattern(int)
 		int[] expectedArray = new int[10];
@@ -287,62 +287,62 @@ public class AbstractSpectrumAlignmentModelTest {
 			for (int i = 0; i < expectedArray.length; i++) {
 				expectedArray[i] = charToState.get(expectedSequences[i].charAt(site));
 			}
-			assertArrayEquals(expectedArray, haplotypeModel.getSitePattern(site));
+			assertArrayEquals(expectedArray, spectrumModel.getSitePattern(site));
 		}
 		Arrays.fill(expectedArray, 17);
-		assertArrayEquals(expectedArray, haplotypeModel.getSitePattern(5));
-		assertArrayEquals(expectedArray, haplotypeModel.getSitePattern(101));
+		assertArrayEquals(expectedArray, spectrumModel.getSitePattern(5));
+		assertArrayEquals(expectedArray, spectrumModel.getSitePattern(101));
 		
 		
 
 		
 		// getState(int, int)
-		for (int h = 0; h < haplotypeModelRandom.getHaplotypeCount(); h++) {
-			String hap = haplotypeModelRandom.getHaplotypeString(h);
-			assertEquals(hap.length(), haplotypeModelRandom.getHaplotypeLength());
-			assertEquals(-1, hap.indexOf('.'));
-			for (int i = 0; i < hap.length(); i++) {
-				int expected = charToState.get(hap.charAt(i));
-				assertEquals(expected, haplotypeModelRandom.getState(h, i));
-				assertEquals(expected, haplotypeModelRandom.getPatternState(h, i));
-			}
-			int expected = 17; 
-			assertEquals(expected, haplotypeModelRandom.getState(h, hap.length()));
-			assertEquals(expected, haplotypeModelRandom.getPatternState(h, hap.length()));
-		}
+//		for (int h = 0; h < haplotypeModelRandom.getHaplotypeCount(); h++) {
+//			String hap = haplotypeModelRandom.getHaplotypeString(h);
+//			assertEquals(hap.length(), haplotypeModelRandom.getHaplotypeLength());
+//			assertEquals(-1, hap.indexOf('.'));
+//			for (int i = 0; i < hap.length(); i++) {
+//				int expected = charToState.get(hap.charAt(i));
+//				assertEquals(expected, haplotypeModelRandom.getState(h, i));
+//				assertEquals(expected, haplotypeModelRandom.getPatternState(h, i));
+//			}
+//			int expected = 17; 
+//			assertEquals(expected, haplotypeModelRandom.getState(h, hap.length()));
+//			assertEquals(expected, haplotypeModelRandom.getPatternState(h, hap.length()));
+//		}
 		
-		for (int h = 0; h < haplotypeModel.getHaplotypeCount(); h++) {
-			String hap = expectedSequences[h];
-			assertEquals(hap.length(), haplotypeModel.getHaplotypeLength());
-			for (int i = 0; i < hap.length(); i++) {
-				int expected = charToState.get(hap.charAt(i));
-				assertEquals(expected, haplotypeModel.getState(h, i));
-				assertEquals(expected, haplotypeModel.getPatternState(h, i));
-			}
-			int expected = 17;
-			assertEquals(expected, haplotypeModel.getState(h, hap.length()));
-			assertEquals(expected, haplotypeModel.getPatternState(h, hap.length()));
-		}
+//		for (int h = 0; h < haplotypeModel.getHaplotypeCount(); h++) {
+//			String hap = expectedSequences[h];
+//			assertEquals(hap.length(), haplotypeModel.getHaplotypeLength());
+//			for (int i = 0; i < hap.length(); i++) {
+//				int expected = charToState.get(hap.charAt(i));
+//				assertEquals(expected, haplotypeModel.getState(h, i));
+//				assertEquals(expected, haplotypeModel.getPatternState(h, i));
+//			}
+//			int expected = 17;
+//			assertEquals(expected, haplotypeModel.getState(h, hap.length()));
+//			assertEquals(expected, haplotypeModel.getPatternState(h, hap.length()));
+//		}
 
 	}
 
 	@Test
 	public void testPatternList() throws Exception {
 		// getDataType()
-		assertEquals(Nucleotides.INSTANCE, haplotypeModel.getDataType());
-		assertEquals(Nucleotides.class, haplotypeModel.getDataType().getClass());
-		assertEquals(Nucleotides.DESCRIPTION, haplotypeModel.getDataType().getDescription());
+		assertEquals(Nucleotides.INSTANCE, spectrumModel.getDataType());
+		assertEquals(Nucleotides.class, spectrumModel.getDataType().getClass());
+		assertEquals(Nucleotides.DESCRIPTION, spectrumModel.getDataType().getDescription());
 
 		// getPattern(int)
 		// in testSiteList()
 		
 		// getPatternCount()
-		assertEquals(100, haplotypeModel.getPatternCount());
-		assertEquals(100, haplotypeModelRandom.getPatternCount());
+		assertEquals(100, spectrumModel.getPatternCount());
+		assertEquals(100, spectrumModelRandom.getPatternCount());
 		
 		// getPatternLength()
-		assertEquals(10, haplotypeModel.getPatternLength());
-		assertEquals(5, haplotypeModelRandom.getPatternLength());
+		assertEquals(10, spectrumModel.getPatternLength());
+		assertEquals(5, spectrumModelRandom.getPatternLength());
 		
 		// getPatternState(int, int)
 		// in testSiteList()
@@ -350,30 +350,30 @@ public class AbstractSpectrumAlignmentModelTest {
 		
 		// getPatternWeight(int)
 		for (int i = 0; i < 100; i++) {
-			assertEquals(1, haplotypeModel.getPatternWeight(i), 0);
-			assertEquals(1, haplotypeModelRandom.getPatternWeight(i), 0);
+			assertEquals(1, spectrumModel.getPatternWeight(i), 0);
+			assertEquals(1, spectrumModelRandom.getPatternWeight(i), 0);
 		}
 		
 		// getPatternWeights()
-		double[] expectedArray = new double[haplotypeModel.getPatternCount()];
+		double[] expectedArray = new double[spectrumModel.getPatternCount()];
 		Arrays.fill(expectedArray, 1.0);
-		assertArrayEquals(expectedArray, haplotypeModel.getPatternWeights(), 0);
-		assertArrayEquals(expectedArray, haplotypeModelRandom.getPatternWeights(), 0);
+		assertArrayEquals(expectedArray, spectrumModel.getPatternWeights(), 0);
+		assertArrayEquals(expectedArray, spectrumModelRandom.getPatternWeights(), 0);
 		
 		// getStateCount()
-		assertEquals(4, haplotypeModel.getStateCount());
-		assertEquals(4, haplotypeModelRandom.getStateCount());
+		assertEquals(4, spectrumModel.getStateCount());
+		assertEquals(4, spectrumModelRandom.getStateCount());
 		
 		// getStateFrequencies()
 		double[] expectedFreq = {0.2755418, 0.3034056, 0.2414861, 0.1795666};
-		assertArrayEquals(expectedFreq, haplotypeModel.getStateFrequencies(), 1e-7);
+		assertArrayEquals(expectedFreq, spectrumModel.getStateFrequencies(), 1e-7);
 		
-		double[] stateFrequencies = haplotypeModelRandom.getStateFrequencies();
+		double[] stateFrequencies = spectrumModelRandom.getStateFrequencies();
 		StringBuilder sb = new StringBuilder();
 		
-		for (int i = 0; i < haplotypeModelRandom.getHaplotypeCount(); i++) {
-			sb.append(haplotypeModelRandom.getHaplotypeString(i));
-		}
+//		for (int i = 0; i < haplotypeModelRandom.getHaplotypeCount(); i++) {
+//			sb.append(haplotypeModelRandom.getHaplotypeString(i));
+//		}
 		String temp = sb.toString();
 		double[] count = new double[4];
 		Arrays.fill(count, 0);
@@ -400,24 +400,24 @@ public class AbstractSpectrumAlignmentModelTest {
 		for (int i = 0; i < count.length; i++) {
 			count[i] /= total;
 		}
-		assertArrayEquals(count, haplotypeModelRandom.getStateFrequencies(), 1e-6);
+		assertArrayEquals(count, spectrumModelRandom.getStateFrequencies(), 1e-6);
 
 	}
 	
 	@Test
 	public void testIdentifiable() throws Exception {
-		assertNull(haplotypeModel.getId());
+		assertNull(spectrumModel.getId());
 		
-		haplotypeModel.setId("Test1");
-		assertEquals("Test1", haplotypeModel.getId());
-		haplotypeModel.setId("Test2");
-		assertEquals("Test2", haplotypeModel.getId());
+		spectrumModel.setId("Test1");
+		assertEquals("Test1", spectrumModel.getId());
+		spectrumModel.setId("Test2");
+		assertEquals("Test2", spectrumModel.getId());
 	}
 	@Test
 	public void testIterable() throws Exception {
 
 		// Iterator()
-		Iterator<Taxon> taxonIterator = haplotypeModel.iterator();
+		Iterator<Taxon> taxonIterator = spectrumModel.iterator();
 		SortedSet<Taxon> attributeSet = new TreeSet<Taxon>();
 		while (taxonIterator.hasNext()) {
 			Taxon taxon = (Taxon) taxonIterator.next();
@@ -440,27 +440,27 @@ public class AbstractSpectrumAlignmentModelTest {
 	@Test
 	public void testAttributable() throws Exception {
 		// null test first
-		assertNull(haplotypeModel.getAttribute("NULL"));
-		assertNull(haplotypeModel.getAttributeNames());
+		assertNull(spectrumModel.getAttribute("NULL"));
+		assertNull(spectrumModel.getAttributeNames());
 		
-		haplotypeModel.setAttribute("A1", 0);
-		haplotypeModel.setAttribute("A2", "StringAttribute");
+		spectrumModel.setAttribute("A1", 0);
+		spectrumModel.setAttribute("A2", "StringAttribute");
 		ArrayList<String> tempList = new ArrayList<String>();
 		tempList.add("T1");tempList.add("T2");
-		haplotypeModel.setAttribute("A3", tempList);
+		spectrumModel.setAttribute("A3", tempList);
 		int[] tempArray = new int[]{1,2,3,0};
-		haplotypeModel.setAttribute("A4", tempArray);
+		spectrumModel.setAttribute("A4", tempArray);
 		
-		assertEquals(0, haplotypeModel.getAttribute("A1"));
-		assertEquals("StringAttribute", haplotypeModel.getAttribute("A2"));
+		assertEquals(0, spectrumModel.getAttribute("A1"));
+		assertEquals("StringAttribute", spectrumModel.getAttribute("A2"));
 		ArrayList<String> expectedList = new ArrayList<String>();
 		expectedList.add("T1");expectedList.add("T2");
-		assertEquals(expectedList, haplotypeModel.getAttribute("A3"));
+		assertEquals(expectedList, spectrumModel.getAttribute("A3"));
 		int[] expectedArray = new int[]{1,2,3,0};
-		assertArrayEquals(expectedArray, (int[]) haplotypeModel.getAttribute("A4"));
-		assertNull(haplotypeModel.getAttribute("A5"));
+		assertArrayEquals(expectedArray, (int[]) spectrumModel.getAttribute("A4"));
+		assertNull(spectrumModel.getAttribute("A5"));
 		
-		Iterator<String> attributeNames = haplotypeModel.getAttributeNames();
+		Iterator<String> attributeNames = spectrumModel.getAttributeNames();
 		Set<String> attributeSet = new HashSet<String>();
 		while (attributeNames.hasNext()) {
 			String string = (String) attributeNames.next();
