@@ -1,7 +1,5 @@
 package srp.spectrum;
 
-import java.util.Arrays;
-
 import dr.inference.model.Parameter;
 
 //public class Spectra implements Parameter{
@@ -22,18 +20,16 @@ public class SpectraParameter extends Parameter.Default{
     	if(getDimension()!=4){
     		throw new IllegalArgumentException("Frequencies should have 4 elements, frequencies.length= "+getDimension());
     	}
-        if (Math.abs(sum - 1.0) > 1e-8) {
-            throw new IllegalArgumentException("Frequencies do not sum to 1, they sum to " + sum);
-        }
-    	
+    	//TODO make sure it's ON!!!
+//        if (Math.abs(sum - 1.0) > 1e-8) {
+//            throw new IllegalArgumentException("Frequencies do not sum to 1, they sum to " + sum);
+//        }
+//    	
 		addBounds(new DefaultBounds(1.0, 0.0, getDimension()));
-		if(!isWithinBounds()){
-			throw new IllegalArgumentException("Frequencies out of bounds 0 < f < 1\t"+ Arrays.toString(frequencies)); 
-		}
-//        this.frequencyParameter = frequencyParameter;
-//        addVariable(frequencyParameter);
-//        frequencyParameter.addBounds(new Parameter.DefaultBounds(1.0, 0.0, frequencyParameter.getDimension()));
-//        this.dataType = dataType;
+//		if(!isWithinBounds()){
+//			throw new IllegalArgumentException("Frequencies out of bounds 0 < f < 1\t"+ Arrays.toString(frequencies)); 
+//		}
+
     }
 
     private static double getSumOfFrequencies(double[] frequencies) {

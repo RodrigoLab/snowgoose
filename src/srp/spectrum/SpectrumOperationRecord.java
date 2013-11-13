@@ -59,7 +59,6 @@ public class SpectrumOperationRecord {
 		
 	
 	public SpectrumOperationRecord() {
-		// TODO Auto-generated constructor stub
 		operation = SpectrumOperation.NONE;
 	}
 

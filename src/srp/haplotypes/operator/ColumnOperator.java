@@ -90,19 +90,17 @@ public class ColumnOperator extends AbstractCoercableOperator {
 
 	@Override
 	public double getCoercableParameter() {
-		// TODO Auto-generated method stub
+
 		return 0;
 	}
 
 	@Override
 	public void setCoercableParameter(double value) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public double getRawParameter() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 

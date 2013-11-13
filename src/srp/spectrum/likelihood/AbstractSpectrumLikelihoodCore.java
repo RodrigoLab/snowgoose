@@ -25,6 +25,10 @@
 
 package srp.spectrum.likelihood;
 
+import java.util.Arrays;
+
+import org.apache.commons.lang3.ArrayUtils;
+
 import dr.evomodel.treelikelihood.LikelihoodCore;
 
 /**
@@ -46,8 +50,9 @@ public abstract class AbstractSpectrumLikelihoodCore implements LikelihoodCore {
     protected boolean integrateCategories;
 
     protected double[][][] partials;
-
-    protected int[][] states;
+//    private double[][][] storedPartials;
+    
+//    protected int[][] states;
 
     protected double[][][] matrices;
 
@@ -61,6 +66,7 @@ public abstract class AbstractSpectrumLikelihoodCore implements LikelihoodCore {
     protected double[][][] scalingFactors;
 
     private double scalingThreshold = 1.0E-100;
+	
 
     /**
      * Constructor
@@ -79,7 +85,8 @@ public abstract class AbstractSpectrumLikelihoodCore implements LikelihoodCore {
      * @param matrixCount         the number of matrices (i.e., number of categories)
      * @param integrateCategories whether sites are being integrated over all matrices
      */
-    public void initialize(int nodeCount, int patternCount, int matrixCount, boolean integrateCategories) {
+    @Override
+	public void initialize(int nodeCount, int patternCount, int matrixCount, boolean integrateCategories) {
 
         this.nodeCount = nodeCount;
         this.patternCount = patternCount;
@@ -94,6 +101,7 @@ public abstract class AbstractSpectrumLikelihoodCore implements LikelihoodCore {
         }
 
         partials = new double[2][nodeCount][];
+//        storedPartials = new double[2][nodeCount][];
 
         currentMatricesIndices = new int[nodeCount];
         storedMatricesIndices = new int[nodeCount];
@@ -101,13 +109,13 @@ public abstract class AbstractSpectrumLikelihoodCore implements LikelihoodCore {
         currentPartialsIndices = new int[nodeCount];
         storedPartialsIndices = new int[nodeCount];
 
-        states = new int[nodeCount][];
+//        states = new int[nodeCount][];
 
         for (int i = 0; i < nodeCount; i++) {
             partials[0][i] = null;
             partials[1][i] = null;
 
-            states[i] = null;
+//            states[i] = null;
         }
 
         matrixSize = stateCount * stateCount;
@@ -118,7 +126,8 @@ public abstract class AbstractSpectrumLikelihoodCore implements LikelihoodCore {
     /**
      * cleans up and deallocates arrays.
      */
-    public void finalize() throws java.lang.Throwable  {
+    @Override
+	public void finalize() throws java.lang.Throwable  {
         super.finalize();
 
         nodeCount = 0;
@@ -126,9 +135,11 @@ public abstract class AbstractSpectrumLikelihoodCore implements LikelihoodCore {
         matrixCount = 0;
 
         partials = null;
+//        storedPartials = null;
+        
         currentPartialsIndices = null;
         storedPartialsIndices = null;
-        states = null;
+//        states = null;
         matrices = null;
         currentMatricesIndices = null;
         storedMatricesIndices = null;
@@ -136,7 +147,8 @@ public abstract class AbstractSpectrumLikelihoodCore implements LikelihoodCore {
         scalingFactors = null;
     }
 
-    public void setUseScaling(boolean useScaling) {
+    @Override
+	public void setUseScaling(boolean useScaling) {
         this.useScaling = useScaling;
 
         if (useScaling) {
@@ -147,7 +159,8 @@ public abstract class AbstractSpectrumLikelihoodCore implements LikelihoodCore {
     /**
      * Allocates partials for a node
      */
-    public void createNodePartials(int nodeIndex) {
+    @Override
+	public void createNodePartials(int nodeIndex) {
 
         this.partials[0][nodeIndex] = new double[partialsSize];
         this.partials[1][nodeIndex] = new double[partialsSize];
@@ -156,7 +169,8 @@ public abstract class AbstractSpectrumLikelihoodCore implements LikelihoodCore {
     /**
      * Sets partials for a node
      */
-    public void setNodePartials(int nodeIndex, double[] partials) {
+    @Override
+	public void setNodePartials(int nodeIndex, double[] partials) {
 
         if (this.partials[0][nodeIndex] == null) {
             createNodePartials(nodeIndex);
@@ -171,34 +185,9 @@ public abstract class AbstractSpectrumLikelihoodCore implements LikelihoodCore {
             System.arraycopy(partials, 0, this.partials[0][nodeIndex], 0, partials.length);
         }
     }
-
-    /**
-     * Allocates states for a node
-     */
-    public void createNodeStates(int nodeIndex) {
-
-        this.states[nodeIndex] = new int[patternCount];
-    }
-
-    /**
-     * Sets states for a node
-     */
-    public void setNodeStates(int nodeIndex, int[] states) {
-
-        if (this.states[nodeIndex] == null) {
-            createNodeStates(nodeIndex);
-        }
-        System.arraycopy(states, 0, this.states[nodeIndex], 0, patternCount);
-    }
-
-    /**
-     * Gets states for a node
-     */
-    public void getNodeStates(int nodeIndex, int[] states) {
-        System.arraycopy(this.states[nodeIndex], 0, states, 0, patternCount);
-    }
-
-    public void setNodeMatrixForUpdate(int nodeIndex) {
+    
+    @Override
+	public void setNodeMatrixForUpdate(int nodeIndex) {
         currentMatricesIndices[nodeIndex] = 1 - currentMatricesIndices[nodeIndex];
 
     }
@@ -207,7 +196,12 @@ public abstract class AbstractSpectrumLikelihoodCore implements LikelihoodCore {
     /**
      * Sets probability matrix for a node
      */
-    public void setNodeMatrix(int nodeIndex, int matrixIndex, double[] matrix) {
+    @Override
+	public void setNodeMatrix(int nodeIndex, int matrixIndex, double[] matrix) {
+//    	System.out.println("old:"+Arrays.toString(
+//    	ArrayUtils.subarray(matrices[0][nodeIndex], matrixIndex * matrixSize, matrixIndex * matrixSize + matrixSize)
+//    	));
+//    	System.out.println("new:"+Arrays.toString(matrix));
         System.arraycopy(matrix, 0, matrices[currentMatricesIndices[nodeIndex]][nodeIndex],
                 matrixIndex * matrixSize, matrixSize);
     }
@@ -220,7 +214,8 @@ public abstract class AbstractSpectrumLikelihoodCore implements LikelihoodCore {
                 matrixIndex * matrixSize, matrix, 0, matrixSize);
     }
 
-    public void setNodePartialsForUpdate(int nodeIndex) {
+    @Override
+	public void setNodePartialsForUpdate(int nodeIndex) {
         currentPartialsIndices[nodeIndex] = 1 - currentPartialsIndices[nodeIndex];
     }
 
@@ -228,7 +223,8 @@ public abstract class AbstractSpectrumLikelihoodCore implements LikelihoodCore {
      * Sets the currently updating node partials for node nodeIndex. This may
      * need to repeatedly copy the partials for the different category partitions
      */
-    public void setCurrentNodePartials(int nodeIndex, double[] partials) {
+    @Override
+	public void setCurrentNodePartials(int nodeIndex, double[] partials) {
         if (partials.length < partialsSize) {
             int k = 0;
             for (int i = 0; i < matrixCount; i++) {
@@ -247,63 +243,58 @@ public abstract class AbstractSpectrumLikelihoodCore implements LikelihoodCore {
      * @param nodeIndex2 the 'child 2' node
      * @param nodeIndex3 the 'parent' node
      */
-    public void calculatePartials(int nodeIndex1, int nodeIndex2, int nodeIndex3) {
-        if (states[nodeIndex1] != null) {
-            if (states[nodeIndex2] != null) {
-                calculateStatesStatesPruning(
-                        states[nodeIndex1], matrices[currentMatricesIndices[nodeIndex1]][nodeIndex1],
-                        states[nodeIndex2], matrices[currentMatricesIndices[nodeIndex2]][nodeIndex2],
-                        partials[currentPartialsIndices[nodeIndex3]][nodeIndex3]);
-            } else {
-                calculateStatesPartialsPruning(states[nodeIndex1], matrices[currentMatricesIndices[nodeIndex1]][nodeIndex1],
-                        partials[currentPartialsIndices[nodeIndex2]][nodeIndex2], matrices[currentMatricesIndices[nodeIndex2]][nodeIndex2],
-                        partials[currentPartialsIndices[nodeIndex3]][nodeIndex3]);
-            }
-        } else {
-            if (states[nodeIndex2] != null) {
-                calculateStatesPartialsPruning(states[nodeIndex2], matrices[currentMatricesIndices[nodeIndex2]][nodeIndex2],
-                        partials[currentPartialsIndices[nodeIndex1]][nodeIndex1], matrices[currentMatricesIndices[nodeIndex1]][nodeIndex1],
-                        partials[currentPartialsIndices[nodeIndex3]][nodeIndex3]);
-            } else {
-                calculatePartialsPartialsPruning(partials[currentPartialsIndices[nodeIndex1]][nodeIndex1], matrices[currentMatricesIndices[nodeIndex1]][nodeIndex1],
-                        partials[currentPartialsIndices[nodeIndex2]][nodeIndex2], matrices[currentMatricesIndices[nodeIndex2]][nodeIndex2],
-                        partials[currentPartialsIndices[nodeIndex3]][nodeIndex3]);
-            }
-        }
+    @Override
+	public void calculatePartials(int nodeIndex1, int nodeIndex2, int nodeIndex3) {
 
+        calculatePartialsPartialsPruning(partials[currentPartialsIndices[nodeIndex1]][nodeIndex1], matrices[currentMatricesIndices[nodeIndex1]][nodeIndex1],
+                partials[currentPartialsIndices[nodeIndex2]][nodeIndex2], matrices[currentMatricesIndices[nodeIndex2]][nodeIndex2],
+                partials[currentPartialsIndices[nodeIndex3]][nodeIndex3]);
+//		System.out.println(nodeIndex3
+//			+ "\t"
+//			+ Arrays.toString(partials[currentPartialsIndices[nodeIndex3]][nodeIndex3])
+//			+ "\n"
+//			+ Arrays.toString(partials[currentPartialsIndices[nodeIndex1]][nodeIndex1])
+//			+ "\t"
+//			+ Arrays.toString(partials[currentPartialsIndices[nodeIndex2]][nodeIndex2])
+//			+ "\nIndex:" + Arrays.toString(currentPartialsIndices)
+//			+ "\nP0 C1:" + Arrays.toString(partials[0][nodeIndex1])
+//			+ "\nP0 C2:" + Arrays.toString(partials[0][nodeIndex2])
+//			+ "\nP0 N3:" + Arrays.toString(partials[0][nodeIndex3])
+//			+ "\nP1 C1:" + Arrays.toString(partials[1][nodeIndex1])
+//			+ "\nP1 C2:" + Arrays.toString(partials[1][nodeIndex2])
+//			+ "\nP1 N3:" + Arrays.toString(partials[1][nodeIndex3]) + "\n"
+//
+//		);
+        if(Double.isNaN(partials[currentPartialsIndices[nodeIndex3]][nodeIndex3][0])){
+        	
+    		System.out.println(nodeIndex3
+			+ "\t"
+			+ "\n" +Arrays.toString(currentMatricesIndices) 
+			+ "\n" +nodeIndex1 +"\t"+ nodeIndex2
+			+ Arrays.toString(partials[currentPartialsIndices[nodeIndex3]][nodeIndex3])
+			+ "\n"
+			+ Arrays.toString(partials[currentPartialsIndices[nodeIndex1]][nodeIndex1])
+			+ "\t"
+			+ Arrays.toString(partials[currentPartialsIndices[nodeIndex2]][nodeIndex2])
+			+ "\nIndex:" + Arrays.toString(currentPartialsIndices)
+			+ "\nP0 C1:" + Arrays.toString(partials[0][nodeIndex1])
+			+ "\nP0 C2:" + Arrays.toString(partials[0][nodeIndex2])
+			+ "\nP0 N3:" + Arrays.toString(partials[0][nodeIndex3])
+			+ "\nP1 C1:" + Arrays.toString(partials[1][nodeIndex1])
+			+ "\nP1 C2:" + Arrays.toString(partials[1][nodeIndex2])
+			+ "\nP1 N3:" + Arrays.toString(partials[1][nodeIndex3]) + "\n"
+			);
+        	
+        }
         if (useScaling) {
             scalePartials(nodeIndex3);
         }
 
-//
-//        int k =0;
-//        for (int i = 0; i < patternCount; i++) {
-//            double f = 0.0;
-//
-//            for (int j = 0; j < stateCount; j++) {
-//                f += partials[currentPartialsIndices[nodeIndex3]][nodeIndex3][k];
-//                k++;
-//            }
-//            if (f == 0.0) {
-//                Logger.getLogger("error").severe("A partial likelihood (node index = " + nodeIndex3 + ", pattern = "+ i +") is zero for all states.");
-//            }
-//        }
+
     }
 
-    /**
-     * Calculates partial likelihoods at a node when both children have states.
-     */
-    protected abstract void calculateStatesStatesPruning(int[] states1, double[] matrices1,
-                                                         int[] states2, double[] matrices2,
-                                                         double[] partials3);
 
-    /**
-     * Calculates partial likelihoods at a node when one child has states and one has partials.
-     */
-    protected abstract void calculateStatesPartialsPruning(int[] states1, double[] matrices1,
-                                                           double[] partials2, double[] matrices2,
-                                                           double[] partials3);
-
+    
     /**
      * Calculates partial likelihoods at a node when both children have partials.
      */
@@ -311,69 +302,16 @@ public abstract class AbstractSpectrumLikelihoodCore implements LikelihoodCore {
                                                              double[] partials2, double[] matrices2,
                                                              double[] partials3);
 
-    /**
-     * Calculates partial likelihoods at a node.
-     *
-     * @param nodeIndex1 the 'child 1' node
-     * @param nodeIndex2 the 'child 2' node
-     * @param nodeIndex3 the 'parent' node
-     * @param matrixMap  a map of which matrix to use for each pattern (can be null if integrating over categories)
-     */
-    public void calculatePartials(int nodeIndex1, int nodeIndex2, int nodeIndex3, int[] matrixMap) {
-        if (states[nodeIndex1] != null) {
-            if (states[nodeIndex2] != null) {
-                calculateStatesStatesPruning(
-                        states[nodeIndex1], matrices[currentMatricesIndices[nodeIndex1]][nodeIndex1],
-                        states[nodeIndex2], matrices[currentMatricesIndices[nodeIndex2]][nodeIndex2],
-                        partials[currentPartialsIndices[nodeIndex3]][nodeIndex3], matrixMap);
-            } else {
-                calculateStatesPartialsPruning(
-                        states[nodeIndex1], matrices[currentMatricesIndices[nodeIndex1]][nodeIndex1],
-                        partials[currentPartialsIndices[nodeIndex2]][nodeIndex2], matrices[currentMatricesIndices[nodeIndex2]][nodeIndex2],
-                        partials[currentPartialsIndices[nodeIndex3]][nodeIndex3], matrixMap);
-            }
-        } else {
-            if (states[nodeIndex2] != null) {
-                calculateStatesPartialsPruning(
-                        states[nodeIndex2], matrices[currentMatricesIndices[nodeIndex2]][nodeIndex2],
-                        partials[currentPartialsIndices[nodeIndex1]][nodeIndex1], matrices[currentMatricesIndices[nodeIndex1]][nodeIndex1],
-                        partials[currentPartialsIndices[nodeIndex3]][nodeIndex3], matrixMap);
-            } else {
-                calculatePartialsPartialsPruning(
-                        partials[currentPartialsIndices[nodeIndex1]][nodeIndex1], matrices[currentMatricesIndices[nodeIndex1]][nodeIndex1],
-                        partials[currentPartialsIndices[nodeIndex2]][nodeIndex2], matrices[currentMatricesIndices[nodeIndex2]][nodeIndex2],
-                        partials[currentPartialsIndices[nodeIndex3]][nodeIndex3], matrixMap);
-            }
-        }
 
-        if (useScaling) {
-            scalePartials(nodeIndex3);
-        }
-    }
-
-    /**
-     * Calculates partial likelihoods at a node when both children have states.
-     */
-    protected abstract void calculateStatesStatesPruning(int[] states1, double[] matrices1,
-                                                         int[] states2, double[] matrices2,
-                                                         double[] partials3, int[] matrixMap);
-
-    /**
-     * Calculates partial likelihoods at a node when one child has states and one has partials.
-     */
-    protected abstract void calculateStatesPartialsPruning(int[] states1, double[] matrices1,
-                                                           double[] partials2, double[] matrices2,
-                                                           double[] partials3, int[] matrixMap);
-
-    /**
-     * Calculates partial likelihoods at a node when both children have partials.
-     */
-    protected abstract void calculatePartialsPartialsPruning(double[] partials1, double[] matrices1,
-                                                             double[] partials2, double[] matrices2,
-                                                             double[] partials3, int[] matrixMap);
-
-
-    public void integratePartials(int nodeIndex, double[] proportions, double[] outPartials) {
+    @Override
+	public void integratePartials(int nodeIndex, double[] proportions, double[] outPartials) {
+//TODO remove later
+    	//    	System.out.println(Arrays.toString(currentPartialsIndices));
+//    	for (int i = 0; i < nodeCount; i++) {
+//    		System.out.println(Arrays.toString(partials[0][i]));
+//        	System.out.println(Arrays.toString(partials[1][i]));
+//		}
+//    	
         calculateIntegratePartials(partials[currentPartialsIndices[nodeIndex]][nodeIndex], proportions, outPartials);
     }
 
@@ -446,7 +384,8 @@ public abstract class AbstractSpectrumLikelihoodCore implements LikelihoodCore {
      *
      * @return the log scaling factor
      */
-    public double getLogScalingFactor(int pattern) {
+    @Override
+	public double getLogScalingFactor(int pattern) {
         double logScalingFactor = 0.0;
         if (useScaling) {
             for (int i = 0; i < nodeCount; i++) {
@@ -462,7 +401,8 @@ public abstract class AbstractSpectrumLikelihoodCore implements LikelihoodCore {
      * @param nodeIndex   the node
      * @param outPartials an array into which the partials will go
      */
-    public void getPartials(int nodeIndex, double[] outPartials) {
+    @Override
+	public void getPartials(int nodeIndex, double[] outPartials) {
         double[] partials1 = partials[currentPartialsIndices[nodeIndex]][nodeIndex];
 
         System.arraycopy(partials1, 0, outPartials, 0, partialsSize);
@@ -471,16 +411,19 @@ public abstract class AbstractSpectrumLikelihoodCore implements LikelihoodCore {
     /**
      * Store current state
      */
-    public void storeState() {
+    @Override
+	public void storeState() {
 
         System.arraycopy(currentMatricesIndices, 0, storedMatricesIndices, 0, nodeCount);
         System.arraycopy(currentPartialsIndices, 0, storedPartialsIndices, 0, nodeCount);
+        
     }
 
     /**
      * Restore the stored state
      */
-    public void restoreState() {
+    @Override
+	public void restoreState() {
         // Rather than copying the stored stuff back, just swap the pointers...
         int[] tmp1 = currentMatricesIndices;
         currentMatricesIndices = storedMatricesIndices;
@@ -489,5 +432,62 @@ public abstract class AbstractSpectrumLikelihoodCore implements LikelihoodCore {
         int[] tmp2 = currentPartialsIndices;
         currentPartialsIndices = storedPartialsIndices;
         storedPartialsIndices = tmp2;
+
+
     }
+
+	//
+	//    /**
+	//     * Allocates states for a node
+	//     */
+    @Override
+	public void createNodeStates(int nodeIndex) {
+    	throw new IllegalArgumentException("createNodeStates in AbstractSpectrumLikelihoodCore should not be called");
+    }
+
+	//
+	//    /**
+	//     * Sets states for a node
+	//     */
+    @Override
+	public void setNodeStates(int nodeIndex, int[] states) {
+        throw new IllegalArgumentException("setNodeStates in AbstractSpectrumLikelihoodCore should not be called");
+    }
+
+	//
+	//    /**
+	//     * Gets states for a node
+	//     */
+    public void getNodeStates(int nodeIndex, int[] states) {
+        throw new IllegalArgumentException("getNodeStates in AbstractSpectrumLikelihoodCore should not be called");
+    }
+
+	/**
+	     * Calculates partial likelihoods at a node.
+	     *
+	     * @param nodeIndex1 the 'child 1' node
+	     * @param nodeIndex2 the 'child 2' node
+	     * @param nodeIndex3 the 'parent' node
+	     * @param matrixMap  a map of which matrix to use for each pattern (can be null if integrating over categories)
+	     */
+	@Override
+	public void calculatePartials(int nodeIndex1, int nodeIndex2,
+			int nodeIndex3, int[] matrixMap) {
+		throw new RuntimeException("calculatePartials is not implemented using matrixMap");
+
+	}
+	
+	public String diagonistic(){
+		StringBuilder sb = new StringBuilder();
+		
+		for (int i = 0; i < nodeCount; i++) {
+			sb.append("Node: "+i+" ");
+			sb.append(Arrays.toString(partials[currentPartialsIndices[i]][i]));
+			sb.append("\n");
+//			
+//			partials[currentPartialsIndices[nodeIndex1]][nodeIndex1], matrices[currentMatricesIndices[nodeIndex1]][nodeIndex1],
+//                partials[currentPartialsIndices[nodeIndex2]][nodeIndex2], matrices[currentMatricesIndices[nodeIndex2]][nodeIndex2],
+		}
+		return sb.toString();
+	}
 }

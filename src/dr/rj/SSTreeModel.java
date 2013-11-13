@@ -1855,7 +1855,7 @@ public class SSTreeModel extends AbstractModel implements MutableTree {
 	
     
 	private int doubleTheTree() {
-		// TODO Auto-generated method stub
+		throw new RuntimeException("Not yet implemented");
 		return 0;
 	}
 

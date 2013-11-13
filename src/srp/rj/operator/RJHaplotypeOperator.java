@@ -125,7 +125,7 @@ public class RJHaplotypeOperator extends AbstractCoercableOperator {
 
 	@Override
 	public String getPerformanceSuggestion() {
-		// TODO Auto-generated method stub
+
 		return switchProb+ "\t"
 				+ Arrays.toString(haplotypeModel.getSwapInfo()
 						.getSwapInfoSWAPBASE()) + "\t"

@@ -138,11 +138,11 @@ public class MCMCSetupHelperSpectrum extends MCMCSetupHelper {
 
 		operator = new ExchangeOperator(ExchangeOperator.NARROW, treeModel, 15.0);
 		operator.setWeight(opMed);
-//		OperatorList.add(operator);
+		schedule.addOperator(operator);
 
 		operator = new ExchangeOperator(ExchangeOperator.WIDE, treeModel, 3.0);
 		operator.setWeight(opSmall);
-//		OperatorList.add(operator);
+		schedule.addOperator(operator);
 
 		operator = new WilsonBalding(treeModel, 3.0);
 		operator.setWeight(opSmall);

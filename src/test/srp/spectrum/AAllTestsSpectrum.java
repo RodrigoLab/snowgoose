@@ -6,10 +6,11 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({ 
-
+	
 	SpectraParameterTest.class,
-
+	SpectrumAlignmentModelTest.class,
+	SpectrumTest.class,
 })
-public class AllTestsSpectrum {
+public class AAllTestsSpectrum {
 
 }

@@ -204,7 +204,7 @@ public class RJTreeOperator  extends AbstractTreeOperator {
 
 	@Override
 	public String getPerformanceSuggestion() {
-		// TODO Auto-generated method stub
+
 		return null;
 	}
 }

@@ -87,7 +87,7 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 		return validChar;
 	}
 
-	private void addSpectrum(Spectrum spectrum) {
+	public void addSpectrum(Spectrum spectrum) {
 		spectrum.setDataType(getDataType());
 		for (int i = 0; i < spectrumLength; i++) {
 			spectrum.setStoreSiteIndex(i);
@@ -154,6 +154,9 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 
 		for (int i = 0; i < trueAlignment.getSequenceCount(); i++) {
 			Spectrum spectrum = new Spectrum(trueAlignment.getSequence(i));
+			Taxon t = new Taxon(TAXON_PREFIX+i); 
+//			Spectrum spectrum = new Spectrum(spectrumLength);
+			spectrum.setTaxon(t);
 			addSpectrum(spectrum);
 		}
 	}
@@ -195,11 +198,7 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 			
 			return getSpectrum(spectrumIndex).getFrequencies(i);
 	}
-	@Deprecated
-	private void setSpectrum(int index, Spectrum spectrum) {
-		// TODO Auto-generated method stub
-		spectrumList.set(index, spectrum);
-	}
+
 
 	@Override
 	public void fireModelChanged(){
@@ -485,6 +484,10 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 				site)));
 		System.out.println(Arrays.toString(spectrumModel2.getSpectrum(spec).getFrequencies(
 				site)));
+		
+	}
+	public void removeSpectrum(int i) {
+		spectrumList.remove(0);
 		
 	}
 	

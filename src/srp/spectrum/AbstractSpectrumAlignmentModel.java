@@ -6,13 +6,16 @@ import java.util.List;
 
 import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.PatternList;
+import dr.evolution.alignment.SiteList;
 import dr.evolution.datatype.DataType;
 import dr.evolution.sequence.Sequence;
+import dr.evolution.sequence.SequenceList;
 import dr.evolution.util.Taxon;
+import dr.evolution.util.TaxonList;
 import dr.inference.model.AbstractModel;
 import dr.util.Attributable;
 
-public abstract class AbstractSpectrumAlignmentModel extends AbstractModel implements Alignment {
+public abstract class AbstractSpectrumAlignmentModel extends AbstractModel implements TaxonList, SiteList{
 //maybe only can implements TaxonList
 	
 	public AbstractSpectrumAlignmentModel(String name) {
@@ -49,38 +52,7 @@ public abstract class AbstractSpectrumAlignmentModel extends AbstractModel imple
 //		return spectrumList.get(hapIndex).getChar(charIndex);
 //	}
 
-	
-    // **************************************************************
-    // SequenceList IMPLEMENTATION
-    // **************************************************************
-	
-	/*
-	 * Call getHaplotypesCount(), return haplotypesCount
-	 */
-	@Override
-	public int getSequenceCount() {
-		return getSpectrumCount();
-	}
 
-	@Override
-	public Sequence getSequence(int i) {
-		//TODO Fail
-		throw new IllegalArgumentException("getSequence() is not implemented for AbstractSpectrumModel");
-	}
-
-	
-	@Override
-	public void setSequenceAttribute(int index, String name, Object value) {
-		Sequence sequence = getSequence(index);
-        sequence.setAttribute(name, value);
-	}
-
-	
-	@Override
-	public Object getSequenceAttribute(int index, String name) {
-		Sequence sequence = getSequence(index);
-        return sequence.getAttribute(name);
-	}
 
     // **************************************************************
     // TaxonList IMPLEMENTATION
@@ -169,7 +141,8 @@ public abstract class AbstractSpectrumAlignmentModel extends AbstractModel imple
         if (taxon != null)
             return taxon.getAttribute(name);
         else
-            return getSequenceAttribute(taxonIndex, name);
+            throw new IllegalArgumentException("Illegal taxon index:" + taxonIndex);
+//            return getSequenceAttribute(taxonIndex, name);
     }
 
     @Override
@@ -299,7 +272,7 @@ public abstract class AbstractSpectrumAlignmentModel extends AbstractModel imple
      */
     @Override
 	public int getPatternLength() {
-        return getSequenceCount();
+        return getSpectrumCount();
     }
 
     /**
@@ -367,34 +340,11 @@ public abstract class AbstractSpectrumAlignmentModel extends AbstractModel imple
     // Alignment IMPLEMENTATION
     // **************************************************************
 
-	@Override
+//	@Override
 	public void setDataType(DataType dataType) {
 		this.dataType = dataType;
 	}
 
-	
-	/**
-	 * call getHaplotypeString(sequenceIndex);
-	 */
-	@Override
-	public String getAlignedSequenceString(int sequenceIndex) {
-		//TODO Fail
-		throw new IllegalArgumentException("Not implemented for AbstractSpectrumModel");
-//		return "?";
-//		return getSpectrumString(sequenceIndex);
-	}
-
-	/**
-	 * call getHaplotypeString(sequenceIndex);
-	 */
-	@Override
-	public String getUnalignedSequenceString(int sequenceIndex) {
-		//TODO Fail
-		throw new IllegalArgumentException("Not implemented for AbstractSpectrumModel");
-
-//		return getSpectrumString(sequenceIndex);
-	}
-	
     // **************************************************************
     // Identifiable IMPLEMENTATION
     // **************************************************************

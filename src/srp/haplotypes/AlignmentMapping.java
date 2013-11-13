@@ -351,42 +351,5 @@ public class AlignmentMapping {
 	}
 	
 
-
-	@Deprecated
-	public int[] getNextBaseFrequency(Parameter freqs) {
-//		// TODO Auto-generated method stub
-//
-//		posChar[0] = MathUtils.nextInt(haplotypeLength);
-//		double d = MathUtils.nextDouble();
-//		
-////		double[] freqsValue = freqs.getParameterValues();
-////		double sumFreq = 0;
-////		for (int i = 0; i < freqsValue.length; i++) {
-////			sumFreq += freqsValue[i];
-////			if (d <= sumFreq) {
-////				posChar[1] = VALID_CHARS[i];
-//////				System.out.println(d +"\t"+ posChar[1] +"\t"+  sumFreq +"\t"+ Arrays.toString(freqsValue)				);
-////				return posChar;
-////			}
-////			
-////		}
-////		
-//		
-//		double sumFreq = 0;
-//		for (int i = 0; i < freqs.getDimension(); i++) {
-//			sumFreq += freqs.getParameterValue(i);
-//			if (d <= sumFreq) {
-//				posChar[1] = VALID_CHARS[i];
-////				System.out.println(d +"\t"+ posChar[1] +"\t"+  sumFreq +"\t"+ Arrays.toString(freqsValue)				);
-//				return posChar;
-//			}
-//			
-//		}
-//		System.err.println(d +"\t"+ sumFreq);
-//		posChar[1] = GAP;
-		return posChar;
-//
-	}
-
 	
 }

@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 
+import srp.haplotypes.AlignmentMapping;
 import srp.spectrum.Spectrum;
 import srp.spectrum.SpectrumAlignmentModel;
 import srp.spectrum.likelihood.ShortReadsSpectrumLikelihood;
@@ -41,8 +42,8 @@ public class MainMCMCSpectrumFull {
 
 		String dataDir = "/home/sw167/workspaceSrp/ABI/unittest/testData/";
 		int runIndex = 1;
-		int totalSamples = 1000;
-		int logInterval = 10000;
+		int totalSamples = 1;
+		int logInterval = 100000;
 		int noOfTrueHaplotype = 7;
 		int noOfRecoveredHaplotype=7;
 		
@@ -65,8 +66,12 @@ public class MainMCMCSpectrumFull {
 		
 		DataImporter dataImporter = new DataImporter(dataDir);
 
+		Alignment trueAlignment = dataImporter.importAlignment(trueHaplotypeFile);
+		
 		Alignment shortReads = dataImporter.importShortReads(shortReadFile);
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(shortReads, noOfRecoveredHaplotype);
+		AlignmentMapping aMap = new AlignmentMapping(shortReads);
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, noOfRecoveredHaplotype);
+//		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, trueAlignment);
 
 //		SingleSpectrumDeltaExchangeOperator sop = new SingleSpectrumDeltaExchangeOperator(spectrumModel, 0.25, CoercionMode.COERCION_OFF);
 //		for (int i = 0; i < 100; i++) {
@@ -76,7 +81,7 @@ public class MainMCMCSpectrumFull {
 //				// TODO: handle exception
 //			}
 //		}
-		Alignment trueAlignment = dataImporter.importAlignment(trueHaplotypeFile);
+		
 //		haplotypeModel = new HaplotypeModel(alignmentMapping, trueAlignment);
 //		ShortReadLikelihood shortReadLikelihood  = new ShortReadLikelihood(haplotypeModel);
 		
@@ -87,6 +92,7 @@ public class MainMCMCSpectrumFull {
 		ConstantPopulationModel popModel = new ConstantPopulationModel(popSize, Units.Type.YEARS);
 		TreeModel treeModel = MCMCSetupHelper.setupRandomTreeModel(popModel, spectrumModel, Units.Type.YEARS);
 		
+
 		// Coalescent likelihood
 		CoalescentLikelihood coalescent = new CoalescentLikelihood(treeModel,null, new ArrayList<TaxonList>(), popModel);
 		coalescent.setId("coalescent");
@@ -176,20 +182,37 @@ public class MainMCMCSpectrumFull {
 
 		
 		System.out.println(mcmc.getTimer().toString());
-		for (int s = 0; s < loggers.length; s++) {
-			
-			System.out.println("State: "+s);
-			for (int j = 0; j < spectrumModel.getSpectrumCount(); j++) {
-				Spectrum spectrum = spectrumModel.getSpectrum(j);
-				for (int k = 0; k < 10; k++) {
+		int stateCount = 4;
+//		for (int s = 0; s < stateCount; s++) {
+//			
+//			System.out.println("State: "+s);
+//			for (int j = 0; j < spectrumModel.getSpectrumCount(); j++) {
+//				Spectrum spectrum = spectrumModel.getSpectrum(j);
+//				for (int k = 0; k < 5; k++) {
+//					System.out.print(spectrum.getFrequency(k, s)+"\t");
+//	//				System.out.print("\t");
+//				}
+//				System.out.println();
+//			}
+//			System.out.println();
+//		}
+		
+		for (int j = 0; j < spectrumModel.getSpectrumCount(); j++) {
+			Spectrum spectrum = spectrumModel.getSpectrum(j);
+			System.out.println("Specturm:"+j);
+			for (int s = 0; s < stateCount; s++) {
+				for (int k = 0; k < 5; k++) {
 					System.out.print(spectrum.getFrequency(k, s)+"\t");
-	//				System.out.print("\t");
 				}
+			
+
 				System.out.println();
 			}
+			System.out.println(trueAlignment.getAlignedSequenceString(j));
 			System.out.println();
 		}
 	}
 
 
 }
+

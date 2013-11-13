@@ -108,20 +108,11 @@ public abstract class AbstractSpectrumTreeLikelihood extends AbstractModelLikeli
                                      int sequenceIndex, int nodeIndex) {
         double[] partials = new double[patternCount * stateCount];
 
-        boolean[] stateSet;
-
         int v = 0;
         for (int i = 0; i < patternCount; i++) {
         	//TODO implement here
             double[] frequencies = spectrumModel.getSpecturmFrequencies(sequenceIndex, i);
-//            stateSet = dataType.getStateSet(state);
-
             for (int j = 0; j < stateCount; j++) {
-//                if (stateSet[j]) {
-//                    partials[v] = 1.0;
-//                } else {
-//                    partials[v] = 0.0;
-//                }
             	partials[v] = frequencies[j];
                 v++;
             }
@@ -130,35 +121,6 @@ public abstract class AbstractSpectrumTreeLikelihood extends AbstractModelLikeli
         likelihoodCore.setNodePartials(nodeIndex, partials);
     }
 
-//    /**
-//     * Sets the partials from a sequence in an alignment.
-//     */
-//    protected final void setMissingStates(LikelihoodCore likelihoodCore, int nodeIndex) {
-//        int[] states = new int[patternCount];
-//
-//        for (int i = 0; i < patternCount; i++) {
-//            states[i] = dataType.getGapState();
-//        }
-//
-//        likelihoodCore.setNodeStates(nodeIndex, states);
-//    }
-//
-//    /**
-//     * Sets the partials from a sequence in an alignment.
-//     */
-//    protected final void setMissingPartials(LikelihoodCore likelihoodCore, int nodeIndex) {
-//        double[] partials = new double[patternCount * stateCount];
-//
-//        int v = 0;
-//        for (int i = 0; i < patternCount; i++) {
-//            for (int j = 0; j < stateCount; j++) {
-//                partials[v] = 1.0;
-//                v++;
-//            }
-//        }
-//
-//        likelihoodCore.setNodePartials(nodeIndex, partials);
-//    }
 
     /**
      * Set update flag for a node and its children
@@ -199,7 +161,8 @@ public abstract class AbstractSpectrumTreeLikelihood extends AbstractModelLikeli
     /**
      * Set update flag for all nodes
      */
-    protected void updateAllNodes() {
+    //TODO change back to protected 
+    public void updateAllNodes() {
         for (int i = 0; i < nodeCount; i++) {
             updateNode[i] = true;
         }

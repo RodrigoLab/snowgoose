@@ -100,7 +100,7 @@ public class TreeLikelihoodExt extends TreeLikelihood {
         likelihoodKnown = false;
 		
         patternLogLikelihoods = new double[patternCount];
-        resetRootPartials(); //TODO chechk Changes in which version 
+        resetRootPartials(); 
 //        getRootPartials();
 //        rootPartials = new double[patternCount * stateCount];
 

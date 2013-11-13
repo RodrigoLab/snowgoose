@@ -23,13 +23,13 @@ public class ShortReadImporter extends FastaImporter {
 	}
 	public ShortReadImporter(Reader reader, DataType dataType) {
 		super(reader, DATA_TYPE);
-		// TODO Auto-generated constructor stub
+
 	}
 
 	public ShortReadImporter(Reader reader, Writer commentWriter,
 			DataType dataType) {
 		super(reader, commentWriter, dataType);
-		// TODO Auto-generated constructor stub
+
 	}
 
     public Alignment importAlignment() throws IOException, ImportException

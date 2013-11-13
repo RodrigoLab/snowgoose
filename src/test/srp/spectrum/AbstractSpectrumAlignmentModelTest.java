@@ -130,8 +130,8 @@ public class AbstractSpectrumAlignmentModelTest {
 		
 		for (int i = 0; i < expectedList.size(); i++) {
 		
-			assertEquals(expectedSequences[i], spectrumModel.getAlignedSequenceString(i));
-			assertEquals(expectedSequences[i], spectrumModel.getUnalignedSequenceString(i));
+//			assertEquals(expectedSequences[i], spectrumModel.getAlignedSequenceString(i));
+//			assertEquals(expectedSequences[i], spectrumModel.getUnalignedSequenceString(i));
 //			assertEquals(expectedSequences[i], haplotypeModel.getHaplotype(i).getSequenceString());
 			assertEquals(expectedTaxons[i], spectrumModel.getSpectrum(i).getTaxon());
 			

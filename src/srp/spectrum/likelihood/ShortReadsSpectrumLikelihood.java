@@ -452,7 +452,6 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 	@Override
 	protected void handleVariableChangedEvent(Variable variable, int index,
 			ChangeType type) {
-		// TODO Auto-generated method stub
 		System.err.println("Call handleVariableChangedEvent in SpectrumAlignmentModel");
 	}
 

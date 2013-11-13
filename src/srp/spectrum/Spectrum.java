@@ -114,6 +114,8 @@ public class Spectrum extends AbstractModel implements Attributable {
 //		super("Spectrum");
 		Spectrum newSpectrum = new Spectrum(oldSpectrum.getLength());
 //		spectrum = new ArrayList<SpectraParameter>();
+		Taxon newTaxon = oldSpectrum.getTaxon();
+		newSpectrum.setTaxon(newTaxon);
 		for (int i = 0; i < oldSpectrum.getLength(); i++) {
 			double[] frequencies = oldSpectrum.getFrequencies(i);
 			newSpectrum.resetFrequencies(i, frequencies);

@@ -15,7 +15,6 @@ public class HaplotypeLogger extends MCLogger {
 //	public HaplotypeLogger(LogFormatter formatter, int logEvery,
 //			boolean performanceReport, int performanceReportDelay) {
 //		super(formatter, logEvery, performanceReport, performanceReportDelay);
-//		// TODO Auto-generated constructor stub
 //	}
 	
 	protected Alignment alignment;
