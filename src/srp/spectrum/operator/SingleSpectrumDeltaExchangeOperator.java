@@ -68,29 +68,12 @@ public class SingleSpectrumDeltaExchangeOperator extends AbstractSpectrumOperato
 
         double scalar1 = parameter.getParameterValue(dim1);
         double scalar2 = parameter.getParameterValue(dim2);
-        debugList[0] = dim1;
-        debugList[1] = scalar1;
-        debugList[3] = dim2;
-        debugList[4] = scalar2;
-//        System.err.println("OLD:\t"+dim1 +":"+ scalar1 +"\t"+ dim2 +":"+ scalar2);
-//        if (isIntegerOperator) {
-//            int d = MathUtils.nextInt((int) Math.round(delta)) + 1;
-//
-//            if (parameterWeights[dim1] != parameterWeights[dim2]) throw new RuntimeException();
-//            scalar1 = Math.round(scalar1 - d);
-//            scalar2 = Math.round(scalar2 + d);
-//        } else {
 
-            // exchange a random delta
-            final double d = MathUtils.nextDouble() * delta;
-            scalar1 -= d;
-//            if (parameterWeights[dim1] != parameterWeights[dim2]) {
-//                scalar2 += d * (double) parameterWeights[dim1] / (double) parameterWeights[dim2];
-//            } else {
-                scalar2 += d;
-//            }
+        final double d = delta;//MathUtils.nextDouble() * delta;
+        
+        scalar1 -= d;
+        scalar2 += d;
 
-//        }
         Bounds<Double> bounds = parameter.getBounds();
 
         if (scalar1 < bounds.getLowerLimit(dim1) ||
@@ -99,25 +82,12 @@ public class SingleSpectrumDeltaExchangeOperator extends AbstractSpectrumOperato
                 scalar2 > bounds.getUpperLimit(dim2)) {
             throw new OperatorFailedException("proposed values out of range!");
         }
-//        parameter.storeParameterValues();
-//        System.err.println("NEW:\t"+dim1 +":"+ scalar1 +"\t"+ dim2 +":"+ scalar2);
-        debugList[2] = scalar1;
-        debugList[5] = scalar2;
-        debugList[6] = spectrumIndex;
-        debugList[7] = siteIndex;
         
         parameter.setParameterValue(dim1, scalar1);
         parameter.setParameterValue(dim2, scalar2);
 
         // symmetrical move so return a zero hasting ratio
-//        spectrum = spectrumModel.getSpectrum(spectrumIndex);
-//        parameter = spectrum.getSpecturm(site);
-//		System.out.println(Arrays.toString(parameter.getFrequencies()));
-        
 		spectrumModel.setSpectrumOperationRecord(OP, spectrumIndex, siteIndex, d);
-		
-		
-		
 		
 		spectrumModel.endSpectrumOperation();
 
@@ -132,11 +102,18 @@ public class SingleSpectrumDeltaExchangeOperator extends AbstractSpectrumOperato
 
 
     public double getCoercableParameter() {
+//    	double t = Math.log(delta/(1-delta));
+//    	return t;
+//        return Math.log(1.0 / delta - 1.0);
         return Math.log(delta);
     }
 
     public void setCoercableParameter(double value) {
+    	System.out.println(value +"\t"+ delta +"\t"+ getAcceptanceProbability());
         delta = Math.exp(value);
+//        double t = Math.exp(value);
+//        delta = t/(t+1);
+
     }
 
     public double getRawParameter() {

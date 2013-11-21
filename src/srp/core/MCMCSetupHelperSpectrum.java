@@ -158,7 +158,7 @@ public class MCMCSetupHelperSpectrum extends MCMCSetupHelper {
 
 		MCMCOperator operator;
 		
-		operator = new SingleSpectrumDeltaExchangeOperator(spectrumModel, 0.5, CoercionMode.COERCION_OFF);
+		operator = new SingleSpectrumDeltaExchangeOperator(spectrumModel, 0.05, CoercionMode.COERCION_ON);
 		operator.setWeight(opLarge);
 		schedule.addOperator(operator);
 		

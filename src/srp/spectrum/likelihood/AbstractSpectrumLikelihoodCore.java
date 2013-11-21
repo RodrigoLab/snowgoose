@@ -179,10 +179,12 @@ public abstract class AbstractSpectrumLikelihoodCore implements LikelihoodCore {
             int k = 0;
             for (int i = 0; i < matrixCount; i++) {
                 System.arraycopy(partials, 0, this.partials[0][nodeIndex], k, partials.length);
+//                System.arraycopy(partials, 0, this.partials[1][nodeIndex], k, partials.length);
                 k += partials.length;
             }
         } else {
             System.arraycopy(partials, 0, this.partials[0][nodeIndex], 0, partials.length);
+//            System.arraycopy(partials, 0, this.partials[1][nodeIndex], 0, partials.length);
         }
     }
     
@@ -265,27 +267,27 @@ public abstract class AbstractSpectrumLikelihoodCore implements LikelihoodCore {
 //			+ "\nP1 N3:" + Arrays.toString(partials[1][nodeIndex3]) + "\n"
 //
 //		);
-        if(Double.isNaN(partials[currentPartialsIndices[nodeIndex3]][nodeIndex3][0])){
-        	
-    		System.out.println(nodeIndex3
-			+ "\t"
-			+ "\n" +Arrays.toString(currentMatricesIndices) 
-			+ "\n" +nodeIndex1 +"\t"+ nodeIndex2
-			+ Arrays.toString(partials[currentPartialsIndices[nodeIndex3]][nodeIndex3])
-			+ "\n"
-			+ Arrays.toString(partials[currentPartialsIndices[nodeIndex1]][nodeIndex1])
-			+ "\t"
-			+ Arrays.toString(partials[currentPartialsIndices[nodeIndex2]][nodeIndex2])
-			+ "\nIndex:" + Arrays.toString(currentPartialsIndices)
-			+ "\nP0 C1:" + Arrays.toString(partials[0][nodeIndex1])
-			+ "\nP0 C2:" + Arrays.toString(partials[0][nodeIndex2])
-			+ "\nP0 N3:" + Arrays.toString(partials[0][nodeIndex3])
-			+ "\nP1 C1:" + Arrays.toString(partials[1][nodeIndex1])
-			+ "\nP1 C2:" + Arrays.toString(partials[1][nodeIndex2])
-			+ "\nP1 N3:" + Arrays.toString(partials[1][nodeIndex3]) + "\n"
-			);
-        	
-        }
+//        if(Double.isNaN(partials[currentPartialsIndices[nodeIndex3]][nodeIndex3][0])){
+//        	
+//    		System.out.println(nodeIndex3
+//			+ "\t"
+//			+ "\n" +Arrays.toString(currentMatricesIndices) 
+//			+ "\n" +nodeIndex1 +"\t"+ nodeIndex2
+//			+ Arrays.toString(partials[currentPartialsIndices[nodeIndex3]][nodeIndex3])
+//			+ "\n"
+//			+ Arrays.toString(partials[currentPartialsIndices[nodeIndex1]][nodeIndex1])
+//			+ "\t"
+//			+ Arrays.toString(partials[currentPartialsIndices[nodeIndex2]][nodeIndex2])
+//			+ "\nIndex:" + Arrays.toString(currentPartialsIndices)
+//			+ "\nP0 C1:" + Arrays.toString(partials[0][nodeIndex1])
+//			+ "\nP0 C2:" + Arrays.toString(partials[0][nodeIndex2])
+//			+ "\nP0 N3:" + Arrays.toString(partials[0][nodeIndex3])
+//			+ "\nP1 C1:" + Arrays.toString(partials[1][nodeIndex1])
+//			+ "\nP1 C2:" + Arrays.toString(partials[1][nodeIndex2])
+//			+ "\nP1 N3:" + Arrays.toString(partials[1][nodeIndex3]) + "\n"
+//			);
+//        }
+//        
         if (useScaling) {
             scalePartials(nodeIndex3);
         }

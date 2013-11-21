@@ -26,6 +26,7 @@ import dr.evomodel.branchratemodel.StrictClockBranchRates;
 import dr.evomodel.coalescent.CoalescentLikelihood;
 import dr.evomodel.coalescent.ConstantPopulationModel;
 import dr.evomodel.sitemodel.GammaSiteModel;
+import dr.evomodel.sitemodel.SiteModel;
 import dr.evomodel.substmodel.FrequencyModel;
 import dr.evomodel.substmodel.HKY;
 import dr.evomodel.tree.TreeLogger;
@@ -40,6 +41,7 @@ import dr.inference.mcmc.MCMC;
 import dr.inference.mcmc.MCMCOptions;
 import dr.inference.model.CompoundLikelihood;
 import dr.inference.model.Likelihood;
+import dr.inference.model.Model;
 import dr.inference.model.OneOnXPrior;
 import dr.inference.model.Parameter;
 import dr.inference.operators.CoercionMode;
@@ -62,8 +64,8 @@ public class MainMCMCTest {
 
 		String dataDir = "/home/sw167/workspaceSrp/ABI/unittest/testData/";
 		int runIndex = 1;
-		int totalSamples = 1;
-		int logInterval = 100000;
+		int totalSamples = 2;
+		int logInterval = 1;
 		int noOfTrueHaplotype = 7;
 		int noOfRecoveredHaplotype=7;
 		String hapRunIndex = "H"+noOfTrueHaplotype+"_"+runIndex;
@@ -114,14 +116,14 @@ public class MainMCMCTest {
 
 		// Operators
 		OperatorSchedule schedule = new SimpleOperatorSchedule();
-		MCMCSetupHelperSpectrum.defalutSpectrumOperators(schedule, spectrumModel, freqs, kappa);
-		MCMCSetupHelperSpectrum.defalutTreeOperators(schedule, treeModel);
+		MCMCSetupHelperSpectrum.defalutSpectrumOperators(schedule, spectrumModel);//, freqs, kappa);
+//		MCMCSetupHelperSpectrum.defalutTreeOperators(schedule, treeModel);
 
 		// MCLogger
 		MCLogger[] loggers = new MCLogger[1];
 		// log tracer
 		loggers[0] = new MCLogger(new TabDelimitedFormatter(System.out), logInterval, true, logInterval*2);
-		MCMCSetupHelper.addToLogger(loggers[1],
+		MCMCSetupHelper.addToLogger(loggers[0],
 				posterior, prior, likelihood, shortReadLikelihood,
 				kappa
 				);
@@ -140,7 +142,7 @@ public class MainMCMCTest {
 		
 		///////////////////////////////////////////////////////////
 		
-		TreeModel newTreeModel = new TreeModel(treeModel);
+		TreeModel newTreeModel  = new TreeModel(treeModel);
 		
 		SpectrumAlignmentModel newSpectrumModel = SpectrumAlignmentModel.duplicateSpectrumAlignmentModel(spectrumModel);
 		ShortReadsSpectrumLikelihood newSrpLikelihood = new ShortReadsSpectrumLikelihood(newSpectrumModel);
@@ -173,34 +175,60 @@ public class MainMCMCTest {
 		Parameter newKappa = new Parameter.Default(HKYParser.KAPPA, kappa.getParameterValue(0), 0, 100.0);
 
 		// Sub model
-		FrequencyModel f = new FrequencyModel(Nucleotides.INSTANCE, freqs);
-		HKY hky = new HKY(kappa, f);
-
+		FrequencyModel f = new FrequencyModel(Nucleotides.INSTANCE, newFreqs);
+		HKY hky = new HKY(newKappa, f);
+		System.out.println(Arrays.toString(f.getFrequencies()));
 		// siteModel
 		GammaSiteModel newSiteModel = new GammaSiteModel(hky);
 		Parameter mu = new Parameter.Default(
 				GammaSiteModelParser.MUTATION_RATE, 1, 0, Double.POSITIVE_INFINITY);
 		newSiteModel.setMutationRateParameter(mu);
 		// treeLikelihood
+		treeLikelihood.makeDirty();
+		
+		System.out.println(treeLikelihood.getLogLikelihood());
+		treeLikelihood = new SpectrumTreeLikelihood(
+				newSpectrumModel, newTreeModel, newSiteModel, newBranchRateModel, 
+				false, false, true, false, false);
+		System.out.println(treeLikelihood.getLogLikelihood());
+		for (int i = 0; i < treeLikelihood.getModelCount(); i++) {
+			Model model = treeLikelihood.getModel(i);
+			System.out.println(model.getModelName());
+			if(model.getModelName().equals("siteModel")){
+				newSiteModel = (GammaSiteModel) model;
+				System.out.println(Arrays.toString(newSiteModel.getFrequencyModel()
+						.getFrequencies()));
+			}
+			else if(model.getModelName().equals("treeModel")){
+				System.out.println(newTreeModel.toString());
+				newTreeModel = (TreeModel) model;
+				System.out.println(newTreeModel.toString());
+				
+			}
+			else if(model.getModelName().equals("strictClockBranchRates")){
+				System.out.println(newBranchRateModel.getVariable(0));
+				newBranchRateModel = (StrictClockBranchRates) model;
+				System.out.println(newBranchRateModel.getVariable(0));
+			}
+			else if(model.getModelName().equals("SpectrumModel")){
+				newSpectrumModel = SpectrumAlignmentModel.duplicateSpectrumAlignmentModel((SpectrumAlignmentModel) model);
+			}
+			else if(model.getModelName().equals("frequencyModel")){
+				f = (FrequencyModel) model;
+				System.out.println(Arrays.toString(f.getFrequencies()));
+			}
+			
+		}
+		SpectrumAlignmentModel.compareTwoSpectrumModel(
+				spectrumModel, newSpectrumModel);
 		SpectrumTreeLikelihood newTreeLikelihood = new SpectrumTreeLikelihood(
 				newSpectrumModel, newTreeModel, newSiteModel, newBranchRateModel, 
 				false, false, true, false, false);
+		System.out.println(newTreeLikelihood.getLogLikelihood());
 		///////////////////////////////////////////////////////////////////////
-		
-		
-		// CompoundLikelihood
-//		HashMap<String, Likelihood> compoundlikelihoods = MCMCSetupHelper.setupCompoundLikelihood(
-//				popSize, kappa, coalescent, treeLikelihood, srpLikelihood);
-//		Likelihood prior = compoundlikelihoods.get(CompoundLikelihoodParser.PRIOR);
-//		Likelihood likelihood = compoundlikelihoods.get(CompoundLikelihoodParser.LIKELIHOOD);
-//		Likelihood shortReadLikelihood = compoundlikelihoods.get(ShortReadsSpectrumLikelihood.SHORT_READ_LIKELIHOOD);
-//		Likelihood posterior = compoundlikelihoods.get(CompoundLikelihoodParser.POSTERIOR);
 
 		
 		
-		// CompoundLikelihood
-		HashMap<String, Likelihood> compoundLikelihoods = new HashMap<String, Likelihood>(4);
-	
 		List<Likelihood> likelihoods = new ArrayList<Likelihood>();
 	
 		// Prior
@@ -208,29 +236,27 @@ public class MainMCMCTest {
 		oneOnX.addData(popSize);
 	
 		DistributionLikelihood logNormalLikelihood = new DistributionLikelihood(
-				new LogNormalDistribution(1.0, 1.25), 0); // meanInRealSpace="false"
-		logNormalLikelihood.addData(newKappa);
+				new LogNormalDistribution(1.0, 1.25), 0); 
+		logNormalLikelihood.addData(kappa);
 	
 		likelihoods.add(oneOnX);
 		likelihoods.add(logNormalLikelihood);
 		likelihoods.add(coalescent);
+
 		Likelihood newPrior = new CompoundLikelihood(0, likelihoods);
 		newPrior.setId(CompoundLikelihoodParser.PRIOR);
-		compoundLikelihoods.put(CompoundLikelihoodParser.PRIOR, newPrior);
 	
 		// Likelihood
 		likelihoods.clear();
 		likelihoods.add(newTreeLikelihood);
 		Likelihood newLikelihood = new CompoundLikelihood(-1, likelihoods);
 		newLikelihood.setId(CompoundLikelihoodParser.LIKELIHOOD);
-		compoundLikelihoods.put(CompoundLikelihoodParser.LIKELIHOOD, newLikelihood);
 	
 		// ShortReadLikelihood
 		likelihoods.clear();
 		likelihoods.add(newSrpLikelihood);
 		Likelihood newShortReadlikelihood = new CompoundLikelihood(-1, likelihoods);
 		newShortReadlikelihood.setId(ShortReadsSpectrumLikelihood.SHORT_READ_LIKELIHOOD);
-		compoundLikelihoods.put(ShortReadsSpectrumLikelihood.SHORT_READ_LIKELIHOOD, newShortReadlikelihood);
 	
 		// Posterior
 		likelihoods.clear();
@@ -239,10 +265,14 @@ public class MainMCMCTest {
 		likelihoods.add(newSrpLikelihood);
 		Likelihood newPosterior = new CompoundLikelihood(0, likelihoods);
 		newPosterior.setId(CompoundLikelihoodParser.POSTERIOR);
-		compoundLikelihoods.put(CompoundLikelihoodParser.POSTERIOR, newPosterior);
 	
-		assertEquals(prior.getLogLikelihood(), newPosterior.getLogLikelihood(), 0);
+		assertEquals(prior.getLogLikelihood(), newPrior.getLogLikelihood(), 0);
+		
+		assertEquals(likelihood.getLogLikelihood(), treeLikelihood.getLogLikelihood(), 0);
+		assertEquals(newLikelihood.getLogLikelihood(), newTreeLikelihood.getLogLikelihood(), 0);
+		
 		assertEquals(likelihood.getLogLikelihood(), newLikelihood.getLogLikelihood(), 0);
+		assertEquals(treeLikelihood.getLogLikelihood(), newTreeLikelihood.getLogLikelihood(), 0);
 		assertEquals(srpLikelihood.getLogLikelihood(), newShortReadlikelihood.getLogLikelihood(), 0);
 		assertEquals(posterior.getLogLikelihood(), newPosterior.getLogLikelihood(), 0);
 		System.out.println("==============");

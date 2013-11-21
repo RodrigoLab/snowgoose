@@ -15,7 +15,7 @@ import dr.util.Identifiable;
 
 //public class Spectrum implements Identifiable, Attributable{// extends AbstractModel{
 public class Spectrum extends AbstractModel implements Attributable {
-//TODO should be a model as well?
+
 
 
 	private static final long serialVersionUID = -728370884996776301L;
@@ -143,6 +143,7 @@ public class Spectrum extends AbstractModel implements Attributable {
 	public int getLength(){
 		return spectrum.size();
 	}
+	
 	@Deprecated
 	public void setFrequencyAt(int site, int state, double value) {
 		getSpectra(site).setFrequency(state, value);

@@ -1,6 +1,9 @@
 package srp.spectrum;
 
+import java.util.Arrays;
+
 import dr.inference.model.Parameter;
+import dr.math.MathUtils;
 
 //public class Spectra implements Parameter{
 public class SpectraParameter extends Parameter.Default{
@@ -9,6 +12,19 @@ public class SpectraParameter extends Parameter.Default{
 	
 	public SpectraParameter(){
 		this(EQUAL_FREQ);
+//		double[] freq = new double[4];
+//		for (int i = 0; i < freq.length; i++) {
+//			freq[i] = MathUtils.nextInt(10);
+//		}
+//		double sum = getSumOfFrequencies(freq);
+//		for (int i = 0; i < freq.length; i++) {
+//			freq[i] /= sum;
+//		}
+//		System.out.println(Arrays.toString(freq));
+////		super(freq);
+//		setFrequenciesQuietly(freq);
+//		addBounds(new DefaultBounds(1.0, 0.0, getDimension()));
+		
 	}
 
     public SpectraParameter(double[] frequencies) {
@@ -21,14 +37,14 @@ public class SpectraParameter extends Parameter.Default{
     		throw new IllegalArgumentException("Frequencies should have 4 elements, frequencies.length= "+getDimension());
     	}
     	//TODO make sure it's ON!!!
-//        if (Math.abs(sum - 1.0) > 1e-8) {
-//            throw new IllegalArgumentException("Frequencies do not sum to 1, they sum to " + sum);
-//        }
-//    	
+        if (Math.abs(sum - 1.0) > 1e-8) {
+            throw new IllegalArgumentException("Frequencies do not sum to 1, they sum to " + sum);
+        }
+    	
 		addBounds(new DefaultBounds(1.0, 0.0, getDimension()));
-//		if(!isWithinBounds()){
-//			throw new IllegalArgumentException("Frequencies out of bounds 0 < f < 1\t"+ Arrays.toString(frequencies)); 
-//		}
+		if(!isWithinBounds()){
+			throw new IllegalArgumentException("Frequencies out of bounds 0 < f < 1\t"+ Arrays.toString(frequencies)); 
+		}
 
     }
 
@@ -40,9 +56,7 @@ public class SpectraParameter extends Parameter.Default{
         return total;
     }
 
-    @Deprecated
     public void setFrequency(int i, double value) {
-    	System.err.println("setFrequency in SpectraParameter "+i +"\t"+ value);
     	setParameterValue(i, value);
     }
     

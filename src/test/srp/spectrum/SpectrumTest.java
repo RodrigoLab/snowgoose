@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import srp.spectrum.SpectraParameter;
 import srp.spectrum.Spectrum;
 
 public class SpectrumTest {
@@ -53,6 +54,7 @@ public class SpectrumTest {
 	@Test
 		public void testResetFrequencies() throws Exception {
 			Spectrum spectrum = new Spectrum(5);
+//			SpectraParameter spectra = spectrum.getSpectra(0);
 			for (int i = 0; i < 4; i++) {
 				spectrum.setFrequencyAt(i, i, (i+1)/10.0);
 			}

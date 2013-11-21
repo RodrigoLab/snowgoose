@@ -11,7 +11,8 @@ import org.junit.runners.Suite.SuiteClasses;
 	test.srp.haplotypes.AAllTestsHaplotypes.class,
 	test.srp.haplotypes.operator.AAllTestsHaplotyesOperator.class,
 	test.srp.likelihood.AllTestsLikelihood.class,
-	
+	test.srp.spectrum.AAllTestsSpectrum.class,
+	test.srp.spectrum.likelihood.AllTestsSpectrumLikelihood.class,
 	})
 public class AllTests {
 

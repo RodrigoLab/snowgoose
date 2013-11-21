@@ -42,8 +42,8 @@ public class MainMCMCSpectrumFull {
 
 		String dataDir = "/home/sw167/workspaceSrp/ABI/unittest/testData/";
 		int runIndex = 1;
-		int totalSamples = 1;
-		int logInterval = 100000;
+		int totalSamples = 100;
+		int logInterval = 10000;
 		int noOfTrueHaplotype = 7;
 		int noOfRecoveredHaplotype=7;
 		

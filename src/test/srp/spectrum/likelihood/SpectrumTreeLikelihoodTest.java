@@ -2,7 +2,9 @@ package test.srp.spectrum.likelihood;
 
 import static org.junit.Assert.*;
 
+import java.io.File;
 import java.util.Arrays;
+import java.util.HashMap;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.math3.stat.StatUtils;
@@ -13,10 +15,13 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import srp.core.MCMCSetupHelper;
+import srp.core.MCMCSetupHelperSpectrum;
 import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.AlignmentUtils;
+import srp.spectrum.SpectraParameter;
 import srp.spectrum.Spectrum;
 import srp.spectrum.SpectrumAlignmentModel;
+import srp.spectrum.likelihood.ShortReadsSpectrumLikelihood;
 import srp.spectrum.likelihood.SpectrumTreeLikelihood;
 import srp.spectrum.operator.SingleSpectrumDeltaExchangeOperator;
 
@@ -30,6 +35,7 @@ import dr.evolution.tree.SimpleTree;
 import dr.evolution.tree.Tree;
 import dr.evolution.util.Taxon;
 import dr.evolution.util.Units;
+import dr.evomodel.branchratemodel.StrictClockBranchRates;
 import dr.evomodel.sitemodel.GammaSiteModel;
 import dr.evomodel.sitemodel.SiteModel;
 import dr.evomodel.substmodel.FrequencyModel;
@@ -39,12 +45,20 @@ import dr.evomodel.treelikelihood.LikelihoodCore;
 import dr.evomodel.treelikelihood.TreeLikelihood;
 import dr.evomodelxml.sitemodel.GammaSiteModelParser;
 import dr.evomodelxml.substmodel.HKYParser;
+import dr.inference.loggers.MCLogger;
+import dr.inference.loggers.TabDelimitedFormatter;
+import dr.inference.mcmc.MCMC;
+import dr.inference.mcmc.MCMCOptions;
+import dr.inference.model.Likelihood;
 import dr.inference.model.Parameter;
 import dr.inference.operators.DeltaExchangeOperator;
 import dr.inference.operators.MCMCOperator;
 import dr.inference.operators.OperatorFailedException;
+import dr.inference.operators.OperatorSchedule;
 import dr.inference.operators.SimpleMCMCOperator;
+import dr.inference.operators.SimpleOperatorSchedule;
 import dr.inference.operators.UpDownOperator;
+import dr.inferencexml.model.CompoundLikelihoodParser;
 import dr.math.MathUtils;
 
 public class SpectrumTreeLikelihoodTest {
@@ -162,12 +176,27 @@ public class SpectrumTreeLikelihoodTest {
 //				[0.9802314196914651, 1.096410868086927E-5, 1.096410868086935E-5, 1.096410868086927E-5]	
 //						[1.0964108663326694E-5, 0.9802314196862197, 1.0964108663326694E-5, 1.0964108663326615E-5]
 
+		int stateCount = 4;
 		
-		Spectrum s = new Spectrum(aMap.getLength(), new double[]{0.9802314196914651, 1.096410868086927E-5, 1.096410868086935E-5, 1.096410868086927E-5});
+		double[] node1 = new double[]{0.9802314196914651, 1.096410868086927E-5, 1.096410868086935E-5, 1.096410868086927E-5};
+		Spectrum s = new Spectrum(aMap.getLength());
+		for (int i = 0; i < s.getLength(); i++) {
+			SpectraParameter spectra = s.getSpectra(i); 
+			for (int j = 0; j < stateCount; j++) {
+				spectra.setFrequency(j, node1[j]);
+			}
+		}
 		s.setTaxon(taxa[0]);
 		spectrumModel.addSpectrum(s);
 		
-		s = new Spectrum(aMap.getLength(), new double[]{1.0964108663326694E-5, 0.9802314196862197, 1.0964108663326694E-5, 1.0964108663326615E-5});
+		s = new Spectrum(aMap.getLength());
+		double[] node2 = new double[]{1.0964108663326694E-5, 0.9802314196862197, 1.0964108663326694E-5, 1.0964108663326615E-5};
+		for (int i = 0; i < s.getLength(); i++) {
+			SpectraParameter spectra = s.getSpectra(i); 
+			for (int j = 0; j < stateCount; j++) {
+				spectra.setFrequency(j, node2[j]);
+			}
+		}
 		s.setTaxon(taxa[1]);
 		spectrumModel.addSpectrum(s);
 		
@@ -203,48 +232,211 @@ public class SpectrumTreeLikelihoodTest {
 	public void testUpdateSpectrum() {
 
 		SiteModel siteModel = MCMCSetupHelper.setupSiteModel();
-
-		Taxon[] taxa = new Taxon[4];
+		int taxaCount = 8;
+		Taxon[] taxa = new Taxon[taxaCount];
 		for (int i = 0; i < taxa.length; i++) {
 			taxa[i] = new Taxon("taxa_"+i);
 		}
 
 		TreeModel treeModel = createTreeModel(taxa, 0.01);
 		
-		String[] seqs = new String[] {"ACGTTGCA"};
+		String[] seqs = new String[] {"ACGTTTA"};
 			
 		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
 //		SimpleAlignment alignment = AlignmentUtils.createAlignment(seqs);
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 4);
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, taxaCount);
+		SpectrumTreeLikelihood spectrumTreeLikelihood = new SpectrumTreeLikelihood(spectrumModel, treeModel,
+				siteModel, null, false, false, true, false, false);
+
+		MCMCOperator op = new SingleSpectrumDeltaExchangeOperator(spectrumModel, 0.1, null);
+		double likelihood = spectrumTreeLikelihood.getLogLikelihood();
+		double expected = 0;
+		for (int i = 0; i < 1e4; i++) {
+			try {
+				spectrumTreeLikelihood.storeModelState();
+				
+				op.operate();
+				SpectrumAlignmentModel newSpectrumModel = SpectrumAlignmentModel.duplicateSpectrumAlignmentModel(spectrumModel);
+				SpectrumTreeLikelihood newSpectrumTreeLikelihood = new SpectrumTreeLikelihood(newSpectrumModel, treeModel,
+						siteModel, null, false, false, true, false, true);
+				expected = newSpectrumTreeLikelihood.getLogLikelihood();
+				likelihood = spectrumTreeLikelihood.getLogLikelihood();
+				assertEquals(expected, likelihood, 1e-10);
+				double rand = MathUtils.nextDouble();
+
+				if(rand>0.5){
+					op.accept(0);
+					spectrumTreeLikelihood.acceptModelState();
+				}
+				else{
+					op.reject();
+					spectrumTreeLikelihood.restoreModelState();
+				}
+
+			} catch (OperatorFailedException e){
+				op.reject();
+			} catch (AssertionError e){
+				System.out.println(i);
+				System.out.println(likelihood);
+				System.out.println(expected);
+				SpectrumTreeLikelihood newSpectrumTreeLikelihood = new SpectrumTreeLikelihood(
+						spectrumModel, treeModel, siteModel, null, false,
+						false, true, false, true);
+				
+				expected = newSpectrumTreeLikelihood.getLogLikelihood();
+				spectrumTreeLikelihood.makeDirty();
+				likelihood = spectrumTreeLikelihood.getLogLikelihood();
+				System.out.println(likelihood);
+				System.out.println(expected);
+				
+				for (int j = 0; j < taxaCount; j++) {
+					System.out.println(treeModel.getTaxon(j));
+				}
+				SpectrumAlignmentModel defaultSpecturmModer = new SpectrumAlignmentModel(aMap, taxaCount);
+				SpectrumAlignmentModel.compareTwoSpectrumModel(spectrumModel, defaultSpecturmModer);
+				
+				System.out.println(newSpectrumTreeLikelihood.diagnostic());
+				System.out.println( 
+						SpectrumTreeLikelihood.compareTwoModels(spectrumTreeLikelihood, newSpectrumTreeLikelihood) );
+				
+				System.out.println(spectrumTreeLikelihood.diagnostic());
+				System.exit(1);
+			}
+			
+		}
+	}
+
+	@Test
+	public void testUpdateSpectrumMCMC() {
+
+		SiteModel siteModel = MCMCSetupHelper.setupSiteModel();
+
+		int taxaCount = 8;
+		Taxon[] taxa = new Taxon[taxaCount];
+		for (int i = 0; i < taxa.length; i++) {
+			taxa[i] = new Taxon("taxa_"+i);
+		}
+
+		TreeModel treeModel = createTreeModel(taxa, 0.01);
+		
+		String[] seqs = new String[] {
+				"ACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCA"+
+				"ACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCA"+
+				"ACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCA"+
+				"ACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCA"+
+				"ACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCA"+
+				"ACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCA"+
+				"ACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCA"+
+				"ACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCA"+
+				"ACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCA"+
+				"ACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCA"		
+		};
+
+			
+		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
+//		SimpleAlignment alignment = AlignmentUtils.createAlignment(seqs);
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, taxaCount);
 		SpectrumTreeLikelihood spectrumTreeLikelihood = new SpectrumTreeLikelihood(spectrumModel, treeModel,
 				siteModel, null, false, false, true, false, false);
 
 		SimpleMCMCOperator op = new SingleSpectrumDeltaExchangeOperator(spectrumModel, 0.1, null);
 		double likelihood = spectrumTreeLikelihood.getLogLikelihood();
-		for (int i = 0; i < 1e4; i++) {
-			try {
-				spectrumTreeLikelihood.storeModelState();
-				
-				op.doOperation();
-				SpectrumAlignmentModel newSpectrumModel = SpectrumAlignmentModel.duplicateSpectrumAlignmentModel(spectrumModel);
-				SpectrumTreeLikelihood newSpectrumTreeLikelihood = new SpectrumTreeLikelihood(newSpectrumModel, treeModel,
-						siteModel, null, false, false, true, false, false);
-				double expected = newSpectrumTreeLikelihood.getLogLikelihood();
-				likelihood = spectrumTreeLikelihood.getLogLikelihood();
-				assertEquals(expected, likelihood, 0);
-				double rand = MathUtils.nextDouble();
+//		for (int i = 0; i < 1e4; i++) {
+//			try {
+//				spectrumTreeLikelihood.storeModelState();
+//				
+//				op.doOperation();
+//				double newLikelihood = spectrumTreeLikelihood.getLogLikelihood();
+//				double rand = newLikelihood-likelihood;
+//
+//				if(rand>0.5){
+//					spectrumTreeLikelihood.acceptModelState();
+//					likelihood = newLikelihood;
+//				}
+//				else{
+//					spectrumTreeLikelihood.restoreModelState();
+//				}
+//
+//			} catch (OperatorFailedException e){
+//			}
+//			
+//		}
+//		likelihood = spectrumTreeLikelihood.getLogLikelihood();
+//		SpectrumAlignmentModel newSpectrumModel = SpectrumAlignmentModel.duplicateSpectrumAlignmentModel(spectrumModel);
+//		SpectrumTreeLikelihood newSpectrumTreeLikelihood = new SpectrumTreeLikelihood(newSpectrumModel, treeModel,
+//				siteModel, null, false, false, true, false, false);
+//		double expected = newSpectrumTreeLikelihood.getLogLikelihood();
+//		likelihood = spectrumTreeLikelihood.getLogLikelihood();
+//		assertEquals(expected, likelihood, 0);
 
-				if(rand>0.5){
-					spectrumTreeLikelihood.acceptModelState();
-				}
-				else{
-					spectrumTreeLikelihood.restoreModelState();
-				}
+//		
+//		ShortReadsSpectrumLikelihood srpLikelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
+//
+//		// CompoundLikelihood
+//		HashMap<String, Likelihood> compoundlikelihoods = MCMCSetupHelper.setupCompoundLikelihood(
+//				popSize, kappa, coalescent, treeLikelihood, srpLikelihood);
+//		Likelihood prior = compoundlikelihoods.get(CompoundLikelihoodParser.PRIOR);
+//		Likelihood likelihood = compoundlikelihoods.get(CompoundLikelihoodParser.LIKELIHOOD);
+//		Likelihood shortReadLikelihood = compoundlikelihoods.get(ShortReadsSpectrumLikelihood.SHORT_READ_LIKELIHOOD);
+//		Likelihood posterior = compoundlikelihoods.get(CompoundLikelihoodParser.POSTERIOR);
+//
+		// Operators
+		OperatorSchedule schedule = new SimpleOperatorSchedule();
+		MCMCSetupHelperSpectrum.defalutSpectrumOperators(schedule, spectrumModel);//, freqs, kappa);
+//		MCMCSetupHelperSpectrum.defalutTreeOperators(schedule, treeModel);
 
-			} catch (OperatorFailedException e){
-			}
-			
-		}
+		// MCLogger
+//		MCLogger[] loggers = new MCLogger[1];
+//		// log tracer
+//		loggers[0] = new MCLogger(new TabDelimitedFormatter(System.out), logInterval, true, logInterval*2);
+//		MCMCSetupHelper.addToLogger(loggers[0],
+//				posterior, prior, likelihood, shortReadLikelihood,
+//				kappa
+//				);
+		
+		// MCMC
+		MCMCOptions options = MCMCSetupHelper.setMCMCOptions(10000,1);
+		
+		MCMC mcmc = new MCMC("mcmc1");
+//		mcmc.setShowOperatorAnalysis(true);
+//		mcmc.setOperatorAnalysisFile(new File(operatorAnalysisFile));
+		
+		mcmc.init(options, spectrumTreeLikelihood, schedule, null);
+		mcmc.run();
+		
+		likelihood = spectrumTreeLikelihood.getLogLikelihood();
+		SpectrumAlignmentModel newSpectrumModel = SpectrumAlignmentModel.duplicateSpectrumAlignmentModel(spectrumModel);
+		SpectrumTreeLikelihood newSpectrumTreeLikelihood = new SpectrumTreeLikelihood(newSpectrumModel, treeModel,
+				siteModel, null, false, false, true, false, false);
+		double expected = newSpectrumTreeLikelihood.getLogLikelihood();
+		likelihood = spectrumTreeLikelihood.getLogLikelihood();
+//		assertEquals(expected, likelihood, 0);
+		
+
+		// clock model
+		Parameter rateParameter = new Parameter.Default(StrictClockBranchRates.RATE, 1e-5, 0, 1);
+		StrictClockBranchRates branchRateModel = new StrictClockBranchRates(rateParameter);
+	
+		Parameter freqs = new Parameter.Default("frequency", new double[]{0.25, 0.25, 0.25, 0.25});
+		Parameter kappa = new Parameter.Default(HKYParser.KAPPA, 1.0, 0, 100.0);
+
+		// Sub model
+		FrequencyModel f = new FrequencyModel(Nucleotides.INSTANCE, freqs);
+		HKY hky = new HKY(kappa, f);
+
+		// siteModel
+		GammaSiteModel AsiteModel = new GammaSiteModel(hky);
+		Parameter mu = new Parameter.Default(
+				GammaSiteModelParser.MUTATION_RATE, 1, 0, Double.POSITIVE_INFINITY);
+		AsiteModel.setMutationRateParameter(mu);
+		
+		SpectrumTreeLikelihood anewSpectrumTreeLikelihood = new SpectrumTreeLikelihood(newSpectrumModel, treeModel,
+				AsiteModel, null, false, false, true, false, false);
+		double aexpected = newSpectrumTreeLikelihood.getLogLikelihood();
+		likelihood = anewSpectrumTreeLikelihood.getLogLikelihood();
+		assertEquals(aexpected, likelihood, 0);
+		
+
 	}
 
 	@Test
@@ -252,7 +444,8 @@ public class SpectrumTreeLikelihoodTest {
 
 		SiteModel siteModel = MCMCSetupHelper.setupSiteModel();
 
-		Taxon[] taxa = new Taxon[4];
+		int taxaCount = 8;
+		Taxon[] taxa = new Taxon[taxaCount];
 		for (int i = 0; i < taxa.length; i++) {
 			taxa[i] = new Taxon("taxa_"+i);
 		}
@@ -263,37 +456,40 @@ public class SpectrumTreeLikelihoodTest {
 			
 		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
 //		SimpleAlignment alignment = AlignmentUtils.createAlignment(seqs);
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 4);
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, taxaCount);
 		SpectrumTreeLikelihood spectrumTreeLikelihood = new SpectrumTreeLikelihood(spectrumModel, treeModel,
 				siteModel, null, false, false, true, false, false);
 
-		SimpleMCMCOperator op = new SingleSpectrumDeltaExchangeOperator(spectrumModel, 0.1, null);
+		MCMCOperator op = new SingleSpectrumDeltaExchangeOperator(spectrumModel, 0.1, null);
 		double likelihood = spectrumTreeLikelihood.getLogLikelihood();
 		
 		//Accept only
 		for (int i = 0; i < 1e3; i++) {
 			try {
 				spectrumTreeLikelihood.storeModelState();
-				op.doOperation();
+				op.operate();
 				SpectrumAlignmentModel newSpectrumModel = SpectrumAlignmentModel.duplicateSpectrumAlignmentModel(spectrumModel);
 				SpectrumTreeLikelihood newSpectrumTreeLikelihood = new SpectrumTreeLikelihood(newSpectrumModel, treeModel,
 						siteModel, null, false, false, true, false, false);
 				double expected = newSpectrumTreeLikelihood.getLogLikelihood();
 				likelihood = spectrumTreeLikelihood.getLogLikelihood();
 				assertEquals(expected, likelihood, 0);
+				op.accept(0);
 				spectrumTreeLikelihood.acceptModelState();
 			}
 			catch(OperatorFailedException e){
+				op.reject();
 			}
 		}
 	}
 
 	@Test
-	public void testUpdateSpectrumRestore() {
+	public void testUpdateSpectrumRestore() throws OperatorFailedException {
 
 		SiteModel siteModel = MCMCSetupHelper.setupSiteModel();
 
-		Taxon[] taxa = new Taxon[4];
+		int taxaCount = 8;
+		Taxon[] taxa = new Taxon[taxaCount];
 		for (int i = 0; i < taxa.length; i++) {
 			taxa[i] = new Taxon("taxa_"+i);
 		}
@@ -304,7 +500,7 @@ public class SpectrumTreeLikelihoodTest {
 			
 		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
 //		SimpleAlignment alignment = AlignmentUtils.createAlignment(seqs);
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 4);
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, taxaCount);
 		SpectrumTreeLikelihood spectrumTreeLikelihood = new SpectrumTreeLikelihood(spectrumModel, treeModel,
 				siteModel, null, false, false, true, false, false);
 
@@ -391,6 +587,45 @@ public class SpectrumTreeLikelihoodTest {
 	}
 	
 	private static TreeModel createTreeModel(Taxon[] taxa, double height) {
+		
+		int length = taxa.length;
+		if(length == 2){
+			return createTreeModel2Taxa(taxa, height);
+		}
+		else if(length == 4){
+			return createTreeModel4Taxa(taxa, height);
+		}
+		else if(length == 8){
+			return createTreeModel8Taxa(taxa, height);
+		}
+		return null;
+	}
+	
+	private static TreeModel createTreeModel2Taxa(Taxon[] taxa, double height) {
+
+		SimpleNode[] nodes = new SimpleNode[taxa.length*2-1];
+		for (int n = 0; n < nodes.length; n++) {
+			nodes[n] = new SimpleNode();
+		}
+
+		for (int i = 0; i < taxa.length; i++) {
+			nodes[i].setTaxon(taxa[i]);
+		}
+		
+		nodes[2].setHeight(height);
+		nodes[2].addChild(nodes[0]);
+		nodes[2].addChild(nodes[1]);
+
+		SimpleNode root = new SimpleNode();
+		root = nodes[2];
+
+		Tree tree = new SimpleTree(root);
+		tree.setUnits(Units.Type.YEARS);
+
+		return new TreeModel(tree); // treeModel
+	}
+
+	private static TreeModel createTreeModel4Taxa(Taxon[] taxa, double height) {
 
 		SimpleNode[] nodes = new SimpleNode[taxa.length*2-1];
 		for (int n = 0; n < nodes.length; n++) {
@@ -409,33 +644,20 @@ public class SpectrumTreeLikelihoodTest {
 		nodes[5].addChild(nodes[2]);
 		nodes[5].addChild(nodes[3]);
 
-//		nodes[5].setTaxon(taxa[3]); // gorilla
-//
 		nodes[6].setHeight(height*2);
 		nodes[6].addChild(nodes[4]);
 		nodes[6].addChild(nodes[5]);
-//
-//		nodes[7].setTaxon(taxa[4]); // orangutan
-//
-//		nodes[8].setHeight(0.069125);
-//		nodes[8].addChild(nodes[6]);
-//		nodes[8].addChild(nodes[7]);
-
-//		nodes[9].setTaxon(taxa[5]); // siamang
 
 		SimpleNode root = new SimpleNode();
 		root = nodes[6];
-//		root.setHeight(0.02);
-//		root.addChild(nodes[0]);
-//		root.addChild(nodes[3]);
-
 		Tree tree = new SimpleTree(root);
 		tree.setUnits(Units.Type.YEARS);
 
 		return new TreeModel(tree); // treeModel
 	}
 
-	private static TreeModel createTreeModel2Taxa(Taxon[] taxa, double height) {
+	
+	private static TreeModel createTreeModel8Taxa(Taxon[] taxa, double height) {
 
 		SimpleNode[] nodes = new SimpleNode[taxa.length*2-1];
 		for (int n = 0; n < nodes.length; n++) {
@@ -446,12 +668,40 @@ public class SpectrumTreeLikelihoodTest {
 			nodes[i].setTaxon(taxa[i]);
 		}
 		
-		nodes[2].setHeight(height);
-		nodes[2].addChild(nodes[0]);
-		nodes[2].addChild(nodes[1]);
+		nodes[8].setHeight(height);
+		nodes[8].addChild(nodes[0]);
+		nodes[8].addChild(nodes[1]);
 
+		nodes[9].setHeight(height*2);
+		nodes[9].addChild(nodes[2]);
+		nodes[9].addChild(nodes[3]);
+
+		nodes[10].setHeight(height*3);
+		nodes[10].addChild(nodes[8]);
+		nodes[10].addChild(nodes[9]);
+
+		
+		
+		nodes[11].setHeight(height*1);
+		nodes[11].addChild(nodes[4]);
+		nodes[11].addChild(nodes[5]);
+
+		nodes[12].setHeight(height*2);
+		nodes[12].addChild(nodes[6]);
+		nodes[12].addChild(nodes[11]);
+
+		nodes[13].setHeight(height*3);
+		nodes[13].addChild(nodes[7]);
+		nodes[13].addChild(nodes[12]);
+
+		nodes[14].setHeight(height*4);
+		nodes[14].addChild(nodes[10]);
+		nodes[14].addChild(nodes[13]);
+
+		
+		
 		SimpleNode root = new SimpleNode();
-		root = nodes[2];
+		root = nodes[14];
 //		root.setHeight(0.02);
 //		root.addChild(nodes[0]);
 //		root.addChild(nodes[3]);

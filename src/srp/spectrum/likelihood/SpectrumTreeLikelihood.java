@@ -31,6 +31,8 @@ import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 import srp.spectrum.SpectrumAlignmentModel;
 import srp.spectrum.SpectrumOperationRecord;
 
@@ -191,7 +193,8 @@ public class SpectrumTreeLikelihood extends AbstractSpectrumTreeLikelihood {
      * Handles model changed events from the submodels.
      */
     protected void handleModelChangedEvent(Model model, Object object, int index) {
-
+//    	System.out.println(model.getModelName());
+//    	System.out.println(object.getClass());
         if (model == treeModel) {
             if (object instanceof TreeModel.TreeChangedEvent) {
 
@@ -244,6 +247,7 @@ public class SpectrumTreeLikelihood extends AbstractSpectrumTreeLikelihood {
 			String taxonId = spectrumModel.getTaxonId(spectrumIndex);
             updateExternalNodeIndex = treeModel.getTaxonIndex(taxonId );
 //            int index = spectrumModel.getTaxonIndex(id);
+
             if (updateExternalNodeIndex == -1) {
             	try {
 					throw new TaxonList.MissingTaxonException("Taxon, " + taxonId + ", in tree, " + treeModel.getId() +
@@ -252,20 +256,23 @@ public class SpectrumTreeLikelihood extends AbstractSpectrumTreeLikelihood {
 					e.printStackTrace();
 				}
             }
-            
-
+//            updateAllNodes();
             double[] partials = new double[patternCount * stateCount];
             int v = 0;
             //TODO only update one part of the array
+//            System.out.println("Update Node: "+updateExternalNodeIndex +"\tSpectrumIndex: "+ spectrumIndex);
             for (int i = 0; i < patternCount; i++) {
-                double[] frequencies = spectrumModel.getSpecturmFrequencies(updateExternalNodeIndex, i);
+                double[] frequencies = spectrumModel.getSpecturmFrequencies(spectrumIndex, i);
                 //TODO use siteIndex here
+//                System.out.println(Arrays.toString(frequencies));
                 for (int j = 0; j < stateCount; j++) {
                 	partials[v] = frequencies[j];
                     v++;
                 }
             }
-
+//            updateAllNodes();
+//            updateAllPatterns();
+//            makeDirty();
             likelihoodCore.setNodePartialsForUpdate(updateExternalNodeIndex);
             likelihoodCore.setCurrentNodePartials(updateExternalNodeIndex, partials);
 
@@ -291,11 +298,19 @@ public class SpectrumTreeLikelihood extends AbstractSpectrumTreeLikelihood {
      * Stores the additional state other than model components
      */
     @Override
+	protected void acceptState() {
+    	SpectrumOperationRecord record = spectrumModel.getSpectrumOperationRecord();
+		int spectrumIndex = record.getSpectrumIndex();
+		int siteIndex = record.getSiteIndex();
+
+	}
+    @Override
 	protected void storeState() {
         if (storePartials) {
             likelihoodCore.storeState();
         }
         super.storeState();
+        
 
     }
 
@@ -333,7 +348,7 @@ public class SpectrumTreeLikelihood extends AbstractSpectrumTreeLikelihood {
 
         final NodeRef root = treeModel.getRoot();
         traverse(treeModel, root);
-
+        
         double logL = 0.0;
         double ascertainmentCorrection = getAscertainmentCorrection(patternLogLikelihoods);
         for (int i = 0; i < patternCount; i++) {
@@ -345,7 +360,7 @@ public class SpectrumTreeLikelihood extends AbstractSpectrumTreeLikelihood {
 
             // We probably had an underflow... turn on scaling
             likelihoodCore.setUseScaling(true);
-
+            
             // and try again...
             updateAllNodes();
             updateAllPatterns();
@@ -490,6 +505,7 @@ public class SpectrumTreeLikelihood extends AbstractSpectrumTreeLikelihood {
             }
         }
         else{
+        	
         	if(nodeNum == updateExternalNodeIndex){
         		update = true;
         	}
@@ -613,5 +629,60 @@ public class SpectrumTreeLikelihood extends AbstractSpectrumTreeLikelihood {
      * the LikelihoodCore
      */
     protected LikelihoodCore likelihoodCore;
-    
+ 
+    public String diagnostic(){
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("Diagnostic!\n");
+    	SpectrumOperationRecord record = spectrumModel.getSpectrumOperationRecord();
+		int spectrumIndex = record.getSpectrumIndex();
+		int siteIndex = record.getSiteIndex();
+//    	updateExternalNodeIndex = -1;
+//    	spectrumIndex -> taxonName -> indexOnTree
+		String taxonId = spectrumModel.getTaxonId(spectrumIndex);
+        updateExternalNodeIndex = treeModel.getTaxonIndex(taxonId );
+    	
+    	
+    	for (int i = 0; i < nodeCount; i++) {
+    		double[] outPartials = new double[stateCount*patternCount];
+    		likelihoodCore.getPartials(i, outPartials);
+    		sb.append("Node: "+i +"\t"+ Arrays.toString(outPartials)+"\n");
+		}
+		
+//		sb.append(spectrumIndex +"\t"+ siteIndex +"\tTreeNode:"+ updateExternalNodeIndex +"\n" );
+//		sb.append(taxonId +"\t"+ treeModel.getTaxonId(updateExternalNodeIndex) +"\n");
+//		spectrumModel.getSpecturmFrequencies(spectrumIndex, siteIndex);
+//		sb.append(Arrays.toString(outPartials));
+		
+		
+		sb.append("End diagnostic!\n");
+    	return sb.toString();
+    }
+
+	public static String compareTwoModels(
+			SpectrumTreeLikelihood spectrumTreeLikelihood,
+			SpectrumTreeLikelihood newSpectrumTreeLikelihood) {
+
+		StringBuilder sb = new StringBuilder();
+		sb.append(Arrays.toString(spectrumTreeLikelihood.getPatternLogLikelihoods()));
+		sb.append(Arrays.toString(newSpectrumTreeLikelihood.getPatternLogLikelihoods()));
+		
+		int nodeCount = spectrumTreeLikelihood.nodeCount;
+		int stateCount = 4;
+		int patternCount = spectrumTreeLikelihood.patternCount;
+		LikelihoodCore likelihoodCore = spectrumTreeLikelihood.getLikelihoodCore();
+		LikelihoodCore likelihoodCore2 = newSpectrumTreeLikelihood.getLikelihoodCore();
+		for (int i = 0; i < nodeCount; i++) {
+    		double[] outPartials = new double[stateCount*patternCount];
+    		double[] outPartials2 = new double[stateCount*patternCount];
+    		likelihoodCore.getPartials(i, outPartials);
+    		likelihoodCore2.getPartials(i, outPartials2);
+    		for (int j = 0; j < outPartials2.length; j++) {
+				if(outPartials[j]!=outPartials2[j]){
+					sb.append("node: "+i+" index: "+j +"\t"+ outPartials[j] +"\t"+ outPartials2[j]+"\n");
+				}
+			}
+//    		sb.append("Node: "+i +"\t"+ Arrays.toString(outPartials)+"\n");
+		}
+		return sb.toString();
+	}
 }
