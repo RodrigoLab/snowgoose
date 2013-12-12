@@ -1,4 +1,4 @@
-package test.srp.spectrum;
+package test;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -34,6 +34,7 @@ import dr.evomodel.tree.TreeModel;
 import dr.evomodelxml.coalescent.ConstantPopulationModelParser;
 import dr.evomodelxml.sitemodel.GammaSiteModelParser;
 import dr.evomodelxml.substmodel.HKYParser;
+import dr.evomodelxml.treelikelihood.TreeLikelihoodParser;
 import dr.inference.distribution.DistributionLikelihood;
 import dr.inference.loggers.MCLogger;
 import dr.inference.loggers.TabDelimitedFormatter;
@@ -56,7 +57,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-public class MainMCMCTest {
+public class CopyOfMainMCMCTest {
 
 	@Test
 	public void test() throws Exception{
@@ -64,7 +65,7 @@ public class MainMCMCTest {
 
 		String dataDir = "/home/sw167/workspaceSrp/ABI/unittest/testData/";
 		int runIndex = 1;
-		int totalSamples = 2;
+		int totalSamples = 10;
 		int logInterval = 1;
 		int noOfTrueHaplotype = 7;
 		int noOfRecoveredHaplotype=7;
@@ -97,11 +98,34 @@ public class MainMCMCTest {
 		coalescent.setId("coalescent");
 
 		// Simulate haplotypes, treeLikelihood
-		HashMap<String, Object> parameterList = MCMCSetupHelperSpectrum.setupSpectrumTreeLikelihoodSpectrumModel(treeModel, spectrumModel);
-		Parameter kappa = (Parameter) parameterList.get("kappa");
-		Parameter freqs = (Parameter) parameterList.get("freqs");
-		StrictClockBranchRates branchRateModel = (StrictClockBranchRates) parameterList.get("branchRateModel");
-		SpectrumTreeLikelihood treeLikelihood = (SpectrumTreeLikelihood) parameterList.get("treeLikelihood");
+
+		// clock model
+		Parameter rateParameter = new Parameter.Default(StrictClockBranchRates.RATE, 1e-5, 0, 1);
+		StrictClockBranchRates branchRateModel = new StrictClockBranchRates(rateParameter);
+	
+		Parameter freqs = new Parameter.Default("frequency", new double[]{0.25, 0.25, 0.25, 0.25});
+		Parameter kappa = new Parameter.Default(HKYParser.KAPPA, 1.0, 0, 100.0);
+
+		// Sub model
+		FrequencyModel f = new FrequencyModel(Nucleotides.INSTANCE, freqs);
+		HKY hky = new HKY(kappa, f);
+
+		// siteModel
+		GammaSiteModel siteModel = new GammaSiteModel(hky);
+		Parameter mu = new Parameter.Default(
+				GammaSiteModelParser.MUTATION_RATE, 1, 0, Double.POSITIVE_INFINITY);
+		siteModel.setMutationRateParameter(mu);
+
+//		// Simulate halotypes
+//		if(errorRate>0){
+//			haplotypeModel.simulateSequence(errorRate, siteModel, hky, treeModel);
+//		}
+		
+		// treeLikelihood
+		SpectrumTreeLikelihood treeLikelihood = new SpectrumTreeLikelihood(
+				spectrumModel, treeModel, siteModel, branchRateModel, 
+				false, false, true, false, false);
+		treeLikelihood.setId(TreeLikelihoodParser.TREE_LIKELIHOOD);
 		
 		// ShortReadLikelihood
 		ShortReadsSpectrumLikelihood srpLikelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
@@ -135,62 +159,94 @@ public class MainMCMCTest {
 		mcmc.setShowOperatorAnalysis(true);
 		mcmc.setOperatorAnalysisFile(new File(operatorAnalysisFile));
 		
-		mcmc.init(options, posterior, schedule, loggers);
+		System.out.println(likelihood.getLogLikelihood());
+		mcmc.init(options, likelihood, schedule, loggers);
 		mcmc.run();
 		
 		System.out.println(mcmc.getTimer().toString());
 		
-		///////////////////////////////////////////////////////////
+		System.out.println(likelihood.getLogLikelihood());
 		
+		///////////////////////////////////////////////////////////
+	
+		
+		for (int i = 0; i < 10; i++) {
+			
+
+			TreeModel newTreeModel  = new TreeModel(treeModel);
+			
+			SpectrumAlignmentModel newSpectrumModel = SpectrumAlignmentModel.duplicateSpectrumAlignmentModel(spectrumModel);
+			ShortReadsSpectrumLikelihood newSrpLikelihood = new ShortReadsSpectrumLikelihood(newSpectrumModel);
+
+			// clock model
+			Parameter newRateParameter = new Parameter.Default(StrictClockBranchRates.RATE, 1e-5, 0, 1);
+			StrictClockBranchRates newBranchRateModel = new StrictClockBranchRates(newRateParameter);
+		
+			Parameter newFreqs = new Parameter.Default("frequency", freqs.getParameterValues());
+			Parameter newKappa = new Parameter.Default(HKYParser.KAPPA, kappa.getParameterValue(0), 0, 100.0);
+
+			// Sub model
+			FrequencyModel newFM = new FrequencyModel(Nucleotides.INSTANCE, newFreqs);
+			HKY newHky = new HKY(newKappa, newFM);
+			// siteModel
+			GammaSiteModel newSiteModel = new GammaSiteModel(newHky);
+			Parameter newMu = new Parameter.Default(
+					GammaSiteModelParser.MUTATION_RATE, 1, 0, Double.POSITIVE_INFINITY);
+			newSiteModel.setMutationRateParameter(newMu);
+			// treeLikelihood
+
+			
+			SpectrumTreeLikelihood atreeLikelihood = new SpectrumTreeLikelihood(
+					newSpectrumModel, newTreeModel, newSiteModel, newBranchRateModel, 
+					false, false, true, false, false);
+			System.out.println(atreeLikelihood.getLogLikelihood());
+	}
+		/////////////////////////////////////////////////////////
 		TreeModel newTreeModel  = new TreeModel(treeModel);
 		
 		SpectrumAlignmentModel newSpectrumModel = SpectrumAlignmentModel.duplicateSpectrumAlignmentModel(spectrumModel);
 		ShortReadsSpectrumLikelihood newSrpLikelihood = new ShortReadsSpectrumLikelihood(newSpectrumModel);
 
-		// coalescent
-//		Parameter popSize = new Parameter.Default(ConstantPopulationModelParser.POPULATION_SIZE, 3000.0, 100, 100000.0);
-//
-//		// Random treeModel
-//		ConstantPopulationModel popModel = new ConstantPopulationModel(popSize, Units.Type.YEARS);
-//		TreeModel treeModel = MCMCSetupHelper.setupRandomTreeModel(popModel, spectrumModel, Units.Type.YEARS);
-
-		// Coalescent likelihood
-//		CoalescentLikelihood coalescent = new CoalescentLikelihood(treeModel,null, new ArrayList<TaxonList>(), popModel);
-//		coalescent.setId("coalescent");
-
-		// Simulate haplotypes, treeLikelihood
-//		HashMap<String, Object> parameterList = MCMCSetupHelperSpectrum.setupSpectrumTreeLikelihoodSpectrumModel(treeModel, spectrumModel);
-//		Parameter kappa = (Parameter) parameterList.get("kappa");
-//		Parameter freqs = (Parameter) parameterList.get("freqs");
-//		StrictClockBranchRates branchRateModel = (StrictClockBranchRates) parameterList.get("branchRateModel");
-//		SpectrumTreeLikelihood treeLikelihood = (SpectrumTreeLikelihood) parameterList.get("treeLikelihood");
-
-		
-
 		// clock model
-		Parameter rateParameter = new Parameter.Default(StrictClockBranchRates.RATE, 1e-5, 0, 1);
-		StrictClockBranchRates newBranchRateModel = new StrictClockBranchRates(rateParameter);
+		Parameter newRateParameter = new Parameter.Default(StrictClockBranchRates.RATE, 1e-5, 0, 1);
+		StrictClockBranchRates newBranchRateModel = new StrictClockBranchRates(newRateParameter);
 	
 		Parameter newFreqs = new Parameter.Default("frequency", freqs.getParameterValues());
 		Parameter newKappa = new Parameter.Default(HKYParser.KAPPA, kappa.getParameterValue(0), 0, 100.0);
 
 		// Sub model
-		FrequencyModel f = new FrequencyModel(Nucleotides.INSTANCE, newFreqs);
-		HKY hky = new HKY(newKappa, f);
-		System.out.println(Arrays.toString(f.getFrequencies()));
+		FrequencyModel newFM = new FrequencyModel(Nucleotides.INSTANCE, newFreqs);
+		HKY newHky = new HKY(newKappa, newFM);
+		System.out.println(Arrays.toString(newFM.getFrequencies()));
 		// siteModel
-		GammaSiteModel newSiteModel = new GammaSiteModel(hky);
-		Parameter mu = new Parameter.Default(
+		GammaSiteModel newSiteModel = new GammaSiteModel(newHky);
+		Parameter newMu = new Parameter.Default(
 				GammaSiteModelParser.MUTATION_RATE, 1, 0, Double.POSITIVE_INFINITY);
-		newSiteModel.setMutationRateParameter(mu);
+		newSiteModel.setMutationRateParameter(newMu);
 		// treeLikelihood
-		treeLikelihood.makeDirty();
+
 		
-		System.out.println(treeLikelihood.getLogLikelihood());
+		System.out.println("================");
 		treeLikelihood = new SpectrumTreeLikelihood(
 				newSpectrumModel, newTreeModel, newSiteModel, newBranchRateModel, 
 				false, false, true, false, false);
 		System.out.println(treeLikelihood.getLogLikelihood());
+
+		treeLikelihood = new SpectrumTreeLikelihood(
+				spectrumModel, treeModel, siteModel, branchRateModel, 
+				false, false, true, false, false);
+		System.out.println(treeLikelihood.getLogLikelihood());
+		
+		treeLikelihood = new SpectrumTreeLikelihood(
+				spectrumModel, treeModel, siteModel, branchRateModel, 
+				false, false, true, false, false);
+		System.out.println(treeLikelihood.getLogLikelihood());
+		
+		treeLikelihood = new SpectrumTreeLikelihood(
+				spectrumModel, treeModel, siteModel, branchRateModel, 
+				false, false, true, false, false);
+		System.out.println(treeLikelihood.getLogLikelihood());
+		
 		for (int i = 0; i < treeLikelihood.getModelCount(); i++) {
 			Model model = treeLikelihood.getModel(i);
 			System.out.println(model.getModelName());
@@ -222,12 +278,18 @@ public class MainMCMCTest {
 		SpectrumAlignmentModel.compareTwoSpectrumModel(
 				spectrumModel, newSpectrumModel);
 		SpectrumTreeLikelihood newTreeLikelihood = new SpectrumTreeLikelihood(
-				newSpectrumModel, newTreeModel, newSiteModel, newBranchRateModel, 
+				newSpectrumModel, newTreeModel, newSiteModel, null, 
 				false, false, true, false, false);
 		System.out.println(newTreeLikelihood.getLogLikelihood());
 		///////////////////////////////////////////////////////////////////////
 
 		
+//		SpectrumAlignmentModel newSpectrumModel = SpectrumAlignmentModel.duplicateSpectrumAlignmentModel(spectrumModel);
+		SpectrumTreeLikelihood newSpectrumTreeLikelihood = new SpectrumTreeLikelihood(newSpectrumModel, treeModel,
+				newSiteModel, null, false, false, true, false, false);
+		double expected = newSpectrumTreeLikelihood.getLogLikelihood();
+		double sslikelihood = likelihood.getLogLikelihood();
+		assertEquals(expected, sslikelihood, 0);
 		
 		List<Likelihood> likelihoods = new ArrayList<Likelihood>();
 	

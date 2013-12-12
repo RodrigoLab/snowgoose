@@ -2,7 +2,6 @@ package srp.spectrum.operator;
 
 import java.util.Arrays;
 
-import srp.haplotypes.HaplotypeModel;
 import srp.spectrum.SpectraParameter;
 import srp.spectrum.Spectrum;
 import srp.spectrum.SpectrumAlignmentModel;
@@ -10,11 +9,8 @@ import srp.spectrum.SpectrumOperation;
 import srp.spectrum.SpectrumOperationRecord;
 import dr.inference.model.Bounds;
 import dr.inference.model.Parameter;
-import dr.inference.operators.AbstractCoercableOperator;
 import dr.inference.operators.CoercionMode;
-import dr.inference.operators.MCMCOperator;
 import dr.inference.operators.OperatorFailedException;
-import dr.inference.operators.OperatorUtils;
 import dr.math.MathUtils;
 
 public class SingleSpectrumDeltaExchangeOperator extends AbstractSpectrumOperator {
@@ -24,7 +20,7 @@ public class SingleSpectrumDeltaExchangeOperator extends AbstractSpectrumOperato
 //    private Parameter parameter = null;
     private final int[] parameterWeights;
     private double delta = 0.02;
-    private boolean isIntegerOperator = false;
+
     
 	public SingleSpectrumDeltaExchangeOperator(SpectrumAlignmentModel spectrumModel, 
 			double delta, CoercionMode mode) {
@@ -33,7 +29,6 @@ public class SingleSpectrumDeltaExchangeOperator extends AbstractSpectrumOperato
 		
 		this.delta = delta;
         setWeight(1.0);
-        this.isIntegerOperator = false;
 
         parameterWeights = new int[this.spectrumModel.getDataType().getStateCount()];
         for (int i = 0; i < parameterWeights.length; i++) {
@@ -43,6 +38,7 @@ public class SingleSpectrumDeltaExchangeOperator extends AbstractSpectrumOperato
 	}
 
 	private double[] debugList = new double[8];
+	private int mm;
 	@Override
 	public double doOperation() throws OperatorFailedException {
 
@@ -69,7 +65,7 @@ public class SingleSpectrumDeltaExchangeOperator extends AbstractSpectrumOperato
         double scalar1 = parameter.getParameterValue(dim1);
         double scalar2 = parameter.getParameterValue(dim2);
 
-        final double d = delta;//MathUtils.nextDouble() * delta;
+        final double d = MathUtils.nextDouble() * delta;
         
         scalar1 -= d;
         scalar2 += d;
@@ -101,30 +97,38 @@ public class SingleSpectrumDeltaExchangeOperator extends AbstractSpectrumOperato
 	}
 
 
-    public double getCoercableParameter() {
+    @Override
+	public double getCoercableParameter() {
 //    	double t = Math.log(delta/(1-delta));
 //    	return t;
 //        return Math.log(1.0 / delta - 1.0);
         return Math.log(delta);
     }
 
-    public void setCoercableParameter(double value) {
-    	System.out.println(value +"\t"+ delta +"\t"+ getAcceptanceProbability());
+    @Override
+	public void setCoercableParameter(double value) {
+//    	mm++;
+//    	if(mm%1000 == 0){
+//    		System.out.println(value +"\t"+ delta +"\t"+ getAcceptanceProbability());
+//    	}
         delta = Math.exp(value);
 //        double t = Math.exp(value);
 //        delta = t/(t+1);
 
     }
 
-    public double getRawParameter() {
+    @Override
+	public double getRawParameter() {
         return delta;
     }
 
-    public double getTargetAcceptanceProbability() {
+    @Override
+	public double getTargetAcceptanceProbability() {
         return 0.234;
     }
 
-    public final String getPerformanceSuggestion() {
+    @Override
+	public final String getPerformanceSuggestion() {
 		SpectrumOperationRecord record = spectrumModel.getSpectrumOperationRecord();
 		String s = record.getSpectrumIndex() +"\t"+ record.getSiteIndex() +"\n";
 		s+= spectrumModel.diagnostic() +"\n";
@@ -145,7 +149,8 @@ public class SingleSpectrumDeltaExchangeOperator extends AbstractSpectrumOperato
 //        } else return "";
     }
 
-    public String toString() {
+    @Override
+	public String toString() {
         return getOperatorName() + "(windowsize=" + delta + ")";
     }
 

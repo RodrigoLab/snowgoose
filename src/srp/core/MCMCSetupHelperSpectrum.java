@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.commons.math3.random.RandomDataGenerator;
+import org.apache.commons.math3.stat.StatUtils;
+import org.apache.commons.math3.util.MathUtils;
+
 import srp.haplotypes.HaplotypeModel;
 import srp.haplotypes.operator.ColumnOperator;
 import srp.haplotypes.operator.HaplotypeRecombinationOperator;
@@ -59,8 +63,8 @@ public class MCMCSetupHelperSpectrum extends MCMCSetupHelper {
 	
 	public static HashMap<String, Object> setupSpectrumTreeLikelihoodSpectrumModel(
 				TreeModel treeModel, SpectrumAlignmentModel spectrumModel) {
-	
-	
+		RandomDataGenerator r = new RandomDataGenerator();
+//		r.nextSample(c, k)
 	//		double errorRate = 0.01;
 			
 			// clock model
@@ -158,7 +162,8 @@ public class MCMCSetupHelperSpectrum extends MCMCSetupHelper {
 
 		MCMCOperator operator;
 		
-		operator = new SingleSpectrumDeltaExchangeOperator(spectrumModel, 0.05, CoercionMode.COERCION_ON);
+		operator = new SingleSpectrumDeltaExchangeOperator(spectrumModel, 0.2, CoercionMode.COERCION_ON);
+//		0.05 delta, accept 0.8
 		operator.setWeight(opLarge);
 		schedule.addOperator(operator);
 		

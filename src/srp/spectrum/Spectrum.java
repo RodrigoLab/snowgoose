@@ -1,4 +1,5 @@
 package srp.spectrum;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -44,7 +45,7 @@ public class Spectrum extends AbstractModel implements Attributable {
 		super("Spectrum");
 		spectrum = new ArrayList<SpectraParameter>();
 		for (int i = 0; i < length; i++) {
-			SpectraParameter spectra = new SpectraParameter(initFreq);
+			SpectraParameter spectra = new SpectraParameter();
 			addVariable(spectra);
 			spectrum.add(spectra);
 		}
@@ -164,12 +165,15 @@ public class Spectrum extends AbstractModel implements Attributable {
 	    return spectrum.get(site);
 	}
 	
+	private final NumberFormat formatter = NumberFormat.getNumberInstance();
 	@Override
 	public String toString(){
+		formatter.setMaximumFractionDigits(2);
 		StringBuffer sb = new StringBuffer();
 		for (int p = 0; p < 4; p++) {
 			for (int i = 0; i < spectrum.size(); i++) {
-				sb.append(getFrequency(i, p)).append("\t");
+				String freq = formatter.format(getFrequency(i, p));
+				sb.append(freq).append("\t");
 			}
 			sb.append("\n");
 		}

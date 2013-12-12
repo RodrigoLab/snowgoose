@@ -8,22 +8,33 @@ import dr.math.MathUtils;
 //public class Spectra implements Parameter{
 public class SpectraParameter extends Parameter.Default{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3519136356577040343L;
 	public static final double[] EQUAL_FREQ = new double[]{0.25, 0.25, 0.25, 0.25};
+	
+	public SpectraParameter(boolean random){
+		this();
+		if(random){
+			double[] freq = new double[4];
+			for (int i = 0; i < freq.length; i++) {
+				freq[i] = MathUtils.nextInt(100);
+			}
+			double sum = getSumOfFrequencies(freq);
+			for (int i = 0; i < freq.length; i++) {
+				freq[i] /= sum;
+			}
+			System.out.println(Arrays.toString(freq));
+//			super(freq);
+			setFrequenciesQuietly(freq);
+			addBounds(new DefaultBounds(1.0, 0.0, getDimension()));
+			
+		}
+	}
 	
 	public SpectraParameter(){
 		this(EQUAL_FREQ);
-//		double[] freq = new double[4];
-//		for (int i = 0; i < freq.length; i++) {
-//			freq[i] = MathUtils.nextInt(10);
-//		}
-//		double sum = getSumOfFrequencies(freq);
-//		for (int i = 0; i < freq.length; i++) {
-//			freq[i] /= sum;
-//		}
-//		System.out.println(Arrays.toString(freq));
-////		super(freq);
-//		setFrequenciesQuietly(freq);
-//		addBounds(new DefaultBounds(1.0, 0.0, getDimension()));
 		
 	}
 
@@ -65,6 +76,7 @@ public class SpectraParameter extends Parameter.Default{
     	for (int i = 0; i < values.length; i++) {
     		setParameterValueQuietly(i, values[i]);
 		}
+//    	fireParameterChangedEvent(i, Parameter.ChangeType.VALUE_CHANGED);
 //    	System.arraycopy(values, 0, this.values, 0, values.length);
     }
     

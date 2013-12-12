@@ -1856,7 +1856,7 @@ public class SSTreeModel extends AbstractModel implements MutableTree {
     
 	private int doubleTheTree() {
 		throw new RuntimeException("Not yet implemented");
-		return 0;
+//		return 0;
 	}
 
 	public NodeRef getTrueRoot() {

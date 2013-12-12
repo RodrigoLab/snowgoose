@@ -11,6 +11,7 @@ import java.util.HashMap;
 import srp.haplotypes.AlignmentMapping;
 import srp.spectrum.Spectrum;
 import srp.spectrum.SpectrumAlignmentModel;
+import srp.spectrum.SpectrumLogger;
 import srp.spectrum.likelihood.ShortReadsSpectrumLikelihood;
 import srp.spectrum.likelihood.SpectrumTreeLikelihood;
 import srp.spectrum.operator.SingleSpectrumDeltaExchangeOperator;
@@ -39,20 +40,30 @@ import dr.inferencexml.model.CompoundLikelihoodParser;
 public class MainMCMCSpectrumFull {
 
 	public static void main(String[] args) throws Exception {
+//
+//0.30933196101825705	0.30249512435225206	0.2825730502398382	0.3122140438344868	0.31071974332425467	0.30928379887532603	0.31231278315168154	
+//0.4313886921245247	0.42251157301604264	0.36601314864409784	0.4287955518793434	0.43182972173904316	0.431444897184788	0.43294820478526	
+//0.3121265404728817	0.30638171409639386	0.2880006593359247	0.3099814108119972	0.3123797592007158	0.3114106319137973	0.31290882634473327	
+//0.37250962641044366	0.36800711790778085	0.3565109918690321	0.37268010551554437	0.37269166754477395	0.3730513482348595	0.370813206645306	
+//0.540636490287451	0.5263861349379844	0.4270550208705616	0.538498800782783	0.5416501177059991	0.5405796169959256	0.5397434743780452	
+//0.48127893944007205	0.4702431976343528	0.38967231908010985	0.481094963242507	0.4825315431397799	0.4821172766781288	0.48092511228341606	
+//0.4281713946916407	0.4198173796641415	0.3524266561999545	0.42895690329065106	0.42928715725961364	0.42590787930341933	0.427904513786816	
+//
+//
 
-		String dataDir = "/home/sw167/workspaceSrp/ABI/unittest/testData/";
-		int runIndex = 1;
-		int totalSamples = 100;
-		int logInterval = 10000;
-		int noOfTrueHaplotype = 7;
-		int noOfRecoveredHaplotype=7;
+//		String dataDir = "/home/sw167/workspaceSrp/ABI/unittest/testData/";
+//		int runIndex = 1;
+//		int totalSamples = 10;
+//		int logInterval = 1000;
+//		int noOfTrueHaplotype = 7;
+//		int noOfRecoveredHaplotype=7;
 		
-//		String dataDir = args[0];
-//		int runIndex = Integer.parseInt(args[1]);
-//		int totalSamples = Integer.parseInt(args[2]);
-//		int logInterval = Integer.parseInt(args[3]);
-//		int noOfTrueHaplotype = Integer.parseInt(args[4]);
-//		int noOfRecoveredHaplotype= Integer.parseInt(args[5]);
+		String dataDir = args[0];
+		int runIndex = Integer.parseInt(args[1]);
+		int totalSamples = Integer.parseInt(args[2]);
+		int logInterval = Integer.parseInt(args[3]);
+		int noOfTrueHaplotype = Integer.parseInt(args[4]);
+		int noOfRecoveredHaplotype= Integer.parseInt(args[5]);
 		
 		String hapRunIndex = "H"+noOfTrueHaplotype+"_"+runIndex;
 		String shortReadFile = hapRunIndex +"_Srp.fasta";
@@ -140,7 +151,7 @@ public class MainMCMCSpectrumFull {
 		
 
 		// MCLogger
-		MCLogger[] loggers = new MCLogger[3];
+		MCLogger[] loggers = new MCLogger[4];
 		// log tracer
 		loggers[0] = new MCLogger(logTracerName, logInterval, false, 0);
 		MCMCSetupHelper.addToLogger(loggers[0], posterior, prior, likelihood, shortReadLikelihood,
@@ -163,12 +174,12 @@ public class MainMCMCSpectrumFull {
 		loggers[2] = new TreeLogger(treeModel, branchRateModel, null, null,
 				treeFormatter, logInterval, true, true, true, null, null);
 
-		// log Haplotype
+//		 log spectrum??
 //		Alignment trueAlignment = dataImporter.importAlignment(trueHaplotypeFile);
 //		AlignmentMapping alignmentMapping = new AlignmentMapping(shortReads);
 //		ShortReadLikelihood trueSrp = new ShortReadLikelihood(HaplotypeModelUtils.factory(shortReads, trueAlignment));
 //		System.err.println("\'trueShortReadLikelihood\': "+trueSrp.getLogLikelihood());
-//		loggers[3] = new HaplotypeLoggerWithTrueHaplotype(spectrumModel, trueAlignment, logHaplotypeName, logInterval*10);
+		loggers[3] = new SpectrumLogger(spectrumModel, trueAlignment, logHaplotypeName, logInterval*totalSamples);
 		
 		// MCMC
 		MCMCOptions options = MCMCSetupHelper.setMCMCOptions(logInterval, totalSamples);
@@ -196,21 +207,25 @@ public class MainMCMCSpectrumFull {
 //			}
 //			System.out.println();
 //		}
-		
-		for (int j = 0; j < spectrumModel.getSpectrumCount(); j++) {
-			Spectrum spectrum = spectrumModel.getSpectrum(j);
-			System.out.println("Specturm:"+j);
-			for (int s = 0; s < stateCount; s++) {
-				for (int k = 0; k < 5; k++) {
-					System.out.print(spectrum.getFrequency(k, s)+"\t");
-				}
-			
 
-				System.out.println();
-			}
-			System.out.println(trueAlignment.getAlignedSequenceString(j));
-			System.out.println();
-		}
+		
+		
+//		for (int j = 0; j < spectrumModel.getSpectrumCount(); j++) {
+//			Spectrum spectrum = spectrumModel.getSpectrum(j);
+//			System.out.println("Specturm:"+j);
+//			for (int s = 0; s < stateCount; s++) {
+//				for (int k = 0; k < 5; k++) {
+//					System.out.print(spectrum.getFrequency(k, s)+"\t");
+//				}
+//			
+//
+//				System.out.println();
+//			}
+//			System.out.println(trueAlignment.getAlignedSequenceString(j));
+//			System.out.println();
+//		}
+//		StringBuffer sbDist = spectrumModel.calculatetoAlignmentDistance(trueAlignment);
+//		System.out.println(sbDist.toString());
 	}
 
 

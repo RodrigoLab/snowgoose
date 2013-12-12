@@ -3,29 +3,15 @@ package srp.spectrum;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
-import javax.swing.JTabbedPane;
-
-import srp.haplotypes.AbstractHaplotypeModel;
 import srp.haplotypes.AlignmentMapping;
-import srp.haplotypes.Haplotype;
 import srp.haplotypes.Operation;
 import srp.haplotypes.SwapInfo;
-
-import jebl.evolution.sequences.Sequence;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.datatype.DataType;
 import dr.evolution.datatype.Nucleotides;
-import dr.evolution.tree.Tree;
+import dr.evolution.sequence.Sequence;
 import dr.evolution.util.Taxon;
-import dr.evomodel.sitemodel.GammaSiteModel;
-import dr.evomodel.sitemodel.SiteModel;
-import dr.evomodel.substmodel.HKY;
-import dr.evomodel.substmodel.SubstitutionModel;
-import dr.evomodel.tree.TreeModel;
-import dr.ext.SeqGenExt;
-import dr.ext.TreeLikelihoodExt;
 import dr.inference.model.Model;
 import dr.inference.model.Parameter;
 import dr.inference.model.Variable;
@@ -489,6 +475,26 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 	public void removeSpectrum(int i) {
 		spectrumList.remove(0);
 		
+	}
+	public StringBuffer calculatetoAlignmentDistance(Alignment trueAlignment) {
+		StringBuffer sb = new StringBuffer();
+		for (int i = 0; i < getSpectrumCount(); i++) {
+			Spectrum spe = getSpectrum(i);
+			double dist = 0;
+			for (int j = 0; j < trueAlignment.getSequenceCount(); j++) {
+				Sequence seq = trueAlignment.getSequence(j);
+				for (int k = 0; k < getSpectrumLength(); k++) {
+					int state = seq.getState(k);
+					double d = spe.getFrequencies(k)[state]; //Match
+					dist += d;
+				}
+				dist /= getSpectrumLength();
+				sb.append(dist).append("\t");
+			}
+			sb.append("\n");
+		}
+		sb.append("\n");
+		return sb;
 	}
 	
 }
