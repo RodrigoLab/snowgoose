@@ -21,6 +21,8 @@ import srp.spectrum.SpectrumAlignmentModel;
 import srp.spectrum.SpectrumOperation;
 import srp.spectrum.SpectrumOperationRecord;
 import srp.spectrum.likelihood.ShortReadsSpectrumLikelihood;
+import srp.spectrum.operator.ColumnSpectrumDeltaExchangeOperator;
+import srp.spectrum.operator.MultiSpectrumDeltaExchangeOperator;
 import srp.spectrum.operator.SingleSpectrumDeltaExchangeOperator;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.SimpleAlignment;
@@ -188,7 +190,7 @@ public class ShortReadsSpectrumLikelihoodTest {
 			try {
 				op.doOperation();
 				double logLikelihoodSingle = likelihood.getLogLikelihood();
-				assertEquals(SpectrumOperation.DELTASINGLE, likelihood.getOperation());
+				assertEquals(SpectrumOperation.SINGLE_DELTA, likelihood.getOperation());
 				record.setOperation(SpectrumOperation.NONE);
 				likelihood.makeDirty();
 				double logLikelihoodFull = likelihood.getLogLikelihood();
@@ -226,6 +228,86 @@ public class ShortReadsSpectrumLikelihoodTest {
 				logLikelihoodFull = likelihoodFull.getLogLikelihood();
 				assertEquals(SpectrumOperation.NONE, likelihoodFull.getOperation());
 				assertEquals(logLikelihoodFull, logLikelihoodSingle, 1e-8);
+
+				double rand = MathUtils.nextDouble();
+				if(rand>0.5){
+					likelihood.acceptModelState();
+				}
+				else{
+					likelihood.restoreModelState();
+				}
+			} catch (Exception e) {
+			}
+		}
+	}
+	
+
+	@Test
+	public void testFullvsMultiStoreRestore() throws Exception {
+	
+		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/ABI/unittest/", "HaplotypeModelTest_10_srp.fasta");
+		AlignmentMapping aMap = new AlignmentMapping(alignment);
+			
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 4);
+		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
+		
+		MultiSpectrumDeltaExchangeOperator op = new MultiSpectrumDeltaExchangeOperator(spectrumModel, 0.1, null);
+		
+		double logLikelihoodMulti;
+		double logLikelihoodFull;
+		
+		for (int i = 0; i < 1e4; i++) {
+			try {
+				likelihood.storeModelState();
+				op.doOperation();
+				likelihood.makeDirty();
+				logLikelihoodMulti = likelihood.getLogLikelihood();
+
+				SpectrumAlignmentModel spectrumModelFull = SpectrumAlignmentModel.duplicateSpectrumAlignmentModel(spectrumModel);
+				ShortReadsSpectrumLikelihood likelihoodFull = new ShortReadsSpectrumLikelihood(spectrumModelFull);
+				logLikelihoodFull = likelihoodFull.getLogLikelihood();
+				assertEquals(SpectrumOperation.NONE, likelihoodFull.getOperation());
+				assertEquals(logLikelihoodFull, logLikelihoodMulti, 1e-8);
+
+				double rand = MathUtils.nextDouble();
+				if(rand>0.5){
+					likelihood.acceptModelState();
+				}
+				else{
+					likelihood.restoreModelState();
+				}
+			} catch (Exception e) {
+			}
+		}
+	}
+
+
+	@Test
+	public void testFullvsColumnStoreRestore() throws Exception {
+	
+		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/ABI/unittest/", "HaplotypeModelTest_10_srp.fasta");
+		AlignmentMapping aMap = new AlignmentMapping(alignment);
+			
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 4);
+		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
+		
+		ColumnSpectrumDeltaExchangeOperator op = new ColumnSpectrumDeltaExchangeOperator(spectrumModel, 0.1, null);
+		
+		double logLikelihoodColumn;
+		double logLikelihoodFull;
+		
+		for (int i = 0; i < 1e4; i++) {
+			try {
+				likelihood.storeModelState();
+				op.doOperation();
+				likelihood.makeDirty();
+				logLikelihoodColumn = likelihood.getLogLikelihood();
+
+				SpectrumAlignmentModel spectrumModelFull = SpectrumAlignmentModel.duplicateSpectrumAlignmentModel(spectrumModel);
+				ShortReadsSpectrumLikelihood likelihoodFull = new ShortReadsSpectrumLikelihood(spectrumModelFull);
+				logLikelihoodFull = likelihoodFull.getLogLikelihood();
+				assertEquals(SpectrumOperation.NONE, likelihoodFull.getOperation());
+				assertEquals(logLikelihoodFull, logLikelihoodColumn, 1e-8);
 
 				double rand = MathUtils.nextDouble();
 				if(rand>0.5){

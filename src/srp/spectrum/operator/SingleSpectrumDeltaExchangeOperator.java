@@ -16,10 +16,10 @@ import dr.math.MathUtils;
 public class SingleSpectrumDeltaExchangeOperator extends AbstractSpectrumOperator {
 
 	public static final String OPERATOR_NAME = SingleSpectrumDeltaExchangeOperator.class.getSimpleName();
-	public static final SpectrumOperation OP = SpectrumOperation.DELTASINGLE;
+	public static final SpectrumOperation OP = SpectrumOperation.SINGLE_DELTA;
 //    private Parameter parameter = null;
     private final int[] parameterWeights;
-    private double delta = 0.02;
+    private double delta = 0.1;
 
     
 	public SingleSpectrumDeltaExchangeOperator(SpectrumAlignmentModel spectrumModel, 
@@ -55,11 +55,11 @@ public class SingleSpectrumDeltaExchangeOperator extends AbstractSpectrumOperato
 		Spectrum spectrum = spectrumModel.getSpectrum(spectrumIndex);
 		SpectraParameter parameter = spectrum.getSpectra(siteIndex);
         // get two dimensions
-        final int dim = parameter.getDimension();
-        final int dim1 = MathUtils.nextInt(dim);
+
+        final int dim1 = MathUtils.nextInt(DIMENSION);
         int dim2;// = dim1;
         do {
-            dim2 = MathUtils.nextInt(dim);
+            dim2 = MathUtils.nextInt(DIMENSION);
         }while (dim1 == dim2);
 
         double scalar1 = parameter.getParameterValue(dim1);
@@ -70,12 +70,11 @@ public class SingleSpectrumDeltaExchangeOperator extends AbstractSpectrumOperato
         scalar1 -= d;
         scalar2 += d;
 
-        Bounds<Double> bounds = parameter.getBounds();
 
-        if (scalar1 < bounds.getLowerLimit(dim1) ||
-                scalar1 > bounds.getUpperLimit(dim1) ||
-                scalar2 < bounds.getLowerLimit(dim2) ||
-                scalar2 > bounds.getUpperLimit(dim2)) {
+    	if (scalar1 < BOUNDS_LOWER ||
+                scalar1 > BOUNDS_UPPER ||
+                scalar2 < BOUNDS_LOWER ||
+                scalar2 > BOUNDS_UPPER ) {        	
             throw new OperatorFailedException("proposed values out of range!");
         }
         

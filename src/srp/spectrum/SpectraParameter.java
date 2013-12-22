@@ -2,6 +2,7 @@ package srp.spectrum;
 
 import java.util.Arrays;
 
+import dr.inference.model.Bounds;
 import dr.inference.model.Parameter;
 import dr.math.MathUtils;
 
@@ -13,11 +14,13 @@ public class SpectraParameter extends Parameter.Default{
 	 */
 	private static final long serialVersionUID = -3519136356577040343L;
 	public static final double[] EQUAL_FREQ = new double[]{0.25, 0.25, 0.25, 0.25};
+	public static final int DIMENSION = 4;
+	public static final Bounds<Double> SPECTRUM_BOUNDS = new DefaultBounds(1.0, 0.0, DIMENSION);
 	
 	public SpectraParameter(boolean random){
 		this();
 		if(random){
-			double[] freq = new double[4];
+			double[] freq = new double[DIMENSION];
 			for (int i = 0; i < freq.length; i++) {
 				freq[i] = MathUtils.nextInt(100);
 			}
@@ -28,10 +31,11 @@ public class SpectraParameter extends Parameter.Default{
 			System.out.println(Arrays.toString(freq));
 //			super(freq);
 			setFrequenciesQuietly(freq);
-			addBounds(new DefaultBounds(1.0, 0.0, getDimension()));
+			addBounds();
 			
 		}
 	}
+	
 	
 	public SpectraParameter(){
 		this(EQUAL_FREQ);
@@ -44,7 +48,7 @@ public class SpectraParameter extends Parameter.Default{
     	
 
         double sum = getSumOfFrequencies(frequencies);
-    	if(getDimension()!=4){
+    	if(getDimension()!=DIMENSION){
     		throw new IllegalArgumentException("Frequencies should have 4 elements, frequencies.length= "+getDimension());
     	}
     	//TODO make sure it's ON!!!
@@ -52,7 +56,7 @@ public class SpectraParameter extends Parameter.Default{
             throw new IllegalArgumentException("Frequencies do not sum to 1, they sum to " + sum);
         }
     	
-		addBounds(new DefaultBounds(1.0, 0.0, getDimension()));
+		addBounds();
 		if(!isWithinBounds()){
 			throw new IllegalArgumentException("Frequencies out of bounds 0 < f < 1\t"+ Arrays.toString(frequencies)); 
 		}
@@ -120,5 +124,9 @@ public class SpectraParameter extends Parameter.Default{
     public String diagnostic(){
     	return super.diagnostic();
     }
-
+    
+    private void addBounds(){
+		addBounds(SPECTRUM_BOUNDS);
+	}
+	
 }

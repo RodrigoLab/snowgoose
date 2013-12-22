@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.swing.JPopupMenu.Separator;
+
 import org.apache.commons.math3.random.RandomDataGenerator;
 import org.apache.commons.math3.stat.StatUtils;
 import org.apache.commons.math3.util.MathUtils;
@@ -23,6 +25,8 @@ import srp.haplotypes.operator.SwitchBaseFrequencyOperator;
 import srp.rj.operator.RJTreeOperator;
 import srp.spectrum.SpectrumAlignmentModel;
 import srp.spectrum.likelihood.SpectrumTreeLikelihood;
+import srp.spectrum.operator.ColumnSpectrumDeltaExchangeOperator;
+import srp.spectrum.operator.MultiSpectrumDeltaExchangeOperator;
 import srp.spectrum.operator.SingleSpectrumDeltaExchangeOperator;
 import dr.evolution.datatype.Nucleotides;
 import dr.evolution.util.Units;
@@ -57,9 +61,9 @@ public class MCMCSetupHelperSpectrum extends MCMCSetupHelper {
 
 	private static final double opTiny = 0.1;
 	private static final double opSmall = 3;
-	private static final double opMed = 10;
-	private static final double opLarge = 30;
-	private static final double opHuge = 100;
+	private static final double opMed = 12;
+	private static final double opLarge = 50;
+	private static final double opSpectrum = 24;
 	
 	public static HashMap<String, Object> setupSpectrumTreeLikelihoodSpectrumModel(
 				TreeModel treeModel, SpectrumAlignmentModel spectrumModel) {
@@ -164,7 +168,12 @@ public class MCMCSetupHelperSpectrum extends MCMCSetupHelper {
 		
 		operator = new SingleSpectrumDeltaExchangeOperator(spectrumModel, 0.2, CoercionMode.COERCION_ON);
 //		0.05 delta, accept 0.8
-		operator.setWeight(opLarge);
+		
+		
+		operator = new ColumnSpectrumDeltaExchangeOperator(spectrumModel, 0.05, CoercionMode.COERCION_OFF);
+		operator = new MultiSpectrumDeltaExchangeOperator(spectrumModel, 0.05, CoercionMode.COERCION_OFF);
+		
+		operator.setWeight(opSpectrum);
 		schedule.addOperator(operator);
 		
 		for (Parameter parameter : parameters) {
@@ -174,20 +183,19 @@ public class MCMCSetupHelperSpectrum extends MCMCSetupHelper {
 			if("kappa".equals(parameterName)){
 				operator = new ScaleOperator(parameter, 0.75);
 				operator.setWeight(opTiny);
-				schedule.addOperator(operator);
+//				schedule.addOperator(operator);
 			}
 			else if("frequency".equals(parameterName)){
 				operator = new DeltaExchangeOperator(parameter, new int[] { 1,
 						1, 1, 1 }, 0.01, 0.1, false, CoercionMode.COERCION_ON);
 				operator.setWeight(opTiny);
-//				operator.setWeight(opHuge);
-				schedule.addOperator(operator);
+//				schedule.addOperator(operator);
 				
 			}
 			else if("populationSize".equals(parameterName)){
 				operator = new ScaleOperator(parameter, 0.75);
-				operator.setWeight(opTiny);
-				schedule.addOperator(operator);
+				operator.setWeight(opSmall);
+//				schedule.addOperator(operator);
 			}
 			
 		}

@@ -25,6 +25,7 @@ public class SpectrumOperationRecord {
 	private int spectrumIndex;
 	private int siteIndex;
 	private double[] delta;
+	private int[] allSiteIndexs;
 
 	
 	/*
@@ -172,15 +173,6 @@ public class SpectrumOperationRecord {
 	}
 
 
-	public void setRecord(SpectrumOperation operation, int spectrumIndex, int siteIndex, double[] delta) {
-		this.operation = operation;
-		this.spectrumIndex = spectrumIndex;
-		this.siteIndex = siteIndex;
-		this.delta = delta;
-		
-	}
-
-
 	public int getSpectrumIndex() {
 		return spectrumIndex;
 	}
@@ -206,9 +198,41 @@ public class SpectrumOperationRecord {
 	}
 
 
+	public void setRecord(SpectrumOperation operation, int spectrumIndex, int siteIndex, double[] delta) {
+		this.operation = operation;
+		this.spectrumIndex = spectrumIndex;
+		this.siteIndex = siteIndex;
+		this.delta = delta;
+		
+	}
+
+
 	public void setOperation(SpectrumOperation operation) {
 		this.operation = operation;
 		
+	}
+
+
+	public void setRecord(SpectrumOperation op, int siteIndex, double[] delta) {
+		this.operation = op;
+		this.siteIndex = siteIndex;
+		this.delta = delta;
+				
+	}
+
+
+	public void setRecord(SpectrumOperation op, int spectrumIndex, int[] siteIndexs) {
+		this.operation = op;
+		this.spectrumIndex = spectrumIndex;
+		this.allSiteIndexs = siteIndexs;
+		
+		
+	}
+
+
+	public int[] getSiteIndexs() {
+		// TODO Auto-generated method stub
+		return allSiteIndexs;
 	}
 
 

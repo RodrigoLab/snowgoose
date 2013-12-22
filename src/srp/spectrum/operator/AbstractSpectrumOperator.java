@@ -5,6 +5,7 @@ import java.util.Arrays;
 import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.HaplotypeModel;
 import srp.haplotypes.Operation;
+import srp.spectrum.SpectraParameter;
 import srp.spectrum.SpectrumAlignmentModel;
 import dr.inference.model.Bounds;
 import dr.inference.model.Parameter;
@@ -18,12 +19,18 @@ import dr.math.MathUtils;
 
 public abstract class AbstractSpectrumOperator extends AbstractCoercableOperator {
 
-	public final static Operation OP = Operation.SWAPSINGLE;
+	public static final int DIMENSION = SpectraParameter.DIMENSION;
+    public static final Bounds<Double> BOUNDS = SpectraParameter.SPECTRUM_BOUNDS;
+    public static final double BOUNDS_LOWER = BOUNDS.getLowerLimit(0);
+    public static final double BOUNDS_UPPER = BOUNDS.getUpperLimit(0);
+    
 
-	public SpectrumAlignmentModel spectrumModel;
-	public int spectrumCount;
-	public AlignmentMapping alignmentMapping;
+    public static Operation OP;
+    
+    protected SpectrumAlignmentModel spectrumModel;
+	protected AlignmentMapping alignmentMapping;
 	
+	protected final int spectrumCount;
 	protected final int spectrumLength;
 
 

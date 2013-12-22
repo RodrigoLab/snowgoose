@@ -64,6 +64,19 @@ public class MainMCMCSpectrumFull {
 		int logInterval = Integer.parseInt(args[3]);
 		int noOfTrueHaplotype = Integer.parseInt(args[4]);
 		int noOfRecoveredHaplotype= Integer.parseInt(args[5]);
+
+		dataDir = "/home/sw167/workspaceSrp/ABI/unittest/testData/";
+		runIndex = 1;
+		totalSamples = 1000;
+		logInterval = 1000;
+		
+		totalSamples = 1000;
+//		logInterval = 100;
+		
+		noOfTrueHaplotype = 7;
+		noOfRecoveredHaplotype=7;
+		
+		
 		
 		String hapRunIndex = "H"+noOfTrueHaplotype+"_"+runIndex;
 		String shortReadFile = hapRunIndex +"_Srp.fasta";
@@ -75,24 +88,18 @@ public class MainMCMCSpectrumFull {
 		String logHaplotypeName = prefix+".haplatype";
 		String operatorAnalysisFile = prefix+"_operatorAnalysisFile.txt";
 		
+		String partialHaplotypeName = prefix+".partialhaplatype";
+		
 		DataImporter dataImporter = new DataImporter(dataDir);
 
 		Alignment trueAlignment = dataImporter.importAlignment(trueHaplotypeFile);
 		
 		Alignment shortReads = dataImporter.importShortReads(shortReadFile);
 		AlignmentMapping aMap = new AlignmentMapping(shortReads);
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, noOfRecoveredHaplotype);
+//		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, noOfRecoveredHaplotype);
+		SpectrumAlignmentModel spectrumModel = SpectrumAlignmentModel.importPartial(aMap, partialHaplotypeName );
 //		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, trueAlignment);
 
-//		SingleSpectrumDeltaExchangeOperator sop = new SingleSpectrumDeltaExchangeOperator(spectrumModel, 0.25, CoercionMode.COERCION_OFF);
-//		for (int i = 0; i < 100; i++) {
-//			try {
-//				sop.doOperation();	
-//			} catch (Exception e) {
-//				// TODO: handle exception
-//			}
-//		}
-		
 //		haplotypeModel = new HaplotypeModel(alignmentMapping, trueAlignment);
 //		ShortReadLikelihood shortReadLikelihood  = new ShortReadLikelihood(haplotypeModel);
 		
@@ -130,7 +137,7 @@ public class MainMCMCSpectrumFull {
 		OperatorSchedule schedule = new SimpleOperatorSchedule();
 //		ArrayList<MCMCOperator> defalutOperatorsList = 
 		MCMCSetupHelperSpectrum.defalutSpectrumOperators(schedule, spectrumModel, freqs, popSize, kappa);
-		MCMCSetupHelperSpectrum.defalutTreeOperators(schedule, treeModel);
+//		MCMCSetupHelperSpectrum.defalutTreeOperators(schedule, treeModel);
 		
 		
 //		MCMCOperator operator;

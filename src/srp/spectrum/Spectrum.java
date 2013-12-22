@@ -34,13 +34,20 @@ public class Spectrum extends AbstractModel implements Attributable {
 //		sequenceString = new StringBuilder();
 //	}
 
-	public Spectrum(int length) {
-		this(length, SpectraParameter.EQUAL_FREQ);
-
+	public Spectrum(double[][] freqs) {
+		this(freqs[0].length);
+		for (int s = 0; s < spectrum.size(); s++) {
+			SpectraParameter spectra = spectrum.get(s);
+			for (int f = 0; f < 4; f++) {
+				spectra.setFrequency(f, freqs[f][s]);
+			}
+//			double[] freq = new double[]{freqs[0][s], freqs[1][s], freqs[2][s], freqs[3][s]}; 
+//			spectrum.resetFrequencies(s, freq);
+		}
 	}
 
 
-	public Spectrum(int length, double[] initFreq){
+	public Spectrum(int length){
 		
 		super("Spectrum");
 		spectrum = new ArrayList<SpectraParameter>();
@@ -408,7 +415,7 @@ public class Spectrum extends AbstractModel implements Attributable {
 	}
 	@Override
 	protected void storeState() {
-//		System.err.println("storeState Specturm");
+//		System.err.println("storeState Specturm: "+storeSiteIndex);
 		//TODO maybe don't need to copy everything
 		
 //		for (int i = 0; i < spectrum.size(); i++) {
@@ -419,7 +426,7 @@ public class Spectrum extends AbstractModel implements Attributable {
 
 	@Override
 	protected void restoreState(){
-//		System.err.println("restoreState Spectrum");
+//		System.err.println("restoreState Spectrum: "+storeSiteIndex);
 		getSpectra(storeSiteIndex).restoreState();
 		//TODO don't need to copy everything
 //		for (int i = 0; i < spectrum.size(); i++) {
