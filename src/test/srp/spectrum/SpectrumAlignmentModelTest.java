@@ -80,7 +80,7 @@ public class SpectrumAlignmentModelTest {
 		assertEquals(5, spectrumModel.getSpectrumCount());
 		for (int i = 0; i < spectrumModel.getSpectrumCount(); i++) {
 			Spectrum spectrum = spectrumModel.getSpectrum(i);
-			assertArrayEquals(expectedFreq , spectrum.getFrequencies(0), 0);
+			assertArrayEquals(expectedFreq , spectrum.getFrequenciesAt(0), 0);
 		}
 		
 	}

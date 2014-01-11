@@ -1,12 +1,8 @@
 package test.srp.spectrum.likelihood;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
-import java.io.File;
-import java.util.Arrays;
-import java.util.HashMap;
-
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.math3.stat.StatUtils;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -21,11 +17,8 @@ import srp.haplotypes.AlignmentUtils;
 import srp.spectrum.SpectraParameter;
 import srp.spectrum.Spectrum;
 import srp.spectrum.SpectrumAlignmentModel;
-import srp.spectrum.likelihood.ShortReadsSpectrumLikelihood;
 import srp.spectrum.likelihood.SpectrumTreeLikelihood;
 import srp.spectrum.operator.SingleSpectrumDeltaExchangeOperator;
-
-import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.SimpleAlignment;
 import dr.evolution.alignment.SitePatterns;
 import dr.evolution.datatype.Nucleotides;
@@ -41,24 +34,17 @@ import dr.evomodel.sitemodel.SiteModel;
 import dr.evomodel.substmodel.FrequencyModel;
 import dr.evomodel.substmodel.HKY;
 import dr.evomodel.tree.TreeModel;
-import dr.evomodel.treelikelihood.LikelihoodCore;
 import dr.evomodel.treelikelihood.TreeLikelihood;
 import dr.evomodelxml.sitemodel.GammaSiteModelParser;
 import dr.evomodelxml.substmodel.HKYParser;
-import dr.inference.loggers.MCLogger;
-import dr.inference.loggers.TabDelimitedFormatter;
 import dr.inference.mcmc.MCMC;
 import dr.inference.mcmc.MCMCOptions;
-import dr.inference.model.Likelihood;
 import dr.inference.model.Parameter;
-import dr.inference.operators.DeltaExchangeOperator;
 import dr.inference.operators.MCMCOperator;
 import dr.inference.operators.OperatorFailedException;
 import dr.inference.operators.OperatorSchedule;
 import dr.inference.operators.SimpleMCMCOperator;
 import dr.inference.operators.SimpleOperatorSchedule;
-import dr.inference.operators.UpDownOperator;
-import dr.inferencexml.model.CompoundLikelihoodParser;
 import dr.math.MathUtils;
 
 public class SpectrumTreeLikelihoodTest {

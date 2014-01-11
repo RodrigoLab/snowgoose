@@ -97,7 +97,7 @@ public class MainMCMCSpectrumFull {
 		Alignment shortReads = dataImporter.importShortReads(shortReadFile);
 		AlignmentMapping aMap = new AlignmentMapping(shortReads);
 //		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, noOfRecoveredHaplotype);
-		SpectrumAlignmentModel spectrumModel = SpectrumAlignmentModel.importPartial(aMap, partialHaplotypeName );
+		SpectrumAlignmentModel spectrumModel = SpectrumAlignmentModel.importPartialSpectrumFile(aMap, partialHaplotypeName );
 //		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, trueAlignment);
 
 //		haplotypeModel = new HaplotypeModel(alignmentMapping, trueAlignment);

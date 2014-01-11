@@ -77,7 +77,7 @@ public class SpectraParameter extends Parameter.Default{
     
     //Sets the value of the parameter without firing a changed event.
     protected void setFrequenciesQuietly(double[] values){
-    	for (int i = 0; i < values.length; i++) {
+    	for (int i = 0; i < DIMENSION; i++) {
     		setParameterValueQuietly(i, values[i]);
 		}
 //    	fireParameterChangedEvent(i, Parameter.ChangeType.VALUE_CHANGED);

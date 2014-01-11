@@ -47,13 +47,13 @@ public class SingleSpectrumDeltaExchangeOperator extends AbstractSpectrumOperato
 //		int[] posChar = alignmentMapping.getNextBase();
 //		spectrumModel.swapHaplotypeSingleBase(OP, posChar);
 		int spectrumIndex = MathUtils.nextInt(spectrumCount);
-		int siteIndex = MathUtils.nextInt(spectrumLength);
+		int[] siteIndex = new int[]{MathUtils.nextInt(spectrumLength)};
 		
 		
 //		System.err.println(spectrumIndex +"\t"+ siteIndex);
 		
 		Spectrum spectrum = spectrumModel.getSpectrum(spectrumIndex);
-		SpectraParameter parameter = spectrum.getSpectra(siteIndex);
+		SpectraParameter parameter = spectrum.getSpectra(siteIndex[0]);
         // get two dimensions
 
         final int dim1 = MathUtils.nextInt(DIMENSION);
@@ -129,7 +129,7 @@ public class SingleSpectrumDeltaExchangeOperator extends AbstractSpectrumOperato
     @Override
 	public final String getPerformanceSuggestion() {
 		SpectrumOperationRecord record = spectrumModel.getSpectrumOperationRecord();
-		String s = record.getSpectrumIndex() +"\t"+ record.getSiteIndex() +"\n";
+		String s = record.getSpectrumIndex() +"\t"+ Arrays.toString(record.getAllSiteIndexs()) +"\n";
 		s+= spectrumModel.diagnostic() +"\n";
 		s += Arrays.toString(debugList);
 		spectrumModel.restoreModelState();

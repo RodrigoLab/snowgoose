@@ -55,21 +55,17 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 	private SpectrumOperationRecord spectrumOperationRecord;
 	
 
-	private SpectrumAlignmentModel(int length){
+	
+	private SpectrumAlignmentModel(AlignmentMapping aMap){
 		super(MODEL_NAME);
-		spectrumLength = length;
+		this.aMap = aMap;
+		spectrumLength = this.aMap.getLength();
 		
 		spectrumList = new ArrayList<Spectrum>();
 		storedSpectrumList = new ArrayList<Spectrum>();
 		setDataType(Nucleotides.INSTANCE);
 		spectrumOperationRecord = new SpectrumOperationRecord();
 		
-//		storedCumSumFrequency[INDEX_OF_LAST_VALID_CHARS]=1;
-	}
-	
-	private SpectrumAlignmentModel(AlignmentMapping aMap){
-		this(aMap.getLength());
-		this.aMap = aMap;
 //		
 //		spectrumLength = this.aMap.getLength();
 //		
@@ -80,9 +76,9 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 		
 //		storedCumSumFrequency[INDEX_OF_LAST_VALID_CHARS]=1;
 	}
-	private SpectrumAlignmentModel(Alignment shortReads) {
-		this(new AlignmentMapping(shortReads));
-	}
+//	private SpectrumAlignmentModel(Alignment shortReads) {
+//		this(new AlignmentMapping(shortReads));
+//	}
 
 
 	private static char[] initValidChars4() {
@@ -181,6 +177,8 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 		}
 	}
 	
+	
+	
 	public SpectrumAlignmentModel(Alignment shortReads, int hapCount) {
 		this(new AlignmentMapping(shortReads), hapCount);
 
@@ -202,34 +200,38 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 	public AlignmentMapping getAlignmentMapping() {
 		return aMap;
 	}
-	
-	public void setSpectrumOperationRecord(SpectrumOperation op, int spectrumIndex,
-			int siteIndex, double... delta){
 
-		spectrumOperationRecord.setRecord(op, spectrumIndex, siteIndex, delta);
+	public void setSpectrumOperationRecord(SpectrumOperation op,
+			int[] twoSpectrumIndex, int[] swapPositionIndex){
+
+		spectrumOperationRecord.setRecord(op, twoSpectrumIndex, swapPositionIndex);
 	}
 
+	//	public void setSpectrumOperationRecord(SpectrumOperation op, int spectrumIndex,
+//			int siteIndex, double... delta){
+//
+//		spectrumOperationRecord.setRecord(op, spectrumIndex, siteIndex, delta);
+//	}
 
-	public void setSpectrumOperationRecord(SpectrumOperation op, int siteIndex, double... delta){
-
+	public void setSpectrumOperationRecord(SpectrumOperation op, int siteIndex,
+			double... delta) {
 		spectrumOperationRecord.setRecord(op, siteIndex, delta);
 	}
-	
 
-	public void setSpectrumOperationRecord(SpectrumOperation op, int spectrumIndex, int[] siteIndexs) {
-		spectrumOperationRecord.setRecord(op, spectrumIndex, siteIndexs );
-		
+	public void setSpectrumOperationRecord(SpectrumOperation op,
+			int spectrumIndex, int[] siteIndexs, double... delta) {
+		spectrumOperationRecord.setRecord(op, spectrumIndex, siteIndexs, delta);
+
 	}
 
-
-	public SpectrumOperationRecord getSpectrumOperationRecord(){
+	public SpectrumOperationRecord getSpectrumOperationRecord() {
 		return spectrumOperationRecord;
 	}
-	
+
 	public double[] getSpecturmFrequencies(int spectrumIndex, int i) {
 	//		Spectrum spectrum = getSpectrum(sequenceIndex);
 			
-			return getSpectrum(spectrumIndex).getFrequencies(i);
+			return getSpectrum(spectrumIndex).getFrequenciesAt(i);
 	}
 
 
@@ -268,7 +270,7 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 			break;
 		case SINGLE_DELTA:
 			spectrumIndex = spectrumOperationRecord.getSpectrumIndex();
-			siteIndex = spectrumOperationRecord.getSiteIndex();
+			siteIndex = spectrumOperationRecord.getAllSiteIndexs()[0];
 
 			spectrum = getSpectrum(spectrumIndex);
 			spectrum.setStoreSiteIndex(siteIndex);
@@ -276,7 +278,7 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 			break;
 		case COLUMN_DELTA:
 //			spectrumIndex = spectrumOperationRecord.getSpectrumIndex();
-			siteIndex = spectrumOperationRecord.getSiteIndex();
+			siteIndex = spectrumOperationRecord.getColumnIndex();
 			for (int i = 0; i < getSpectrumCount(); i++) {
 				spectrum = getSpectrum(i);
 				spectrum.setStoreSiteIndex(siteIndex);
@@ -285,7 +287,7 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 			break;
 		case MULTI_DELTA:
 			spectrumIndex = spectrumOperationRecord.getSpectrumIndex();
-			siteIndexs = spectrumOperationRecord.getSiteIndexs();
+			siteIndexs = spectrumOperationRecord.getAllSiteIndexs();
 			spectrum = getSpectrum(spectrumIndex);
 			for (int i = 0; i < siteIndexs.length; i++) {
 				spectrum.setStoreSiteIndex(siteIndexs[i]);
@@ -332,7 +334,7 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 				break;
 			case SINGLE_DELTA:
 				spectrumIndex = spectrumOperationRecord.getSpectrumIndex();
-				siteIndex = spectrumOperationRecord.getSiteIndex();
+				siteIndex = spectrumOperationRecord.getAllSiteIndexs()[0];
 //				System.err.println(spectrumIndex +"\t"+ siteIndex +"\t"+ Arrays.toString(getSpecturmFrequencies(spectrumIndex,
 //						siteIndex)));
 				spectrum = getSpectrum(spectrumIndex);
@@ -343,7 +345,7 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 				break;
 			case COLUMN_DELTA:
 //				spectrumIndex = spectrumOperationRecord.getSpectrumIndex();
-				siteIndex = spectrumOperationRecord.getSiteIndex();
+				siteIndex = spectrumOperationRecord.getColumnIndex();
 //				System.err.println(spectrumIndex +"\t"+ siteIndex +"\t"+ Arrays.toString(getSpecturmFrequencies(spectrumIndex,
 //						siteIndex)));
 				for (int i = 0; i < getSpectrumCount(); i++) {
@@ -354,7 +356,7 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 				break;
 			case MULTI_DELTA:
 				spectrumIndex = spectrumOperationRecord.getSpectrumIndex();
-				siteIndexs = spectrumOperationRecord.getSiteIndexs();
+				siteIndexs = spectrumOperationRecord.getAllSiteIndexs();
 				spectrum = getSpectrum(spectrumIndex);
 				for (int i = 0; i < siteIndexs.length; i++) {
 					spectrum.setStoreSiteIndex(siteIndexs[i]);
@@ -535,7 +537,7 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 	public String diagnostic(){
 
 		int spectrumIndex = spectrumOperationRecord.getSpectrumIndex();
-		int siteIndex = spectrumOperationRecord.getSiteIndex();
+		int siteIndex = spectrumOperationRecord.getAllSiteIndexs()[0];
 
 		Spectrum spectrum = getSpectrum(spectrumIndex);
 		spectrum.setStoreSiteIndex(siteIndex);
@@ -553,10 +555,10 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 			Spectrum spectrum = spectrumModel.getSpectrum(i);
 			Spectrum newSpectrum = spectrumModel2.getSpectrum(i);
 			for (int j = 0; j < spectrum.getLength(); j++) {
-				double[] frequencies = spectrum.getFrequencies(j);
+				double[] frequencies = spectrum.getFrequenciesAt(j);
 				for (int k = 0; k < frequencies.length; k++) {
 					if(frequencies[k] != newSpectrum.getFrequency(j, k)){
-						System.err.println("DIFFMODEL"+i +"\t"+ j +"\t"+ k +"\t"+ Arrays.toString(frequencies) +"\t"+ Arrays.toString(newSpectrum.getFrequencies(j)));
+						System.err.println("DIFFMODEL"+i +"\t"+ j +"\t"+ k +"\t"+ Arrays.toString(frequencies) +"\t"+ Arrays.toString(newSpectrum.getFrequenciesAt(j)));
 					}
 				}
 			}
@@ -564,11 +566,11 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 		}
 		SpectrumOperationRecord record = spectrumModel.getSpectrumOperationRecord();
 		int spec = record.getSpectrumIndex();
-		int site = record.getSiteIndex();
+		int site = record.getAllSiteIndexs()[0];
 		System.out.println("compare two models");
-		System.out.println(Arrays.toString(spectrumModel.getSpectrum(spec).getFrequencies(
+		System.out.println(Arrays.toString(spectrumModel.getSpectrum(spec).getFrequenciesAt(
 				site)));
-		System.out.println(Arrays.toString(spectrumModel2.getSpectrum(spec).getFrequencies(
+		System.out.println(Arrays.toString(spectrumModel2.getSpectrum(spec).getFrequenciesAt(
 				site)));
 		
 	}
@@ -585,7 +587,7 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 				Sequence seq = trueAlignment.getSequence(j);
 				for (int k = 0; k < getSpectrumLength(); k++) {
 					int state = seq.getState(k);
-					double d = spe.getFrequencies(k)[state]; //Match
+					double d = spe.getFrequenciesAt(k)[state]; //Match
 					dist += d;
 				}
 				dist /= getSpectrumLength();
@@ -598,10 +600,10 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 	}
 
 	
-	public static SpectrumAlignmentModel importPartial(AlignmentMapping aMap,
-			String partialHaplotypeName) throws IOException {
+	public static SpectrumAlignmentModel importPartialSpectrumFile(AlignmentMapping aMap,
+			String partialSpectrumName) throws IOException {
 
-		BufferedReader inFile  = new BufferedReader(new FileReader(partialHaplotypeName));
+		BufferedReader inFile  = new BufferedReader(new FileReader(partialSpectrumName));
 		String inline;
 		int length = 0;
 		SpectrumAlignmentModel spectrumModel = null;
@@ -641,8 +643,8 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 					String[] result = inline.split("\\s");
 					
 					length = result.length;
-					spectrumModel = new SpectrumAlignmentModel(length);
-					spectrumModel.aMap = aMap;
+					spectrumModel = new SpectrumAlignmentModel(aMap);
+//					spectrumModel.aMap = aMap;
 					
 					
 					double[][] freqs = new double[4][length];
@@ -671,7 +673,7 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 		}
 //		int length = 0;
 //		SpectrumAlignmentModel model = new SpectrumAlignmentModel(length);
-
+		inFile.close();
 		return spectrumModel;
 	}
 	

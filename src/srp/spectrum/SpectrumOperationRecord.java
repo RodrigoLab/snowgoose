@@ -1,6 +1,5 @@
 package srp.spectrum;
 
-import srp.haplotypes.Operation;
 
 public class SpectrumOperationRecord {
 
@@ -23,9 +22,11 @@ public class SpectrumOperationRecord {
 	private int[] posChars;
 	private SpectrumOperation operation;
 	private int spectrumIndex;
-	private int siteIndex;
+	private int columnIndex;
 	private double[] delta;
 	private int[] allSiteIndexs;
+	private int[] swapPositionIndex;
+	private int[] twoSpectrumIndex;
 
 	
 	/*
@@ -61,6 +62,7 @@ public class SpectrumOperationRecord {
 	
 	public SpectrumOperationRecord() {
 		operation = SpectrumOperation.NONE;
+
 	}
 
 
@@ -183,27 +185,18 @@ public class SpectrumOperationRecord {
 //	}
 
 
-	public int getSiteIndex() {
-		return siteIndex;
+	public int getColumnIndex() {
+		return columnIndex;
 	}
-//
-//
-//	public void setSiteIndex(int siteIndex) {
-//		this.siteIndex = siteIndex;
-//	}
+
+	public int[] getAllSiteIndexs() {
+	
+		return allSiteIndexs;
+	}
 
 
 	public double[] getDelta() {
 		return delta;
-	}
-
-
-	public void setRecord(SpectrumOperation operation, int spectrumIndex, int siteIndex, double[] delta) {
-		this.operation = operation;
-		this.spectrumIndex = spectrumIndex;
-		this.siteIndex = siteIndex;
-		this.delta = delta;
-		
 	}
 
 
@@ -212,29 +205,45 @@ public class SpectrumOperationRecord {
 		
 	}
 
+	@Deprecated
+	public void setRecord(SpectrumOperation op, int spectrumIndex, int siteIndex, double[] delta) {
+		//Single
+		setOperation(op);
+		this.spectrumIndex = spectrumIndex;
+		this.columnIndex = siteIndex;
+		this.delta = delta;
+		
+	}
 
-	public void setRecord(SpectrumOperation op, int siteIndex, double[] delta) {
-		this.operation = op;
-		this.siteIndex = siteIndex;
+
+	public void setRecord(SpectrumOperation op, int columnIndex, double[] delta) {
+		//Column
+		setOperation(op);
+		this.columnIndex = columnIndex;
 		this.delta = delta;
 				
 	}
 
 
-	public void setRecord(SpectrumOperation op, int spectrumIndex, int[] siteIndexs) {
-		this.operation = op;
+	public void setRecord(SpectrumOperation op, int spectrumIndex, int[] siteIndexs, double[] delta) {
+		//Multi
+		setOperation(op);
 		this.spectrumIndex = spectrumIndex;
 		this.allSiteIndexs = siteIndexs;
+		this.delta = delta;
 		
 		
 	}
 
 
-	public int[] getSiteIndexs() {
-		// TODO Auto-generated method stub
-		return allSiteIndexs;
-	}
 
+	public void setRecord(SpectrumOperation op, int[] twoSpectrumIndex,
+			int[] swapPositionIndex) {
+		setOperation(op);
+		this.twoSpectrumIndex = twoSpectrumIndex;
+		this.swapPositionIndex = swapPositionIndex;
+
+	}
 
 	
 }

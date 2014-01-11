@@ -1,9 +1,8 @@
 package test.srp.spectrum.likelihood;
 
 
-import static org.junit.Assert.*;
-
-import java.util.Arrays;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -14,8 +13,6 @@ import org.junit.Test;
 import srp.core.DataImporter;
 import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.AlignmentUtils;
-import srp.haplotypes.HaplotypeModel;
-import srp.likelihood.ShortReadLikelihood;
 import srp.spectrum.Spectrum;
 import srp.spectrum.SpectrumAlignmentModel;
 import srp.spectrum.SpectrumOperation;
@@ -155,20 +152,24 @@ public class ShortReadsSpectrumLikelihoodTest {
 		//Site2: 0.7, 0.1, 0.1, 0.1
 		//Site3: 0.4, 0.2, 0.2, 0.2
 		//Site4: 0.1, 0.3, 0.3, 0.3
-		double[] expecteds = new double[]{ 
-				//MMMD
-				Math.log(1*NOT_ERROR+0*ERROR)+Math.log(0.7*NOT_ERROR+0.3*ERROR)+
-				Math.log(0.4*NOT_ERROR+0.6*ERROR)+Math.log(0.3*NOT_ERROR+0.7*ERROR),
-				
-				//MMDD
-				Math.log(1*NOT_ERROR+0*ERROR)+Math.log(0.7*NOT_ERROR+0.3*ERROR)+
-				Math.log(0.2*NOT_ERROR+0.8*ERROR)+Math.log(0.3*NOT_ERROR+0.7*ERROR),
-				
-				//MDDD
-				Math.log(1*NOT_ERROR+0*ERROR)+Math.log(0.1*NOT_ERROR+0.9*ERROR)+
-				Math.log(0.2*NOT_ERROR+0.8*ERROR)+Math.log(0.3*NOT_ERROR+0.7*ERROR),
+		double[] expecteds = new double[] {
+				// MMMD
+				Math.log((1 * NOT_ERROR + 0 * ERROR)
+						* (0.7 * NOT_ERROR + 0.3 * ERROR)
+						* (0.4 * NOT_ERROR + 0.6 * ERROR)
+						* (0.3 * NOT_ERROR + 0.7 * ERROR)),
+				// MMDD
+				Math.log((1 * NOT_ERROR + 0 * ERROR)
+						* (0.7 * NOT_ERROR + 0.3 * ERROR)
+						* (0.2 * NOT_ERROR + 0.8 * ERROR)
+						* (0.3 * NOT_ERROR + 0.7 * ERROR)),
 
-			};
+				// MDDD
+				Math.log((1 * NOT_ERROR + 0 * ERROR)
+						* (0.1 * NOT_ERROR + 0.9 * ERROR)
+						* (0.2 * NOT_ERROR + 0.8 * ERROR)
+						* (0.3 * NOT_ERROR + 0.7 * ERROR)) 
+		};
 		assertArrayEquals(expecteds, eachLikelihood, 1e-8);
 		
 
@@ -423,7 +424,7 @@ public class ShortReadsSpectrumLikelihoodTest {
 		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 4);
 		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
 		
-		SingleSpectrumDeltaExchangeOperator op = new SingleSpectrumDeltaExchangeOperator(spectrumModel, 0.1, null);
+//		SingleSpectrumDeltaExchangeOperator op = new SingleSpectrumDeltaExchangeOperator(spectrumModel, 0.1, null);
 		
 		double trial = 1e5;
 		long totalTime = 0;

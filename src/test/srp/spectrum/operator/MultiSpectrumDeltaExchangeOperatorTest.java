@@ -21,9 +21,10 @@ import srp.spectrum.Spectrum;
 import srp.spectrum.SpectrumAlignmentModel;
 import srp.spectrum.SpectrumOperationRecord;
 import srp.spectrum.likelihood.ShortReadsSpectrumLikelihood;
-import srp.spectrum.operator.SingleSpectrumDeltaExchangeOperator;
+import srp.spectrum.operator.MultiSpectrumDeltaExchangeOperator;
 
-public class SingleSpectrumDeltaExchangeOperatorTest {
+
+public class MultiSpectrumDeltaExchangeOperatorTest {
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -50,7 +51,7 @@ public class SingleSpectrumDeltaExchangeOperatorTest {
 				};
 		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
 		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 1);
-		SingleSpectrumDeltaExchangeOperator op = new SingleSpectrumDeltaExchangeOperator(
+		MultiSpectrumDeltaExchangeOperator op = new MultiSpectrumDeltaExchangeOperator(
 				spectrumModel, 0.1, CoercionMode.COERCION_OFF);
 
 		double[][] storedFrequencies = new double[spectrumModel.getSiteCount()][4];
@@ -65,22 +66,24 @@ public class SingleSpectrumDeltaExchangeOperatorTest {
 				
 				SpectrumOperationRecord opRecord = spectrumModel.getSpectrumOperationRecord();
 				int spectrumIndex = opRecord.getSpectrumIndex();
-				int siteIndex = opRecord.getAllSiteIndexs()[0];
-				double delta = opRecord.getDelta()[0];
+				int[] siteIndexs = opRecord.getAllSiteIndexs();
+				double[] delta = opRecord.getDelta();
 				
 				spectrum = spectrumModel.getSpectrum(spectrumIndex);
-				double[] frequencies = spectrum.getFrequenciesAt(siteIndex);
-				
-				int count = 0;
-				for (int f = 0; f < frequencies.length; f++) {
-					if(frequencies[f]!= storedFrequencies[siteIndex][f]){
-						count++;
-						double absDelta = Math.abs(frequencies[f]-storedFrequencies[siteIndex][f]);
-						assertEquals(delta, absDelta, 1e-8);
+				for (int i = 0; i < siteIndexs.length; i++) {
+					
+					double[] frequencies = spectrum.getFrequenciesAt(siteIndexs[i]);
+					int count = 0;
+					for (int f = 0; f < frequencies.length; f++) {
+						if(frequencies[f]!= storedFrequencies[siteIndexs[i]][f]){
+							count++;
+							double absDelta = Math.abs(frequencies[f]-storedFrequencies[siteIndexs[i]][f]);
+							assertEquals(delta[i], absDelta, 1e-8);
+						}
+						storedFrequencies[siteIndexs[i]][f] = frequencies[f];
 					}
-					storedFrequencies[siteIndex][f] = frequencies[f];
+					assertEquals(2, count);
 				}
-				assertEquals(2, count);
 			} catch (OperatorFailedException e) {
 //				e.printStackTrace();
 			}	
@@ -97,7 +100,7 @@ public class SingleSpectrumDeltaExchangeOperatorTest {
 				};
 		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
 		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 5);
-		SingleSpectrumDeltaExchangeOperator op = new SingleSpectrumDeltaExchangeOperator(
+		MultiSpectrumDeltaExchangeOperator op = new MultiSpectrumDeltaExchangeOperator(
 				spectrumModel, 0.1, CoercionMode.COERCION_OFF);
 
 		double[][][] storedFrequencies = new double[spectrumModel
@@ -115,23 +118,25 @@ public class SingleSpectrumDeltaExchangeOperatorTest {
 				
 				SpectrumOperationRecord opRecord = spectrumModel.getSpectrumOperationRecord();
 				int spectrumIndex = opRecord.getSpectrumIndex();
-				int siteIndex = opRecord.getAllSiteIndexs()[0];
-				double delta = opRecord.getDelta()[0];
+				int[] siteIndexs = opRecord.getAllSiteIndexs();
+				double[] delta = opRecord.getDelta();
 				
 				Spectrum spectrum = spectrumModel.getSpectrum(spectrumIndex);
-				double[] frequencies = spectrum.getFrequenciesAt(siteIndex);
-				
-				int count = 0;
-				double[] spectraFrequencies = storedFrequencies[spectrumIndex][siteIndex];
-				for (int f = 0; f < frequencies.length; f++) {
-					if(frequencies[f]!= spectraFrequencies[f]){
-						count++;
-						double absDelta = Math.abs(frequencies[f]-spectraFrequencies[f]);
-						assertEquals(delta, absDelta, 1e-8);
+				for (int i = 0; i < siteIndexs.length; i++) {
+					
+					double[] frequencies = spectrum.getFrequenciesAt(siteIndexs[i]);
+					int count = 0;
+					double[] spectraFrequencies = storedFrequencies[spectrumIndex][siteIndexs[i]];
+					for (int f = 0; f < frequencies.length; f++) {
+						if(frequencies[f]!= spectraFrequencies[f]){
+							count++;
+							double absDelta = Math.abs(frequencies[f]-spectraFrequencies[f]);
+							assertEquals(delta[i], absDelta, 1e-8);
+						}
+						spectraFrequencies[f] = frequencies[f];
 					}
-					spectraFrequencies[f] = frequencies[f];
+					assertEquals(2, count);
 				}
-				assertEquals(2, count);
 			} catch (OperatorFailedException e) {
 //				e.printStackTrace();
 			}	

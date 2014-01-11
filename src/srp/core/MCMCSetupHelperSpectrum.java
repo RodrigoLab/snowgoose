@@ -27,6 +27,7 @@ import srp.spectrum.SpectrumAlignmentModel;
 import srp.spectrum.likelihood.SpectrumTreeLikelihood;
 import srp.spectrum.operator.ColumnSpectrumDeltaExchangeOperator;
 import srp.spectrum.operator.MultiSpectrumDeltaExchangeOperator;
+import srp.spectrum.operator.RecombinationSpectrumOperator;
 import srp.spectrum.operator.SingleSpectrumDeltaExchangeOperator;
 import dr.evolution.datatype.Nucleotides;
 import dr.evolution.util.Units;
@@ -168,11 +169,19 @@ public class MCMCSetupHelperSpectrum extends MCMCSetupHelper {
 		
 		operator = new SingleSpectrumDeltaExchangeOperator(spectrumModel, 0.2, CoercionMode.COERCION_ON);
 //		0.05 delta, accept 0.8
+		operator.setWeight(opSpectrum);
+//		schedule.addOperator(operator);
 		
 		
 		operator = new ColumnSpectrumDeltaExchangeOperator(spectrumModel, 0.05, CoercionMode.COERCION_OFF);
-		operator = new MultiSpectrumDeltaExchangeOperator(spectrumModel, 0.05, CoercionMode.COERCION_OFF);
+		operator.setWeight(opSpectrum);
+//		schedule.addOperator(operator);
 		
+		operator = new MultiSpectrumDeltaExchangeOperator(spectrumModel, 0.05, CoercionMode.COERCION_OFF);
+		operator.setWeight(opSpectrum);
+		schedule.addOperator(operator);
+		
+		operator = new RecombinationSpectrumOperator(spectrumModel, 10, CoercionMode.COERCION_OFF);
 		operator.setWeight(opSpectrum);
 		schedule.addOperator(operator);
 		

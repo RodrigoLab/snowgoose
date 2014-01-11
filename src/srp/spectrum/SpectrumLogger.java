@@ -4,7 +4,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import srp.haplotypes.HaplotypeModelUtils;
 import dr.evolution.alignment.Alignment;
 import dr.inference.loggers.LogFormatter;
 import dr.inference.loggers.MCLogger;
@@ -48,11 +47,13 @@ public class SpectrumLogger extends MCLogger {
 	}
 
 
-    public void startLogging() {
+    @Override
+	public void startLogging() {
     	logLine("START!!");
     }
 
-    public void log(long state) {
+    @Override
+	public void log(long state) {
 
     	if (logEvery > 0 && (state % logEvery == 0)) {
 //    		(logEvery < 0 || ((state % logEvery) == 0));
@@ -69,7 +70,8 @@ public class SpectrumLogger extends MCLogger {
 
     }
 
-    public void stopLogging() {
+    @Override
+	public void stopLogging() {
     
         super.stopLogging();
     }

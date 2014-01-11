@@ -1,6 +1,7 @@
 package srp.spectrum.operator;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import srp.spectrum.SpectraParameter;
 import srp.spectrum.Spectrum;
@@ -112,10 +113,12 @@ public class ColumnSpectrumDeltaExchangeOperator extends AbstractSpectrumOperato
 
     	
         SpectraParameter[] spectra = new SpectraParameter[spectrumCount];
+        double[] d = new double[spectrumCount];
         double[] scalar1 = new double[spectrumCount];
         double[] scalar2 = new double[spectrumCount];
         int[] dim1 = new int[spectrumCount];
 		int[] dim2 = new int[spectrumCount];
+		
         
 		for (int i = 0; i < spectrumCount; i++) {
 			
@@ -134,9 +137,9 @@ public class ColumnSpectrumDeltaExchangeOperator extends AbstractSpectrumOperato
 	        scalar1[i] = spectra[i].getParameterValue(dim1[i]);
 	        scalar2[i]= spectra[i].getParameterValue(dim2[i]);
 	
-	        final double d = MathUtils.nextDouble() * delta;
-	        scalar1[i] -= d;
-	        scalar2[i] += d;
+	        d[i] = MathUtils.nextDouble() * delta;
+	        scalar1[i] -= d[i];
+	        scalar2[i] += d[i];
 	
 	        
 	
@@ -156,7 +159,7 @@ public class ColumnSpectrumDeltaExchangeOperator extends AbstractSpectrumOperato
 
 		}
         // symmetrical move so return a zero hasting ratio
-		spectrumModel.setSpectrumOperationRecord(OP, siteIndex);
+		spectrumModel.setSpectrumOperationRecord(OP, siteIndex, d);
 		
 		spectrumModel.endSpectrumOperation();
 
@@ -204,7 +207,7 @@ public class ColumnSpectrumDeltaExchangeOperator extends AbstractSpectrumOperato
     @Override
 	public final String getPerformanceSuggestion() {
 		SpectrumOperationRecord record = spectrumModel.getSpectrumOperationRecord();
-		String s = record.getSpectrumIndex() +"\t"+ record.getSiteIndex() +"\n";
+		String s = record.getSpectrumIndex() +"\t"+ record.getColumnIndex() +"\n";
 		s+= spectrumModel.diagnostic() +"\n";
 		s += Arrays.toString(debugList);
 		spectrumModel.restoreModelState();

@@ -241,7 +241,7 @@ public class SpectrumTreeLikelihood extends AbstractSpectrumTreeLikelihood {
         else if (model == spectrumModel){
         	SpectrumOperationRecord record = spectrumModel.getSpectrumOperationRecord();
 			int spectrumIndex = record.getSpectrumIndex();
-			int siteIndex = record.getSiteIndex();
+			int siteIndex = record.getAllSiteIndexs()[0];
 //        	updateExternalNodeIndex = -1;
 //        	spectrumIndex -> taxonName -> indexOnTree
 			String taxonId = spectrumModel.getTaxonId(spectrumIndex);
@@ -300,8 +300,6 @@ public class SpectrumTreeLikelihood extends AbstractSpectrumTreeLikelihood {
     @Override
 	protected void acceptState() {
     	SpectrumOperationRecord record = spectrumModel.getSpectrumOperationRecord();
-		int spectrumIndex = record.getSpectrumIndex();
-		int siteIndex = record.getSiteIndex();
 
 	}
     @Override
@@ -635,7 +633,7 @@ public class SpectrumTreeLikelihood extends AbstractSpectrumTreeLikelihood {
     	sb.append("Diagnostic!\n");
     	SpectrumOperationRecord record = spectrumModel.getSpectrumOperationRecord();
 		int spectrumIndex = record.getSpectrumIndex();
-		int siteIndex = record.getSiteIndex();
+		int siteIndex = record.getAllSiteIndexs()[0];
 //    	updateExternalNodeIndex = -1;
 //    	spectrumIndex -> taxonName -> indexOnTree
 		String taxonId = spectrumModel.getTaxonId(spectrumIndex);

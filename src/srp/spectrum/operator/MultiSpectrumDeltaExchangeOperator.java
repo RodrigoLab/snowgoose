@@ -62,6 +62,7 @@ public class MultiSpectrumDeltaExchangeOperator extends AbstractSpectrumOperator
 //		int siteIndex = MathUtils.nextInt(spectrumLength);
 
         SpectraParameter[] spectra = new SpectraParameter[baseCount];
+        double[] d = new double[baseCount];
         double[] scalar1 = new double[baseCount];
         double[] scalar2 = new double[baseCount];
         int[] dim1 = new int[baseCount];
@@ -109,11 +110,10 @@ public class MultiSpectrumDeltaExchangeOperator extends AbstractSpectrumOperator
 	        scalar1[i] = spectra[i].getParameterValue(dim1[i]);
 	        scalar2[i]= spectra[i].getParameterValue(dim2[i]);
 	
-	        final double d = MathUtils.nextDouble() * delta;
-	        scalar1[i] -= d;
-	        scalar2[i] += d;
+	        d[i] = MathUtils.nextDouble() * delta;
+	        scalar1[i] -= d[i];
+	        scalar2[i] += d[i];
 	
-	        
 	
 	        if (scalar1[i] < BOUNDS_LOWER ||
 	                scalar1[i] > BOUNDS_UPPER ||
@@ -131,7 +131,7 @@ public class MultiSpectrumDeltaExchangeOperator extends AbstractSpectrumOperator
 
 		}
         // symmetrical move so return a zero hasting ratio
-		spectrumModel.setSpectrumOperationRecord(OP, spectrumIndex, siteIndexs);
+		spectrumModel.setSpectrumOperationRecord(OP, spectrumIndex, siteIndexs, d);
 		
 		spectrumModel.endSpectrumOperation();
 
@@ -179,7 +179,7 @@ public class MultiSpectrumDeltaExchangeOperator extends AbstractSpectrumOperator
     @Override
 	public final String getPerformanceSuggestion() {
 		SpectrumOperationRecord record = spectrumModel.getSpectrumOperationRecord();
-		String s = record.getSpectrumIndex() +"\t"+ record.getSiteIndex() +"\n";
+		String s = record.getSpectrumIndex() +"\t"+ Arrays.toString(record.getAllSiteIndexs()) +"\n";
 		s+= spectrumModel.diagnostic() +"\n";
 		s += Arrays.toString(debugList);
 		spectrumModel.restoreModelState();

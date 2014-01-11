@@ -218,9 +218,9 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 //			case SWAPCOLUMN:
 //				logLikelihood = calculateSrpLikelihoodSwapColumn();
 //				break;
-//			case SWAPSECTION:
-//				logLikelihood = calculateSrpLikelihoodSwapSection();
-//				break;
+			case SWAPSECTION:
+				logLikelihood = calculateSrpLikelihoodSwapSection();
+				break;
 //			case PASS:
 //				logLikelihood = storedLogLikelihood;
 //				break;
@@ -241,7 +241,7 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 //		System.out.println("calculateSrpLikelihoodFull");
 		SpectrumOperationRecord record = spectrumModel.getSpectrumOperationRecord();
 		int spectrumIndex = record.getSpectrumIndex(); 
-		int siteIndex = record.getSiteIndex();
+		int siteIndex = record.getAllSiteIndexs()[0];
 //		System.out.println("In fullCaluclation\t"+spectrumIndex +"\t"+ siteIndex +"\t"+ 
 //				Arrays.toString(spectrumModel.getSpectrum(spectrumIndex)
 //				.getFrequencies(siteIndex)));
@@ -259,7 +259,7 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 				Spectrum spectrum = spectrumModel.getSpectrum(j);
 				spectrumLogLikelihood[i][j] = 0;
 				for (int k = start; k < end; k++) {
-					double[] frequencies = spectrum.getFrequencies(k);
+					double[] frequencies = spectrum.getFrequenciesAt(k);
 					char srpChar = fullSrp.charAt(k);
 					int state = dataType.getState(srpChar);
 					if(state<stateCount){
@@ -316,7 +316,7 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 //		System.out.println("calculateSrpLikelihoodSingle");
 		SpectrumOperationRecord record = spectrumModel.getSpectrumOperationRecord();
 		int spectrumIndex = record.getSpectrumIndex(); 
-		int siteIndex = record.getSiteIndex();
+		int siteIndex = record.getAllSiteIndexs()[0];
 //		System.out.println("In singleCalculation:\t"+spectrumIndex +"\t"+ siteIndex +"\t"
 //				+Arrays.toString(spectrumModel.getSpectrum(spectrumIndex)
 //				.getFrequencies(siteIndex)));
@@ -346,10 +346,11 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 				
 //				for (int k = start; k < end; k++) {
 					int k = siteIndex;
-					double[] frequencies = spectrum.getFrequencies(k);
+					double[] frequencies = spectrum.getFrequenciesAt(k);
 					char srpChar = fullSrp.charAt(k);
 					int state = dataType.getState(srpChar);
 					if(state<stateCount){
+						//TODO replace with getFrequenices(k, state)?? might be faster
 						double likelihood = frequencies[state] * NOT_ERROR_RATE
 								+ (1 - frequencies[state]) * ERROR_RATE;
 						logLikelihood = Math.log(likelihood);
@@ -397,8 +398,8 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 
 		SpectrumOperationRecord record = spectrumModel.getSpectrumOperationRecord();
 		int spectrumIndex = record.getSpectrumIndex(); 
-		int[] siteIndexs = record.getSiteIndexs();
-		int siteIndex;
+		int[] siteIndexs = record.getAllSiteIndexs();
+//		int siteIndex;
 		
 		Set<Integer> allSrpPos = new HashSet<Integer>();
 		for (int i = 0; i < siteIndexs.length; i++) {
@@ -423,7 +424,7 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 				for (int s = 0; s < siteIndexs.length; s++) {
 					int k = siteIndexs[s];
 					if(allLogLikelihood[i][j][k]!=0){
-						double[] frequencies = spectrum.getFrequencies(k);
+						double[] frequencies = spectrum.getFrequenciesAt(k);
 						char srpChar = fullSrp.charAt(k);
 						int state = dataType.getState(srpChar);
 						if(state<stateCount){
@@ -465,7 +466,7 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 
 		SpectrumOperationRecord record = spectrumModel.getSpectrumOperationRecord();
 		int spectrumIndex = record.getSpectrumIndex(); 
-		int[] siteIndexs = record.getSiteIndexs();
+		int[] siteIndexs = record.getAllSiteIndexs();
 
 		int j = spectrumIndex;
 		Spectrum spectrum = spectrumModel.getSpectrum(j);
@@ -480,7 +481,7 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 				double logLikelihood;
 
 //					if(allLogLikelihood[i][j][k]!=0){
-						double[] frequencies = spectrum.getFrequencies(k);
+						double[] frequencies = spectrum.getFrequenciesAt(k);
 						char srpChar = fullSrp.charAt(k);
 						int state = dataType.getState(srpChar);
 						if(state<stateCount){
@@ -527,7 +528,7 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 //		System.out.println("calculateSrpLikelihoodSingle");
 		SpectrumOperationRecord record = spectrumModel.getSpectrumOperationRecord();
 //		int spectrumIndex = record.getSpectrumIndex(); 
-		int siteIndex = record.getSiteIndex();
+		int siteIndex = record.getColumnIndex();
 //		System.out.println("In singleCalculation:\t"+spectrumIndex +"\t"+ siteIndex +"\t"
 //				+Arrays.toString(spectrumModel.getSpectrum(spectrumIndex)
 //				.getFrequencies(siteIndex)));
@@ -557,7 +558,7 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 				
 //				for (int k = start; k < end; k++) {
 					int k = siteIndex;
-					double[] frequencies = spectrum.getFrequencies(k);
+					double[] frequencies = spectrum.getFrequenciesAt(k);
 					char srpChar = fullSrp.charAt(k);
 					int state = dataType.getState(srpChar);
 					if(state<stateCount){
@@ -604,61 +605,17 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 //		System.out.println(logLikelihood);
 		return logLikelihood;
 	}
-	private void calLikeliSpectrumSingle(int srpIndex, int siteIndex) {
+	private double calculateSrpLikelihoodSwapSection() {
+		
 
-		ShortRead srp = aMap.getShortRead(srpIndex);
-		int srpChar = srp.getFullSrpCharAt(siteIndex);
-//		System.out.println(srpIndex +"\t"+  hapIndex+"\t"+  swapPos+"\t"+  srpChar +"\t"+newChar+"\t"+  oldChar );
-//		int deltaDist = calculateDeltaDist(srpChar, newChar, oldChar);
-
-//		if (deltaDist!= 0){
-//			double[] logPD = scaledLogBinomialDesnity.get(srp.getLength());
-
-//			int newDist = storedAllDists[srpIndex][hapIndex] + deltaDist;
-
-//			allDists[srpIndex][hapIndex] = newDist;
-	
-//			liS.reset();		
-//			for (int j = 0; j < haplotypeCount ; j++) {
-//				liS.addScaledLogProb(logPD[allDists[srpIndex][j]]);
-//		}
-			eachSrpLikelihood[srpIndex] = liS.getLogLikelihood();
+		SpectrumOperationRecord record = spectrumModel.getSpectrumOperationRecord();
+		int spectrumIndex = record.getSpectrumIndex(); 
+		int[] siteIndexs = record.getAllSiteIndexs();
+//		int siteIndex;
+		
+		return 0;
 	}
 
-		
-	
-
-
-	private static int calculateDeltaDist(int srpChar, int newChar, int oldChar){//, boolean isHapEqualNew){
-	
-		int deltaDist = 0;
-	
-		if(newChar!= oldChar){ // if(newChar!= oldChar && isHapEqualNew)
-			if (srpChar==newChar){
-				deltaDist = -1;
-			}
-			else if(srpChar==oldChar){
-				deltaDist = 1;
-			}
-		}
-		return deltaDist;
-		
-	}
-	private static int calculateDeltaDist(boolean srpEqNew, int srpChar, int newChar, int oldChar){//, boolean isHapEqualNew){
-		
-		int deltaDist = 0;
-	
-		if(newChar!= oldChar){ // if(newChar!= oldChar && isHapEqualNew)
-			if (srpEqNew){
-				deltaDist = -1;
-			}
-			else if(srpChar==oldChar){
-				deltaDist = 1;
-			}
-		}
-		return deltaDist;
-		
-	}
 
 	@Override
 	protected void handleModelChangedEvent(Model model, Object object, int index) {
@@ -695,7 +652,7 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 		SpectrumOperationRecord spectrumOperationRecord = spectrumModel.getSpectrumOperationRecord();
 		SpectrumOperation operation = spectrumOperationRecord.getOperation();
 		int spectrumIndex;
-		int siteIndex = spectrumOperationRecord.getSiteIndex();
+		int siteIndex = spectrumOperationRecord.getAllSiteIndexs()[0];
 		ArrayList<Integer> mapToSrp = aMap.getMapToSrp(siteIndex);
 		int[] siteIndexs;
 		
@@ -720,7 +677,7 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 			break;
 		case MULTI_DELTA:
 			spectrumIndex = spectrumOperationRecord.getSpectrumIndex();
-			siteIndexs =  spectrumOperationRecord.getSiteIndexs();
+			siteIndexs =  spectrumOperationRecord.getAllSiteIndexs();
 			for (int s = 0; s < siteIndexs.length; s++) {
 				mapToSrp = aMap.getMapToSrp(siteIndexs[s]);
 				for (int i : mapToSrp) {
@@ -792,7 +749,7 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 		SpectrumOperationRecord spectrumOperationRecord = spectrumModel.getSpectrumOperationRecord();
 		SpectrumOperation operation = spectrumOperationRecord.getOperation();
 		int spectrumIndex;
-		int siteIndex = spectrumOperationRecord.getSiteIndex();
+		int siteIndex = spectrumOperationRecord.getAllSiteIndexs()[0];
 		ArrayList<Integer> mapToSrp = aMap.getMapToSrp(siteIndex);
 		int[] siteIndexs;
 		
@@ -818,7 +775,7 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 			break;
 		case MULTI_DELTA:
 			spectrumIndex = spectrumOperationRecord.getSpectrumIndex();
-			siteIndexs =  spectrumOperationRecord.getSiteIndexs();
+			siteIndexs =  spectrumOperationRecord.getAllSiteIndexs();
 			for (int s = 0; s < siteIndexs.length; s++) {
 				mapToSrp = aMap.getMapToSrp(siteIndexs[s]);
 				for (int i : mapToSrp) {

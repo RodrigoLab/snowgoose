@@ -12,7 +12,6 @@ import dr.inference.model.Model;
 import dr.inference.model.Variable;
 import dr.inference.model.Variable.ChangeType;
 import dr.util.Attributable;
-import dr.util.Identifiable;
 
 //public class Spectrum implements Identifiable, Attributable{// extends AbstractModel{
 public class Spectrum extends AbstractModel implements Attributable {
@@ -60,7 +59,9 @@ public class Spectrum extends AbstractModel implements Attributable {
 		stateCount = dataType.getStateCount();
 	}
 	
+//	public static SpectrumFactory(Sequence sequence)
 	public Spectrum(Sequence sequence) {
+		//TODO change to static factory method
 		super("Spectrum");
 		
 		dataType = Nucleotides.INSTANCE;
@@ -125,7 +126,7 @@ public class Spectrum extends AbstractModel implements Attributable {
 		Taxon newTaxon = oldSpectrum.getTaxon();
 		newSpectrum.setTaxon(newTaxon);
 		for (int i = 0; i < oldSpectrum.getLength(); i++) {
-			double[] frequencies = oldSpectrum.getFrequencies(i);
+			double[] frequencies = oldSpectrum.getFrequenciesAt(i);
 			newSpectrum.resetFrequencies(i, frequencies);
 //			SpectraParameter spectra = new SpectraParameter(frequencies);
 //			addVariable(spectra);
@@ -160,11 +161,17 @@ public class Spectrum extends AbstractModel implements Attributable {
 	public void resetFrequencies(int site, double[] values){
 		getSpectra(site).setFrequenciesQuietly(values);
 	}
+	
 	public double getFrequency(int site, int state) {
 	    return getSpectra(site).getFrequency(state);
 	}
-	
-	public double[] getFrequencies(int site) {
+	/**
+	 * Create a new double[], might be slower then getFrequency(int site, int state) 
+	 * bench mark required
+	 * @param site
+	 * @return frequencies[]
+	 */
+	public double[] getFrequenciesAt(int site) {
 		return getSpectra(site).getFrequencies();
 	}
 
@@ -399,7 +406,6 @@ public class Spectrum extends AbstractModel implements Attributable {
 	@Override
 	protected void handleModelChangedEvent(Model model, Object object, int index) {
 		System.err.println("Call handleModelChangedEvent");
-		//TODO implement
 	}
 
 	@Override
@@ -416,7 +422,7 @@ public class Spectrum extends AbstractModel implements Attributable {
 	@Override
 	protected void storeState() {
 //		System.err.println("storeState Specturm: "+storeSiteIndex);
-		//TODO maybe don't need to copy everything
+
 		
 //		for (int i = 0; i < spectrum.size(); i++) {
 //			storeSpectrum.set(i, spectrum.get(i));
@@ -428,7 +434,7 @@ public class Spectrum extends AbstractModel implements Attributable {
 	protected void restoreState(){
 //		System.err.println("restoreState Spectrum: "+storeSiteIndex);
 		getSpectra(storeSiteIndex).restoreState();
-		//TODO don't need to copy everything
+
 //		for (int i = 0; i < spectrum.size(); i++) {
 //			spectrum.set(i, storeSpectrum.get(i));
 //		}
