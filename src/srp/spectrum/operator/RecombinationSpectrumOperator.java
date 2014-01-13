@@ -17,7 +17,7 @@ import dr.math.MathUtils;
 public class RecombinationSpectrumOperator extends AbstractSpectrumOperator {
 
 	public static final String OPERATOR_NAME = RecombinationSpectrumOperator.class.getSimpleName();
-	public static final SpectrumOperation OP = SpectrumOperation.COLUMN_DELTA;
+	public static final SpectrumOperation OP = SpectrumOperation.RECOMBINATION;
 //    private Parameter parameter = null;
     private final int[] parameterWeights;
 //    private double delta = 0.05;
@@ -63,33 +63,17 @@ public class RecombinationSpectrumOperator extends AbstractSpectrumOperator {
 	public double doOperation() throws OperatorFailedException {
 
 		spectrumModel.startSpectrumOperation();
-
-//		int[] posChar = alignmentMapping.getNextBase();
-//		spectrumModel.swapHaplotypeSingleBase(OP, posChar);
-//		int spectrumIndex = MathUtils.nextInt(spectrumCount);
 		
 		twoSpectrumIndex[0] = MathUtils.nextInt(spectrumCount);
-		twoSpectrumIndex[1] = -1; 
+//		twoSpectrumIndex[1] = -1; 
 				
 		do {
 			twoSpectrumIndex[1] = MathUtils.nextInt(spectrumCount);
         }while (twoSpectrumIndex[0] == twoSpectrumIndex[1]);
 
-//        dim1[i] = MathUtils.nextInt(DIMENSION);
-//        do {
-//            dim2[i] = MathUtils.nextInt(DIMENSION);
-//        }while (dim1[i] == dim2[i]);
-		
 		swapPositionIndex[0] = MathUtils.nextInt(spectrumLength-swapLength);
 		swapPositionIndex[1]= swapPositionIndex[0] + swapLength;
-		
-//        SpectraParameter[] spectra = new SpectraParameter[spectrumCount];
-//        double[] d = new double[spectrumCount];
-//        double[] scalar1 = new double[spectrumCount];
-//        double[] scalar2 = new double[spectrumCount];
-//        int[] dim1 = new int[spectrumCount];
-//		int[] dim2 = new int[spectrumCount];
-		
+
 		Spectrum spectrum1 = spectrumModel.getSpectrum(twoSpectrumIndex[0]);
 		Spectrum spectrum2 = spectrumModel.getSpectrum(twoSpectrumIndex[1]);
 		SpectraParameter spectra1;
@@ -108,14 +92,6 @@ public class RecombinationSpectrumOperator extends AbstractSpectrumOperator {
 				
 			}
 			
-//	        if (scalar1[i] < BOUNDS_LOWER ||
-//	                scalar1[i] > BOUNDS_UPPER ||
-//	                scalar2[i] < BOUNDS_LOWER ||
-//	                scalar2[i] > BOUNDS_UPPER ) {
-////	        	System.err.println("throw");
-//	            throw new OperatorFailedException("proposed values out of range!");
-//	        }
-	        // symmetrical move so return a zero hasting ratio
 		}
 		spectrumModel.setSpectrumOperationRecord(OP, twoSpectrumIndex, swapPositionIndex);
 		
@@ -231,6 +207,11 @@ public class RecombinationSpectrumOperator extends AbstractSpectrumOperator {
         return getOperatorName() + "(windowsize=" + swapLength + ")";
     }
 
+
+	@Override
+	public SpectrumOperation getSpectrumOperation() {
+		return OP;
+	}
 	
 }
 

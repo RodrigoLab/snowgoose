@@ -1,5 +1,7 @@
 package srp.spectrum;
 
+import java.util.Arrays;
+
 
 public class SpectrumOperationRecord {
 
@@ -25,8 +27,8 @@ public class SpectrumOperationRecord {
 	private int columnIndex;
 	private double[] delta;
 	private int[] allSiteIndexs;
-	private int[] swapPositionIndex;
-	private int[] twoSpectrumIndex;
+	private int[] recombinationPositionIndex;
+	private int[] recombinationSpectrumIndex;
 
 	
 	/*
@@ -237,12 +239,22 @@ public class SpectrumOperationRecord {
 
 
 
-	public void setRecord(SpectrumOperation op, int[] twoSpectrumIndex,
-			int[] swapPositionIndex) {
+	public void setRecord(SpectrumOperation op, int[] recombinationSpectrumIndex,
+			int[] recombinationPositionIndex) {
 		setOperation(op);
-		this.twoSpectrumIndex = twoSpectrumIndex;
-		this.swapPositionIndex = swapPositionIndex;
+		this.recombinationSpectrumIndex = recombinationSpectrumIndex;
+		this.recombinationPositionIndex = recombinationPositionIndex;
 
+	}
+
+
+	public int[] getRecombinationPositionIndex() {
+		return recombinationPositionIndex;
+	}
+
+
+	public int[] getRecombinationSpectrumIndex() {
+		return recombinationSpectrumIndex;
 	}
 
 	

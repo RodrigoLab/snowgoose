@@ -7,6 +7,7 @@ import srp.haplotypes.HaplotypeModel;
 import srp.haplotypes.Operation;
 import srp.spectrum.SpectraParameter;
 import srp.spectrum.SpectrumAlignmentModel;
+import srp.spectrum.SpectrumOperation;
 import dr.inference.model.Bounds;
 import dr.inference.model.Parameter;
 import dr.inference.operators.AbstractCoercableOperator;
@@ -25,7 +26,7 @@ public abstract class AbstractSpectrumOperator extends AbstractCoercableOperator
     public static final double BOUNDS_UPPER = BOUNDS.getUpperLimit(0);
     
 
-    public static Operation OP;
+    public SpectrumOperation OP;
     
     protected SpectrumAlignmentModel spectrumModel;
 	protected AlignmentMapping alignmentMapping;
@@ -48,6 +49,14 @@ public abstract class AbstractSpectrumOperator extends AbstractCoercableOperator
 		spectrumLength = this.spectrumModel.getSpectrumLength();
 		alignmentMapping = this.spectrumModel.getAlignmentMapping();
 	}
+
+
+	public abstract SpectrumOperation getSpectrumOperation();
+
+//	public SpectrumOperation getSpectrumOperation() {
+//		// TODO Auto-generated method stub
+//		return OP;
+//	}
 	
 //	public AbstractMultiBasesOperator(HaplotypeModel haplotypeModel, int swapLength, CoercionMode mode) {
 //		super(mode);

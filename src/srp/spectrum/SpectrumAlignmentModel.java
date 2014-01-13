@@ -198,12 +198,12 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 	}
 	
 	public AlignmentMapping getAlignmentMapping() {
-		return aMap;
+		return aMap;	
 	}
 
 	public void setSpectrumOperationRecord(SpectrumOperation op,
 			int[] twoSpectrumIndex, int[] swapPositionIndex){
-
+		
 		spectrumOperationRecord.setRecord(op, twoSpectrumIndex, swapPositionIndex);
 	}
 
@@ -268,14 +268,14 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 		case NONE:
 //			System.err.println("SpectrumAlignmentModel NONE operation");
 			break;
-		case SINGLE_DELTA:
-			spectrumIndex = spectrumOperationRecord.getSpectrumIndex();
-			siteIndex = spectrumOperationRecord.getAllSiteIndexs()[0];
-
-			spectrum = getSpectrum(spectrumIndex);
-			spectrum.setStoreSiteIndex(siteIndex);
-			spectrum.storeState();
-			break;
+//		case SINGLE_DELTA:
+//			spectrumIndex = spectrumOperationRecord.getSpectrumIndex();
+//			siteIndex = spectrumOperationRecord.getAllSiteIndexs()[0];
+//
+//			spectrum = getSpectrum(spectrumIndex);
+//			spectrum.setStoreSiteIndex(siteIndex);
+//			spectrum.storeState();
+//			break;
 		case COLUMN_DELTA:
 //			spectrumIndex = spectrumOperationRecord.getSpectrumIndex();
 			siteIndex = spectrumOperationRecord.getColumnIndex();
@@ -285,6 +285,7 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 				spectrum.storeState();
 			}
 			break;
+		case SINGLE_DELTA:
 		case MULTI_DELTA:
 			spectrumIndex = spectrumOperationRecord.getSpectrumIndex();
 			siteIndexs = spectrumOperationRecord.getAllSiteIndexs();
@@ -292,6 +293,17 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 			for (int i = 0; i < siteIndexs.length; i++) {
 				spectrum.setStoreSiteIndex(siteIndexs[i]);
 				spectrum.storeState();
+			}
+			break;
+		case RECOMBINATION:
+			int[] twoSpectrums = spectrumOperationRecord.getRecombinationSpectrumIndex();
+			int[] twoPositions = spectrumOperationRecord.getRecombinationPositionIndex();
+			for (int i = 0; i < twoSpectrums.length; i++) {
+				spectrum = getSpectrum(i);
+				for (int s = twoPositions[0]; s < twoPositions[1]; s++) {
+					spectrum.setStoreSiteIndex(s);
+					spectrum.storeState();
+				}
 			}
 			break;
 		default:
@@ -332,17 +344,17 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 				break;
 			case PASS:
 				break;
-			case SINGLE_DELTA:
-				spectrumIndex = spectrumOperationRecord.getSpectrumIndex();
-				siteIndex = spectrumOperationRecord.getAllSiteIndexs()[0];
-//				System.err.println(spectrumIndex +"\t"+ siteIndex +"\t"+ Arrays.toString(getSpecturmFrequencies(spectrumIndex,
-//						siteIndex)));
-				spectrum = getSpectrum(spectrumIndex);
-				spectrum.setStoreSiteIndex(siteIndex);
-				spectrum.restoreState();
-//				System.err.println("after restore\t"+spectrumIndex +"\t"+ siteIndex +"\t"+ Arrays.toString(getSpecturmFrequencies(spectrumIndex,
-//						siteIndex)));
-				break;
+//			
+//				spectrumIndex = spectrumOperationRecord.getSpectrumIndex();
+//				siteIndex = spectrumOperationRecord.getAllSiteIndexs()[0];
+////				System.err.println(spectrumIndex +"\t"+ siteIndex +"\t"+ Arrays.toString(getSpecturmFrequencies(spectrumIndex,
+////						siteIndex)));
+//				spectrum = getSpectrum(spectrumIndex);
+//				spectrum.setStoreSiteIndex(siteIndex);
+//				spectrum.restoreState();
+////				System.err.println("after restore\t"+spectrumIndex +"\t"+ siteIndex +"\t"+ Arrays.toString(getSpecturmFrequencies(spectrumIndex,
+////						siteIndex)));
+//				break;
 			case COLUMN_DELTA:
 //				spectrumIndex = spectrumOperationRecord.getSpectrumIndex();
 				siteIndex = spectrumOperationRecord.getColumnIndex();
@@ -354,6 +366,7 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 					spectrum.restoreState();
 				}
 				break;
+			case SINGLE_DELTA:
 			case MULTI_DELTA:
 				spectrumIndex = spectrumOperationRecord.getSpectrumIndex();
 				siteIndexs = spectrumOperationRecord.getAllSiteIndexs();
@@ -361,6 +374,18 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 				for (int i = 0; i < siteIndexs.length; i++) {
 					spectrum.setStoreSiteIndex(siteIndexs[i]);
 					spectrum.restoreState();
+				}
+				break;
+				
+			case RECOMBINATION:
+				int[] twoSpectrums = spectrumOperationRecord.getRecombinationSpectrumIndex();
+				int[] twoPositions = spectrumOperationRecord.getRecombinationPositionIndex();
+				for (int i = 0; i < twoSpectrums.length; i++) {
+					spectrum = getSpectrum(i);
+					for (int s = twoPositions[0]; s < twoPositions[1]; s++) {
+						spectrum.setStoreSiteIndex(s);
+						spectrum.restoreState();
+					}
 				}
 				break;
 			default:

@@ -231,6 +231,12 @@ public class ColumnSpectrumDeltaExchangeOperator extends AbstractSpectrumOperato
         return getOperatorName() + "(windowsize=" + delta + ")";
     }
 
+
+	@Override
+	public SpectrumOperation getSpectrumOperation() {
+		return OP;
+	}
+
 	
 }
 

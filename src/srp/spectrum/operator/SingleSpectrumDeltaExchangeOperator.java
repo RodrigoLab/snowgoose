@@ -153,6 +153,11 @@ public class SingleSpectrumDeltaExchangeOperator extends AbstractSpectrumOperato
         return getOperatorName() + "(windowsize=" + delta + ")";
     }
 
+	@Override
+	public SpectrumOperation getSpectrumOperation() {
+		return OP;
+	}
+
 	
 }
 

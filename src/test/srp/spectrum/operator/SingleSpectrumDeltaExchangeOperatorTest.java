@@ -42,11 +42,11 @@ public class SingleSpectrumDeltaExchangeOperatorTest {
 	}
 	
 	@Test
-	public void testDoOperator() throws Exception {
+	public void testDoOperatorOneSpectrum() throws Exception {
 		String[] seqs = new String[]{
-				"AAAC",
-				"AACT",
-				"ACGT"
+				"AAACGTTT",
+				"AAACGT..",
+				"..AGGTTC",
 				};
 		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
 		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 1);
@@ -91,9 +91,11 @@ public class SingleSpectrumDeltaExchangeOperatorTest {
 	
 
 	@Test
-	public void testDoOperator2() throws Exception {
+	public void testDoOperatorMultiSpectrum() throws Exception {
 		String[] seqs = new String[]{
-				"AAACGT",
+				"AAACGTTT",
+				"AAACGT..",
+				"..AGGTTC",
 				};
 		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
 		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 5);

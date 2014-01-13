@@ -203,6 +203,12 @@ public class MultiSpectrumDeltaExchangeOperator extends AbstractSpectrumOperator
         return getOperatorName() + "(windowsize=" + delta + ")";
     }
 
+
+	@Override
+	public SpectrumOperation getSpectrumOperation() {
+		return OP;
+	}
+
 	
 }
 

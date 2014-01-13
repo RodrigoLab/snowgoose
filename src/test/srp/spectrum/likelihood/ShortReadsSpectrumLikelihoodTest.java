@@ -18,11 +18,14 @@ import srp.spectrum.SpectrumAlignmentModel;
 import srp.spectrum.SpectrumOperation;
 import srp.spectrum.SpectrumOperationRecord;
 import srp.spectrum.likelihood.ShortReadsSpectrumLikelihood;
+import srp.spectrum.operator.AbstractSpectrumOperator;
 import srp.spectrum.operator.ColumnSpectrumDeltaExchangeOperator;
 import srp.spectrum.operator.MultiSpectrumDeltaExchangeOperator;
+import srp.spectrum.operator.RecombinationSpectrumOperator;
 import srp.spectrum.operator.SingleSpectrumDeltaExchangeOperator;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.SimpleAlignment;
+import dr.inference.operators.OperatorFailedException;
 import dr.math.MathUtils;
 
 public class ShortReadsSpectrumLikelihoodTest {
@@ -203,33 +206,29 @@ public class ShortReadsSpectrumLikelihoodTest {
 		}
 	}
 
-	@Test
-	public void testFullvsSingleStoreRestore() throws Exception {
-	
-		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/ABI/unittest/", "HaplotypeModelTest_10_srp.fasta");
-		AlignmentMapping aMap = new AlignmentMapping(alignment);
-			
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 4);
+	private static void assertLikelihoodOperator(SpectrumAlignmentModel spectrumModel,
+			AbstractSpectrumOperator op) {
+		
+		int ite = (int) 10;
+		SpectrumOperation expectedSpectrumOperation = op.getSpectrumOperation();
 		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
-		
-		SingleSpectrumDeltaExchangeOperator op = new SingleSpectrumDeltaExchangeOperator(spectrumModel, 0.25, null);
-		
-		double logLikelihoodSingle;
+		double logLikelihoodOperator;
 		double logLikelihoodFull;
 		
-		for (int i = 0; i < 1e4; i++) {
+		for (int i = 0; i < ite; i++) {
 			try {
 				likelihood.storeModelState();
 				op.doOperation();
 				likelihood.makeDirty();
-				logLikelihoodSingle = likelihood.getLogLikelihood();
-
+				logLikelihoodOperator = likelihood.getLogLikelihood();
+				assertEquals(expectedSpectrumOperation, likelihood.getOperation());
+				
 				SpectrumAlignmentModel spectrumModelFull = SpectrumAlignmentModel.duplicateSpectrumAlignmentModel(spectrumModel);
 				ShortReadsSpectrumLikelihood likelihoodFull = new ShortReadsSpectrumLikelihood(spectrumModelFull);
 				logLikelihoodFull = likelihoodFull.getLogLikelihood();
 				assertEquals(SpectrumOperation.NONE, likelihoodFull.getOperation());
-				assertEquals(logLikelihoodFull, logLikelihoodSingle, 1e-8);
-
+				assertEquals(logLikelihoodFull, logLikelihoodOperator, 1e-8);
+	
 				double rand = MathUtils.nextDouble();
 				if(rand>0.5){
 					likelihood.acceptModelState();
@@ -237,9 +236,21 @@ public class ShortReadsSpectrumLikelihoodTest {
 				else{
 					likelihood.restoreModelState();
 				}
-			} catch (Exception e) {
+			} catch (OperatorFailedException e) {
 			}
 		}
+	}
+
+	@Test
+	public void testFullvsSingleStoreRestore() throws Exception {
+	
+		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/ABI/unittest/", "HaplotypeModelTest_10_srp.fasta");
+		AlignmentMapping aMap = new AlignmentMapping(alignment);
+			
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 4);
+		
+		SingleSpectrumDeltaExchangeOperator op = new SingleSpectrumDeltaExchangeOperator(spectrumModel, 0.25, null);
+		assertLikelihoodOperator(spectrumModel, op);
 	}
 	
 
@@ -250,36 +261,9 @@ public class ShortReadsSpectrumLikelihoodTest {
 		AlignmentMapping aMap = new AlignmentMapping(alignment);
 			
 		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 4);
-		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
 		
 		MultiSpectrumDeltaExchangeOperator op = new MultiSpectrumDeltaExchangeOperator(spectrumModel, 0.1, null);
-		
-		double logLikelihoodMulti;
-		double logLikelihoodFull;
-		
-		for (int i = 0; i < 1e4; i++) {
-			try {
-				likelihood.storeModelState();
-				op.doOperation();
-				likelihood.makeDirty();
-				logLikelihoodMulti = likelihood.getLogLikelihood();
-
-				SpectrumAlignmentModel spectrumModelFull = SpectrumAlignmentModel.duplicateSpectrumAlignmentModel(spectrumModel);
-				ShortReadsSpectrumLikelihood likelihoodFull = new ShortReadsSpectrumLikelihood(spectrumModelFull);
-				logLikelihoodFull = likelihoodFull.getLogLikelihood();
-				assertEquals(SpectrumOperation.NONE, likelihoodFull.getOperation());
-				assertEquals(logLikelihoodFull, logLikelihoodMulti, 1e-8);
-
-				double rand = MathUtils.nextDouble();
-				if(rand>0.5){
-					likelihood.acceptModelState();
-				}
-				else{
-					likelihood.restoreModelState();
-				}
-			} catch (Exception e) {
-			}
-		}
+		assertLikelihoodOperator(spectrumModel, op);
 	}
 
 
@@ -290,153 +274,24 @@ public class ShortReadsSpectrumLikelihoodTest {
 		AlignmentMapping aMap = new AlignmentMapping(alignment);
 			
 		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 4);
-		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
-		
 		ColumnSpectrumDeltaExchangeOperator op = new ColumnSpectrumDeltaExchangeOperator(spectrumModel, 0.1, null);
-		
-		double logLikelihoodColumn;
-		double logLikelihoodFull;
-		
-		for (int i = 0; i < 1e4; i++) {
-			try {
-				likelihood.storeModelState();
-				op.doOperation();
-				likelihood.makeDirty();
-				logLikelihoodColumn = likelihood.getLogLikelihood();
-
-				SpectrumAlignmentModel spectrumModelFull = SpectrumAlignmentModel.duplicateSpectrumAlignmentModel(spectrumModel);
-				ShortReadsSpectrumLikelihood likelihoodFull = new ShortReadsSpectrumLikelihood(spectrumModelFull);
-				logLikelihoodFull = likelihoodFull.getLogLikelihood();
-				assertEquals(SpectrumOperation.NONE, likelihoodFull.getOperation());
-				assertEquals(logLikelihoodFull, logLikelihoodColumn, 1e-8);
-
-				double rand = MathUtils.nextDouble();
-				if(rand>0.5){
-					likelihood.acceptModelState();
-				}
-				else{
-					likelihood.restoreModelState();
-				}
-			} catch (Exception e) {
-			}
-		}
-	}
-
-	@Test
-	public void testTimeTrialFull() throws Exception {
-
-		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/ABI/unittest/", "H4_srp.fasta");
-		AlignmentMapping aMap = new AlignmentMapping(alignment);
-			
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 4);
-		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
-		
-		double trial = 100;
-		long time1 = System.currentTimeMillis();
-		for (int t = 0; t < trial; t++) {
-			likelihood.makeDirty();
-			likelihood.getLogLikelihood();
-		}
-		long totalTime = System.currentTimeMillis() - time1;
-		System.out.println("timeTrialFull:  \t"+ totalTime +"\t"+ totalTime/trial +"/calculation");
+		assertLikelihoodOperator(spectrumModel, op);
 		
 	}
 
-	@Test
-	public void testTimeTrialSingle() throws Exception {
-
-		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/ABI/unittest/", "H4_srp.fasta");
-		AlignmentMapping aMap = new AlignmentMapping(alignment);
-			
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 4);
-		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
-
-		SingleSpectrumDeltaExchangeOperator op = new SingleSpectrumDeltaExchangeOperator(spectrumModel, 0.1, null);
-
-		double trial = 1e4;
-		long totalTime = 0;
-		int count = 0;
-		do{
-			try {
-				op.doOperation();
-				
-				long time1 = System.currentTimeMillis();
-				likelihood.makeDirty();
-				likelihood.getLogLikelihood();
-				totalTime += (System.currentTimeMillis()-time1);
-				count++;
-				
-			} catch (Exception e) {
-			}
-		}while(count< trial);
-		System.out.println("timeTrialSingle:\t"+ totalTime +"\t"+ totalTime/trial +"/calculation");
-	}
-
-
-	@Test
-	public void testTimeTrialSingleCombine() throws Exception {
-
-		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/ABI/unittest/", "H4_srp.fasta");
-		AlignmentMapping aMap = new AlignmentMapping(alignment);
-			
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 4);
-		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
 	
-		SingleSpectrumDeltaExchangeOperator op = new SingleSpectrumDeltaExchangeOperator(spectrumModel, 0.1, null);
-		double trial = 1e4;
-		long totalTime = 0;
-		int count = 0;
-		do{
-			try {
-				op.doOperation();
-				
-				long time1 = System.currentTimeMillis();
-
-				likelihood.storeModelState();
-				op.doOperation();
-				likelihood.makeDirty();
-				likelihood.getLogLikelihood();
-
-				double rand = MathUtils.nextDouble();
-				if(rand>0.5){
-					likelihood.acceptModelState();
-				}
-				else{
-					likelihood.restoreModelState();
-				}
-				totalTime += (System.currentTimeMillis()-time1);
-
-				count++;
-			} catch (Exception e) {
-			}
-		}while(count< trial);
-
-		System.out.println("timeTrialSingleCombined:\t"+ totalTime +"\t"+ totalTime/trial +"/calculation");
-
-	}
 
 	@Test
-	public void testTimeTrialStoreState() throws Exception {
-
+	public void testFullvsRecombinationStoreRestore() throws Exception {
+	
+//		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/ABI/unittest/", "HaplotypeModelTest_10_srp.fasta");
 		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/ABI/unittest/", "H4_srp.fasta");
+		
 		AlignmentMapping aMap = new AlignmentMapping(alignment);
 			
 		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 4);
-		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
 		
-//		SingleSpectrumDeltaExchangeOperator op = new SingleSpectrumDeltaExchangeOperator(spectrumModel, 0.1, null);
-		
-		double trial = 1e5;
-		long totalTime = 0;
-		for (int t = 0; t < trial; t++) {
-			long time1 = System.currentTimeMillis();
-			likelihood.storeModelState();
-			likelihood.restoreModelState();
-			totalTime += (System.currentTimeMillis()-time1);
-
-		}
-		System.out.println("timeTrialStoreRestoreState:\t"+ totalTime +"\t"+ totalTime/trial +"/calculation");
-
+		RecombinationSpectrumOperator op = new RecombinationSpectrumOperator(spectrumModel, 100, null);
+		assertLikelihoodOperator(spectrumModel, op);
 	}
-
 }

@@ -59,17 +59,17 @@ public class ColumnSpectrumDeltaExchangeOperatorTest {
 		double[][][] storedFrequencies = new double[spectrumCount][spectrumModel.getSiteCount()][4];
 		for (int i = 0; i < storedFrequencies.length; i++) {
 			Spectrum spectrum = spectrumModel.getSpectrum(i);
-			for (int j = 0; j < storedFrequencies.length; j++) {
+			for (int j = 0; j < storedFrequencies[i].length; j++) {
 				storedFrequencies[i][j] = spectrum.getFrequenciesAt(j);
 			}
 		}
-		
+
 		for (int o = 0; o < 100; o++) {
 			try {
 				op.doOperation();
 				
 				SpectrumOperationRecord opRecord = spectrumModel.getSpectrumOperationRecord();
-//				int spectrumIndex = opRecord.getSpectrumIndex();
+
 				int siteIndex = opRecord.getColumnIndex();
 				double[] delta = opRecord.getDelta();
 				
@@ -100,9 +100,11 @@ public class ColumnSpectrumDeltaExchangeOperatorTest {
 	@Test
 	public void testDoOperator2() throws Exception {
 		String[] seqs = new String[]{
-				"AAACGT",
+				"AAACGTTT",
+				"AAACGT..",
+				"..AGGTTC",
 				};
-		int spectrumCount = 4;
+		int spectrumCount = 10;
 		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
 		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, spectrumCount);
 		ColumnSpectrumDeltaExchangeOperator op = new ColumnSpectrumDeltaExchangeOperator(
