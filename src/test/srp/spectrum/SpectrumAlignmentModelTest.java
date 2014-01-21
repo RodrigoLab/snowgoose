@@ -84,4 +84,11 @@ public class SpectrumAlignmentModelTest {
 		}
 		
 	}
+	
+
+	@Test
+	public void testStoreRestore() throws Exception {
+		
+	
+	}
 }

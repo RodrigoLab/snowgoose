@@ -61,11 +61,11 @@ public class ShortReadsSpectrumLikelihoodTimeTrialTest {
 	@Test
 	public void testTimeTrialFull() throws Exception {
 
-		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/ABI/unittest/", "H4_srp.fasta");
-		AlignmentMapping aMap = new AlignmentMapping(alignment);
-			
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 4);
-		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
+//		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/ABI/unittest/", "H4_srp.fasta");
+//		AlignmentMapping aMap = new AlignmentMapping(alignment);
+//			
+//		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 4);
+//		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
 		
 		double trial = 100;
 		long time1 = System.currentTimeMillis();
@@ -81,11 +81,11 @@ public class ShortReadsSpectrumLikelihoodTimeTrialTest {
 	@Test
 	public void testTimeTrialSingleNoStoreRestore() throws Exception {
 
-		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/ABI/unittest/", "H4_srp.fasta");
-		AlignmentMapping aMap = new AlignmentMapping(alignment);
-			
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 4);
-		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
+//		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/ABI/unittest/", "H4_srp.fasta");
+//		AlignmentMapping aMap = new AlignmentMapping(alignment);
+//			
+//		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 4);
+//		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
 
 		SingleSpectrumDeltaExchangeOperator op = new SingleSpectrumDeltaExchangeOperator(spectrumModel, 0.1, null);
 
@@ -112,11 +112,11 @@ public class ShortReadsSpectrumLikelihoodTimeTrialTest {
 	@Test
 	public void testTimeTrialStoreRestoreOnly() throws Exception {
 
-		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/ABI/unittest/", "H4_srp.fasta");
-		AlignmentMapping aMap = new AlignmentMapping(alignment);
-			
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 4);
-		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
+//		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/ABI/unittest/", "H4_srp.fasta");
+//		AlignmentMapping aMap = new AlignmentMapping(alignment);
+//			
+//		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 4);
+//		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
 		
 		double trial = 1e5;
 		long totalTime = 0;
@@ -134,38 +134,40 @@ public class ShortReadsSpectrumLikelihoodTimeTrialTest {
 	@Test
 	public void testTimeTrialSingle() throws Exception {
 
-		SingleSpectrumDeltaExchangeOperator op = new SingleSpectrumDeltaExchangeOperator(spectrumModel, 0.1, null);
+		SingleSpectrumDeltaExchangeOperator op = new SingleSpectrumDeltaExchangeOperator(
+				spectrumModel, 0.1, null);
 		String summary = timeTrialOperator(likelihood, op);
-		System.out.println(summary +"\t"+ op.getOperatorName());
+		System.out.println(summary + "\t" + op.getOperatorName());
 
 	}
-
 
 	@Test
 	public void testTimeTrialMulti() throws Exception {
 
-		MultiSpectrumDeltaExchangeOperator op = new MultiSpectrumDeltaExchangeOperator(spectrumModel, 0.1, null);
+		MultiSpectrumDeltaExchangeOperator op = new MultiSpectrumDeltaExchangeOperator(
+				spectrumModel, 0.1, null);
 		String summary = timeTrialOperator(likelihood, op);
-		System.out.println(summary +"\t"+ op.getOperatorName());
+		System.out.println(summary + "\t" + op.getOperatorName());
 
 	}
-	
 
 	@Test
 	public void testTimeTrialColumn() throws Exception {
-	
-		ColumnSpectrumDeltaExchangeOperator op = new ColumnSpectrumDeltaExchangeOperator(spectrumModel, 0.1, null);
+
+		ColumnSpectrumDeltaExchangeOperator op = new ColumnSpectrumDeltaExchangeOperator(
+				spectrumModel, 0.1, null);
 		String summary = timeTrialOperator(likelihood, op);
-		System.out.println(summary +"\t"+ op.getOperatorName());
+		System.out.println(summary + "\t" + op.getOperatorName());
 
 	}
 
 	@Test
 	public void testTimeTrialRecombination() throws Exception {
-	
-//		RecombinationSpectrumOperator op = new RecombinationSpectrumOperator(spectrumModel, 10, null);
-//		String summary = timeTrialOperator(likelihood, op);
-//		System.out.println(summary +"\t"+ op.getOperatorName());
+
+		RecombinationSpectrumOperator op = new RecombinationSpectrumOperator(
+				spectrumModel, 10, null);
+		String summary = timeTrialOperator(likelihood, op);
+		System.out.println(summary + "\t" + op.getOperatorName());
 
 	}
 
@@ -206,12 +208,11 @@ public class ShortReadsSpectrumLikelihoodTimeTrialTest {
 
 /*
 
-TimeTrial:	1227	0.1227/calculation	ColumnSpectrumDeltaExchangeOperator
-TimeTrial:	530	0.053/calculation	SingleSpectrumDeltaExchangeOperator
-TimeTrial:  	1776	17.76/calculation	Full calculation no operator
-TimeTrial:	347	0.0347/calculation	Single No store/restore
+TimeTrial:	983	0.0983/calculation	ColumnSpectrumDeltaExchangeOperator
+TimeTrial:	455	0.0455/calculation	SingleSpectrumDeltaExchangeOperator
+TimeTrial:  	1740	17.4/calculation	Full calculation no operator
+TimeTrial:	297	0.0297/calculation	Single No store/restore
 TimeTrial:	25	2.5E-4/calculation	StoreRestoreOnly
-TimeTrial:	4037	0.4037/calculation	MultiSpectrumDeltaExchangeOperator
 
-
+TimeTrial:	3670	0.367/calculation	MultiSpectrumDeltaExchangeOperator
 */

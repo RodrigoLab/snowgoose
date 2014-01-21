@@ -16,6 +16,7 @@ import srp.spectrum.likelihood.ShortReadsSpectrumLikelihood;
 import srp.spectrum.likelihood.SpectrumTreeLikelihood;
 import srp.spectrum.operator.SingleSpectrumDeltaExchangeOperator;
 import dr.evolution.alignment.Alignment;
+import dr.evolution.tree.Tree;
 import dr.evolution.util.TaxonList;
 import dr.evolution.util.Units;
 import dr.evomodel.branchratemodel.StrictClockBranchRates;
@@ -67,8 +68,8 @@ public class MainMCMCSpectrumFull {
 
 		dataDir = "/home/sw167/workspaceSrp/ABI/unittest/testData/";
 		runIndex = 1;
-		totalSamples = 1000;
-		logInterval = 1000;
+		totalSamples = 5000;
+		logInterval = 40000;
 		
 		totalSamples = 1000;
 //		logInterval = 100;
@@ -88,7 +89,8 @@ public class MainMCMCSpectrumFull {
 		String logHaplotypeName = prefix+".haplatype";
 		String operatorAnalysisFile = prefix+"_operatorAnalysisFile.txt";
 		
-		String partialHaplotypeName = prefix+".partialhaplatype";
+		String partialSpectrumName = prefix+".partialhaplatype";
+		String partialTreeName = "FullTree_"+hapRunIndex+".partialtrees";
 		
 		DataImporter dataImporter = new DataImporter(dataDir);
 
@@ -97,7 +99,7 @@ public class MainMCMCSpectrumFull {
 		Alignment shortReads = dataImporter.importShortReads(shortReadFile);
 		AlignmentMapping aMap = new AlignmentMapping(shortReads);
 //		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, noOfRecoveredHaplotype);
-		SpectrumAlignmentModel spectrumModel = SpectrumAlignmentModel.importPartialSpectrumFile(aMap, partialHaplotypeName );
+		SpectrumAlignmentModel spectrumModel = SpectrumAlignmentModel.importPartialSpectrumFile(aMap, partialSpectrumName );
 //		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, trueAlignment);
 
 //		haplotypeModel = new HaplotypeModel(alignmentMapping, trueAlignment);
@@ -108,8 +110,11 @@ public class MainMCMCSpectrumFull {
 
 		// Random treeModel
 		ConstantPopulationModel popModel = new ConstantPopulationModel(popSize, Units.Type.YEARS);
-		TreeModel treeModel = MCMCSetupHelper.setupRandomTreeModel(popModel, spectrumModel, Units.Type.YEARS);
-		
+//		TreeModel treeModel = MCMCSetupHelper.setupRandomTreeModel(popModel, spectrumModel, Units.Type.YEARS);
+
+		Tree partialPhylogeny = dataImporter.importTree(partialTreeName);
+		TreeModel treeModel = new TreeModel(TreeModel.TREE_MODEL, partialPhylogeny, false);
+
 
 		// Coalescent likelihood
 		CoalescentLikelihood coalescent = new CoalescentLikelihood(treeModel,null, new ArrayList<TaxonList>(), popModel);
@@ -237,4 +242,6 @@ public class MainMCMCSpectrumFull {
 
 
 }
+
+//10000000	-46310.69881492259	-60.46688487202967	-7411.656643747804	-38838.57528630275	3000.0	1.0	-50.99843521986054	1791.5586323740524	0.04 hours/million states
 

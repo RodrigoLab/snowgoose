@@ -26,7 +26,7 @@ public class RecombinationSpectrumOperator extends AbstractSpectrumOperator {
 	private double autoOptimize;
 	private double scaleFactor;
 	
-	private int[] swapPositionIndex;
+	private int[] twoPositionIndex;
 	private int[] twoSpectrumIndex;
 
 	
@@ -35,7 +35,7 @@ public class RecombinationSpectrumOperator extends AbstractSpectrumOperator {
 			int swapLength, CoercionMode mode) {
 		super(spectrumModel, mode);
 		
-		swapPositionIndex = new int[2];
+		twoPositionIndex = new int[2];
 		twoSpectrumIndex = new int[2];
 		
 //		this.delta = delta;
@@ -71,29 +71,35 @@ public class RecombinationSpectrumOperator extends AbstractSpectrumOperator {
 			twoSpectrumIndex[1] = MathUtils.nextInt(spectrumCount);
         }while (twoSpectrumIndex[0] == twoSpectrumIndex[1]);
 
-		swapPositionIndex[0] = MathUtils.nextInt(spectrumLength-swapLength);
-		swapPositionIndex[1]= swapPositionIndex[0] + swapLength;
+		twoPositionIndex[0] = MathUtils.nextInt(spectrumLength-swapLength);
+		twoPositionIndex[1]= twoPositionIndex[0] + swapLength;
 
 		Spectrum spectrum1 = spectrumModel.getSpectrum(twoSpectrumIndex[0]);
 		Spectrum spectrum2 = spectrumModel.getSpectrum(twoSpectrumIndex[1]);
 		SpectraParameter spectra1;
 		SpectraParameter spectra2;
 
-		for (int i = swapPositionIndex[0]; i < swapPositionIndex[1]; i++) {
+//		System.err.println(swapLength);
+		
+		for (int i = twoPositionIndex[0]; i < twoPositionIndex[1]; i++) {
 			
 //			int spectrumIndex = i;
 //			System.err.println(spectrumIndex +"\t"+ siteIndex);
 			spectra1 = spectrum1.getSpectra(i);
 			spectra2 = spectrum2.getSpectra(i);
+//			System.err.println(Arrays.toString(spectra1.getParameterValues()) +"\t"+ 
+//					Arrays.toString(spectra2.getParameterValues()));
 			for (int j = 0; j < DIMENSION; j++) {
 				double tempFreq = spectra1.getFrequency(j);
 				spectra1.setParameterValueQuietly(j, spectra2.getFrequency(j));
 				spectra2.setParameterValueQuietly(j, tempFreq);
 				
 			}
-			
+//			System.err.println("After");
+//			System.err.println(Arrays.toString(spectra1.getParameterValues()) +"\t"+ 
+//					Arrays.toString(spectra2.getParameterValues()));
 		}
-		spectrumModel.setSpectrumOperationRecord(OP, twoSpectrumIndex, swapPositionIndex);
+		spectrumModel.setSpectrumOperationRecord(OP, twoSpectrumIndex, twoPositionIndex);
 		
 		spectrumModel.endSpectrumOperation();
 
@@ -115,7 +121,6 @@ public class RecombinationSpectrumOperator extends AbstractSpectrumOperator {
 	@Override
 	public void setCoercableParameter(double autoOpt) {
 		convertFromAutoOptimizeToValue(autoOpt);
-	    
 	}
 
 	private void convertFromAutoOptimizeToValue(double autoOpt) {
@@ -144,6 +149,7 @@ public class RecombinationSpectrumOperator extends AbstractSpectrumOperator {
 			swapLength = spectrumLength;
 		}
 	}
+	
 	@Override
 	public double getRawParameter() {
 		return swapLength;
@@ -183,10 +189,10 @@ public class RecombinationSpectrumOperator extends AbstractSpectrumOperator {
     @Override
 	public final String getPerformanceSuggestion() {
 		SpectrumOperationRecord record = spectrumModel.getSpectrumOperationRecord();
-		String s = record.getSpectrumIndex() +"\t"+ Arrays.toString(record.getAllSiteIndexs()) +"\n";
+		String s = OPERATOR_NAME +"\t"+ Arrays.toString(twoSpectrumIndex) +"\t"+ Arrays.toString(twoPositionIndex);
 		s+= spectrumModel.diagnostic() +"\n";
-		s += Arrays.toString(debugList);
-		spectrumModel.restoreModelState();
+//		s += Arrays.toString(debugList);
+//		spectrumModel.restoreModelState();
     	return s;
     	
 //        double prob = MCMCOperator.Utils.getAcceptanceProbability(this);

@@ -33,6 +33,11 @@ public class Spectrum extends AbstractModel implements Attributable {
 //		sequenceString = new StringBuilder();
 //	}
 
+	public Spectrum(int length) {
+		this(length, false);
+	}
+
+
 	public Spectrum(double[][] freqs) {
 		this(freqs[0].length);
 		for (int s = 0; s < spectrum.size(); s++) {
@@ -46,12 +51,12 @@ public class Spectrum extends AbstractModel implements Attributable {
 	}
 
 
-	public Spectrum(int length){
+	public Spectrum(int length, boolean random){
 		
 		super("Spectrum");
 		spectrum = new ArrayList<SpectraParameter>();
 		for (int i = 0; i < length; i++) {
-			SpectraParameter spectra = new SpectraParameter();
+			SpectraParameter spectra = new SpectraParameter(random);
 			addVariable(spectra);
 			spectrum.add(spectra);
 		}
@@ -417,16 +422,17 @@ public class Spectrum extends AbstractModel implements Attributable {
 
 	private int storeSiteIndex;
 	public void setStoreSiteIndex(int s){
+//		System.err.println("setStoreSiteIndex\t"+s);
 		storeSiteIndex = s;
 	}
 	@Override
 	protected void storeState() {
 //		System.err.println("storeState Specturm: "+storeSiteIndex);
 
-		
+		getSpectra(storeSiteIndex).storeState();
 //		for (int i = 0; i < spectrum.size(); i++) {
 //			storeSpectrum.set(i, spectrum.get(i));
-		getSpectra(storeSiteIndex).storeState();
+		
 //		}
 	}
 

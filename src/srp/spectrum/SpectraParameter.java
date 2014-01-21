@@ -18,7 +18,7 @@ public class SpectraParameter extends Parameter.Default{
 	public static final Bounds<Double> SPECTRUM_BOUNDS = new DefaultBounds(1.0, 0.0, DIMENSION);
 	
 	public SpectraParameter(boolean random){
-		this();
+		this(EQUAL_FREQ);
 		if(random){
 			double[] freq = new double[DIMENSION];
 			for (int i = 0; i < freq.length; i++) {
@@ -31,16 +31,16 @@ public class SpectraParameter extends Parameter.Default{
 			System.out.println(Arrays.toString(freq));
 //			super(freq);
 			setFrequenciesQuietly(freq);
-			addBounds();
+
 			
 		}
+
 	}
 	
 	
-	public SpectraParameter(){
-		this(EQUAL_FREQ);
-		
-	}
+//	public SpectraParameter(){
+//		this(EQUAL_FREQ);
+//	}
 
     public SpectraParameter(double[] frequencies) {
     	super(frequencies);
@@ -51,7 +51,6 @@ public class SpectraParameter extends Parameter.Default{
     	if(getDimension()!=DIMENSION){
     		throw new IllegalArgumentException("Frequencies should have 4 elements, frequencies.length= "+getDimension());
     	}
-    	//TODO make sure it's ON!!!
         if (Math.abs(sum - 1.0) > 1e-8) {
             throw new IllegalArgumentException("Frequencies do not sum to 1, they sum to " + sum);
         }

@@ -138,6 +138,7 @@ public class ColumnSpectrumDeltaExchangeOperator extends AbstractSpectrumOperato
 	        scalar2[i]= spectra[i].getParameterValue(dim2[i]);
 	
 	        d[i] = MathUtils.nextDouble() * delta;
+	        d[i] = delta;
 	        scalar1[i] -= d[i];
 	        scalar2[i] += d[i];
 	

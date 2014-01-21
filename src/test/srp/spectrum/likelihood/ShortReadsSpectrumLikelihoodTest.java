@@ -3,6 +3,7 @@ package test.srp.spectrum.likelihood;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -40,8 +41,18 @@ public class ShortReadsSpectrumLikelihoodTest {
 	public static void tearDownAfterClass() throws Exception {
 	}
 
+
+
+	private SpectrumAlignmentModel spectrumModel;
+
 	@Before
 	public void setUp() throws Exception {
+
+		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/ABI/unittest/", "HaplotypeModelTest_10_srp.fasta");
+//		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/ABI/unittest/", "H4_srp.fasta");
+		AlignmentMapping aMap = new AlignmentMapping(alignment);
+			
+		spectrumModel = new SpectrumAlignmentModel(aMap, 4, true);
 	}
 
 	@After
@@ -181,10 +192,6 @@ public class ShortReadsSpectrumLikelihoodTest {
 	@Test
 	public void testFullvsSingle() throws Exception {
 	
-		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/ABI/unittest/", "HaplotypeModelTest_10_srp.fasta");
-		AlignmentMapping aMap = new AlignmentMapping(alignment);
-			
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 4);
 		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
 		
 		SpectrumOperationRecord record = spectrumModel.getSpectrumOperationRecord();
@@ -209,15 +216,16 @@ public class ShortReadsSpectrumLikelihoodTest {
 	private static void assertLikelihoodOperator(SpectrumAlignmentModel spectrumModel,
 			AbstractSpectrumOperator op) {
 		
-		int ite = (int) 10;
+		int ite = (int) 1e4;
 		SpectrumOperation expectedSpectrumOperation = op.getSpectrumOperation();
 		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
 		double logLikelihoodOperator;
 		double logLikelihoodFull;
-		
+
 		for (int i = 0; i < ite; i++) {
 			try {
 				likelihood.storeModelState();
+				
 				op.doOperation();
 				likelihood.makeDirty();
 				logLikelihoodOperator = likelihood.getLogLikelihood();
@@ -236,6 +244,7 @@ public class ShortReadsSpectrumLikelihoodTest {
 				else{
 					likelihood.restoreModelState();
 				}
+
 			} catch (OperatorFailedException e) {
 			}
 		}
@@ -243,55 +252,35 @@ public class ShortReadsSpectrumLikelihoodTest {
 
 	@Test
 	public void testFullvsSingleStoreRestore() throws Exception {
-	
-		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/ABI/unittest/", "HaplotypeModelTest_10_srp.fasta");
-		AlignmentMapping aMap = new AlignmentMapping(alignment);
-			
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 4);
-		
-		SingleSpectrumDeltaExchangeOperator op = new SingleSpectrumDeltaExchangeOperator(spectrumModel, 0.25, null);
+
+		SingleSpectrumDeltaExchangeOperator op = new SingleSpectrumDeltaExchangeOperator(
+				spectrumModel, 0.25, null);
 		assertLikelihoodOperator(spectrumModel, op);
 	}
-	
 
 	@Test
 	public void testFullvsMultiStoreRestore() throws Exception {
-	
-		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/ABI/unittest/", "HaplotypeModelTest_10_srp.fasta");
-		AlignmentMapping aMap = new AlignmentMapping(alignment);
-			
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 4);
-		
-		MultiSpectrumDeltaExchangeOperator op = new MultiSpectrumDeltaExchangeOperator(spectrumModel, 0.1, null);
+
+		MultiSpectrumDeltaExchangeOperator op = new MultiSpectrumDeltaExchangeOperator(
+				spectrumModel, 0.1, null);
 		assertLikelihoodOperator(spectrumModel, op);
 	}
-
 
 	@Test
 	public void testFullvsColumnStoreRestore() throws Exception {
-	
-		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/ABI/unittest/", "HaplotypeModelTest_10_srp.fasta");
-		AlignmentMapping aMap = new AlignmentMapping(alignment);
-			
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 4);
-		ColumnSpectrumDeltaExchangeOperator op = new ColumnSpectrumDeltaExchangeOperator(spectrumModel, 0.1, null);
-		assertLikelihoodOperator(spectrumModel, op);
-		
-	}
 
-	
+		ColumnSpectrumDeltaExchangeOperator op = new ColumnSpectrumDeltaExchangeOperator(
+				spectrumModel, 0.1, null);
+		assertLikelihoodOperator(spectrumModel, op);
+
+	}
 
 	@Test
 	public void testFullvsRecombinationStoreRestore() throws Exception {
-	
-//		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/ABI/unittest/", "HaplotypeModelTest_10_srp.fasta");
-		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/ABI/unittest/", "H4_srp.fasta");
-		
-		AlignmentMapping aMap = new AlignmentMapping(alignment);
-			
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 4);
-		
-		RecombinationSpectrumOperator op = new RecombinationSpectrumOperator(spectrumModel, 100, null);
+
+		RecombinationSpectrumOperator op = new RecombinationSpectrumOperator(
+				spectrumModel, 10, null);
 		assertLikelihoodOperator(spectrumModel, op);
 	}
+
 }

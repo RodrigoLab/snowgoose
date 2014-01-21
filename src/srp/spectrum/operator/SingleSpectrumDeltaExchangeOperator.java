@@ -65,8 +65,8 @@ public class SingleSpectrumDeltaExchangeOperator extends AbstractSpectrumOperato
         double scalar1 = parameter.getParameterValue(dim1);
         double scalar2 = parameter.getParameterValue(dim2);
 
-        final double d = MathUtils.nextDouble() * delta;
-        
+        double d = MathUtils.nextDouble() * delta;
+        d = delta;
         scalar1 -= d;
         scalar2 += d;
 

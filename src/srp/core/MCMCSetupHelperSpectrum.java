@@ -167,22 +167,22 @@ public class MCMCSetupHelperSpectrum extends MCMCSetupHelper {
 
 		MCMCOperator operator;
 		
-		operator = new SingleSpectrumDeltaExchangeOperator(spectrumModel, 0.2, CoercionMode.COERCION_ON);
+		operator = new SingleSpectrumDeltaExchangeOperator(spectrumModel, 0.1, CoercionMode.COERCION_OFF);
 //		0.05 delta, accept 0.8
 		operator.setWeight(opSpectrum);
 //		schedule.addOperator(operator);
 		
 		
 		operator = new ColumnSpectrumDeltaExchangeOperator(spectrumModel, 0.05, CoercionMode.COERCION_OFF);
-		operator.setWeight(opSpectrum);
-//		schedule.addOperator(operator);
-		
-		operator = new MultiSpectrumDeltaExchangeOperator(spectrumModel, 0.05, CoercionMode.COERCION_OFF);
-		operator.setWeight(opSpectrum);
+		operator.setWeight(opSpectrum*10);//fast! 
 		schedule.addOperator(operator);
 		
-		operator = new RecombinationSpectrumOperator(spectrumModel, 10, CoercionMode.COERCION_OFF);
-		operator.setWeight(opSpectrum);
+		operator = new MultiSpectrumDeltaExchangeOperator(spectrumModel, 0.02, CoercionMode.COERCION_ON);
+		operator.setWeight(opSpectrum);//fix delta at 0.02(~7bp) or 0.05(3bp)
+		schedule.addOperator(operator);
+		
+		operator = new RecombinationSpectrumOperator(spectrumModel, 10, CoercionMode.COERCION_ON);
+		operator.setWeight(opSpectrum*2); //(3bp)
 		schedule.addOperator(operator);
 		
 		for (Parameter parameter : parameters) {

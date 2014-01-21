@@ -7,6 +7,7 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({ 
 	ShortReadsSpectrumLikelihoodTest.class,
+	ShortReadsSpectrumLikelihoodTimeTrialTest.class,
 	SpectrumTreeLikelihoodTest.class
 	})
 public class AllTestsSpectrumLikelihood {

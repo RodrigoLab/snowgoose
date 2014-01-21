@@ -23,7 +23,7 @@ public class MultiSpectrumDeltaExchangeOperator extends AbstractSpectrumOperator
 
 	public static final String OPERATOR_NAME = MultiSpectrumDeltaExchangeOperator.class.getSimpleName();
 	public static final SpectrumOperation OP = SpectrumOperation.MULTI_DELTA;
-//    private Parameter parameter = null;
+	private static final int MIN_BASE = 3;
     private final int[] parameterWeights;
     private double delta = 0.05;
     private int baseCount = 3;
@@ -38,7 +38,7 @@ public class MultiSpectrumDeltaExchangeOperator extends AbstractSpectrumOperator
 		if(baseCount<2){
 			baseCount = 3;
 		}
-
+//		baseCount = 5;
         setWeight(1.0);
 
         parameterWeights = new int[this.spectrumModel.getDataType().getStateCount()];
@@ -49,10 +49,11 @@ public class MultiSpectrumDeltaExchangeOperator extends AbstractSpectrumOperator
 	}
 
 	private double[] debugList = new double[8];
+	private double autoOptimize;
+	private int scaleFactor=1;
 	
 	
-	
-	
+	@Override
 	public double doOperation() throws OperatorFailedException {
 
 		spectrumModel.startSpectrumOperation();
@@ -111,6 +112,7 @@ public class MultiSpectrumDeltaExchangeOperator extends AbstractSpectrumOperator
 	        scalar2[i]= spectra[i].getParameterValue(dim2[i]);
 	
 	        d[i] = MathUtils.nextDouble() * delta;
+	        d[i] = delta;
 	        scalar1[i] -= d[i];
 	        scalar2[i] += d[i];
 	
@@ -146,29 +148,58 @@ public class MultiSpectrumDeltaExchangeOperator extends AbstractSpectrumOperator
 	}
 
 
-    @Override
+//    @Override
+//	public double getCoercableParameter() {
+//        return Math.log(delta);
+//    }
+//
+//    @Override
+//	public void setCoercableParameter(double value) {
+//        delta = Math.exp(value);
+//
+//    }
+
+	@Override
 	public double getCoercableParameter() {
-//    	double t = Math.log(delta/(1-delta));
-//    	return t;
-//        return Math.log(1.0 / delta - 1.0);
-        return Math.log(delta);
-    }
+	    return autoOptimize;
+	}
 
-    @Override
-	public void setCoercableParameter(double value) {
-//    	mm++;
-//    	if(mm%1000 == 0){
-//    		System.out.println(value +"\t"+ delta +"\t"+ getAcceptanceProbability());
-//    	}
-        delta = Math.exp(value);
-//        double t = Math.exp(value);
-//        delta = t/(t+1);
+	@Override
+	public void setCoercableParameter(double autoOpt) {
+		convertFromAutoOptimizeToValue(autoOpt);
+	}
 
-    }
+	private void convertFromAutoOptimizeToValue(double autoOpt) {
+	    	autoOptimize = autoOpt;
+	    	baseCount =  MIN_BASE + (int) Math.exp(autoOptimize*scaleFactor);
+//			System.out.println(autoOptimize +"\t"+ Math.exp(autoOptimize*scaleFactor));
+			
+//			System.out.print("A=" + swapLength + "\t" + autoOptimize + "\t" +
+//					"accept: " + getAcceptCount()/(double)getCount() + "\t"  );
+			
+			checkParameterIsValid();
+			
+//			System.out.print("newL:"+swapLength+" ");
+	//		System.out.print("A\t" + swapFragmentLength + "\t" + autoOptimize + "\t"  );
+	    }
 
+	private double convertToAutoOptimize(int length) {
+		baseCount = length;
+		checkParameterIsValid();
+		autoOptimize = Math.log(baseCount - MIN_BASE)/scaleFactor;
+	    return autoOptimize;
+	}
+
+	private void checkParameterIsValid() {
+		if (baseCount > spectrumLength){
+			baseCount = spectrumLength;
+		}
+	}
+	
     @Override
 	public double getRawParameter() {
-        return delta;
+//        return delta;
+        return baseCount;
     }
 
     @Override
