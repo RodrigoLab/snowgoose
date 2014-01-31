@@ -2,9 +2,15 @@ package srp.spectrum;
 
 
 public enum SpectrumOperation{
-	NONE(0),PASS(0),
+	NONE(0),PASS(0), 
+	FULL(1),
 	
-	SINGLE_DELTA(1), COLUMN_DELTA(2), MULTI_DELTA(3), RECOMBINATION(4), 
+	DELTA_SINGLE(2), DELTA_COLUMN(2), DELTA_MULTI(2),
+	
+	RECOMBINATION(4), 
+	
+	DIRICHLET(6), 
+	SWAP_SINGLE(7), SWAP_MULTI(7), SWAP_COLUMN(7), SWAP_SUBCOLUMN(8),
 	
 ////	UNIFORMSWAPBASE(6),
 //	SWAPMULTI(3),
@@ -16,12 +22,12 @@ public enum SpectrumOperation{
 //	TREE(10)
 	;
 	
-	private int code;
+	private int type;
 
 	private SpectrumOperation(int i){
-		code = i;
+		type = i;
 	}
 	public int getCode(){
-		return code;
+		return type;
 	}
 }

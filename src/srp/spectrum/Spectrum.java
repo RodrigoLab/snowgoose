@@ -34,7 +34,7 @@ public class Spectrum extends AbstractModel implements Attributable {
 //	}
 
 	public Spectrum(int length) {
-		this(length, false);
+		this(length, 0);
 	}
 
 
@@ -50,13 +50,19 @@ public class Spectrum extends AbstractModel implements Attributable {
 		}
 	}
 
-
-	public Spectrum(int length, boolean random){
+	/**
+	 * type 0=Equal. 
+	 * 		1=[1 0 0 0].
+	 * 		2=[Random]. 
+	 * @param length
+	 * @param type
+	 */
+	public Spectrum(int length, int type){
 		
 		super("Spectrum");
 		spectrum = new ArrayList<SpectraParameter>();
 		for (int i = 0; i < length; i++) {
-			SpectraParameter spectra = new SpectraParameter(random);
+			SpectraParameter spectra = new SpectraParameter(type);
 			addVariable(spectra);
 			spectrum.add(spectra);
 		}
@@ -187,7 +193,7 @@ public class Spectrum extends AbstractModel implements Attributable {
 	private final NumberFormat formatter = NumberFormat.getNumberInstance();
 	@Override
 	public String toString(){
-		formatter.setMaximumFractionDigits(2);
+		formatter.setMaximumFractionDigits(3);
 		StringBuffer sb = new StringBuffer();
 		for (int p = 0; p < 4; p++) {
 			for (int i = 0; i < spectrum.size(); i++) {

@@ -83,7 +83,7 @@ public class SpectraParameterTest {
 	
 	@Test
 	public void testGetSetFrequencies() throws Exception {
-		SpectraParameter spectra = new SpectraParameter(false);
+		SpectraParameter spectra = new SpectraParameter(0);
 		assertEquals(4, spectra.getDimension());
 		for (int i = 0; i < spectra.getDimension(); i++) {
 			assertEquals(0.25, spectra.getFrequency(i), 0);

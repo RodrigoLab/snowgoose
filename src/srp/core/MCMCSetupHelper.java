@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import srp.likelihood.ShortReadLikelihood;
+import srp.haplotypes.likelihood.ShortReadLikelihood;
 import srp.spectrum.likelihood.ShortReadsSpectrumLikelihood;
 import dr.evolution.coalescent.CoalescentSimulator;
 import dr.evolution.coalescent.ConstantPopulation;
@@ -114,8 +114,8 @@ public class MCMCSetupHelper {
 	//		options.setFullEvaluationCount((int) (logInterval*0.01));
 		
 		
-		MCMCOptions options = new MCMCOptions(logInterval * totalSamples, 10,
-				1, MarkovChain.EVALUATION_TEST_THRESHOLD, true, 0, 1.0);
+		MCMCOptions options = new MCMCOptions(logInterval * totalSamples, 1,
+				0, MarkovChain.EVALUATION_TEST_THRESHOLD, false, 10, 1.0);
 			//		MCMCOptions(long chainLength, 
 	//				long fullEvaluationCount, 
 	//				int minOperatorCountForFullEvaluation, 

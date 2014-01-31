@@ -17,9 +17,15 @@ public class SpectraParameter extends Parameter.Default{
 	public static final int DIMENSION = 4;
 	public static final Bounds<Double> SPECTRUM_BOUNDS = new DefaultBounds(1.0, 0.0, DIMENSION);
 	
-	public SpectraParameter(boolean random){
+	public SpectraParameter(int type){
 		this(EQUAL_FREQ);
-		if(random){
+		if(type==1){//1 0 0 0
+			double[] freq = new double[DIMENSION];
+			int dim = MathUtils.nextInt(DIMENSION);
+			freq[dim]=1;
+			setFrequenciesQuietly(freq);
+		}
+		else if(type==2){//Random
 			double[] freq = new double[DIMENSION];
 			for (int i = 0; i < freq.length; i++) {
 				freq[i] = MathUtils.nextInt(100);
@@ -28,12 +34,19 @@ public class SpectraParameter extends Parameter.Default{
 			for (int i = 0; i < freq.length; i++) {
 				freq[i] /= sum;
 			}
-			System.out.println(Arrays.toString(freq));
+//			System.out.println(Arrays.toString(freq));
 //			super(freq);
 			setFrequenciesQuietly(freq);
-
 			
 		}
+		if(type==3){//0.85 0.05 0.05 0.05
+			double[] freq = new double[DIMENSION];
+			Arrays.fill(freq, 0.05);
+			int dim = MathUtils.nextInt(DIMENSION);
+			freq[dim] = 0.85;
+			setFrequenciesQuietly(freq);
+		}
+
 
 	}
 	

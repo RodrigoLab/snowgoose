@@ -10,7 +10,7 @@ import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.HaplotypeLoggerWithTrueHaplotype;
 import srp.haplotypes.HaplotypeModel;
 import srp.haplotypes.HaplotypeModelUtils;
-import srp.likelihood.ShortReadLikelihood;
+import srp.haplotypes.likelihood.ShortReadLikelihood;
 import srp.rj.operator.RJTreeOperator;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.util.TaxonList;

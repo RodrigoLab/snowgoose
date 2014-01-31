@@ -19,12 +19,15 @@ import srp.spectrum.SpectrumOperation;
 import srp.spectrum.SpectrumOperationRecord;
 import srp.spectrum.likelihood.ShortReadsSpectrumLikelihood;
 import srp.spectrum.operator.AbstractSpectrumOperator;
-import srp.spectrum.operator.ColumnSpectrumDeltaExchangeOperator;
-import srp.spectrum.operator.MultiSpectrumDeltaExchangeOperator;
+import srp.spectrum.operator.DeltaExchangeColumnSpectrumOperator;
+import srp.spectrum.operator.DeltaExchangeMultiSpectrumOperator;
 import srp.spectrum.operator.RecombinationSpectrumOperator;
-import srp.spectrum.operator.SingleSpectrumDeltaExchangeOperator;
+import srp.spectrum.operator.DeltaExchangeSingleSpectrumOperator;
+import srp.spectrum.operator.RecombineSectionSpectrumOperator;
+import srp.spectrum.operator.SwapSingleSpectrumOperator;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.SimpleAlignment;
+import dr.inference.operators.MCMCOperator;
 import dr.inference.operators.OperatorFailedException;
 import dr.math.MathUtils;
 
@@ -87,7 +90,7 @@ public class ShortReadsSpectrumLikelihoodTimeTrialTest {
 //		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 4);
 //		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
 
-		SingleSpectrumDeltaExchangeOperator op = new SingleSpectrumDeltaExchangeOperator(spectrumModel, 0.1, null);
+		DeltaExchangeSingleSpectrumOperator op = new DeltaExchangeSingleSpectrumOperator(spectrumModel, 0.1, null);
 
 		double trial = 1e4;
 		long totalTime = 0;
@@ -97,7 +100,7 @@ public class ShortReadsSpectrumLikelihoodTimeTrialTest {
 				op.doOperation();
 				
 				long time1 = System.currentTimeMillis();
-				likelihood.makeDirty();
+//				likelihood.makeDirty();
 				likelihood.getLogLikelihood();
 				totalTime += (System.currentTimeMillis()-time1);
 				count++;
@@ -132,10 +135,21 @@ public class ShortReadsSpectrumLikelihoodTimeTrialTest {
 	}
 
 	@Test
-	public void testTimeTrialSingle() throws Exception {
+	public void testTimeTrialDeltaSingle() throws Exception {
 
-		SingleSpectrumDeltaExchangeOperator op = new SingleSpectrumDeltaExchangeOperator(
+		AbstractSpectrumOperator op = new DeltaExchangeSingleSpectrumOperator(
 				spectrumModel, 0.1, null);
+		String summary = timeTrialOperator(likelihood, op);
+		System.out.println(summary + "\t" + op.getOperatorName());
+
+	}
+	
+
+	@Test
+	public void testTimeTrialSwapSingle() throws Exception {
+
+		AbstractSpectrumOperator op = new SwapSingleSpectrumOperator(
+				spectrumModel, null);
 		String summary = timeTrialOperator(likelihood, op);
 		System.out.println(summary + "\t" + op.getOperatorName());
 
@@ -144,8 +158,8 @@ public class ShortReadsSpectrumLikelihoodTimeTrialTest {
 	@Test
 	public void testTimeTrialMulti() throws Exception {
 
-		MultiSpectrumDeltaExchangeOperator op = new MultiSpectrumDeltaExchangeOperator(
-				spectrumModel, 0.1, null);
+		DeltaExchangeMultiSpectrumOperator op = new DeltaExchangeMultiSpectrumOperator(
+				spectrumModel, 0.1, 5, null);
 		String summary = timeTrialOperator(likelihood, op);
 		System.out.println(summary + "\t" + op.getOperatorName());
 
@@ -154,7 +168,7 @@ public class ShortReadsSpectrumLikelihoodTimeTrialTest {
 	@Test
 	public void testTimeTrialColumn() throws Exception {
 
-		ColumnSpectrumDeltaExchangeOperator op = new ColumnSpectrumDeltaExchangeOperator(
+		DeltaExchangeColumnSpectrumOperator op = new DeltaExchangeColumnSpectrumOperator(
 				spectrumModel, 0.1, null);
 		String summary = timeTrialOperator(likelihood, op);
 		System.out.println(summary + "\t" + op.getOperatorName());
@@ -165,6 +179,15 @@ public class ShortReadsSpectrumLikelihoodTimeTrialTest {
 	public void testTimeTrialRecombination() throws Exception {
 
 		RecombinationSpectrumOperator op = new RecombinationSpectrumOperator(
+				spectrumModel, null);
+		String summary = timeTrialOperator(likelihood, op);
+		System.out.println(summary + "\t" + op.getOperatorName());
+
+	}
+	@Test
+	public void testTimeTrialSwapSection() throws Exception {
+
+		AbstractSpectrumOperator op = new RecombineSectionSpectrumOperator(
 				spectrumModel, 10, null);
 		String summary = timeTrialOperator(likelihood, op);
 		System.out.println(summary + "\t" + op.getOperatorName());
@@ -182,9 +205,10 @@ public class ShortReadsSpectrumLikelihoodTimeTrialTest {
 				
 				long time1 = System.currentTimeMillis();
 				likelihood.storeModelState();
+//				likelihood.makeDirty();
 				op.doOperation();
 				
-				likelihood.makeDirty();
+
 				likelihood.getLogLikelihood();
 				double rand = MathUtils.nextDouble();
 				if(rand>0.5){
@@ -207,12 +231,16 @@ public class ShortReadsSpectrumLikelihoodTimeTrialTest {
 
 
 /*
+TimeTrial:	1006	0.1006/calculation	ColumnSpectrumDeltaExchangeOperator
+TimeTrial:	393	0.0393/calculation	SingleSpectrumDeltaExchangeOperator
+TimeTrial:  	1858	18.58/calculation	Full calculation no operator
+TimeTrial:	323	0.0323/calculation	Single No store/restore
+TimeTrial:	678	0.0678/calculation	SwapSectionSpectrumOperator
+TimeTrial:	29	2.9E-4/calculation	StoreRestoreOnly
+TimeTrial:	20315	2.0315/calculation	RecombinationSpectrumOperator
+TimeTrial:	1552	0.1552/calculation	MultiSpectrumDeltaExchangeOperator
 
-TimeTrial:	983	0.0983/calculation	ColumnSpectrumDeltaExchangeOperator
-TimeTrial:	455	0.0455/calculation	SingleSpectrumDeltaExchangeOperator
-TimeTrial:  	1740	17.4/calculation	Full calculation no operator
-TimeTrial:	297	0.0297/calculation	Single No store/restore
-TimeTrial:	25	2.5E-4/calculation	StoreRestoreOnly
 
-TimeTrial:	3670	0.367/calculation	MultiSpectrumDeltaExchangeOperator
+TimeTrial:	889	0.0889/calculation	SwapSectionSpectrumOperator //swap index
+TimeTrial:	1483	0.1483/calculation	SwapSectionSpectrumOperator // full calculation
 */

@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.Random;
 
 import org.apache.commons.lang3.StringUtils;
-
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -27,9 +26,9 @@ import srp.haplotypes.Haplotype;
 import srp.haplotypes.HaplotypeModel;
 import srp.haplotypes.HaplotypeModelUtils;
 import srp.haplotypes.SwapInfo;
-import srp.haplotypes.operator.SingleBaseOperator;
-import srp.haplotypes.operator.MultiBasesOperator;
-import srp.likelihood.LikelihoodUtils;
+import srp.haplotypes.likelihood.LikelihoodUtils;
+import srp.haplotypes.operator.BaseSingleOperator;
+import srp.haplotypes.operator.BasesMultiOperator;
 import test.TestUtils;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.SimpleAlignment;
@@ -154,7 +153,7 @@ public class HaplotypeModelTest {
 	public void testReject() throws Exception {
 		
 		MCMCOperator op;
-		op = new SingleBaseOperator(haplotypeModel, 0);
+		op = new BaseSingleOperator(haplotypeModel, 0);
 		
 		for (int i = 0; i < 1000; i++) {
 			op.operate();
@@ -165,7 +164,7 @@ public class HaplotypeModelTest {
 			assertEquals(haplotypeModel.getAlignedSequenceString(i), srpAlignment.getAlignedSequenceString(i));
 		}
 		
-		op = new MultiBasesOperator(haplotypeModel, 10, null);
+		op = new BasesMultiOperator(haplotypeModel, 10, null);
 		for (int i = 0; i < 1000; i++) {
 			op.operate();
 			op.reject();

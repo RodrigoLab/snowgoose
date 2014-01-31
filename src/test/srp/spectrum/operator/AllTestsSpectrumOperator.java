@@ -6,10 +6,10 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({ 
-	ColumnSpectrumDeltaExchangeOperatorTest.class,
-	MultiSpectrumDeltaExchangeOperatorTest.class,
-	RecombinationSpectrumOperatorTest.class,
-	SingleSpectrumDeltaExchangeOperatorTest.class,
+	DeltaExchangeColumnSpectrumOperatorTest.class,
+	DeltaExchangeMultiSpectrumOperatorTest.class,
+	RecombineSectionSpectrumOperatorTest.class,
+	DeltaExchangeSingleSpectrumOperatorTest.class,
 })
 public class AllTestsSpectrumOperator {
 

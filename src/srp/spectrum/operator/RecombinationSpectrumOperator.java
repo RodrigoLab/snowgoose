@@ -1,15 +1,9 @@
 package srp.spectrum.operator;
 
-import java.util.Arrays;
-import java.util.Collections;
-
 import srp.spectrum.SpectraParameter;
 import srp.spectrum.Spectrum;
 import srp.spectrum.SpectrumAlignmentModel;
 import srp.spectrum.SpectrumOperation;
-import srp.spectrum.SpectrumOperationRecord;
-import dr.inference.model.Bounds;
-import dr.inference.model.Parameter;
 import dr.inference.operators.CoercionMode;
 import dr.inference.operators.OperatorFailedException;
 import dr.math.MathUtils;
@@ -32,14 +26,14 @@ public class RecombinationSpectrumOperator extends AbstractSpectrumOperator {
 	
 	
 	public RecombinationSpectrumOperator(SpectrumAlignmentModel spectrumModel, 
-			int swapLength, CoercionMode mode) {
+			CoercionMode mode) {
 		super(spectrumModel, mode);
 		
 		twoPositionIndex = new int[2];
 		twoSpectrumIndex = new int[2];
 		
 //		this.delta = delta;
-		this.swapLength = swapLength;
+//		this.swapLength = swapLength;
         setWeight(1.0);
 
         parameterWeights = new int[this.spectrumModel.getDataType().getStateCount()];
@@ -47,18 +41,15 @@ public class RecombinationSpectrumOperator extends AbstractSpectrumOperator {
             parameterWeights[i] = 1;
         }
 
-		scaleFactor = (int) (spectrumLength*0.01);
-
-		if (scaleFactor <1) {
-			scaleFactor = 1;
-		}
-		convertToAutoOptimize(this.swapLength);
+//		scaleFactor = (int) (spectrumLength*0.01);
+//
+//		if (scaleFactor <1) {
+//			scaleFactor = 1;
+//		}
+////		convertToAutoOptimize(this.swapLength);
 		
 	}
 
-	private double[] debugList = new double[8];
-	
-	
 	@Override
 	public double doOperation() throws OperatorFailedException {
 
@@ -71,8 +62,8 @@ public class RecombinationSpectrumOperator extends AbstractSpectrumOperator {
 			twoSpectrumIndex[1] = MathUtils.nextInt(spectrumCount);
         }while (twoSpectrumIndex[0] == twoSpectrumIndex[1]);
 
-		twoPositionIndex[0] = MathUtils.nextInt(spectrumLength-swapLength);
-		twoPositionIndex[1]= twoPositionIndex[0] + swapLength;
+		twoPositionIndex[0] = MathUtils.nextInt(spectrumLength);//-swapLength);
+		twoPositionIndex[1]= spectrumLength;//twoPositionIndex[0] + swapLength;
 
 		Spectrum spectrum1 = spectrumModel.getSpectrum(twoSpectrumIndex[0]);
 		Spectrum spectrum2 = spectrumModel.getSpectrum(twoSpectrumIndex[1]);
@@ -188,24 +179,9 @@ public class RecombinationSpectrumOperator extends AbstractSpectrumOperator {
 
     @Override
 	public final String getPerformanceSuggestion() {
-		SpectrumOperationRecord record = spectrumModel.getSpectrumOperationRecord();
-		String s = OPERATOR_NAME +"\t"+ Arrays.toString(twoSpectrumIndex) +"\t"+ Arrays.toString(twoPositionIndex);
-		s+= spectrumModel.diagnostic() +"\n";
-//		s += Arrays.toString(debugList);
-//		spectrumModel.restoreModelState();
+    	String s = "Tuning "+swapLength; 
     	return s;
-    	
-//        double prob = MCMCOperator.Utils.getAcceptanceProbability(this);
-//        double targetProb = getTargetAcceptanceProbability();
-//
-////        double d = OperatorUtils.optimizeWindowSize(delta, parameter.getParameterValue(0) * 2.0, prob, targetProb);
-//        double d = OperatorUtils.optimizeWindowSize(delta, 0.25 , prob, targetProb);
-//
-//        if (prob < getMinimumGoodAcceptanceLevel()) {
-//            return "Try decreasing delta to about " + d;
-//        } else if (prob > getMaximumGoodAcceptanceLevel()) {
-//            return "Try increasing delta to about " + d;
-//        } else return "";
+
     }
 
     @Override

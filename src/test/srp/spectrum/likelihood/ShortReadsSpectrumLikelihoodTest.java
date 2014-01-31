@@ -20,10 +20,11 @@ import srp.spectrum.SpectrumOperation;
 import srp.spectrum.SpectrumOperationRecord;
 import srp.spectrum.likelihood.ShortReadsSpectrumLikelihood;
 import srp.spectrum.operator.AbstractSpectrumOperator;
-import srp.spectrum.operator.ColumnSpectrumDeltaExchangeOperator;
-import srp.spectrum.operator.MultiSpectrumDeltaExchangeOperator;
+import srp.spectrum.operator.DeltaExchangeColumnSpectrumOperator;
+import srp.spectrum.operator.DeltaExchangeMultiSpectrumOperator;
 import srp.spectrum.operator.RecombinationSpectrumOperator;
-import srp.spectrum.operator.SingleSpectrumDeltaExchangeOperator;
+import srp.spectrum.operator.DeltaExchangeSingleSpectrumOperator;
+import srp.spectrum.operator.RecombineSectionSpectrumOperator;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.SimpleAlignment;
 import dr.inference.operators.OperatorFailedException;
@@ -52,7 +53,7 @@ public class ShortReadsSpectrumLikelihoodTest {
 //		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/ABI/unittest/", "H4_srp.fasta");
 		AlignmentMapping aMap = new AlignmentMapping(alignment);
 			
-		spectrumModel = new SpectrumAlignmentModel(aMap, 4, true);
+		spectrumModel = new SpectrumAlignmentModel(aMap, 4, 2);
 	}
 
 	@After
@@ -194,18 +195,18 @@ public class ShortReadsSpectrumLikelihoodTest {
 	
 		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
 		
-		SpectrumOperationRecord record = spectrumModel.getSpectrumOperationRecord();
-		SingleSpectrumDeltaExchangeOperator op = new SingleSpectrumDeltaExchangeOperator(spectrumModel, 0.25, null);
+//		SpectrumOperationRecord record = spectrumModel.getSpectrumOperationRecord();
+		DeltaExchangeSingleSpectrumOperator op = new DeltaExchangeSingleSpectrumOperator(spectrumModel, 0.25, null);
 		
 		for (int i = 0; i < 1e4; i++) {
 			try {
 				op.doOperation();
 				double logLikelihoodSingle = likelihood.getLogLikelihood();
-				assertEquals(SpectrumOperation.SINGLE_DELTA, likelihood.getOperation());
-				record.setOperation(SpectrumOperation.NONE);
+				assertEquals(SpectrumOperation.DELTA_SINGLE, likelihood.getOperation());
+				
 				likelihood.makeDirty();
 				double logLikelihoodFull = likelihood.getLogLikelihood();
-				assertEquals(SpectrumOperation.NONE, likelihood.getOperation());
+				assertEquals(SpectrumOperation.FULL, likelihood.getOperation());
 				assertEquals(logLikelihoodFull, logLikelihoodSingle, 1e-8);
 				
 			} catch (Exception e) {
@@ -227,7 +228,7 @@ public class ShortReadsSpectrumLikelihoodTest {
 				likelihood.storeModelState();
 				
 				op.doOperation();
-				likelihood.makeDirty();
+
 				logLikelihoodOperator = likelihood.getLogLikelihood();
 				assertEquals(expectedSpectrumOperation, likelihood.getOperation());
 				
@@ -253,7 +254,7 @@ public class ShortReadsSpectrumLikelihoodTest {
 	@Test
 	public void testFullvsSingleStoreRestore() throws Exception {
 
-		SingleSpectrumDeltaExchangeOperator op = new SingleSpectrumDeltaExchangeOperator(
+		DeltaExchangeSingleSpectrumOperator op = new DeltaExchangeSingleSpectrumOperator(
 				spectrumModel, 0.25, null);
 		assertLikelihoodOperator(spectrumModel, op);
 	}
@@ -261,15 +262,15 @@ public class ShortReadsSpectrumLikelihoodTest {
 	@Test
 	public void testFullvsMultiStoreRestore() throws Exception {
 
-		MultiSpectrumDeltaExchangeOperator op = new MultiSpectrumDeltaExchangeOperator(
-				spectrumModel, 0.1, null);
+		DeltaExchangeMultiSpectrumOperator op = new DeltaExchangeMultiSpectrumOperator(
+				spectrumModel, 0.1, 10, null);
 		assertLikelihoodOperator(spectrumModel, op);
 	}
 
 	@Test
 	public void testFullvsColumnStoreRestore() throws Exception {
 
-		ColumnSpectrumDeltaExchangeOperator op = new ColumnSpectrumDeltaExchangeOperator(
+		DeltaExchangeColumnSpectrumOperator op = new DeltaExchangeColumnSpectrumOperator(
 				spectrumModel, 0.1, null);
 		assertLikelihoodOperator(spectrumModel, op);
 
@@ -279,6 +280,14 @@ public class ShortReadsSpectrumLikelihoodTest {
 	public void testFullvsRecombinationStoreRestore() throws Exception {
 
 		RecombinationSpectrumOperator op = new RecombinationSpectrumOperator(
+				spectrumModel, null);
+		assertLikelihoodOperator(spectrumModel, op);
+	}
+
+	@Test
+	public void testFullvsSwapSectionStoreRestore() throws Exception {
+
+		RecombineSectionSpectrumOperator op = new RecombineSectionSpectrumOperator(
 				spectrumModel, 10, null);
 		assertLikelihoodOperator(spectrumModel, op);
 	}

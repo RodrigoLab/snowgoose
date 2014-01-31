@@ -17,9 +17,9 @@ import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.HaplotypeModel;
 import srp.haplotypes.HaplotypeModelUtils;
 import srp.haplotypes.Operation;
-import srp.haplotypes.operator.MultiBasesUniformOperator;
-import srp.haplotypes.operator.SingleBaseOperator;
-import srp.likelihood.ShortReadLikelihood;
+import srp.haplotypes.likelihood.ShortReadLikelihood;
+import srp.haplotypes.operator.BasesMultiUniformOperator;
+import srp.haplotypes.operator.BaseSingleOperator;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.SitePatterns;
 import dr.evolution.datatype.Nucleotides;
@@ -126,7 +126,7 @@ public class TreeLikelihoodExtTest {
 		
 		srpLikelihood = new ShortReadLikelihood(haplotypeModel);
 
-		SimpleMCMCOperator op = new MultiBasesUniformOperator(haplotypeModel, 100, CoercionMode.COERCION_OFF);
+		SimpleMCMCOperator op = new BasesMultiUniformOperator(haplotypeModel, 100, CoercionMode.COERCION_OFF);
 
         for (int i = 0; i < 100; i++) {
         	srpLikelihood.storeModelState();
@@ -351,7 +351,7 @@ public class TreeLikelihoodExtTest {
 		likelihood = treeLikelihoodExt.getLogLikelihood();
 		System.out.println(likelihood);
 		
-		SingleBaseOperator op = new SingleBaseOperator(haplotypeModel, 0);
+		BaseSingleOperator op = new BaseSingleOperator(haplotypeModel, 0);
         for (int i = 0; i < 100; i++) {
         	op.doOperation();
 //			alignment = haplotypeModel.getAlignment();

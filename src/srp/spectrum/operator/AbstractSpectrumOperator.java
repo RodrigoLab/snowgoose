@@ -1,22 +1,12 @@
 package srp.spectrum.operator;
 
-import java.util.Arrays;
-
 import srp.haplotypes.AlignmentMapping;
-import srp.haplotypes.HaplotypeModel;
-import srp.haplotypes.Operation;
 import srp.spectrum.SpectraParameter;
 import srp.spectrum.SpectrumAlignmentModel;
 import srp.spectrum.SpectrumOperation;
 import dr.inference.model.Bounds;
-import dr.inference.model.Parameter;
 import dr.inference.operators.AbstractCoercableOperator;
 import dr.inference.operators.CoercionMode;
-import dr.inference.operators.MCMCOperator;
-import dr.inference.operators.OperatorFailedException;
-import dr.inference.operators.OperatorUtils;
-import dr.inference.operators.SimpleMCMCOperator;
-import dr.math.MathUtils;
 
 public abstract class AbstractSpectrumOperator extends AbstractCoercableOperator {
 

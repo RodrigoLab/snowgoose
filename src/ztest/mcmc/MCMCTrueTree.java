@@ -19,7 +19,7 @@ import srp.core.MCMCSetupHelperHaplotype;
 import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.HaplotypeLoggerWithTrueHaplotype;
 import srp.haplotypes.HaplotypeModel;
-import srp.likelihood.ShortReadLikelihood;
+import srp.haplotypes.likelihood.ShortReadLikelihood;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.tree.Tree;
 import dr.evolution.util.TaxonList;

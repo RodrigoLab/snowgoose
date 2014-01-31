@@ -8,18 +8,18 @@ import srp.haplotypes.HaplotypeModel;
 import srp.haplotypes.operator.ColumnOperator;
 import srp.haplotypes.operator.HaplotypeRecombinationOperator;
 import srp.haplotypes.operator.HaplotypeSwapSectionOperator;
-import srp.haplotypes.operator.SingleBaseEmpiricalOperator;
-import srp.haplotypes.operator.SingleBaseFrequencyOperator;
-import srp.haplotypes.operator.SingleBaseOperator;
-import srp.haplotypes.operator.SingleBaseUniformOperator;
-import srp.haplotypes.operator.MultiBasesEmpiricalOperator;
-import srp.haplotypes.operator.MultiBasesOperator;
-import srp.haplotypes.operator.MultiBasesUniformOperator;
+import srp.haplotypes.operator.BaseSingleEmpiricalOperator;
+import srp.haplotypes.operator.BaseSingleFrequencyOperator;
+import srp.haplotypes.operator.BaseSingleOperator;
+import srp.haplotypes.operator.BaseSingleUniformOperator;
+import srp.haplotypes.operator.BasesMultiEmpiricalOperator;
+import srp.haplotypes.operator.BasesMultiOperator;
+import srp.haplotypes.operator.BasesMultiUniformOperator;
 import srp.haplotypes.operator.SwitchBaseFrequencyOperator;
 import srp.rj.operator.RJTreeOperator;
 import srp.spectrum.SpectrumAlignmentModel;
-import srp.spectrum.likelihood.SpectrumTreeLikelihood;
-import srp.spectrum.operator.SingleSpectrumDeltaExchangeOperator;
+import srp.spectrum.operator.DeltaExchangeSingleSpectrumOperator;
+import srp.spectrum.treelikelihood.SpectrumTreeLikelihood;
 import dr.evolution.datatype.Nucleotides;
 import dr.evolution.util.Units;
 import dr.evomodel.branchratemodel.StrictClockBranchRates;
@@ -287,7 +287,7 @@ public class MCMCSetupHelperHaplotype extends MCMCSetupHelper {
 	//		operator.setWeight(opSmall);
 	//		OperatorList.add(operator);
 	
-			operator = new SingleBaseEmpiricalOperator(haplotypeModel, 0);
+			operator = new BaseSingleEmpiricalOperator(haplotypeModel, 0);
 			operator.setWeight(opMed);
 			OperatorList.add(operator);
 	
@@ -299,7 +299,7 @@ public class MCMCSetupHelperHaplotype extends MCMCSetupHelper {
 	//		operator.setWeight(opLarge);
 	//		OperatorList.add(operator);
 	//
-			operator = new MultiBasesEmpiricalOperator(haplotypeModel, 3, CoercionMode.COERCION_ON);
+			operator = new BasesMultiEmpiricalOperator(haplotypeModel, 3, CoercionMode.COERCION_ON);
 			operator.setWeight(opLarge);
 			OperatorList.add(operator);
 	
@@ -334,7 +334,7 @@ public class MCMCSetupHelperHaplotype extends MCMCSetupHelper {
 					OperatorList.add(operator);
 					
 	
-					operator = new SingleBaseFrequencyOperator(haplotypeModel, parameter);
+					operator = new BaseSingleFrequencyOperator(haplotypeModel, parameter);
 					operator.setWeight(opMed);
 					OperatorList.add(operator);
 				}

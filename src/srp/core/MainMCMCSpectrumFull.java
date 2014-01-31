@@ -7,14 +7,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
-
 import srp.haplotypes.AlignmentMapping;
 import srp.spectrum.Spectrum;
 import srp.spectrum.SpectrumAlignmentModel;
 import srp.spectrum.SpectrumLogger;
 import srp.spectrum.likelihood.ShortReadsSpectrumLikelihood;
-import srp.spectrum.likelihood.SpectrumTreeLikelihood;
-import srp.spectrum.operator.SingleSpectrumDeltaExchangeOperator;
+import srp.spectrum.operator.DeltaExchangeSingleSpectrumOperator;
+import srp.spectrum.treelikelihood.SpectrumTreeLikelihood;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.tree.Tree;
 import dr.evolution.util.TaxonList;
@@ -69,10 +68,13 @@ public class MainMCMCSpectrumFull {
 		dataDir = "/home/sw167/workspaceSrp/ABI/unittest/testData/";
 		runIndex = 1;
 		totalSamples = 5000;
-		logInterval = 40000;
+		logInterval = 10000;
 		
-		totalSamples = 1000;
-//		logInterval = 100;
+		boolean randomTree = true;
+//		boolean randomTree = false;
+		
+		boolean randomSpectrum = true;
+//		boolean randomSpectrum = false;
 		
 		noOfTrueHaplotype = 7;
 		noOfRecoveredHaplotype=7;
@@ -89,8 +91,8 @@ public class MainMCMCSpectrumFull {
 		String logHaplotypeName = prefix+".haplatype";
 		String operatorAnalysisFile = prefix+"_operatorAnalysisFile.txt";
 		
-		String partialSpectrumName = prefix+".partialhaplatype";
-		String partialTreeName = "FullTree_"+hapRunIndex+".partialtrees";
+		String partialSpectrumName = prefix+".haplatypepartial";
+		String partialTreeName = "FullTree_"+hapRunIndex+".treespartial";
 		
 		DataImporter dataImporter = new DataImporter(dataDir);
 
@@ -98,23 +100,29 @@ public class MainMCMCSpectrumFull {
 		
 		Alignment shortReads = dataImporter.importShortReads(shortReadFile);
 		AlignmentMapping aMap = new AlignmentMapping(shortReads);
-//		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, noOfRecoveredHaplotype);
-		SpectrumAlignmentModel spectrumModel = SpectrumAlignmentModel.importPartialSpectrumFile(aMap, partialSpectrumName );
+		
+		SpectrumAlignmentModel spectrumModel;
+		if(randomSpectrum){
+			spectrumModel = new SpectrumAlignmentModel(aMap, noOfRecoveredHaplotype);
+		}
+		else{
+			spectrumModel = SpectrumAlignmentModel.importPartialSpectrumFile(aMap, partialSpectrumName );
+		}
 //		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, trueAlignment);
 
-//		haplotypeModel = new HaplotypeModel(alignmentMapping, trueAlignment);
-//		ShortReadLikelihood shortReadLikelihood  = new ShortReadLikelihood(haplotypeModel);
-		
 		// coalescent
 		Parameter popSize = new Parameter.Default(ConstantPopulationModelParser.POPULATION_SIZE, 3000.0, 100, 100000.0);
-
+		
 		// Random treeModel
 		ConstantPopulationModel popModel = new ConstantPopulationModel(popSize, Units.Type.YEARS);
-//		TreeModel treeModel = MCMCSetupHelper.setupRandomTreeModel(popModel, spectrumModel, Units.Type.YEARS);
-
-		Tree partialPhylogeny = dataImporter.importTree(partialTreeName);
-		TreeModel treeModel = new TreeModel(TreeModel.TREE_MODEL, partialPhylogeny, false);
-
+		TreeModel treeModel;
+		if(randomTree){
+			treeModel = MCMCSetupHelper.setupRandomTreeModel(popModel, spectrumModel, Units.Type.YEARS);
+		}
+		else{
+			Tree partialPhylogeny = dataImporter.importTree(partialTreeName);
+			treeModel = new TreeModel(TreeModel.TREE_MODEL, partialPhylogeny, false);
+		}
 
 		// Coalescent likelihood
 		CoalescentLikelihood coalescent = new CoalescentLikelihood(treeModel,null, new ArrayList<TaxonList>(), popModel);
@@ -142,7 +150,7 @@ public class MainMCMCSpectrumFull {
 		OperatorSchedule schedule = new SimpleOperatorSchedule();
 //		ArrayList<MCMCOperator> defalutOperatorsList = 
 		MCMCSetupHelperSpectrum.defalutSpectrumOperators(schedule, spectrumModel, freqs, popSize, kappa);
-//		MCMCSetupHelperSpectrum.defalutTreeOperators(schedule, treeModel);
+		MCMCSetupHelperSpectrum.defalutTreeOperators(schedule, treeModel);
 		
 		
 //		MCMCOperator operator;
@@ -202,8 +210,17 @@ public class MainMCMCSpectrumFull {
 		
 		mcmc.init(options, posterior, schedule, loggers);
 		mcmc.run();
-
 		
+//		if (schedule.getOperator(0).getOperatorName().equals("DeltaExchangeSingleSpectrumOperator")){
+//			DeltaExchangeSingleSpectrumOperator oo = (DeltaExchangeSingleSpectrumOperator) schedule.getOperator(0);
+//			System.out.println(oo.failcount);
+//		}
+//		if (schedule.getOperator(1).getOperatorName().equals("DeltaExchangeSingleSpectrumOperator")){
+//			DeltaExchangeSingleSpectrumOperator oo = (DeltaExchangeSingleSpectrumOperator) schedule.getOperator(0);
+//			System.out.println(oo.failcount);
+//		}
+		System.out.println("spectrumAlignment time:\t"+spectrumModel.time);
+		System.out.println("srpLikelihood time:\t"+srpLikelihood.time);
 		System.out.println(mcmc.getTimer().toString());
 		int stateCount = 4;
 //		for (int s = 0; s < stateCount; s++) {

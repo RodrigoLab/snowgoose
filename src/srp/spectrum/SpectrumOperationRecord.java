@@ -29,6 +29,7 @@ public class SpectrumOperationRecord {
 	private int[] allSiteIndexs;
 	private int[] recombinationPositionIndex;
 	private int[] recombinationSpectrumIndex;
+	private int[] allSpectrumIndexs;
 
 	
 	/*
@@ -198,6 +199,7 @@ public class SpectrumOperationRecord {
 
 
 	public double[] getDelta() {
+		// for unit test only
 		return delta;
 	}
 
@@ -225,6 +227,13 @@ public class SpectrumOperationRecord {
 		this.delta = delta;
 				
 	}
+	public void setRecord(SpectrumOperation op, int spectrumIndex, int[] siteIndexs) {
+		//Swap
+		setOperation(op);
+		this.spectrumIndex = spectrumIndex;
+		this.allSiteIndexs = siteIndexs;
+		
+	}
 
 
 	public void setRecord(SpectrumOperation op, int spectrumIndex, int[] siteIndexs, double[] delta) {
@@ -233,8 +242,6 @@ public class SpectrumOperationRecord {
 		this.spectrumIndex = spectrumIndex;
 		this.allSiteIndexs = siteIndexs;
 		this.delta = delta;
-		
-		
 	}
 
 
@@ -248,6 +255,15 @@ public class SpectrumOperationRecord {
 	}
 
 
+	public void setRecord(SpectrumOperation op, int[] hapIndexs, int siteIndex) {
+		setOperation(op);
+		this.columnIndex = siteIndex;
+		this.allSpectrumIndexs = hapIndexs;
+
+	}
+
+
+
 	public int[] getRecombinationPositionIndex() {
 		return recombinationPositionIndex;
 	}
@@ -256,6 +272,12 @@ public class SpectrumOperationRecord {
 	public int[] getRecombinationSpectrumIndex() {
 		return recombinationSpectrumIndex;
 	}
+
+
+	public int[] getAllSpectrumIndexs() {
+		return allSpectrumIndexs;
+	}
+
 
 	
 }

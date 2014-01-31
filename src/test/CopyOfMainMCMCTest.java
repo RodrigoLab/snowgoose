@@ -8,7 +8,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-
 import srp.core.DataImporter;
 import srp.core.MCMCSetupHelper;
 import srp.core.MCMCSetupHelperSpectrum;
@@ -16,8 +15,8 @@ import srp.haplotypes.AlignmentMapping;
 import srp.spectrum.Spectrum;
 import srp.spectrum.SpectrumAlignmentModel;
 import srp.spectrum.likelihood.ShortReadsSpectrumLikelihood;
-import srp.spectrum.likelihood.SpectrumTreeLikelihood;
-import srp.spectrum.operator.SingleSpectrumDeltaExchangeOperator;
+import srp.spectrum.operator.DeltaExchangeSingleSpectrumOperator;
+import srp.spectrum.treelikelihood.SpectrumTreeLikelihood;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.datatype.Nucleotides;
 import dr.evolution.util.TaxonList;
@@ -51,8 +50,6 @@ import dr.inference.operators.OperatorSchedule;
 import dr.inference.operators.SimpleOperatorSchedule;
 import dr.inferencexml.model.CompoundLikelihoodParser;
 import dr.math.distributions.LogNormalDistribution;
-
-
 import static org.junit.Assert.*;
 
 import org.junit.Test;
