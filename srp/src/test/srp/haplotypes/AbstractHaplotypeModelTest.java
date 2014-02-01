@@ -25,6 +25,7 @@ import java.util.TreeSet;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math3.stat.StatUtils;
 import org.hamcrest.CoreMatchers;
+import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -238,15 +239,17 @@ public class AbstractHaplotypeModelTest {
 			
 			assertEquals(i+i, haplotypeModelRandom.getSequenceAttribute(i,"INDEX"));
 			assertEquals(i+i, haplotypeModelRandom.getTaxonAttribute(i, "INDEX"));
+
 			
 		}
-		
+
 		for (int i = 0; i < haplotypeModelRandom.getTaxonCount(); i++) {
 
 			try {
 				haplotypeModelRandom.getTaxonId(i);
 				
 			} catch (IllegalArgumentException e) {
+//				Matcher<String> startsWith = CoreMatchers.startsWith("Illegal taxon index");
 		        assertThat(e.getMessage(), CoreMatchers.startsWith("Illegal taxon index"));
 		        assertThat(e.getMessage(), CoreMatchers.containsString(""+i));
 			}

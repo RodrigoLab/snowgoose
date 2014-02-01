@@ -96,6 +96,7 @@ public abstract class AbstractHaplotypeModel extends AbstractModel implements Al
     @Override
 	public String getTaxonId(int taxonIndex) {
         Taxon taxon = getTaxon(taxonIndex);
+        
         if (taxon != null)
             return taxon.getId();
         else
