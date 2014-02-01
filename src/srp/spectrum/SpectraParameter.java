@@ -134,7 +134,8 @@ public class SpectraParameter extends Parameter.Default{
     	super.restoreValues();
 	}
     public String diagnostic(){
-    	return super.diagnostic();
+    	String diag = Arrays.toString(getFrequencies());
+    	return diag;
     }
     
     private void addBounds(){

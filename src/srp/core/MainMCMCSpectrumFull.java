@@ -70,11 +70,11 @@ public class MainMCMCSpectrumFull {
 		totalSamples = 5000;
 		logInterval = 10000;
 		
-		boolean randomTree = true;
-//		boolean randomTree = false;
+//		boolean randomTree = true;
+		boolean randomTree = false;
 		
-		boolean randomSpectrum = true;
-//		boolean randomSpectrum = false;
+//		boolean randomSpectrum = true;
+		boolean randomSpectrum = false;
 		
 		noOfTrueHaplotype = 7;
 		noOfRecoveredHaplotype=7;
