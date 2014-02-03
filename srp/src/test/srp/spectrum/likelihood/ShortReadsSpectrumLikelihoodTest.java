@@ -95,7 +95,7 @@ public class ShortReadsSpectrumLikelihoodTest {
 		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, alignment);
 		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
 		
-		double[] eachLikelihood = likelihood.getEachLikelihood();
+		double[] eachLikelihood = likelihood.unittestMethodGetEachLikelihood();
 //		System.out.println(Arrays.toString(eachLikelihood));
 		double[] expecteds = new double[]{ 
 				0+Math.log(1*NOT_ERROR+0*ERROR)*2,
@@ -118,7 +118,7 @@ public class ShortReadsSpectrumLikelihoodTest {
 		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 1, 0);
 		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
 		
-		double[] eachLikelihood = likelihood.getEachLikelihood();
+		double[] eachLikelihood = likelihood.unittestMethodGetEachLikelihood();
 		double[] expecteds = new double[]{ 
 				0+Math.log(0.25*NOT_ERROR+0.75*ERROR)*2,
 				0+Math.log(0.25*NOT_ERROR+0.75*ERROR)*1+Math.log(0.25*NOT_ERROR+0.75*ERROR)*1,
@@ -149,7 +149,7 @@ public class ShortReadsSpectrumLikelihoodTest {
 				};
 		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
 		
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 1);
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 1, 2);
 		Spectrum spectrum = spectrumModel.getSpectrum(0);
 		for (int i = 0; i < spectrum.getLength(); i++) {
 			double[] freqs = new double[]{1-(0.1*i*3), 0.1*i, 0.1*i, 0.1*i};
@@ -160,7 +160,7 @@ public class ShortReadsSpectrumLikelihoodTest {
 		
 		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
 		
-		double[] eachLikelihood = likelihood.getEachLikelihood();
+		double[] eachLikelihood = likelihood.unittestMethodGetEachLikelihood();
 //		System.out.println(Arrays.toString(eachLikelihood));
 		//Site1: 1, 0, 0, 0
 		//Site2: 0.7, 0.1, 0.1, 0.1
@@ -278,8 +278,7 @@ public class ShortReadsSpectrumLikelihoodTest {
 	@Test
 	public void testFullvsRecombinationStoreRestore() throws Exception {
 
-		RecombinationSpectrumOperator op = new RecombinationSpectrumOperator(
-				spectrumModel, null);
+		RecombinationSpectrumOperator op = new RecombinationSpectrumOperator(spectrumModel);
 		assertLikelihoodOperator(spectrumModel, op);
 	}
 

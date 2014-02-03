@@ -33,7 +33,7 @@ import java.util.Hashtable;
 
 // todo not used?
 //
-//public class CollectionHash {
+public class CollectionHash {
 //
 //    private final Hashtable table;
 //
@@ -80,4 +80,4 @@ import java.util.Hashtable;
 //    public void remove(Object key) {
 //    	table.remove(key);
 //    }
-//}
+}

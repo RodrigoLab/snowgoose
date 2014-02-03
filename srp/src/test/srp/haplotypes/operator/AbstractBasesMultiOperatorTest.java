@@ -16,12 +16,12 @@ import org.junit.Test;
 import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.AlignmentUtils;
 import srp.haplotypes.HaplotypeModel;
-import srp.haplotypes.operator.AbstractMultiBasesOperator;
+import srp.haplotypes.operator.AbstractBasesMultiOperator;
 import dr.inference.operators.CoercableMCMCOperator;
 import dr.inference.operators.CoercionMode;
 import dr.inference.operators.OperatorFailedException;
 
-public class AbstractMultiBasesOperatorTest {
+public class AbstractBasesMultiOperatorTest {
 
 	private HaplotypeModel haplotypeModel;
 
@@ -143,7 +143,7 @@ public class AbstractMultiBasesOperatorTest {
 		
 	}
 	
-	private class MockAbstractSwapBaseseOperator extends AbstractMultiBasesOperator {
+	private class MockAbstractSwapBaseseOperator extends AbstractBasesMultiOperator {
 
 		public MockAbstractSwapBaseseOperator(HaplotypeModel haplotypeModel,
 				int swapLength, CoercionMode mode) {

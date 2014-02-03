@@ -112,7 +112,7 @@ public class TestPenaltyShortReadsSpectrumLikelihood {
 		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
 		
 		double loglLikelihood = likelihood.getLogLikelihood();
-		double[] eachLikelihood = likelihood.getEachLikelihood();
+		double[] eachLikelihood = likelihood.unittestMethodGetEachLikelihood();
 		
 //		System.out.println(Arrays.toString(eachLikelihood));
 		double[] expecteds = new double[]{ 
@@ -133,7 +133,7 @@ public class TestPenaltyShortReadsSpectrumLikelihood {
 		likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
 		
 		double loglLikelihood2 = likelihood.getLogLikelihood();
-		double[] eachLikelihood2 = likelihood.getEachLikelihood();
+		double[] eachLikelihood2 = likelihood.unittestMethodGetEachLikelihood();
 //		System.out.println(Arrays.toString(eachLikelihood));
 		double[] expecteds2 = new double[]{ 
 				0+Math.log(1*NOT_ERROR+0*ERROR)*2+Math.log(2),
@@ -167,11 +167,11 @@ public class TestPenaltyShortReadsSpectrumLikelihood {
 				};
 		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
 			
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 1);
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 1, 0);
 		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
 		
 		double loglLikelihood = likelihood.getLogLikelihood();
-		double[] eachLikelihood = likelihood.getEachLikelihood();
+		double[] eachLikelihood = likelihood.unittestMethodGetEachLikelihood();
 //		System.out.println(Arrays.toString(eachLikelihood));
 		double[] expecteds = new double[]{ 
 				0+Math.log(0.25*NOT_ERROR+0.75*ERROR)*2,
@@ -183,11 +183,11 @@ public class TestPenaltyShortReadsSpectrumLikelihood {
 		
 
 		
-		spectrumModel = new SpectrumAlignmentModel(aMap, 2);
+		spectrumModel = new SpectrumAlignmentModel(aMap, 2, 0);
 		likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
 		
 		double loglLikelihood2 = likelihood.getLogLikelihood();
-		double[] eachLikelihood2 = likelihood.getEachLikelihood();
+		double[] eachLikelihood2 = likelihood.unittestMethodGetEachLikelihood();
 //		System.out.println(Arrays.toString(eachLikelihood));
 		double[] expecteds2 = new double[]{ 
 				0+Math.log(0.25*NOT_ERROR+0.75*ERROR)*2+Math.log(2),
@@ -224,7 +224,7 @@ public class TestPenaltyShortReadsSpectrumLikelihood {
 				};
 		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
 		
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 1);
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 1, 1);
 		Spectrum spectrum = spectrumModel.getSpectrum(0);
 		for (int i = 0; i < spectrum.getLength(); i++) {
 			double[] freqs = new double[]{1-(0.1*i*3), 0.1*i, 0.1*i, 0.1*i};
@@ -235,7 +235,7 @@ public class TestPenaltyShortReadsSpectrumLikelihood {
 		
 		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
 		
-		double[] eachLikelihood = likelihood.getEachLikelihood();
+		double[] eachLikelihood = likelihood.unittestMethodGetEachLikelihood();
 //		System.out.println(Arrays.toString(eachLikelihood));
 		//Site1: 1, 0, 0, 0
 		//Site2: 0.7, 0.1, 0.1, 0.1

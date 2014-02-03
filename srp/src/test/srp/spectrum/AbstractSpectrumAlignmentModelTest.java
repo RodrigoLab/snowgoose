@@ -105,7 +105,7 @@ public class AbstractSpectrumAlignmentModelTest {
 	@Before
 	public void setUp() throws Exception {
 		spectrumModel = new SpectrumAlignmentModel(aMap, srpAlignment);
-		spectrumModelRandom = new SpectrumAlignmentModel(aMap, 5);
+		spectrumModelRandom = new SpectrumAlignmentModel(aMap, 5, 2);
 	}
 
 	@After

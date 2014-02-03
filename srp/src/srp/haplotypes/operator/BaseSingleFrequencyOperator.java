@@ -6,7 +6,7 @@ import dr.evolution.datatype.Nucleotides;
 import dr.inference.model.Parameter;
 import dr.inference.operators.OperatorFailedException;
 
-public class BaseSingleFrequencyOperator extends AbstractSingleBaseOperator {
+public class BaseSingleFrequencyOperator extends AbstractBaseSingleOperator {
 
 	
 	public final static String OPERATOR_NAME = BaseSingleFrequencyOperator.class.getSimpleName();

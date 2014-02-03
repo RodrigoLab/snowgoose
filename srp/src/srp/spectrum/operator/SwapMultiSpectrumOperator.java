@@ -21,7 +21,7 @@ public class SwapMultiSpectrumOperator extends AbstractSpectrumOperator {
 	private static final int MIN_BASE = 3;
     private final int[] parameterWeights;
 //    private double delta = 0.05;
-    private int baseCount = 3;
+    private int swapBasesCount = 3;
     
 	public SwapMultiSpectrumOperator(SpectrumAlignmentModel spectrumModel, 
 			int baseCount, CoercionMode mode) {
@@ -29,19 +29,20 @@ public class SwapMultiSpectrumOperator extends AbstractSpectrumOperator {
 		
 		
 //		this.delta = delta;
-		this.baseCount = baseCount;
+		this.swapBasesCount = baseCount;
         setWeight(1.0);
 
         parameterWeights = new int[this.spectrumModel.getDataType().getStateCount()];
         for (int i = 0; i < parameterWeights.length; i++) {
             parameterWeights[i] = 1;
         }
+        convertToAutoOptimize(this.swapBasesCount);
 
 	}
 
 	private double[] debugList = new double[8];
 	private double autoOptimize;
-	private int scaleFactor=1;
+//	private int scaleFactor=1;
 	
 	
 	@Override
@@ -60,7 +61,7 @@ public class SwapMultiSpectrumOperator extends AbstractSpectrumOperator {
 //        int[] dim1 = new int[baseCount];
 //		int[] dim2 = new int[baseCount];
         
-		int[] siteIndexs = new int[baseCount]; 
+		int[] siteIndexs = new int[swapBasesCount]; 
 				
 		Spectrum spectrum = spectrumModel.getSpectrum(spectrumIndex);
 		
@@ -75,7 +76,7 @@ public class SwapMultiSpectrumOperator extends AbstractSpectrumOperator {
 //	    
 //	    
 		Set<Integer> generated = new HashSet<Integer>();
-		while (generated.size() < baseCount)
+		while (generated.size() < swapBasesCount)
 		{
 		    Integer next = MathUtils.nextInt(spectrumLength);
 		    generated.add(next);
@@ -84,62 +85,44 @@ public class SwapMultiSpectrumOperator extends AbstractSpectrumOperator {
 		siteIndexs = Ints.toArray(generated);
 		
 		//		System.out.println(Arrays.toString(siteIndex));
-		for (int i = 0; i < baseCount; i++) {
+		for (int i = 0; i < swapBasesCount; i++) {
 			
 //			siteIndexs[i] = MathUtils.nextInt(spectrumLength);
 //			System.err.println(spectrumIndex +"\tMultiOp\t"+ i +"\t"+ siteIndexs[i]);
-			
-			
 			SpectraParameter spectra = spectrum.getSpectra(siteIndexs[i]);
-			int dim1 = -1;
-	        double scalar1= -1;
-	        for (int d = 0; d < DIMENSION; d++) {
-	        	scalar1 = spectra.getParameterValue(d);
-	        	if(scalar1==1){
-	        		dim1=d;
-	        		break;
-	        	}
-			}
-	        int dim2;// = dim1;
-	        do {
-	            dim2 = MathUtils.nextInt(DIMENSION);
-	        }while (dim1 == dim2);
-	        double scalar2 = spectra.getParameterValue(dim2);
+			
+//			// get any two dims and swap
+//	        int dim1 = MathUtils.nextInt(DIMENSION);
+//	        int dim2;// = dim1;
+//	        do {
+//	            dim2 = MathUtils.nextInt(DIMENSION);
+//	        }while (dim1 == dim2);
+//	        
+//	        double scalar1 = parameter.getParameterValue(dim1);
+//	        double scalar2 = parameter.getParameterValue(dim2);
 	        
-	    	
+	        
+			// get freq==1 and swap with others
+			int dim1 = 0;
+			double scalar1 = 0;
+			for (int d = 0; d < DIMENSION; d++) {
+				scalar1 = spectra.getParameterValue(d);
+				if (scalar1 == 1) {
+					dim1 = d;
+					break;
+				}
+			}
+			int dim2;// = dim1;
+			do {
+				dim2 = MathUtils.nextInt(DIMENSION);
+			} while (dim1 == dim2);
+			double scalar2 = spectra.getParameterValue(dim2);        
+
 			spectra.setParameterValue(dim1, scalar2);
 			spectra.setParameterValue(dim2, scalar1);
 
-//	        // get two dimensions
-//	        dim1[i] = MathUtils.nextInt(DIMENSION);
-//	        do {
-//	            dim2[i] = MathUtils.nextInt(DIMENSION);
-//	        }while (dim1[i] == dim2[i]);
-//    
-//	        scalar1[i] = spectra[i].getParameterValue(dim1[i]);
-//	        scalar2[i]= spectra[i].getParameterValue(dim2[i]);
-//	
-//	        d[i] = MathUtils.nextDouble() * delta;
-//	        d[i] = delta;
-//	        scalar1[i] -= d[i];
-//	        scalar2[i] += d[i];
-//	
-//	
-//	        if (scalar1[i] < BOUNDS_LOWER ||
-//	                scalar1[i] > BOUNDS_UPPER ||
-//	                scalar2[i] < BOUNDS_LOWER ||
-//	                scalar2[i] > BOUNDS_UPPER ) {
-////	        	System.err.println("throw");
-//	            throw new OperatorFailedException("proposed values out of range!");
-//	        }
 	        
 		}
-//		for (int i = 0; i < baseCount; i++) {
-//			
-//			spectra[i].setParameterValue(dim1[i], scalar1[i]);
-//			spectra[i].setParameterValue(dim2[i], scalar2[i]);
-//
-//		}
         // symmetrical move so return a zero hasting ratio
 		spectrumModel.setSpectrumOperationRecord(OP, spectrumIndex, siteIndexs);
 		
@@ -179,7 +162,8 @@ public class SwapMultiSpectrumOperator extends AbstractSpectrumOperator {
 
 	private void convertFromAutoOptimizeToValue(double autoOpt) {
 	    	autoOptimize = autoOpt;
-	    	baseCount =  MIN_BASE + (int) Math.exp(autoOptimize*scaleFactor);
+//	    	baseCount =  MIN_BASE + (int) Math.exp(autoOptimize*scaleFactor);
+	    	swapBasesCount =  MIN_BASE + (int) Math.pow(2, autoOptimize);
 //			System.out.println(autoOptimize +"\t"+ Math.exp(autoOptimize*scaleFactor));
 			
 //			System.out.print("A=" + swapLength + "\t" + autoOptimize + "\t" +
@@ -192,22 +176,23 @@ public class SwapMultiSpectrumOperator extends AbstractSpectrumOperator {
 	    }
 
 	private double convertToAutoOptimize(int length) {
-		baseCount = length;
+		swapBasesCount = length;
 		checkParameterIsValid();
-		autoOptimize = Math.log(baseCount - MIN_BASE)/scaleFactor;
+//		autoOptimize = Math.log(baseCount - MIN_BASE)/scaleFactor;
+		autoOptimize = Math.sqrt(swapBasesCount - MIN_BASE);
 	    return autoOptimize;
 	}
 
 	private void checkParameterIsValid() {
-		if (baseCount > spectrumLength){
-			baseCount = spectrumLength;
+		if (swapBasesCount > spectrumLength){
+			swapBasesCount = spectrumLength;
 		}
 	}
 	
     @Override
 	public double getRawParameter() {
 //        return delta;
-        return baseCount;
+        return swapBasesCount;
     }
 
     @Override
@@ -217,14 +202,14 @@ public class SwapMultiSpectrumOperator extends AbstractSpectrumOperator {
 
     @Override
 	public final String getPerformanceSuggestion() {
-    	String s = "Tuning "+baseCount; 
+    	String s = "Tuning "+swapBasesCount; 
     	return s;
 
     }
 
     @Override
 	public String toString() {
-        return getOperatorName() + "(windowsize=" + baseCount + ")";
+        return getOperatorName() + "(windowsize=" + swapBasesCount + ")";
     }
 
 

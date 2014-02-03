@@ -8,7 +8,7 @@ import dr.inference.operators.OperatorFailedException;
 import dr.math.MathUtils;
 
 
-public class HaplotypeSwapSectionOperator extends AbstractMultiBasesOperator {
+public class HaplotypeSwapSectionOperator extends AbstractBasesMultiOperator {
 
 	
 	public final static String OPERATOR_NAME = HaplotypeSwapSectionOperator.class.getSimpleName();

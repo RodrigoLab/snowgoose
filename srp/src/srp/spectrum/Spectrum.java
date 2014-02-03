@@ -28,7 +28,8 @@ public class Spectrum extends AbstractModel implements Attributable {
 //    private StringBuffer sequenceString = null;
     protected DataType dataType = null;
     protected int stateCount;
-
+    private int storeSiteIndex;
+    
 //	public Spectra() {
 //		sequenceString = new StringBuilder();
 //	}
@@ -426,7 +427,7 @@ public class Spectrum extends AbstractModel implements Attributable {
 		//TODO implement when secptra changed
 	}
 
-	private int storeSiteIndex;
+	
 	public void setStoreSiteIndex(int s){
 //		System.err.println("setStoreSiteIndex\t"+s);
 		storeSiteIndex = s;

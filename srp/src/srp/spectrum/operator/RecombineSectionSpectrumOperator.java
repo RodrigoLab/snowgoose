@@ -1,10 +1,13 @@
 package srp.spectrum.operator;
 
+import java.util.Arrays;
+
 import srp.spectrum.SpectraParameter;
 import srp.spectrum.Spectrum;
 import srp.spectrum.SpectrumAlignmentModel;
 import srp.spectrum.SpectrumOperation;
 import dr.inference.operators.CoercionMode;
+import dr.inference.operators.MCMCOperator;
 import dr.inference.operators.OperatorFailedException;
 import dr.math.MathUtils;
 
@@ -12,13 +15,16 @@ public class RecombineSectionSpectrumOperator extends AbstractSpectrumOperator {
 
 	public static final String OPERATOR_NAME = RecombineSectionSpectrumOperator.class.getSimpleName();
 	public static final SpectrumOperation OP = SpectrumOperation.RECOMBINATION;
-//    private Parameter parameter = null;
+	
+	private final int SWAP_MIN = 1;
+	
+	//    private Parameter parameter = null;
     private final int[] parameterWeights;
 //    private double delta = 0.05;
 	private int swapLength;
 	
 	private double autoOptimize;
-	private double scaleFactor;
+//	private double scaleFactor;
 	
 	private int[] twoPositionIndex;
 	private int[] twoSpectrumIndex;
@@ -41,16 +47,19 @@ public class RecombineSectionSpectrumOperator extends AbstractSpectrumOperator {
             parameterWeights[i] = 1;
         }
 
-		scaleFactor = (int) (spectrumLength*0.01);
-
-		if (scaleFactor <1) {
-			scaleFactor = 1;
-		}
+//		scaleFactor = (int) (spectrumLength*0.01);
+//
+//		if (scaleFactor <1) {
+//			scaleFactor = 1;
+//		}
+////		System.out.println(scaleFactor);
+//		scaleFactor = 1;
 		convertToAutoOptimize(this.swapLength);
 		
 	}
 
 	private double[] debugList = new double[8];
+	
 	
 	
 	@Override
@@ -119,28 +128,30 @@ public class RecombineSectionSpectrumOperator extends AbstractSpectrumOperator {
 
 	private void convertFromAutoOptimizeToValue(double autoOpt) {
 	    	autoOptimize = autoOpt;
-			swapLength =  1 + (int) Math.exp(autoOptimize*scaleFactor);
-//			System.out.println(autoOptimize +"\t"+ Math.exp(autoOptimize*scaleFactor));
-			
-//			System.out.print("A=" + swapLength + "\t" + autoOptimize + "\t" +
-//					"accept: " + getAcceptCount()/(double)getCount() + "\t"  );
-			
+			swapLength =  SWAP_MIN + (int) Math.exp(autoOptimize);
+
 			checkParameterIsValid();
-			
-//			System.out.print("newL:"+swapLength+" ");
+//			int count = MCMCOperator.Utils.getOperationCount(this);
+//			if((count%100.0)==0){
+//				
+//			System.out.println("Count: " + "\t" + count + "\tA:"
+//					+ getAcceptCount() + "\tR:" + getRejectCount() + "\tProb:" + getAcceptanceProbability() +"\t"+ 
+//					 "newL:" + swapLength + " ");
+//			}
+//			
 	//		System.out.print("A\t" + swapFragmentLength + "\t" + autoOptimize + "\t"  );
 	    }
 
 	private double convertToAutoOptimize(int length) {
 		swapLength = length;
 		checkParameterIsValid();
-		autoOptimize = Math.log(swapLength - 1)/scaleFactor;
+		autoOptimize = Math.log(swapLength - SWAP_MIN );
 	    return autoOptimize;
 	}
 
 	private void checkParameterIsValid() {
 		if (swapLength > spectrumLength){
-			swapLength = spectrumLength;
+			swapLength = spectrumLength-1;
 		}
 	}
 	

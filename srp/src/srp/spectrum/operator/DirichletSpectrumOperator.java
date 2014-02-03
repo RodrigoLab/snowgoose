@@ -28,7 +28,7 @@ public class DirichletSpectrumOperator extends AbstractSpectrumOperator {
 	private static final int MIN_BASE = 1;
     private final int[] parameterWeights;
 //    private double delta = 0.05;
-    private int baseCount = 1;
+    private int swapBasesCount;
 	
     private double alpha = 100;
 	
@@ -45,7 +45,7 @@ public class DirichletSpectrumOperator extends AbstractSpectrumOperator {
 		
 //		this.delta = delta;
 //		baseCount = 
-		this.baseCount = baseCount;
+		this.swapBasesCount = baseCount;
         setWeight(1.0);
 
         parameterWeights = new int[this.spectrumModel.getDataType().getStateCount()];
@@ -54,6 +54,7 @@ public class DirichletSpectrumOperator extends AbstractSpectrumOperator {
         }
         
         alpha = 100;
+        convertToAutoOptimize(this.swapBasesCount);
 //        double[] alphas = new double[]{alpha, alpha, alpha, alpha};
 //        DirichletDistribution dd = new DirichletDistribution(alphas);
 //        GammaDistribution drGamma = new GammaDistribution(alpha, 1);
@@ -66,7 +67,7 @@ public class DirichletSpectrumOperator extends AbstractSpectrumOperator {
 	}
 	private double[] debugList = new double[8];
 	private double autoOptimize;
-	private int scaleFactor=1;
+//	private int scaleFactor=1;
 	
 	
 	@Override
@@ -78,14 +79,14 @@ public class DirichletSpectrumOperator extends AbstractSpectrumOperator {
 		int spectrumIndex = MathUtils.nextInt(spectrumCount);
 //		int siteIndex = MathUtils.nextInt(spectrumLength);
 
-        SpectraParameter[] spectra = new SpectraParameter[baseCount];
-        double[] delta = new double[baseCount];
-        double[] scalar1 = new double[baseCount];
-        double[] scalar2 = new double[baseCount];
-        int[] dim1 = new int[baseCount];
-		int[] dim2 = new int[baseCount];
+        SpectraParameter[] spectra = new SpectraParameter[swapBasesCount];
+        double[] delta = new double[swapBasesCount];
+        double[] scalar1 = new double[swapBasesCount];
+        double[] scalar2 = new double[swapBasesCount];
+        int[] dim1 = new int[swapBasesCount];
+		int[] dim2 = new int[swapBasesCount];
         
-		int[] siteIndexs = new int[baseCount]; 
+		int[] siteIndexs = new int[swapBasesCount]; 
 				
 		Spectrum spectrum = spectrumModel.getSpectrum(spectrumIndex);
 		
@@ -100,7 +101,7 @@ public class DirichletSpectrumOperator extends AbstractSpectrumOperator {
 //	    
 //	    
 		Set<Integer> generated = new HashSet<Integer>();
-		while (generated.size() < baseCount)
+		while (generated.size() < swapBasesCount)
 		{
 		    Integer next = MathUtils.nextInt(spectrumLength);
 		    generated.add(next);
@@ -108,7 +109,7 @@ public class DirichletSpectrumOperator extends AbstractSpectrumOperator {
 
 		siteIndexs = Ints.toArray(generated);
 		double ratio = 0;
-		for (int i = 0; i < baseCount; i++) {
+		for (int i = 0; i < swapBasesCount; i++) {
 			
 //			siteIndexs[i] = MathUtils.nextInt(spectrumLength);
 //			System.err.println(spectrumIndex +"\tMultiOp\t"+ i +"\t"+ siteIndexs[i]);
@@ -241,29 +242,29 @@ public class DirichletSpectrumOperator extends AbstractSpectrumOperator {
 
 	private void convertFromAutoOptimizeToValue(double autoOpt) {
     	autoOptimize = autoOpt;
-    	baseCount =  MIN_BASE + (int) Math.exp(autoOptimize*scaleFactor);
+    	swapBasesCount =  MIN_BASE + (int) Math.exp(autoOptimize);
 
     	checkParameterIsValid();
 		
     }
 
 	private double convertToAutoOptimize(int length) {
-		baseCount = length;
+		swapBasesCount = length;
 		checkParameterIsValid();
-		autoOptimize = Math.log(baseCount - MIN_BASE)/scaleFactor;
+		autoOptimize = Math.log(swapBasesCount - MIN_BASE);
 	    return autoOptimize;
 	}
 
 	private void checkParameterIsValid() {
-		if (baseCount > spectrumLength){
-			baseCount = spectrumLength;
+		if (swapBasesCount > spectrumLength){
+			swapBasesCount = spectrumLength;
 		}
 	}
 	
     @Override
 	public double getRawParameter() {
 //        return delta;
-        return baseCount;
+        return swapBasesCount;
     }
 
     @Override
@@ -273,14 +274,14 @@ public class DirichletSpectrumOperator extends AbstractSpectrumOperator {
 
     @Override
 	public final String getPerformanceSuggestion() {
-    	String s = "Tuning "+baseCount; 
+    	String s = "Tuning "+swapBasesCount; 
     	return s;
 
     }
 
     @Override
 	public String toString() {
-        return getOperatorName() + "(windowsize=" + baseCount + ")";
+        return getOperatorName() + "(windowsize=" + swapBasesCount + ")";
     }
 
 
@@ -296,3 +297,82 @@ public class DirichletSpectrumOperator extends AbstractSpectrumOperator {
 
 
 
+/**
+ *
+    public double getCoercableParameter() {
+//	     return Math.log(1.0 / scaleFactor - 1.0);
+        return Math.log(scaleFactor);
+    }
+
+    public void setCoercableParameter(double value) {
+//	     scaleFactor = 1.0 / (Math.exp(value) + 1.0);
+        scaleFactor = Math.exp(value);
+    }
+    ===================
+    
+    public double getCoercableParameter() {
+        return Math.log(delta)-Math.log(1-delta);
+    }
+
+    public void setCoercableParameter(double value) {
+        delta = 1/(1+Math.exp(-value));
+    }
+
+    ===================
+    
+    private int convertFromAutoOptimizeValue(double value) {
+        return 1 + (int) Math.exp(autoOptimize);
+    }
+
+    private double convertToAutoOptimizeValue(int value) {
+        return Math.log(value - 1);
+    }
+
+    public double getCoercableParameter() {
+        return autoOptimize;
+    }
+
+    public void setCoercableParameter(double value) {
+        autoOptimize = value;
+    }
+
+
+============================
+    public double getCoercableParameter() {
+//        return Math.log(scaleFactor);
+        return Math.sqrt(scaleFactor - 1);
+    }
+
+    public void setCoercableParameter(double value) {
+//        scaleFactor = Math.exp(value);
+        scaleFactor = 1 + value * value;
+    }
+    ===================
+    
+        
+            public double getCoercableParameter() {
+        return Math.log(1.0 / scaleFactor - 1.0);
+    }
+
+    public void setCoercableParameter(double value) {
+        scaleFactor = 1.0 / (Math.exp(value) + 1.0);
+    }
+    
+    ==============================
+    
+    
+    public double getCoercableParameter() {
+        return Math.log(windowSize);
+    }
+
+    public void setCoercableParameter(double value) {
+        windowSize = (int) Math.exp(value);
+    }
+
+
+
+=========================
+    
+    
+    *
+    */

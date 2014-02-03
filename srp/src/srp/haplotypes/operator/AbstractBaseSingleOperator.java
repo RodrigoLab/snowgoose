@@ -5,7 +5,7 @@ import srp.haplotypes.HaplotypeModel;
 import srp.haplotypes.Operation;
 import dr.inference.operators.SimpleMCMCOperator;
 
-public abstract class AbstractSingleBaseOperator extends SimpleMCMCOperator {
+public abstract class AbstractBaseSingleOperator extends SimpleMCMCOperator {
 
 	public final static Operation OP = Operation.SWAPSINGLE;
 
@@ -13,7 +13,7 @@ public abstract class AbstractSingleBaseOperator extends SimpleMCMCOperator {
 	public int haplotypeCount;
 	public AlignmentMapping alignmentMapping;
 
-	public AbstractSingleBaseOperator(HaplotypeModel haplotypeModel) {
+	public AbstractBaseSingleOperator(HaplotypeModel haplotypeModel) {
 		this.haplotypeModel = haplotypeModel;
 		haplotypeCount = this.haplotypeModel.getHaplotypeCount();
 		alignmentMapping = this.haplotypeModel.getAlignmentMapping();

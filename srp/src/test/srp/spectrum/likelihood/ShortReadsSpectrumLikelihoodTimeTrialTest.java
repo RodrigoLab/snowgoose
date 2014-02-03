@@ -19,6 +19,7 @@ import srp.spectrum.operator.RecombinationSpectrumOperator;
 import srp.spectrum.operator.RecombineSectionSpectrumOperator;
 import srp.spectrum.operator.SwapSingleSpectrumOperator;
 import dr.evolution.alignment.Alignment;
+import dr.inference.operators.CoercionMode;
 import dr.inference.operators.OperatorFailedException;
 import dr.math.MathUtils;
 
@@ -42,7 +43,7 @@ public class ShortReadsSpectrumLikelihoodTimeTrialTest {
 		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/snowgoose/srp/unittest/", "H4_srp.fasta");
 		AlignmentMapping aMap = new AlignmentMapping(alignment);
 			
-		spectrumModel = new SpectrumAlignmentModel(aMap, 4);
+		spectrumModel = new SpectrumAlignmentModel(aMap, 4, 2);
 		likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
 
 	}
@@ -139,8 +140,7 @@ public class ShortReadsSpectrumLikelihoodTimeTrialTest {
 	@Test
 	public void testTimeTrialSwapSingle() throws Exception {
 
-		AbstractSpectrumOperator op = new SwapSingleSpectrumOperator(
-				spectrumModel, null);
+		AbstractSpectrumOperator op = new SwapSingleSpectrumOperator(spectrumModel);
 		String summary = timeTrialOperator(likelihood, op);
 		System.out.println(summary + "\t" + op.getOperatorName());
 
@@ -150,7 +150,7 @@ public class ShortReadsSpectrumLikelihoodTimeTrialTest {
 	public void testTimeTrialMulti() throws Exception {
 
 		DeltaExchangeMultiSpectrumOperator op = new DeltaExchangeMultiSpectrumOperator(
-				spectrumModel, 0.1, 5, null);
+				spectrumModel, 0.1, 5, CoercionMode.COERCION_OFF);
 		String summary = timeTrialOperator(likelihood, op);
 		System.out.println(summary + "\t" + op.getOperatorName());
 
@@ -169,8 +169,7 @@ public class ShortReadsSpectrumLikelihoodTimeTrialTest {
 	@Test
 	public void testTimeTrialRecombination() throws Exception {
 
-		RecombinationSpectrumOperator op = new RecombinationSpectrumOperator(
-				spectrumModel, null);
+		RecombinationSpectrumOperator op = new RecombinationSpectrumOperator(spectrumModel);
 		String summary = timeTrialOperator(likelihood, op);
 		System.out.println(summary + "\t" + op.getOperatorName());
 
@@ -192,11 +191,8 @@ public class ShortReadsSpectrumLikelihoodTimeTrialTest {
 		long totalTime = 0;
 		do{
 			try {
-//				op.doOperation();
-				
 				long time1 = System.currentTimeMillis();
 				likelihood.storeModelState();
-//				likelihood.makeDirty();
 				op.doOperation();
 				
 

@@ -4,7 +4,7 @@ import srp.haplotypes.HaplotypeModel;
 import dr.inference.operators.CoercionMode;
 import dr.inference.operators.OperatorFailedException;
 
-public class BasesMultiUniformOperator extends AbstractMultiBasesOperator{
+public class BasesMultiUniformOperator extends AbstractBasesMultiOperator{
 
 
 	public final static String OPERATOR_NAME = BasesMultiUniformOperator.class.getSimpleName();

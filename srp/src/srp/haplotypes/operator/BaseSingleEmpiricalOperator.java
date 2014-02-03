@@ -3,7 +3,7 @@ package srp.haplotypes.operator;
 import srp.haplotypes.HaplotypeModel;
 import dr.inference.operators.OperatorFailedException;
 
-public class BaseSingleEmpiricalOperator extends AbstractSingleBaseOperator {
+public class BaseSingleEmpiricalOperator extends AbstractBaseSingleOperator {
 
 	public final static String OPERATOR_NAME = BaseSingleEmpiricalOperator.class.getSimpleName();
 

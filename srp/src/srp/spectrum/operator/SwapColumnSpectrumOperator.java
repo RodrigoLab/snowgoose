@@ -50,9 +50,8 @@ public class SwapColumnSpectrumOperator extends AbstractSpectrumOperator {
 		
 		for (int i = 0; i < spectrumCount; i++) {
 			SpectraParameter spectra = spectrumModel.getSpectrum(i).getSpectra(siteIndex);
-			
-			// get two dimensions
-			
+
+//			// get any two dims and swap
 //	        int dim1 = MathUtils.nextInt(DIMENSION);
 //	        int dim2;// = dim1;
 //	        do {
@@ -61,58 +60,30 @@ public class SwapColumnSpectrumOperator extends AbstractSpectrumOperator {
 //	        
 //	        double scalar1 = parameter.getParameterValue(dim1);
 //	        double scalar2 = parameter.getParameterValue(dim2);
-//			
+	        
+	        
+			// get freq==1 and swap with others
 			int dim1 = 0;
-	        double scalar1=0;
-	        for (int j = 0; j < DIMENSION; j++) {
-	        	scalar1 = spectra.getParameterValue(j);
-	        	if(scalar1==1){
-	        		dim1=j;
-	        		break;
-	        	}
+			double scalar1 = 0;
+			for (int d = 0; d < DIMENSION; d++) {
+				scalar1 = spectra.getParameterValue(d);
+				if (scalar1 == 1) {
+					dim1 = d;
+					break;
+				}
 			}
-	        int dim2;// = dim1;
-	        do {
-	            dim2 = MathUtils.nextInt(DIMENSION);
-	        }while (dim1 == dim2);
-	        double scalar2 = spectra.getParameterValue(dim2);
-
+			int dim2;// = dim1;
+			do {
+				dim2 = MathUtils.nextInt(DIMENSION);
+			} while (dim1 == dim2);
+			double scalar2 = spectra.getParameterValue(dim2);        
 
 	        spectra.setParameterValue(dim1, scalar2);
 	        spectra.setParameterValue(dim2, scalar1);
 
-//			
-//	        // get two dimensions
-//	        dim1[i] = MathUtils.nextInt(DIMENSION);
-//	        do {
-//	            dim2[i] = MathUtils.nextInt(DIMENSION);
-//	        }while (dim1[i] == dim2[i]);
-//    
-//	        scalar1[i] = spectra[i].getParameterValue(dim1[i]);
-//	        scalar2[i]= spectra[i].getParameterValue(dim2[i]);
-//	
-//	        d[i] = MathUtils.nextDouble() * delta;
-//	        d[i] = delta;
-//	        scalar1[i] -= d[i];
-//	        scalar2[i] += d[i];
-//	
-//	        
-//	
-//	        if (scalar1[i] < BOUNDS_LOWER ||
-//	                scalar1[i] > BOUNDS_UPPER ||
-//	                scalar2[i] < BOUNDS_LOWER ||
-//	                scalar2[i] > BOUNDS_UPPER ) {
-////	        	System.err.println("throw");
-//	            throw new OperatorFailedException("proposed values out of range!");
-//	        }
 	        
 		}
-//		for (int i = 0; i < spectrumCount; i++) {
-//			
-//			spectra[i].setParameterValue(dim1[i], scalar1[i]);
-//			spectra[i].setParameterValue(dim2[i], scalar2[i]);
-//
-//		}
+
         // symmetrical move so return a zero hasting ratio
 		spectrumModel.setSpectrumOperationRecord(OP, siteIndex);
 		

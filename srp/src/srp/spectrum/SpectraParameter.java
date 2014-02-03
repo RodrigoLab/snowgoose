@@ -2,6 +2,7 @@ package srp.spectrum;
 
 import java.util.Arrays;
 
+import srp.spectrum.SpectrumAlignmentModel.Type;
 import dr.inference.model.Bounds;
 import dr.inference.model.Parameter;
 import dr.math.MathUtils;
@@ -15,7 +16,11 @@ public class SpectraParameter extends Parameter.Default{
 	private static final long serialVersionUID = -3519136356577040343L;
 	public static final double[] EQUAL_FREQ = new double[]{0.25, 0.25, 0.25, 0.25};
 	public static final int DIMENSION = 4;
-	public static final Bounds<Double> SPECTRUM_BOUNDS = new DefaultBounds(1.0, 0.0, DIMENSION);
+	public static final Bounds<Double> SPECTRA_BOUNDS = new DefaultBounds(1.0, 0.0, DIMENSION);
+	
+	public SpectraParameter(Type type){
+		this(type.getCode());
+	}
 	
 	public SpectraParameter(int type){
 		this(EQUAL_FREQ);
@@ -27,15 +32,14 @@ public class SpectraParameter extends Parameter.Default{
 		}
 		else if(type==2){//Random
 			double[] freq = new double[DIMENSION];
+			double sum = 0;
 			for (int i = 0; i < freq.length; i++) {
 				freq[i] = MathUtils.nextInt(100);
+				sum += freq[i];
 			}
-			double sum = getSumOfFrequencies(freq);
 			for (int i = 0; i < freq.length; i++) {
 				freq[i] /= sum;
 			}
-//			System.out.println(Arrays.toString(freq));
-//			super(freq);
 			setFrequenciesQuietly(freq);
 			
 		}
@@ -139,7 +143,7 @@ public class SpectraParameter extends Parameter.Default{
     }
     
     private void addBounds(){
-		addBounds(SPECTRUM_BOUNDS);
+		addBounds(SPECTRA_BOUNDS);
 	}
 	
 }

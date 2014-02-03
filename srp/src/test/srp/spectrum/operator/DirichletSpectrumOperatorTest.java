@@ -49,7 +49,7 @@ public class DirichletSpectrumOperatorTest {
 				"..AGGTTC",
 				};
 		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 1);
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 1, 2);
 		DirichletSpectrumOperator op = new DirichletSpectrumOperator(
 				spectrumModel, 1, CoercionMode.COERCION_OFF);
 
@@ -160,7 +160,7 @@ void AutotuneDirichlet (MrBFlt acceptanceRate, MrBFlt targetRate, int batch, MrB
 				"..AGGTTC",
 				};
 		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 5);
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 5, 2);
 		DirichletSpectrumOperator op = new DirichletSpectrumOperator(
 				spectrumModel,  10, CoercionMode.COERCION_OFF);
 

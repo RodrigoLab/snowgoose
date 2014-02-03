@@ -35,7 +35,7 @@ package dr.util;
  *
  * @author Andrew Rambaut
  */
-//public class Assert {
+public class Assert {
 //
 //	/* not sure about exactly what this function should display */
 //	private static void fail(String msg)
@@ -69,4 +69,4 @@ package dr.util;
 //		if (ref == null)
 //			fail("Null reference");
 //	}
-//}
+}

@@ -18,9 +18,8 @@ public class SwapSingleSpectrumOperator extends AbstractSpectrumOperator {
     private double delta = Double.NaN;
 
     
-	public SwapSingleSpectrumOperator(SpectrumAlignmentModel spectrumModel, 
-			CoercionMode mode) {
-		super(spectrumModel, mode);
+	public SwapSingleSpectrumOperator(SpectrumAlignmentModel spectrumModel) {
+		super(spectrumModel, CoercionMode.COERCION_OFF);
 		
 		
 //		this.delta = delta;
@@ -35,7 +34,7 @@ public class SwapSingleSpectrumOperator extends AbstractSpectrumOperator {
 	}
 
 	private double[] debugList = new double[8];
-	private int mm;
+
 	@Override
 	public double doOperation() throws OperatorFailedException {
 
@@ -45,45 +44,38 @@ public class SwapSingleSpectrumOperator extends AbstractSpectrumOperator {
 		siteIndex[0] = MathUtils.nextInt(spectrumLength);
 		
 		Spectrum spectrum = spectrumModel.getSpectrum(spectrumIndex);
-		SpectraParameter parameter = spectrum.getSpectra(siteIndex[0]);
-        // get two dimensions
-		
-        int dim1 = MathUtils.nextInt(DIMENSION);
-        int dim2;// = dim1;
-        do {
-            dim2 = MathUtils.nextInt(DIMENSION);
-        }while (dim1 == dim2);
-        
-        double scalar1 = parameter.getParameterValue(dim1);
-        double scalar2 = parameter.getParameterValue(dim2);
-        
-//		int dim1 = 0;
-//        double scalar1=0;
-//        for (int i = 0; i < DIMENSION; i++) {
-//        	scalar1 = parameter.getParameterValue(i);
-//        	if(scalar1==1){
-//        		dim1=i;
-//        		break;
-//        	}
-//		}
-//
+		SpectraParameter spectra = spectrum.getSpectra(siteIndex[0]);
+
+//		// get any two dims and swap
+//        int dim1 = MathUtils.nextInt(DIMENSION);
 //        int dim2;// = dim1;
 //        do {
 //            dim2 = MathUtils.nextInt(DIMENSION);
 //        }while (dim1 == dim2);
+//        
+//        double scalar1 = parameter.getParameterValue(dim1);
 //        double scalar2 = parameter.getParameterValue(dim2);
         
         
-//        double d = MathUtils.nextDouble() * delta;
-//        d = delta;
-//        scalar1 -= d;
-//        scalar2 += d;
+		// get freq==1 and swap with others
+		int dim1 = 0;
+		double scalar1 = 0;
+		for (int d = 0; d < DIMENSION; d++) {
+			scalar1 = spectra.getParameterValue(d);
+			if (scalar1 == 1) {
+				dim1 = d;
+				break;
+			}
+		}
+		int dim2;// = dim1;
+		do {
+			dim2 = MathUtils.nextInt(DIMENSION);
+		} while (dim1 == dim2);
+		double scalar2 = spectra.getParameterValue(dim2);        
 
-
-
-        parameter.setParameterValue(dim1, scalar2);
-        parameter.setParameterValue(dim2, scalar1);
-
+		
+        spectra.setParameterValue(dim1, scalar2);
+        spectra.setParameterValue(dim2, scalar1);
         // symmetrical move so return a zero hasting ratio
 		spectrumModel.setSpectrumOperationRecord(OP, spectrumIndex, siteIndex);
 		
@@ -101,22 +93,11 @@ public class SwapSingleSpectrumOperator extends AbstractSpectrumOperator {
 
     @Override
 	public double getCoercableParameter() {
-//    	double t = Math.log(delta/(1-delta));
-//    	return t;
-//        return Math.log(1.0 / delta - 1.0);
-        return Math.log(delta);
+        return Double.NaN;
     }
 
     @Override
 	public void setCoercableParameter(double value) {
-//    	mm++;
-//    	if(mm%1000 == 0){
-//    		System.out.println(value +"\t"+ delta +"\t"+ getAcceptanceProbability());
-//    	}
-        delta = Math.exp(value);
-//        double t = Math.exp(value);
-//        delta = t/(t+1);
-
     }
 
     @Override
@@ -136,7 +117,7 @@ public class SwapSingleSpectrumOperator extends AbstractSpectrumOperator {
 //		s+= spectrumModel.diagnostic() +"\n";
 //		s += Arrays.toString(debugList);
 //		spectrumModel.restoreModelState();
-    	String s = "Tuning "+delta; 
+    	String s = "No tuning"; 
     	return s;
     	
 //        double prob = MCMCOperator.Utils.getAcceptanceProbability(this);
@@ -154,7 +135,7 @@ public class SwapSingleSpectrumOperator extends AbstractSpectrumOperator {
 
     @Override
 	public String toString() {
-        return getOperatorName() + "(windowsize=" + delta + ")";
+        return getOperatorName() + "(Single)";
     }
 
 	@Override

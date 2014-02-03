@@ -8,6 +8,7 @@ import java.util.HashMap;
 
 import srp.haplotypes.AlignmentMapping;
 import srp.spectrum.SpectrumAlignmentModel;
+import srp.spectrum.SpectrumAlignmentModel.Type;
 import srp.spectrum.SpectrumLogger;
 import srp.spectrum.likelihood.ShortReadsSpectrumLikelihood;
 import srp.spectrum.treelikelihood.SpectrumTreeLikelihood;
@@ -47,7 +48,7 @@ public class MainMCMCSpectrumFull {
 //
 //
 
-//		String dataDir = "/home/sw167/workspaceSrp/ABI/unittest/testData/";
+//		String dataDir = "/home/sw167/workspaceSrp/snowgoose/srp/unittest/testData/";
 //		int runIndex = 1;
 //		int totalSamples = 10;
 //		int logInterval = 1000;
@@ -60,21 +61,24 @@ public class MainMCMCSpectrumFull {
 		int logInterval = Integer.parseInt(args[3]);
 		int noOfTrueHaplotype = Integer.parseInt(args[4]);
 		int noOfRecoveredHaplotype= Integer.parseInt(args[5]);
-
-		dataDir = "/home/sw167/workspaceSrp/ABI/unittest/testData/";
-		runIndex = 1;
-		totalSamples = 5000;
-		logInterval = 10000;
+		boolean randomTree = true;
+		boolean randomSpectrum = true;
 		
-//		boolean randomTree = true;
-		boolean randomTree = false;
-		
-//		boolean randomSpectrum = true;
-		boolean randomSpectrum = false;
-		
-		noOfTrueHaplotype = 7;
-		noOfRecoveredHaplotype=7;
-		
+//		{	
+//			dataDir = "/home/sw167/workspaceSrp/snowgoose/srp/unittest/testData/";
+//			runIndex = 1;
+//			totalSamples = 50;
+//			logInterval = 1000;
+//			
+//			randomTree = true;
+//	//		randomTree = false;
+//			
+//			randomSpectrum = true;
+//	//		randomSpectrum = false;
+//			
+//			noOfTrueHaplotype = 7;
+//			noOfRecoveredHaplotype=7;
+//		}
 		
 		
 		String hapRunIndex = "H"+noOfTrueHaplotype+"_"+runIndex;
@@ -99,7 +103,7 @@ public class MainMCMCSpectrumFull {
 		
 		SpectrumAlignmentModel spectrumModel;
 		if(randomSpectrum){
-			spectrumModel = new SpectrumAlignmentModel(aMap, noOfRecoveredHaplotype);
+			spectrumModel = new SpectrumAlignmentModel(aMap, noOfRecoveredHaplotype, Type.ZERO_ONE);
 		}
 		else{
 			spectrumModel = SpectrumAlignmentModel.importPartialSpectrumFile(aMap, partialSpectrumName );
@@ -157,13 +161,13 @@ public class MainMCMCSpectrumFull {
 		Parameter rootHeight = treeModel.getRootHeightParameter();
 		rootHeight.setId("rootHeight");
 		
-		double total = 0;
-		for (int i = 0; i < schedule.getOperatorCount(); i++) {
-			MCMCOperator op= schedule.getOperator(i);
-//			System.out.println(op.getOperatorName());
-			total += op.getWeight() ;
-		}
-		System.out.println("totalWeight: "+total);
+//		double total = 0;
+//		for (int i = 0; i < schedule.getOperatorCount(); i++) {
+//			MCMCOperator op= schedule.getOperator(i);
+////			System.out.println(op.getOperatorName());
+//			total += op.getWeight() ;
+//		}
+//		System.out.println("totalWeight: "+total);
 		
 
 		// MCLogger
@@ -206,6 +210,7 @@ public class MainMCMCSpectrumFull {
 		
 		mcmc.init(options, posterior, schedule, loggers);
 		mcmc.run();
+		System.out.println(mcmc.getTimer().toString());
 		
 //		if (schedule.getOperator(0).getOperatorName().equals("DeltaExchangeSingleSpectrumOperator")){
 //			DeltaExchangeSingleSpectrumOperator oo = (DeltaExchangeSingleSpectrumOperator) schedule.getOperator(0);
@@ -215,10 +220,10 @@ public class MainMCMCSpectrumFull {
 //			DeltaExchangeSingleSpectrumOperator oo = (DeltaExchangeSingleSpectrumOperator) schedule.getOperator(0);
 //			System.out.println(oo.failcount);
 //		}
-		System.out.println("spectrumAlignment time:\t"+spectrumModel.time);
-		System.out.println("srpLikelihood time:\t"+srpLikelihood.time);
-		System.out.println(mcmc.getTimer().toString());
-		int stateCount = 4;
+//		System.out.println("spectrumAlignment time:\t"+spectrumModel.time);
+//		System.out.println("srpLikelihood time:\t"+srpLikelihood.time);
+		
+//		int stateCount = 4;
 //		for (int s = 0; s < stateCount; s++) {
 //			
 //			System.out.println("State: "+s);

@@ -8,8 +8,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import srp.haplotypes.AlignmentMapping;
-import srp.haplotypes.Operation;
-import srp.haplotypes.SwapInfo;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.datatype.Nucleotides;
 import dr.evolution.sequence.Sequence;
@@ -18,23 +16,19 @@ import dr.inference.model.Model;
 import dr.inference.model.Parameter;
 import dr.inference.model.Variable;
 import dr.inference.model.Variable.ChangeType;
-import dr.math.MathUtils;
 import dr.util.NumberFormatter;
 
 
 
 public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
+
+	
 	private static final boolean DEBUG = false;
 	
 	private static final long serialVersionUID = 3458306765918357829L;
 	private static final String MODEL_NAME = "SpectrumModel";
 
 	
-	private static final int HAP_INDEX = SwapInfo.SWAPBASE_HAP_INDEX;
-	private static final int POS_INDEX = SwapInfo.SWAPBASE_POS_INDEX;
-	private static final int NEW_CHAR_INDEX = SwapInfo.SWAPBASE_NEW_CHAR_INDEX;
-	private static final int OLD_CHAR_INDEX = SwapInfo.SWAPBASE_OLD_CHAR_INDEX;
-
 	private static final int NUCLEOTIDE_STATES[] = Nucleotides.NUCLEOTIDE_STATES;
 	private static final char[] VALID_CHARS = initValidChars4();
 	private static final int INDEX_OF_LAST_VALID_CHARS = VALID_CHARS.length-1;
@@ -45,13 +39,13 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 
 //	int haplotypesCount;
 	private AlignmentMapping aMap;
-	private SwapInfo swapInfo = new SwapInfo();
 
 	private boolean isEdit;
 	
-	private int[] swapBaseRecord = new int[4];
 	private SpectrumOperationRecord spectrumOperationRecord;
 	
+//	public long time = 0;
+
 	
 
 	
@@ -114,11 +108,11 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 	
 	}
 
-	
+	@Deprecated
 	public SpectrumAlignmentModel(Alignment shortReads, int hapCount) {
 		this(new AlignmentMapping(shortReads), hapCount);
 	}
-	
+	@Deprecated
 	public SpectrumAlignmentModel(AlignmentMapping aMap, int hapCount) {
 		this(aMap, hapCount, 1);		
 	}
@@ -132,17 +126,18 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 	 */
 	public SpectrumAlignmentModel(AlignmentMapping aMap, int hapCount, int type) {
 		this(aMap);		
-
 		for (int i = 0; i < hapCount; i++) {
 			Taxon t = new Taxon(TAXON_PREFIX+i); 
 			Spectrum spectrum = new Spectrum(spectrumLength, type);
 			spectrum.setTaxon(t);
 			addSpectrum(spectrum);
 //			randomHaplotype(i);
-
 		}
 	}
 
+	public SpectrumAlignmentModel(AlignmentMapping aMap, int hapCount, Type type) {
+		this(aMap, hapCount, type.getCode());
+	}
 
 	
 	public SpectrumAlignmentModel(AlignmentMapping aMap, Alignment trueAlignment) {
@@ -254,10 +249,9 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 	protected void acceptState() {
 		//Do nothing
 	}
-	public long time = 0;
 	@Override
 	protected void storeState() {
-		long time1 = System.currentTimeMillis();
+
 		
 		SpectrumOperation operation = spectrumOperationRecord.getOperation();
 		int spectrumIndex;
@@ -320,9 +314,6 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 			int[] twoPositions = spectrumOperationRecord.getRecombinationPositionIndex();
 			for (int i : twoSpectrums) {
 				spectrum = getSpectrum(i);
-//			TODO wrong code below, replace with above, unittest doesn't catch this
-//			for (int i = 0; i < twoSpectrums.length; i++) {
-//				spectrum = getSpectrum(i);
 				for (int s = twoPositions[0]; s < twoPositions[1]; s++) {
 					spectrum.setStoreSiteIndex(s);
 					spectrum.storeState();
@@ -334,15 +325,14 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 			
 		}
 
+//		 
+//		long time2 = System.currentTimeMillis();
+//		time += (time2-time1);
 		 
-		long time2 = System.currentTimeMillis();
-		time += (time2-time1);
-		 
-//		swapInfo.storeOperation(Operation.NONE);
 	}
 	@Override
 	protected void restoreState() {
-		long time1 = System.currentTimeMillis();
+//		long time1 = System.currentTimeMillis();
 		
 		SpectrumOperation operation = spectrumOperationRecord.getOperation();
 		int spectrumIndex;
@@ -413,9 +403,6 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 			int[] twoPositions = spectrumOperationRecord.getRecombinationPositionIndex();
 			for (int i : twoSpectrums) {
 				spectrum = getSpectrum(i);
-//			TODO wrong code below, replace with above, unittest doesn't catch this
-//			for (int i = 0; i < twoSpectrums.length; i++) {
-//				spectrum = getSpectrum(i);
 				for (int s = twoPositions[0]; s < twoPositions[1]; s++) {
 					spectrum.setStoreSiteIndex(s);
 					spectrum.restoreState();
@@ -426,97 +413,20 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 			throw new IllegalArgumentException("Unknown operation type: " + operation);
 
 		}
-		long time2 = System.currentTimeMillis();
-		time += (time2-time1);
+//		long time2 = System.currentTimeMillis();
+//		time += (time2-time1);
 	}
 	public void startSpectrumOperation(){
 //		System.err.println("\n!!!startSpectrumOperation");
 		isEdit = true;
 	}
+	//TODO: Implement check system here
 	public void endSpectrumOperation(){
 		isEdit = false;
 //		System.err.println("!!!!!!!endSpectrumOperation, fireModelCHanged");
 		fireModelChanged();
 	}
 //////////////////////////////////////////////////////////////////////////
-	@Deprecated
-	private char setNewCharFromFrequency(){
-		
-		double d = MathUtils.nextDouble();
-		
-		for (int i = 0; i < INDEX_OF_LAST_VALID_CHARS; i++) {
-			if (d <= storedCumSumFrequency[i]) {
-				return VALID_CHARS[i];
-			}
-		}
-		return VALID_CHARS[INDEX_OF_LAST_VALID_CHARS];
-	}
-	
-	@Deprecated
-	public int[] getNextBaseFrequency(Parameter frequency) {
-	
-		checkFrequencyParameter(frequency);
-	
-		int[] tempPosChar = new int[2];
-		tempPosChar[0] = MathUtils.nextInt(getSpectrumLength());
-	
-		double d = MathUtils.nextDouble();
-	
-//		for (int i = 0; i < INDEX_OF_LAST_VALID_CHARS; i++) {
-//			if (d <= storedCumSumFrequency[i]) {
-//				tempPosChar[1] = VALID_CHARS[i];
-//				return tempPosChar;
-//			}
-//		}
-		tempPosChar[1] = setNewCharFromFrequency();
-		return tempPosChar;
-	}
-
-	//	private int replaceHaplotypeCharAt(int hapIndex, int pos, int newChar){
-//		
-//		int oldChar = haplotypes.get(hapIndex).replaceCharAt(pos, (char) newChar);
-//		return oldChar;
-//		
-//	}
-//	private static int replaceHaplotypeCharAt(Haplotype haplotype, int pos, int newChar){
-//		int oldChar = haplotype.replaceCharAt(pos, (char) newChar);
-//		return oldChar;
-//		
-//	}
-	@Deprecated
-	private void resetHaplotypeToOldChar(int[] swapRecord){
-//		Haplotype haplotype = spectrumList.get(swapRecord[0]);
-//		haplotype.replaceCharAt(swapRecord[1], swapRecord[3]);
-
-//		swapHaplotypeCharAt(swapArray[0], swapArray[1], swapArray[3]);
-	}
-	
-//	private int swapHaplotypeCharAt(int hapIndex, int[] posChar){
-//		int oldChar = getHaplotype(hapIndex).getChar(posChar[0]); 
-//		getHaplotype(hapIndex).setCharAt(posChar[0], (char) posChar[1]);
-//		return oldChar;
-//		
-//	}
-//	
-//	
-	@Deprecated
-	public SwapInfo getSwapInfo() {
-		return swapInfo;
-	}
-//	public Operation getOperation() {
-//		return swapInfo.getOperation();
-//	}
-	@Deprecated
-	public void storeOperationRecord(Operation op, int[]... opRecord){
-		swapInfo.storeOperation(op, opRecord);
-	}
-	@Deprecated
-	private void storeOperationRecord(Operation op, int hapIndex,
-			int[][] opRecord) {
-		swapInfo.storeOperation(op, opRecord[0], opRecord[1]);
-		swapInfo.storeHapIndex(hapIndex);
-	}
-
 
 	
 
@@ -744,5 +654,17 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 	}
 
 
-	
+	public enum Type{
+		
+		EQUAL(0),
+		ZERO_ONE(1),
+		RANDOM(2);
+		int type;
+		private Type(int t){
+			type = t;
+		}
+		public int getCode(){
+			return type;
+		}
+	}
 }

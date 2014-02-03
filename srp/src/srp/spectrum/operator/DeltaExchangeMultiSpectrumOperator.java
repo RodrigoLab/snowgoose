@@ -21,7 +21,7 @@ public class DeltaExchangeMultiSpectrumOperator extends AbstractSpectrumOperator
 	private static final int MIN_BASE = 3;
     private final int[] parameterWeights;
     private double delta = 0.05;
-    private int baseCount = 3;
+    private int swapBasesCount = 3;
     
 	public DeltaExchangeMultiSpectrumOperator(SpectrumAlignmentModel spectrumModel, 
 			double delta, int baseCount, CoercionMode mode) {
@@ -29,19 +29,20 @@ public class DeltaExchangeMultiSpectrumOperator extends AbstractSpectrumOperator
 		
 		
 		this.delta = delta;
-		this.baseCount = baseCount;
+		this.swapBasesCount = baseCount;
         setWeight(1.0);
 
         parameterWeights = new int[this.spectrumModel.getDataType().getStateCount()];
         for (int i = 0; i < parameterWeights.length; i++) {
             parameterWeights[i] = 1;
         }
+        convertToAutoOptimize(this.swapBasesCount);
 
 	}
 
 	private double[] debugList = new double[8];
 	private double autoOptimize;
-	private int scaleFactor=1;
+//	private int scaleFactor=1;
 	
 	
 	@Override
@@ -53,20 +54,20 @@ public class DeltaExchangeMultiSpectrumOperator extends AbstractSpectrumOperator
 		int spectrumIndex = MathUtils.nextInt(spectrumCount);
 //		int siteIndex = MathUtils.nextInt(spectrumLength);
 
-        SpectraParameter[] spectra = new SpectraParameter[baseCount];
-        double[] d = new double[baseCount];
-        double[] scalar1 = new double[baseCount];
-        double[] scalar2 = new double[baseCount];
-        int[] dim1 = new int[baseCount];
-		int[] dim2 = new int[baseCount];
+        SpectraParameter[] spectra = new SpectraParameter[swapBasesCount];
+        double[] d = new double[swapBasesCount];
+        double[] scalar1 = new double[swapBasesCount];
+        double[] scalar2 = new double[swapBasesCount];
+        int[] dim1 = new int[swapBasesCount];
+		int[] dim2 = new int[swapBasesCount];
         
-		int[] siteIndexs = new int[baseCount]; 
+		int[] siteIndexs = new int[swapBasesCount]; 
 				
 		Spectrum spectrum = spectrumModel.getSpectrum(spectrumIndex);
 		
 
 		Set<Integer> generated = new HashSet<Integer>();
-		while (generated.size() < baseCount)
+		while (generated.size() < swapBasesCount)
 		{
 		    Integer next = MathUtils.nextInt(spectrumLength);
 		    generated.add(next);
@@ -74,7 +75,7 @@ public class DeltaExchangeMultiSpectrumOperator extends AbstractSpectrumOperator
 //		generated.toArray(siteIndex);
 		siteIndexs = Ints.toArray(generated);
 //		System.out.println(Arrays.toString(siteIndex));
-		for (int i = 0; i < baseCount; i++) {
+		for (int i = 0; i < swapBasesCount; i++) {
 			
 //			siteIndexs[i] = MathUtils.nextInt(spectrumLength);
 //			System.err.println(spectrumIndex +"\tMultiOp\t"+ i +"\t"+ siteIndexs[i]);
@@ -107,7 +108,7 @@ public class DeltaExchangeMultiSpectrumOperator extends AbstractSpectrumOperator
 	        }
 	        
 		}
-		for (int i = 0; i < baseCount; i++) {
+		for (int i = 0; i < swapBasesCount; i++) {
 			
 			spectra[i].setParameterValue(dim1[i], scalar1[i]);
 			spectra[i].setParameterValue(dim2[i], scalar2[i]);
@@ -152,7 +153,7 @@ public class DeltaExchangeMultiSpectrumOperator extends AbstractSpectrumOperator
 
 	private void convertFromAutoOptimizeToValue(double autoOpt) {
 	    	autoOptimize = autoOpt;
-	    	baseCount =  MIN_BASE + (int) Math.exp(autoOptimize*scaleFactor);
+	    	swapBasesCount =  MIN_BASE + (int) Math.exp(autoOptimize);
 //			System.out.println(autoOptimize +"\t"+ Math.exp(autoOptimize*scaleFactor));
 			
 //			System.out.print("A=" + swapLength + "\t" + autoOptimize + "\t" +
@@ -165,22 +166,22 @@ public class DeltaExchangeMultiSpectrumOperator extends AbstractSpectrumOperator
 	    }
 
 	private double convertToAutoOptimize(int length) {
-		baseCount = length;
+		swapBasesCount = length;
 		checkParameterIsValid();
-		autoOptimize = Math.log(baseCount - MIN_BASE)/scaleFactor;
+		autoOptimize = Math.log(swapBasesCount - MIN_BASE);
 	    return autoOptimize;
 	}
 
 	private void checkParameterIsValid() {
-		if (baseCount > spectrumLength){
-			baseCount = spectrumLength;
+		if (swapBasesCount > spectrumLength){
+			swapBasesCount = spectrumLength;
 		}
 	}
 	
     @Override
 	public double getRawParameter() {
 //        return delta;
-        return baseCount;
+        return swapBasesCount;
     }
 
     @Override

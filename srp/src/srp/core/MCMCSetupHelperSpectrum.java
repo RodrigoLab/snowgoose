@@ -43,7 +43,7 @@ public class MCMCSetupHelperSpectrum extends MCMCSetupHelper {
 	private static final double opTiny = 0.1;
 	private static final double opSmall = 3;
 	private static final double opMed = 15;
-	private static final double opLarge = 50;
+	private static final double opLarge = 20;
 	private static final double opSpectrum = 45;
 	
 	public static HashMap<String, Object> setupSpectrumTreeLikelihoodSpectrumModel(
@@ -112,12 +112,12 @@ public class MCMCSetupHelperSpectrum extends MCMCSetupHelper {
 		Parameter rootHeight = treeModel.getRootHeightParameter();
 		rootHeight.setId("TREE_HEIGHT");
 		operator = new ScaleOperator(rootHeight, 0.75);
-		operator.setWeight(opMed);
+		operator.setWeight(opSmall);
 		schedule.addOperator(operator);
 
 		Parameter internalHeights = treeModel.createNodeHeightsParameter(false, true, false);
 		operator = new UniformOperator(internalHeights, 30.0);
-		operator.setWeight(opMed);
+		operator.setWeight(opLarge);
 		schedule.addOperator(operator);
 
 		operator = new SubtreeSlideOperator(treeModel, 15.0, 1.0, true, false,
@@ -170,18 +170,20 @@ public class MCMCSetupHelperSpectrum extends MCMCSetupHelper {
 //		ColumnSpectrumDeltaExchangeOperator               0.012   1000000    141392   0.14     0.2344 
 		
 		
-		operator = new DeltaExchangeMultiSpectrumOperator(spectrumModel, 0.1, 6, CoercionMode.COERCION_OFF);
+		operator = new DeltaExchangeMultiSpectrumOperator(spectrumModel, 0.1,
+				6, CoercionMode.COERCION_OFF);
 		operator.setWeight(opSpectrum*2);//fix delta at 0.02(~7bp) or 0.05(3bp)
 //		schedule.addOperator(operator);
 		
-		operator = new RecombinationSpectrumOperator(spectrumModel, CoercionMode.COERCION_OFF);
-		operator.setWeight(3); //(3bp)
-//		schedule.addOperator(operator);
+		operator = new RecombinationSpectrumOperator(spectrumModel);
+		operator.setWeight(opSpectrum/10); //(3bp)
+		schedule.addOperator(operator);
 
 
-		operator = new RecombineSectionSpectrumOperator(spectrumModel, 12, CoercionMode.COERCION_OFF);
+		operator = new RecombineSectionSpectrumOperator(spectrumModel, 6,
+				CoercionMode.COERCION_ON);
 		operator.setWeight(opSpectrum*1); //(3bp)
-//		schedule.addOperator(operator);
+		schedule.addOperator(operator);
 
 //		Operator analysis
 //		Operator                                          Tuning   Count      Time     Time/Op  Pr(accept)  Performance suggestion
@@ -190,11 +192,11 @@ public class MCMCSetupHelperSpectrum extends MCMCSetupHelper {
 //		RecombinationSpectrumOperator                             133587     1464373  10.96    0.0425      low	Tuning 12
 //		SwapSectionSpectrumOperator                               133225     63241    0.47     0.0419      low	Tuning 12
 
-		operator = new SwapSingleSpectrumOperator(spectrumModel, CoercionMode.COERCION_OFF);
+		operator = new SwapSingleSpectrumOperator(spectrumModel);
 		operator.setWeight(opSpectrum*1);
 		schedule.addOperator(operator);
 		
-		operator = new SwapMultiSpectrumOperator(spectrumModel, 6, CoercionMode.COERCION_OFF);
+		operator = new SwapMultiSpectrumOperator(spectrumModel, 6, CoercionMode.COERCION_ON);
 		operator.setWeight(opSpectrum*1);
 //		schedule.addOperator(operator);
 		
@@ -218,7 +220,7 @@ public class MCMCSetupHelperSpectrum extends MCMCSetupHelper {
 
 		operator = new DirichletSpectrumOperator(spectrumModel, 12, CoercionMode.COERCION_ON);
 		operator.setWeight(opSpectrum*1);
-		schedule.addOperator(operator);
+//		schedule.addOperator(operator);
 
 		
 		for (Parameter parameter : parameters) {

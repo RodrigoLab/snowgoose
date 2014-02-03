@@ -112,15 +112,15 @@ public class MCMCSetupHelper {
 	//		options.setTemperature(1.0);
 	//		options.setFullEvaluationCount((int) (logInterval*0.01));
 		
-		
-		MCMCOptions options = new MCMCOptions(logInterval * totalSamples, 1,
-				0, MarkovChain.EVALUATION_TEST_THRESHOLD, false, 10, 1.0);
+		int coercionDelay = logInterval * totalSamples /100;
+		MCMCOptions options = new MCMCOptions(logInterval * totalSamples, 100,
+				0, MarkovChain.EVALUATION_TEST_THRESHOLD, false, coercionDelay, 1.0);
 			//		MCMCOptions(long chainLength, 
-	//				long fullEvaluationCount, 
-	//				int minOperatorCountForFullEvaluation, 
+	//				long fullEvaluationCount, //2000
+	//				int minOperatorCountForFullEvaluation, //1 
 	//				double evaluationTestThreshold, 
 	//				boolean coercion, 
-	//				long coercionDelay, 
+	//				long coercionDelay, //chainLength/100 
 	//				double temperature) 
 		return options;
 		    

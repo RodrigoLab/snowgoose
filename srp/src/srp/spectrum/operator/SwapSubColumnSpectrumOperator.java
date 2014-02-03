@@ -23,7 +23,7 @@ public class SwapSubColumnSpectrumOperator extends AbstractSpectrumOperator {
 
 
 	private double[] debugList = new double[8];
-	private int swapHapCount;
+	private int swapSpectrumCount;
 	private double autoOptimize;
 	private int spectrumCount;
 //	private double scaleFactor;
@@ -34,7 +34,7 @@ public class SwapSubColumnSpectrumOperator extends AbstractSpectrumOperator {
 		super(spectrumModel, mode);
 		
 		
-		this.swapHapCount = swapHapCount;
+		this.swapSpectrumCount = swapHapCount;
 		this.spectrumCount = spectrumModel.getSpectrumCount();
         setWeight(1.0);
 
@@ -42,7 +42,7 @@ public class SwapSubColumnSpectrumOperator extends AbstractSpectrumOperator {
         for (int i = 0; i < parameterWeights.length; i++) {
             parameterWeights[i] = 1;
         }
-		convertToAutoOptimize(this.swapHapCount);
+		convertToAutoOptimize(this.swapSpectrumCount);
 
 
 //		scaleFactor = (int) (spectrumLength*0.01);
@@ -68,7 +68,7 @@ public class SwapSubColumnSpectrumOperator extends AbstractSpectrumOperator {
 		
 		
 		Set<Integer> generated = new HashSet<Integer>();
-		while (generated.size() < swapHapCount)
+		while (generated.size() < swapSpectrumCount)
 		{
 		    Integer next = MathUtils.nextInt(spectrumCount);
 		    generated.add(next);
@@ -77,24 +77,36 @@ public class SwapSubColumnSpectrumOperator extends AbstractSpectrumOperator {
 		int[] spectrumIndexs = Ints.toArray(generated);
 		
 		//		System.out.println(Arrays.toString(siteIndex));
-		for (int h = 0; h < swapHapCount; h++) {
+		for (int h = 0; h < swapSpectrumCount; h++) {
 			int i = spectrumIndexs[h];
 			SpectraParameter spectra = spectrumModel.getSpectrum(i).getSpectra(siteIndex);
-			int dim1 = 0;
-	        double scalar1=0;
-	        for (int j = 0; j < DIMENSION; j++) {
-	        	scalar1 = spectra.getParameterValue(j);
-	        	if(scalar1==1){
-	        		dim1=j;
-	        		break;
-	        	}
-			}
-	        int dim2;// = dim1;
-	        do {
-	            dim2 = MathUtils.nextInt(DIMENSION);
-	        }while (dim1 == dim2);
-	        double scalar2 = spectra.getParameterValue(dim2);
 
+//			// get any two dims and swap
+//	        int dim1 = MathUtils.nextInt(DIMENSION);
+//	        int dim2;// = dim1;
+//	        do {
+//	            dim2 = MathUtils.nextInt(DIMENSION);
+//	        }while (dim1 == dim2);
+//	        
+//	        double scalar1 = parameter.getParameterValue(dim1);
+//	        double scalar2 = parameter.getParameterValue(dim2);
+	        
+	        
+			// get freq==1 and swap with others
+			int dim1 = 0;
+			double scalar1 = 0;
+			for (int d = 0; d < DIMENSION; d++) {
+				scalar1 = spectra.getParameterValue(d);
+				if (scalar1 == 1) {
+					dim1 = d;
+					break;
+				}
+			}
+			int dim2;// = dim1;
+			do {
+				dim2 = MathUtils.nextInt(DIMENSION);
+			} while (dim1 == dim2);
+			double scalar2 = spectra.getParameterValue(dim2);        
 
 	        spectra.setParameterValue(dim1, scalar2);
 	        spectra.setParameterValue(dim2, scalar1);
@@ -125,22 +137,22 @@ public class SwapSubColumnSpectrumOperator extends AbstractSpectrumOperator {
 	private void convertFromAutoOptimizeToValue(double autoOpt) {
     	autoOptimize = autoOpt;
 //    	swapHapCount =  1 + (int) Math.exp(autoOptimize*scaleFactor);
-    	swapHapCount =  1 + (int) Math.exp(autoOptimize);
+    	swapSpectrumCount =  1 + (int) Math.exp(autoOptimize);
 		
 		checkParameterIsValid();
     }
 
 	private double convertToAutoOptimize(int length) {
-		swapHapCount = length;
+		swapSpectrumCount = length;
 		checkParameterIsValid();
-		autoOptimize = Math.log(swapHapCount - 1);
+		autoOptimize = Math.log(swapSpectrumCount - 1);
 //		autoOptimize = Math.log(swapHapCount - 1)/scaleFactor;
 	    return autoOptimize;
 	}
 
 	private void checkParameterIsValid() {
-		if (swapHapCount > spectrumLength){
-			swapHapCount = spectrumLength;
+		if (swapSpectrumCount > spectrumLength){
+			swapSpectrumCount = spectrumLength;
 		}
 	}
 	
@@ -148,7 +160,7 @@ public class SwapSubColumnSpectrumOperator extends AbstractSpectrumOperator {
 
     @Override
 	public double getRawParameter() {
-        return swapHapCount;
+        return swapSpectrumCount;
     }
 
 
@@ -159,7 +171,7 @@ public class SwapSubColumnSpectrumOperator extends AbstractSpectrumOperator {
 //		s+= spectrumModel.diagnostic() +"\n";
 //		s += Arrays.toString(debugList);
 //		spectrumModel.restoreModelState();
-    	String s = "Tuning "+swapHapCount; 
+    	String s = "Tuning "+swapSpectrumCount; 
     	return s;
 
 //        double prob = MCMCOperator.Utils.getAcceptanceProbability(this);
@@ -177,7 +189,7 @@ public class SwapSubColumnSpectrumOperator extends AbstractSpectrumOperator {
 
     @Override
 	public String toString() {
-        return getOperatorName() + "(windowsize=" + swapHapCount + ")";
+        return getOperatorName() + "(windowsize=" + swapSpectrumCount + ")";
     }
 
 

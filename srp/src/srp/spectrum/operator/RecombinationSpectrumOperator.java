@@ -18,16 +18,15 @@ public class RecombinationSpectrumOperator extends AbstractSpectrumOperator {
 	private int swapLength;
 	
 	private double autoOptimize;
-	private double scaleFactor;
+//	private double scaleFactor;
 	
 	private int[] twoPositionIndex;
 	private int[] twoSpectrumIndex;
 
 	
 	
-	public RecombinationSpectrumOperator(SpectrumAlignmentModel spectrumModel, 
-			CoercionMode mode) {
-		super(spectrumModel, mode);
+	public RecombinationSpectrumOperator(SpectrumAlignmentModel spectrumModel) {
+		super(spectrumModel, CoercionMode.COERCION_OFF);
 		
 		twoPositionIndex = new int[2];
 		twoSpectrumIndex = new int[2];
@@ -40,7 +39,7 @@ public class RecombinationSpectrumOperator extends AbstractSpectrumOperator {
         for (int i = 0; i < parameterWeights.length; i++) {
             parameterWeights[i] = 1;
         }
-
+        
 //		scaleFactor = (int) (spectrumLength*0.01);
 //
 //		if (scaleFactor <1) {
@@ -116,22 +115,13 @@ public class RecombinationSpectrumOperator extends AbstractSpectrumOperator {
 
 	private void convertFromAutoOptimizeToValue(double autoOpt) {
 	    	autoOptimize = autoOpt;
-			swapLength =  1 + (int) Math.exp(autoOptimize*scaleFactor);
-//			System.out.println(autoOptimize +"\t"+ Math.exp(autoOptimize*scaleFactor));
-			
-//			System.out.print("A=" + swapLength + "\t" + autoOptimize + "\t" +
-//					"accept: " + getAcceptCount()/(double)getCount() + "\t"  );
-			
-			checkParameterIsValid();
-			
-//			System.out.print("newL:"+swapLength+" ");
-	//		System.out.print("A\t" + swapFragmentLength + "\t" + autoOptimize + "\t"  );
+			swapLength =  1 + (int) Math.exp(autoOptimize);
 	    }
 
 	private double convertToAutoOptimize(int length) {
 		swapLength = length;
 		checkParameterIsValid();
-		autoOptimize = Math.log(swapLength - 1)/scaleFactor;
+		autoOptimize = Math.log(swapLength - 1);
 	    return autoOptimize;
 	}
 

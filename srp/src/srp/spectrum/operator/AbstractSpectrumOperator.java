@@ -11,7 +11,7 @@ import dr.inference.operators.CoercionMode;
 public abstract class AbstractSpectrumOperator extends AbstractCoercableOperator {
 
 	public static final int DIMENSION = SpectraParameter.DIMENSION;
-    public static final Bounds<Double> BOUNDS = SpectraParameter.SPECTRUM_BOUNDS;
+    public static final Bounds<Double> BOUNDS = SpectraParameter.SPECTRA_BOUNDS;
     public static final double BOUNDS_LOWER = BOUNDS.getLowerLimit(0);
     public static final double BOUNDS_UPPER = BOUNDS.getUpperLimit(0);
     

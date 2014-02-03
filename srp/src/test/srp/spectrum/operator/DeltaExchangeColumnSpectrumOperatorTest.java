@@ -47,7 +47,7 @@ public class DeltaExchangeColumnSpectrumOperatorTest {
 				};
 		int spectrumCount = 4;
 		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, spectrumCount);
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, spectrumCount, 2);
 		DeltaExchangeColumnSpectrumOperator op = new DeltaExchangeColumnSpectrumOperator(
 				spectrumModel, 0.1, CoercionMode.COERCION_OFF);
 
@@ -101,7 +101,7 @@ public class DeltaExchangeColumnSpectrumOperatorTest {
 				};
 		int spectrumCount = 10;
 		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, spectrumCount);
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, spectrumCount, 2);
 		DeltaExchangeColumnSpectrumOperator op = new DeltaExchangeColumnSpectrumOperator(
 				spectrumModel, 0.1, CoercionMode.COERCION_OFF);
 

@@ -39,7 +39,7 @@ package dr.evomodel.speciation;
  * @author Alexei Drummond
  * @author Roald Forsberg
  */
-//public class YuleModel extends UltrametricSpeciationModel {
+public class YuleModel {
 //
 //
 //
@@ -106,4 +106,4 @@ package dr.evomodel.speciation;
 //    //Protected stuff
 //    Parameter birthRateParameter;
 //
-//}
+}
