@@ -1,31 +1,20 @@
 package srp.core;
 
 import java.io.BufferedReader;
-import java.io.EOFException;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.IOException;
-import java.util.List;
 
 import srp.dr.evolution.datatype.ShortReads;
 import srp.dr.evolution.io.ShortReadImporter;
-
-import com.google.common.io.Files;
-
 import dr.evolution.alignment.Alignment;
-import dr.evolution.alignment.SimpleAlignment;
 import dr.evolution.datatype.Nucleotides;
 import dr.evolution.io.FastaImporter;
-import dr.evolution.io.Importer.ImportException;
 import dr.evolution.io.NewickImporter;
 //import dr.evolution.io.Importer.ImportException;
 import dr.evolution.sequence.Sequence;
 import dr.evolution.sequence.SequenceList;
 import dr.evolution.sequence.Sequences;
-import dr.evolution.tree.FlexibleTree;
 import dr.evolution.tree.Tree;
-import dr.evolution.util.Taxon;
 
 public class DataImporter {
 

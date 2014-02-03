@@ -11,8 +11,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import srp.haplotypes.AlignmentUtils;
-import srp.haplotypes.HaplotypeModelUtils;
 import srp.haplotypes.HaplotypeModel;
+import srp.haplotypes.HaplotypeModelUtils;
 
 
 public class HaplotypeModelUtilsTest {

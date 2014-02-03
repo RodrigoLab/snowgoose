@@ -97,6 +97,7 @@ public class DeltaExchangeColumnSpectrumOperator extends AbstractSpectrumOperato
 
 	
 	
+	@Override
 	public double doOperation() throws OperatorFailedException {
 
 		spectrumModel.startSpectrumOperation();

@@ -1,9 +1,6 @@
 package test.srp.spectrum.likelihood;
 
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -12,22 +9,16 @@ import org.junit.Test;
 
 import srp.core.DataImporter;
 import srp.haplotypes.AlignmentMapping;
-import srp.haplotypes.AlignmentUtils;
-import srp.spectrum.Spectrum;
 import srp.spectrum.SpectrumAlignmentModel;
-import srp.spectrum.SpectrumOperation;
-import srp.spectrum.SpectrumOperationRecord;
 import srp.spectrum.likelihood.ShortReadsSpectrumLikelihood;
 import srp.spectrum.operator.AbstractSpectrumOperator;
 import srp.spectrum.operator.DeltaExchangeColumnSpectrumOperator;
 import srp.spectrum.operator.DeltaExchangeMultiSpectrumOperator;
-import srp.spectrum.operator.RecombinationSpectrumOperator;
 import srp.spectrum.operator.DeltaExchangeSingleSpectrumOperator;
+import srp.spectrum.operator.RecombinationSpectrumOperator;
 import srp.spectrum.operator.RecombineSectionSpectrumOperator;
 import srp.spectrum.operator.SwapSingleSpectrumOperator;
 import dr.evolution.alignment.Alignment;
-import dr.evolution.alignment.SimpleAlignment;
-import dr.inference.operators.MCMCOperator;
 import dr.inference.operators.OperatorFailedException;
 import dr.math.MathUtils;
 
@@ -48,7 +39,7 @@ public class ShortReadsSpectrumLikelihoodTimeTrialTest {
 
 	@Before
 	public void setUp() throws Exception {
-		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/ABI/unittest/", "H4_srp.fasta");
+		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/snowgoose/srp/unittest/", "H4_srp.fasta");
 		AlignmentMapping aMap = new AlignmentMapping(alignment);
 			
 		spectrumModel = new SpectrumAlignmentModel(aMap, 4);

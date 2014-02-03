@@ -45,7 +45,12 @@ import dr.xml.Reportable;
 
 public abstract class AbstractRJTreeLikelihood extends AbstractModelLikelihood implements Reportable {
 
-    protected static final boolean COUNT_TOTAL_OPERATIONS = true;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 2434071562092420870L;
+
+	protected static final boolean COUNT_TOTAL_OPERATIONS = true;
 
     public AbstractRJTreeLikelihood(String name, PatternList patternList,
                                   TreeModel treeModel) {
@@ -233,7 +238,8 @@ public abstract class AbstractRJTreeLikelihood extends AbstractModelLikelihood i
     // VariableListener IMPLEMENTATION
     // **************************************************************
 
-    protected void handleVariableChangedEvent(Variable variable, int index, Parameter.ChangeType type) {
+    @Override
+	protected void handleVariableChangedEvent(Variable variable, int index, Parameter.ChangeType type) {
         // do nothing
     }
 
@@ -241,14 +247,16 @@ public abstract class AbstractRJTreeLikelihood extends AbstractModelLikelihood i
     // Model IMPLEMENTATION
     // **************************************************************
 
-    protected void handleModelChangedEvent(Model model, Object object, int index) {
+    @Override
+	protected void handleModelChangedEvent(Model model, Object object, int index) {
         likelihoodKnown = false;
     }
 
     /**
      * Stores the additional state other than model components
      */
-    protected void storeState() {
+    @Override
+	protected void storeState() {
 
         storedLikelihoodKnown = likelihoodKnown;
         storedLogLikelihood = logLikelihood;
@@ -257,20 +265,23 @@ public abstract class AbstractRJTreeLikelihood extends AbstractModelLikelihood i
     /**
      * Restore the additional stored state
      */
-    protected void restoreState() {
+    @Override
+	protected void restoreState() {
 
         likelihoodKnown = storedLikelihoodKnown;
         logLikelihood = storedLogLikelihood;
     }
 
-    protected void acceptState() {
+    @Override
+	protected void acceptState() {
     } // nothing to do
 
     // **************************************************************
     // Likelihood IMPLEMENTATION
     // **************************************************************
 
-    public final Model getModel() {
+    @Override
+	public final Model getModel() {
         return this;
     }
 
@@ -278,7 +289,8 @@ public abstract class AbstractRJTreeLikelihood extends AbstractModelLikelihood i
         return patternList;
     }
 
-    public final double getLogLikelihood() {
+    @Override
+	public final double getLogLikelihood() {
         if (!likelihoodKnown) {
 //        	System.out.print(logLikelihood +"\t");//TODO REMOVE
             logLikelihood = calculateLogLikelihood();
@@ -290,7 +302,8 @@ public abstract class AbstractRJTreeLikelihood extends AbstractModelLikelihood i
     /**
      * Forces a complete recalculation of the likelihood next time getLikelihood is called
      */
-    public void makeDirty() {
+    @Override
+	public void makeDirty() {
         likelihoodKnown = false;
         updateAllNodes();
         updateAllPatterns();
@@ -298,7 +311,8 @@ public abstract class AbstractRJTreeLikelihood extends AbstractModelLikelihood i
 
     protected abstract double calculateLogLikelihood();
 
-    public String getReport() {
+    @Override
+	public String getReport() {
         getLogLikelihood();
         return getClass().getName() + "(" + logLikelihood + ") total operations = " + totalOperationCount;
 

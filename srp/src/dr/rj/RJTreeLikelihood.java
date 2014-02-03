@@ -62,6 +62,11 @@ import dr.inference.model.Statistic;
 
 public class RJTreeLikelihood extends AbstractRJTreeLikelihood {
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = -6174728174341577959L;
+
+	/**
      * Constructor.
      */
     public RJTreeLikelihood(PatternList patternList,
@@ -236,7 +241,8 @@ public class RJTreeLikelihood extends AbstractRJTreeLikelihood {
     /**
      * Handles model changed events from the submodels.
      */
-    protected void handleModelChangedEvent(Model model, Object object, int index) {
+    @Override
+	protected void handleModelChangedEvent(Model model, Object object, int index) {
 
         if (model == treeModel) {
             if (object instanceof TreeModel.TreeChangedEvent) {
@@ -297,7 +303,8 @@ public class RJTreeLikelihood extends AbstractRJTreeLikelihood {
     /**
      * Stores the additional state other than model components
      */
-    protected void storeState() {
+    @Override
+	protected void storeState() {
 
         if (storePartials) {
             likelihoodCore.storeState();
@@ -309,7 +316,8 @@ public class RJTreeLikelihood extends AbstractRJTreeLikelihood {
     /**
      * Restore the additional stored state
      */
-    protected void restoreState() {
+    @Override
+	protected void restoreState() {
 
         if (storePartials) {
             likelihoodCore.restoreState();
@@ -330,7 +338,8 @@ public class RJTreeLikelihood extends AbstractRJTreeLikelihood {
      *
      * @return the log likelihood.
      */
-    protected double calculateLogLikelihood() {
+    @Override
+	protected double calculateLogLikelihood() {
 
         if (patternLogLikelihoods == null) {
             patternLogLikelihoods = new double[patternCount];
@@ -564,11 +573,17 @@ public class RJTreeLikelihood extends AbstractRJTreeLikelihood {
     
     public class SiteLikelihoodsStatistic extends Statistic.Abstract {
 
-        public SiteLikelihoodsStatistic() {
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 5444513933699432671L;
+
+		public SiteLikelihoodsStatistic() {
             super("siteLikelihoods");
         }
 
-        public int getDimension() {
+        @Override
+		public int getDimension() {
             if (patternList instanceof SitePatterns) {
                 return ((SitePatterns)patternList).getSiteCount();
             } else {
@@ -576,11 +591,13 @@ public class RJTreeLikelihood extends AbstractRJTreeLikelihood {
             }
         }
 
-        public String getDimensionName(int dim) {
+        @Override
+		public String getDimensionName(int dim) {
             return getTreeModel().getId() + "site-" + dim;
         }
 
-        public double getStatisticValue(int i) {
+        @Override
+		public double getStatisticValue(int i) {
 
             if (patternList instanceof SitePatterns) {
                 int index = ((SitePatterns)patternList).getPatternIndex(i);

@@ -6,7 +6,6 @@ import java.io.Reader;
 import java.io.Writer;
 
 import srp.dr.evolution.datatype.ShortReads;
-
 import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.SimpleAlignment;
 import dr.evolution.datatype.DataType;
@@ -32,7 +31,8 @@ public class ShortReadImporter extends FastaImporter {
 
 	}
 
-    public Alignment importAlignment() throws IOException, ImportException
+    @Override
+	public Alignment importAlignment() throws IOException, ImportException
     {
         SimpleAlignment alignment = null;
 

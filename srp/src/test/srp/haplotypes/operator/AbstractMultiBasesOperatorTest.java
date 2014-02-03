@@ -151,24 +151,6 @@ public class AbstractMultiBasesOperatorTest {
 
 		}
 
-		@Override
-		public String getPerformanceSuggestion() {
-			fail("Should not happen in " +"\t"+ MockAbstractSwapBaseseOperator.class.getSimpleName());
-			return null;
-		}
-
-		@Override
-		public String getOperatorName() {
-			fail("Should not happen in " +"\t"+ MockAbstractSwapBaseseOperator.class.getSimpleName());
-			return null;
-		}
-
-		@Override
-		public double doOperation() throws OperatorFailedException {
-			fail("Should not happen in " +"\t"+ MockAbstractSwapBaseseOperator.class.getSimpleName());
-			return 0;
-		}
-		
 		public void testResetAllPosChars(){
 			resetAllPosChars();
 		}
@@ -179,6 +161,24 @@ public class AbstractMultiBasesOperatorTest {
 		
 		public void testSetAllPosChars(int[][] intArrays){
 			allPosChars = intArrays;
+		}
+
+		@Override
+		public String getPerformanceSuggestion() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public String getOperatorName() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public double doOperation() throws OperatorFailedException {
+			// TODO Auto-generated method stub
+			return 0;
 		}
 	}
 }

@@ -105,7 +105,6 @@ public class SwitchBaseFrequencyOperator extends AbstractCoercableOperator {
 
 	@Override
 	public void setCoercableParameter(double value) {
-		value = value;
 		switchProb = Math.exp(value) / (1.0 + Math.exp(value));
 	    
 	}

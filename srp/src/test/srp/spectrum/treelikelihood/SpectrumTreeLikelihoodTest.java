@@ -422,7 +422,7 @@ public class SpectrumTreeLikelihoodTest {
 		likelihood = anewSpectrumTreeLikelihood.getLogLikelihood();
 		assertEquals(aexpected, likelihood, 0);
 		
-
+		
 	}
 
 	@Test

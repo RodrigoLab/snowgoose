@@ -16,6 +16,7 @@ public class HaplotypeLoggerWithTrueHaplotype extends HaplotypeLogger{
 		this.trueAlignment = trueAlignment;
 		
 	}
+	@Override
 	public void log(long state) {
 
     	if (logEvery > 0 && (state % logEvery == 0)) {

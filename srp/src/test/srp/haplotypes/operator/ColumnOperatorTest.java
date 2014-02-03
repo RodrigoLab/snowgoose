@@ -4,7 +4,6 @@ package test.srp.haplotypes.operator;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.junit.After;
@@ -18,7 +17,6 @@ import srp.haplotypes.AlignmentUtils;
 import srp.haplotypes.HaplotypeModel;
 import srp.haplotypes.likelihood.ShortReadLikelihood;
 import srp.haplotypes.operator.ColumnOperator;
-import test.TestUtils;
 import dr.evolution.alignment.SimpleAlignment;
 import dr.inference.loggers.ArrayLogFormatter;
 import dr.inference.loggers.MCLogger;

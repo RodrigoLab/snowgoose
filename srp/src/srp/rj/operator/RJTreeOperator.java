@@ -1,24 +1,15 @@
 package srp.rj.operator;
 
-import java.util.Arrays;
-
 import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.HaplotypeModel;
 import srp.haplotypes.Operation;
-import srp.haplotypes.SwapInfo;
-import dr.evolution.datatype.Nucleotides;
 import dr.evolution.tree.FlexibleNode;
 import dr.evolution.tree.FlexibleTree;
 import dr.evolution.tree.NodeRef;
 import dr.evolution.tree.SimpleNode;
 import dr.evomodel.operators.AbstractTreeOperator;
 import dr.evomodel.tree.TreeModel;
-import dr.evomodel.tree.TreeModel.Node;
-import dr.inference.model.Parameter;
-import dr.inference.operators.AbstractCoercableOperator;
-import dr.inference.operators.CoercionMode;
 import dr.inference.operators.OperatorFailedException;
-import dr.inference.operators.SimpleMCMCOperator;
 import dr.math.MathUtils;
 
 public class RJTreeOperator  extends AbstractTreeOperator {

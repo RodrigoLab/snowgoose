@@ -1,10 +1,6 @@
 package test.srp.haplotypes.likelihood;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -14,36 +10,26 @@ import org.junit.Test;
 
 import srp.core.DataImporter;
 import srp.haplotypes.AlignmentMapping;
-import srp.haplotypes.AlignmentUtils;
 import srp.haplotypes.HaplotypeModel;
 import srp.haplotypes.HaplotypeModelUtils;
 import srp.haplotypes.Operation;
 import srp.haplotypes.likelihood.ShortReadLikelihood;
 import srp.haplotypes.operator.AbstractMultiBasesOperator;
 import srp.haplotypes.operator.AbstractSingleBaseOperator;
-import srp.haplotypes.operator.ColumnOperator;
-import srp.haplotypes.operator.HaplotypeRecombinationOperator;
-import srp.haplotypes.operator.HaplotypeSwapSectionOperator;
-import srp.haplotypes.operator.BasesMultiEmpiricalOperator;
-import srp.haplotypes.operator.BasesMultiOperator;
-import srp.haplotypes.operator.BasesMultiUniformOperator;
 import srp.haplotypes.operator.BaseSingleEmpiricalOperator;
 import srp.haplotypes.operator.BaseSingleFrequencyOperator;
 import srp.haplotypes.operator.BaseSingleOperator;
 import srp.haplotypes.operator.BaseSingleUniformOperator;
+import srp.haplotypes.operator.BasesMultiEmpiricalOperator;
+import srp.haplotypes.operator.BasesMultiOperator;
+import srp.haplotypes.operator.BasesMultiUniformOperator;
+import srp.haplotypes.operator.ColumnOperator;
+import srp.haplotypes.operator.HaplotypeRecombinationOperator;
+import srp.haplotypes.operator.HaplotypeSwapSectionOperator;
 import dr.evolution.alignment.Alignment;
-import dr.evolution.alignment.SimpleAlignment;
-import dr.inference.mcmc.MCMC;
-import dr.inference.mcmc.MCMCCriterion;
-import dr.inference.mcmc.MCMCOptions;
-import dr.inference.model.CompoundLikelihood;
-import dr.inference.model.Likelihood;
-import dr.inference.model.Model;
 import dr.inference.model.Parameter;
 import dr.inference.operators.CoercionMode;
 import dr.inference.operators.MCMCOperator;
-import dr.inference.operators.OperatorSchedule;
-import dr.inference.operators.SimpleOperatorSchedule;
 import dr.math.MathUtils;
 
 public class ShortReadLikelihoodWithOperatorTest {
@@ -63,7 +49,7 @@ public class ShortReadLikelihoodWithOperatorTest {
 	public void setUp() throws Exception {
 
 
-		String dataDir = "/home/sw167/workspaceSrp/ABI/unittest/";
+		String dataDir = "/home/sw167/workspaceSrp/snowgoose/srp/unittest/";
 	
 		String trueAlignmentFile = "H4_haplotypes.phyml";
 		String shortReadFile = "H4_srp.fasta";

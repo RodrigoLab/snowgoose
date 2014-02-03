@@ -6,14 +6,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.text.TabableView;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.google.common.util.concurrent.SimpleTimeLimiter;
-
-import dr.evolution.tree.FlexibleNode;
 import dr.evolution.tree.FlexibleTree;
 import dr.evolution.tree.MutableTree;
 import dr.evolution.tree.MutableTreeListener;
@@ -31,7 +26,6 @@ import dr.inference.model.Parameter;
 import dr.inference.model.Statistic;
 import dr.inference.model.Variable;
 import dr.math.MathUtils;
-import dr.math.distributions.ReflectedNormalDistribution;
 import dr.util.Attributable;
 
 
@@ -40,6 +34,11 @@ public class RJTreeModel extends AbstractModel implements MutableTree {
 	//
 	// Public stuff
 	//
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7300035033711283685L;
 
 	public static final String TREE_MODEL = "treeModel";
 

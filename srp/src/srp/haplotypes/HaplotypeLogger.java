@@ -3,7 +3,6 @@ package srp.haplotypes;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 
 import dr.evolution.alignment.Alignment;
 import dr.inference.loggers.LogFormatter;
@@ -39,11 +38,13 @@ public class HaplotypeLogger extends MCLogger {
 	}
 
 
-    public void startLogging() {
+    @Override
+	public void startLogging() {
     	logLine("START!!");
     }
 
-    public void log(long state) {
+    @Override
+	public void log(long state) {
 
     	if (logEvery > 0 && (state % logEvery == 0)) {
 //    		(logEvery < 0 || ((state % logEvery) == 0));
@@ -60,7 +61,8 @@ public class HaplotypeLogger extends MCLogger {
 
     }
 
-    public void stopLogging() {
+    @Override
+	public void stopLogging() {
     
         super.stopLogging();
     }

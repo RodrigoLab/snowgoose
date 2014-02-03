@@ -1,21 +1,13 @@
 package dr.ext;
 
-import javax.swing.text.TabableView;
-
 import srp.haplotypes.HaplotypeModel;
-import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.PatternList;
-import dr.evolution.datatype.DataType;
 import dr.evolution.tree.NodeRef;
 import dr.evolution.tree.Tree;
-import dr.evolution.util.Taxon;
 import dr.evolution.util.TaxonList;
 import dr.evomodel.branchratemodel.BranchRateModel;
 import dr.evomodel.sitemodel.SiteModel;
 import dr.evomodel.tree.TreeModel;
-import dr.evomodel.treelikelihood.GeneralLikelihoodCore;
-import dr.evomodel.treelikelihood.NativeNucleotideLikelihoodCore;
-import dr.evomodel.treelikelihood.NucleotideLikelihoodCore;
 import dr.evomodel.treelikelihood.TipStatesModel;
 import dr.evomodel.treelikelihood.TreeLikelihood;
 import dr.inference.model.Model;
@@ -51,7 +43,8 @@ public class TreeLikelihoodExt extends TreeLikelihood {
     /**
      * Handles model changed events from the submodels.
      */
-    protected void handleModelChangedEvent(Model model, Object object, int index) {
+    @Override
+	protected void handleModelChangedEvent(Model model, Object object, int index) {
     	if (model == haplotypeModel){
 //    		System.out.println("GOOD here");
     		sitePatternExt.updateAlignment(haplotypeModel);
@@ -62,7 +55,8 @@ public class TreeLikelihoodExt extends TreeLikelihood {
     		super.handleModelChangedEvent(model, object, index);
     	}
     }
-    protected void restoreState() {
+    @Override
+	protected void restoreState() {
 
 //        if (storePartials) {
 //            likelihoodCore.restoreState();

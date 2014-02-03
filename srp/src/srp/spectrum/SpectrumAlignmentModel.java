@@ -2,18 +2,15 @@ package srp.spectrum;
 
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.StringTokenizer;
 
 import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.Operation;
 import srp.haplotypes.SwapInfo;
 import dr.evolution.alignment.Alignment;
-import dr.evolution.datatype.DataType;
 import dr.evolution.datatype.Nucleotides;
 import dr.evolution.sequence.Sequence;
 import dr.evolution.util.Taxon;

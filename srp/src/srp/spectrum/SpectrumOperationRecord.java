@@ -1,6 +1,5 @@
 package srp.spectrum;
 
-import java.util.Arrays;
 
 
 public class SpectrumOperationRecord {

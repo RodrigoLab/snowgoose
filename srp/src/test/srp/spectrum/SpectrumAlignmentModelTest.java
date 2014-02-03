@@ -1,9 +1,9 @@
 package test.srp.spectrum;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
 import java.io.File;
-import java.util.ArrayList;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -11,14 +11,11 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import dr.evolution.alignment.Alignment;
-import dr.evolution.util.Taxon;
-
 import srp.core.DataImporter;
 import srp.haplotypes.AlignmentMapping;
-import srp.haplotypes.Haplotype;
 import srp.spectrum.Spectrum;
 import srp.spectrum.SpectrumAlignmentModel;
+import dr.evolution.alignment.Alignment;
 
 public class SpectrumAlignmentModelTest {
 	private AlignmentMapping aMap;
@@ -75,7 +72,7 @@ public class SpectrumAlignmentModelTest {
 	public void testConstructor() throws Exception {
 		double[] expectedFreq = new double[]{0.25, 0.25, 0.25, 0.25};
 		
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 5);
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 5, 0);
 		assertEquals(100, spectrumModel.getSpectrumLength());
 		assertEquals(5, spectrumModel.getSpectrumCount());
 		for (int i = 0; i < spectrumModel.getSpectrumCount(); i++) {

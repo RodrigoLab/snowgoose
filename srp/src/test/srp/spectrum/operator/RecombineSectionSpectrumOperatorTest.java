@@ -1,7 +1,7 @@
 package test.srp.spectrum.operator;
 
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
 
 import java.util.Arrays;
 
@@ -16,8 +16,6 @@ import srp.haplotypes.AlignmentUtils;
 import srp.spectrum.Spectrum;
 import srp.spectrum.SpectrumAlignmentModel;
 import srp.spectrum.SpectrumOperationRecord;
-import srp.spectrum.operator.DeltaExchangeMultiSpectrumOperator;
-import srp.spectrum.operator.RecombinationSpectrumOperator;
 import srp.spectrum.operator.RecombineSectionSpectrumOperator;
 import dr.inference.operators.CoercionMode;
 import dr.inference.operators.OperatorFailedException;
@@ -49,7 +47,7 @@ public class RecombineSectionSpectrumOperatorTest {
 				"..AGGTTC",
 				};
 		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 5);
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 5 ,2);
 		RecombineSectionSpectrumOperator op = new RecombineSectionSpectrumOperator(
 				spectrumModel, 5, CoercionMode.COERCION_OFF);
 
@@ -71,12 +69,12 @@ public class RecombineSectionSpectrumOperatorTest {
 				
 				int[] twoSpectrums = opRecord.getRecombinationSpectrumIndex();
 				int[] twoPositions = opRecord.getRecombinationPositionIndex();
-				System.out.println(Arrays.toString(twoPositions));
+//				System.out.println(Arrays.toString(twoPositions));
 				Spectrum spectrum0 = spectrumModel.getSpectrum(twoSpectrums[0]);
 				Spectrum spectrum1 = spectrumModel.getSpectrum(twoSpectrums[1]);
 				
 				for (int i = 0; i < spectrumLength; i++) {
-					if(twoPositions[0] < i && i < twoPositions[1]){
+					if(twoPositions[0] <= i && i < twoPositions[1]){
 						double[] frequencies = spectrum0.getFrequenciesAt(i);
 						double[] expecteds = storedFrequencies[twoSpectrums[1]][i];
 						assertArrayEquals(expecteds, frequencies, 0);
@@ -95,7 +93,8 @@ public class RecombineSectionSpectrumOperatorTest {
 						assertArrayEquals(expecteds, frequencies, 0);
 						
 					}
-					
+					storedFrequencies[twoSpectrums[0]][i] = spectrum0.getFrequenciesAt(i);
+					storedFrequencies[twoSpectrums[1]][i] = spectrum1.getFrequenciesAt(i);
 				}
 			} catch (OperatorFailedException e) {
 //				e.printStackTrace();

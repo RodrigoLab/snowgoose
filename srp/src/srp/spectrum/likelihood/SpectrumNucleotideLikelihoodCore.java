@@ -25,7 +25,6 @@
 
 package srp.spectrum.likelihood;
 
-import java.util.Arrays;
 
 /**
  * NucleotideLikelihoodCore - An implementation of LikelihoodCore optimised
@@ -51,6 +50,7 @@ public class SpectrumNucleotideLikelihoodCore extends AbstractSpectrumLikelihood
 	/**
 		 * Calculates partial likelihoods at a node when both children have partials.
 		 */
+		@Override
 		protected void calculatePartialsPartialsPruning(double[] partials1, double[] matrices1,
 														double[] partials2, double[] matrices2,
 														double[] partials3)
@@ -121,6 +121,7 @@ public class SpectrumNucleotideLikelihoodCore extends AbstractSpectrumLikelihood
 	 * @param proportions the proportions of sites in each category
 	 * @param outPartials an array into which the integrated partials will go
 	 */
+	@Override
 	public void calculateIntegratePartials(double[] inPartials, double[] proportions, double[] outPartials) {
 
 		int u = 0;
@@ -152,6 +153,7 @@ public class SpectrumNucleotideLikelihoodCore extends AbstractSpectrumLikelihood
 	 * @param frequencies an array of state frequencies
 	 * @param outLogLikelihoods an array into which the likelihoods will go
 	 */
+	@Override
 	public void calculateLogLikelihoods(double[] partials, double[] frequencies, double[] outLogLikelihoods)
 	{
 

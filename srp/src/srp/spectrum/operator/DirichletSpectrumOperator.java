@@ -1,10 +1,7 @@
 package srp.spectrum.operator;
 
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.Set;
-
-import org.apache.commons.math3.random.RandomDataGenerator;
 
 import srp.spectrum.SpectraParameter;
 import srp.spectrum.Spectrum;
@@ -17,8 +14,6 @@ import dr.inference.operators.CoercionMode;
 import dr.inference.operators.OperatorFailedException;
 import dr.math.GammaFunction;
 import dr.math.MathUtils;
-import dr.math.distributions.DirichletDistribution;
-import dr.math.distributions.GammaDistribution;
 
 public class DirichletSpectrumOperator extends AbstractSpectrumOperator {
 

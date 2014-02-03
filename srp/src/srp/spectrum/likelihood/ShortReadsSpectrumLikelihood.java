@@ -1,23 +1,14 @@
 package srp.spectrum.likelihood;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.commons.math3.stat.Frequency;
 import org.apache.commons.math3.stat.StatUtils;
-import org.apache.commons.math3.util.ArithmeticUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import srp.haplotypes.AlignmentMapping;
-import srp.haplotypes.Operation;
-import srp.haplotypes.ShortRead;
-import srp.haplotypes.SwapInfo;
 import srp.haplotypes.likelihood.LikelihoodScaler;
 import srp.spectrum.Spectrum;
 import srp.spectrum.SpectrumAlignmentModel;
@@ -98,6 +89,11 @@ Method 3: boolean index array
 
 
 public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7438385718398999755L;
 
 	private static final boolean DEBUG = false;
 	
@@ -263,7 +259,7 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
         }
         
 		long time2 = System.currentTimeMillis();
-		time += (time2-time1);
+//		time += (time2-time1);
         
         return logLikelihood;
 
@@ -571,7 +567,7 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 		for (int k = twoPositions[0]; k < twoPositions[1]; k++) {
 			
 			ArrayList<Integer> mapToSrp = aMap.getMapToSrp(k);
-			System.out.println("Site: "+k +"\t"+ mapToSrp.size());
+//			System.out.println("Site: "+k +"\t"+ mapToSrp.size());
 			for (int i : mapToSrp) {
 				srpSwitch[i] = true;
 			}
@@ -750,7 +746,7 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 	}
 	@Override
 	protected void storeState() {
-long time1 = System.currentTimeMillis();
+//long time1 = System.currentTimeMillis();
 
 		System.arraycopy(eachSrpLikelihood, 0, storedEachSrpLikelihood, 0, eachSrpLikelihood.length);
 		storedLogLikelihood = logLikelihood;
@@ -852,8 +848,8 @@ long time1 = System.currentTimeMillis();
 		}
 
 
-		long time2 = System.currentTimeMillis();
-		time += (time2-time1);
+//		long time2 = System.currentTimeMillis();
+//		time += (time2-time1);
 		
 		
 //		System.out.println(spectrumIndex +"\t"+ siteIndex);
@@ -891,7 +887,7 @@ long time1 = System.currentTimeMillis();
 
 	@Override
 	protected void restoreState() {
-		long time1 = System.currentTimeMillis();
+//		long time1 = System.currentTimeMillis();
 		
 //		System.err.println("SR likelihood restore: " + logLikelihood +"\t"+ storedLogLikelihood);
 		logLikelihood = storedLogLikelihood;
@@ -993,8 +989,8 @@ long time1 = System.currentTimeMillis();
 			throw new IllegalArgumentException("Unknown operation type: "+operation +"\tin"+ShortReadsSpectrumLikelihood.class.getSimpleName() );
 
 		}
-		long time2 = System.currentTimeMillis();
-		time += (time2-time1);
+//		long time2 = System.currentTimeMillis();
+//		time += (time2-time1);
 //
 //		
 //		SpectrumOperationRecord record = spectrumModel.getSpectrumOperationRecord();

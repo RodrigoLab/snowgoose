@@ -1,21 +1,11 @@
 package test.srp.spectrum;
 
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-
-
-
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -30,8 +20,6 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.math3.stat.StatUtils;
 import org.hamcrest.CoreMatchers;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -44,7 +32,6 @@ import org.junit.rules.ExpectedException;
 import srp.core.DataImporter;
 import srp.dr.evolution.datatype.ShortReads;
 import srp.haplotypes.AlignmentMapping;
-import srp.haplotypes.AlignmentUtils;
 import srp.spectrum.Spectrum;
 import srp.spectrum.SpectrumAlignmentModel;
 //import srp.haplotypes.Haplotype;

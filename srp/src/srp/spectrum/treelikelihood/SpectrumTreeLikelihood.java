@@ -25,24 +25,16 @@
 
 package srp.spectrum.treelikelihood;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.commons.lang3.ArrayUtils;
-
 import srp.spectrum.SpectrumAlignmentModel;
 import srp.spectrum.SpectrumOperationRecord;
 import srp.spectrum.likelihood.SpectrumNucleotideLikelihoodCore;
-import dr.evolution.alignment.AscertainedSitePatterns;
-import dr.evolution.alignment.PatternList;
-import dr.evolution.alignment.SitePatterns;
 import dr.evolution.datatype.DataType;
 import dr.evolution.tree.NodeRef;
 import dr.evolution.tree.Tree;
-import dr.evolution.util.Taxon;
 import dr.evolution.util.TaxonList;
 import dr.evolution.util.TaxonList.MissingTaxonException;
 import dr.evomodel.branchratemodel.BranchRateModel;
@@ -50,18 +42,9 @@ import dr.evomodel.branchratemodel.DefaultBranchRateModel;
 import dr.evomodel.sitemodel.SiteModel;
 import dr.evomodel.substmodel.FrequencyModel;
 import dr.evomodel.tree.TreeModel;
-import dr.evomodel.treelikelihood.AbstractTreeLikelihood;
-import dr.evomodel.treelikelihood.AminoAcidLikelihoodCore;
-import dr.evomodel.treelikelihood.GeneralLikelihoodCore;
 import dr.evomodel.treelikelihood.LikelihoodCore;
-import dr.evomodel.treelikelihood.NativeAminoAcidLikelihoodCore;
-import dr.evomodel.treelikelihood.NativeGeneralLikelihoodCore;
-import dr.evomodel.treelikelihood.NativeNucleotideLikelihoodCore;
-import dr.evomodel.treelikelihood.NucleotideLikelihoodCore;
-import dr.evomodel.treelikelihood.TipStatesModel;
 import dr.evomodelxml.treelikelihood.TreeLikelihoodParser;
 import dr.inference.model.Model;
-import dr.inference.model.Statistic;
 
 /**
  * SpectrumTreeLikelihood - implements a Likelihood Function for specturms on a tree.
@@ -192,7 +175,8 @@ public class SpectrumTreeLikelihood extends AbstractSpectrumTreeLikelihood {
     /**
      * Handles model changed events from the submodels.
      */
-    protected void handleModelChangedEvent(Model model, Object object, int index) {
+    @Override
+	protected void handleModelChangedEvent(Model model, Object object, int index) {
 //    	System.out.println(model.getModelName());
 //    	System.out.println(object.getClass());
         if (model == treeModel) {

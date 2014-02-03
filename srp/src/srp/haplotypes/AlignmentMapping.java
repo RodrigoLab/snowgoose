@@ -9,7 +9,6 @@ import dr.evolution.datatype.DataType;
 import dr.evolution.datatype.Nucleotides;
 import dr.evolution.sequence.Sequence;
 import dr.evolution.util.Taxon;
-import dr.inference.model.Parameter;
 import dr.math.MathUtils;
 
 

@@ -1,12 +1,11 @@
 package test.srp.haplotypes.operator;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Logger;
 
-import org.apache.commons.math3.stat.StatUtils;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -24,14 +23,9 @@ import dr.evolution.alignment.SimpleAlignment;
 import dr.inference.loggers.ArrayLogFormatter;
 import dr.inference.loggers.MCLogger;
 import dr.inference.mcmc.MCMC;
-import dr.inference.mcmc.MCMCOptions;
-import dr.inference.model.CompoundLikelihood;
-import dr.inference.model.Likelihood;
 import dr.inference.model.Parameter;
 import dr.inference.operators.CoercionMode;
 import dr.inference.operators.DeltaExchangeOperator;
-import dr.inference.operators.GeneralOperator;
-import dr.inference.operators.GibbsOperator;
 import dr.inference.operators.MCMCOperator;
 import dr.inference.operators.OperatorFailedException;
 import dr.inference.operators.OperatorSchedule;
@@ -71,7 +65,7 @@ public class BaseSingleFrequencyOperatorTest {
 		HaplotypeModel haplotypeModel = new HaplotypeModel(aMap, 3);
 
 		SimpleMCMCOperator operator = new BaseSingleFrequencyOperator(haplotypeModel, null);
-    	assertEquals(operator.getOperatorName(), "SingleBaseFrequencyOperator");
+    	assertEquals(operator.getOperatorName(), "BaseSingleFrequencyOperator");
     	assertEquals(operator.getPerformanceSuggestion(), "");
     	
 	}

@@ -1,9 +1,7 @@
 package test.srp.spectrum.operator;
 
 
-import static org.junit.Assert.*;
-
-import java.util.Arrays;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -11,17 +9,14 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import dr.inference.operators.CoercionMode;
-import dr.inference.operators.OperatorFailedException;
-
 import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.AlignmentUtils;
-import srp.spectrum.SpectraParameter;
 import srp.spectrum.Spectrum;
 import srp.spectrum.SpectrumAlignmentModel;
 import srp.spectrum.SpectrumOperationRecord;
-import srp.spectrum.likelihood.ShortReadsSpectrumLikelihood;
 import srp.spectrum.operator.DeltaExchangeColumnSpectrumOperator;
+import dr.inference.operators.CoercionMode;
+import dr.inference.operators.OperatorFailedException;
 
 
 

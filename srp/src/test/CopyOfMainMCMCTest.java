@@ -1,21 +1,21 @@
 package test;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import org.junit.Test;
+
 import srp.core.DataImporter;
 import srp.core.MCMCSetupHelper;
 import srp.core.MCMCSetupHelperSpectrum;
 import srp.haplotypes.AlignmentMapping;
-import srp.spectrum.Spectrum;
 import srp.spectrum.SpectrumAlignmentModel;
 import srp.spectrum.likelihood.ShortReadsSpectrumLikelihood;
-import srp.spectrum.operator.DeltaExchangeSingleSpectrumOperator;
 import srp.spectrum.treelikelihood.SpectrumTreeLikelihood;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.datatype.Nucleotides;
@@ -25,10 +25,8 @@ import dr.evomodel.branchratemodel.StrictClockBranchRates;
 import dr.evomodel.coalescent.CoalescentLikelihood;
 import dr.evomodel.coalescent.ConstantPopulationModel;
 import dr.evomodel.sitemodel.GammaSiteModel;
-import dr.evomodel.sitemodel.SiteModel;
 import dr.evomodel.substmodel.FrequencyModel;
 import dr.evomodel.substmodel.HKY;
-import dr.evomodel.tree.TreeLogger;
 import dr.evomodel.tree.TreeModel;
 import dr.evomodelxml.coalescent.ConstantPopulationModelParser;
 import dr.evomodelxml.sitemodel.GammaSiteModelParser;
@@ -44,15 +42,10 @@ import dr.inference.model.Likelihood;
 import dr.inference.model.Model;
 import dr.inference.model.OneOnXPrior;
 import dr.inference.model.Parameter;
-import dr.inference.operators.CoercionMode;
-import dr.inference.operators.MCMCOperator;
 import dr.inference.operators.OperatorSchedule;
 import dr.inference.operators.SimpleOperatorSchedule;
 import dr.inferencexml.model.CompoundLikelihoodParser;
 import dr.math.distributions.LogNormalDistribution;
-import static org.junit.Assert.*;
-
-import org.junit.Test;
 
 public class CopyOfMainMCMCTest {
 

@@ -27,8 +27,6 @@ package srp.spectrum.likelihood;
 
 import java.util.Arrays;
 
-import org.apache.commons.lang3.ArrayUtils;
-
 import dr.evomodel.treelikelihood.LikelihoodCore;
 
 /**

@@ -5,14 +5,6 @@ package srp.core;
 -Djava.library.path=./lib -Xms256m -Xmx1024m
 */
 
-import java.util.Arrays;
-
-import srp.haplotypes.AlignmentMapping;
-import srp.haplotypes.HaplotypeModel;
-import srp.haplotypes.HaplotypeModelUtils;
-import ztest.mcmc.MCMCTrueTree;
-import dr.evolution.alignment.Alignment;
-import dr.math.MathUtils;
 
 
 public class Main {

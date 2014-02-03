@@ -19,20 +19,17 @@ import srp.haplotypes.HaplotypeModel;
 import srp.haplotypes.likelihood.ShortReadLikelihood;
 import srp.haplotypes.operator.BasesMultiOperator;
 import dr.evolution.alignment.SimpleAlignment;
-import dr.evomodelxml.substmodel.HKYParser;
 import dr.inference.loggers.ArrayLogFormatter;
 import dr.inference.loggers.MCLogger;
 import dr.inference.mcmc.MCMC;
 import dr.inference.mcmc.MCMCOptions;
 import dr.inference.model.CompoundLikelihood;
 import dr.inference.model.Likelihood;
-import dr.inference.model.Parameter;
 import dr.inference.operators.CoercableMCMCOperator;
 import dr.inference.operators.CoercionMode;
 import dr.inference.operators.MCMCOperator;
 import dr.inference.operators.OperatorFailedException;
 import dr.inference.operators.OperatorSchedule;
-import dr.inference.operators.ScaleOperator;
 import dr.inference.operators.SimpleOperatorSchedule;
 import dr.inference.trace.ArrayTraceList;
 import dr.inference.trace.Trace;
@@ -71,7 +68,7 @@ public class BasesMultiOperatorTest {
 
 		int nBases = 10;
 		CoercableMCMCOperator operator = new BasesMultiOperator(haplotypeModel, nBases, CoercionMode.COERCION_OFF);
-    	assertEquals(operator.getOperatorName(), "MultiBasesOperator");
+    	assertEquals(operator.getOperatorName(), "BasesMultiOperator");
     	assertEquals(operator.getRawParameter(), nBases, 0);
     	assertEquals(operator.getCoercableParameter(), Math.log(nBases-1), 1e-10); 
     	

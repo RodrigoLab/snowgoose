@@ -17,20 +17,16 @@ import org.junit.Test;
 import srp.core.DataImporter;
 import srp.haplotypes.AbstractHaplotypeModel;
 import srp.haplotypes.AlignmentMapping;
-import srp.haplotypes.AlignmentUtils;
 import srp.haplotypes.Haplotype;
 import srp.haplotypes.Operation;
-//import srp.haplotypes.HaplotypeModel;
-import srp.haplotypes.operator.BasesMultiOperator;
-import srp.haplotypes.operator.BaseSingleOperator;
 import test.TestUtils;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.datatype.DataType;
 import dr.evolution.util.Taxon;
 import dr.inference.model.Parameter;
-import dr.inference.operators.MCMCOperator;
 import dr.math.MathUtils;
 import dr.rj.SSHaplotypeModel;
+//import srp.haplotypes.HaplotypeModel;
 
 
 public class SSHaplotypeModelTest {

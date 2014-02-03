@@ -1,6 +1,5 @@
 package dr.ext;
 
-import srp.haplotypes.HaplotypeModel;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.SitePatterns;
 import dr.evolution.util.TaxonList;

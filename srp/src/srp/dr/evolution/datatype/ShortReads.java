@@ -5,6 +5,10 @@ import dr.evolution.datatype.Nucleotides;
 public class ShortReads extends Nucleotides {
 
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2787317916301857380L;
 	public static final String DESCRIPTION = "shortreads";
 	public static final int TYPE = 9;
 	public static final ShortReads INSTANCE = new ShortReads();

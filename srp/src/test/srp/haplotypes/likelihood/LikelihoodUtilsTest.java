@@ -1,15 +1,13 @@
 package test.srp.haplotypes.likelihood;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
-import org.apache.commons.math3.stat.StatUtils;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import srp.haplotypes.likelihood.LikelihoodScaler;
 import srp.haplotypes.likelihood.LikelihoodUtils;
 
 public class LikelihoodUtilsTest {

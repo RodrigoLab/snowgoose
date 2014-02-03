@@ -62,7 +62,7 @@ public class BaseSingleUniformOperatorTest {
 		
 
 		SimpleMCMCOperator operator = new BaseSingleUniformOperator(haplotypeModel, 0);
-    	assertEquals(operator.getOperatorName(), "SingleBaseUniformOperator");
+    	assertEquals(operator.getOperatorName(), "BaseSingleUniformOperator");
     	assertEquals(operator.getPerformanceSuggestion(), "");
 	}
 

@@ -66,7 +66,7 @@ public class BasesMultiEmpiricalOperatorTest {
 
 		int nBases = 10;
 		CoercableMCMCOperator operator = new BasesMultiEmpiricalOperator(haplotypeModel, nBases, CoercionMode.COERCION_OFF);
-    	assertEquals(operator.getOperatorName(), "MultiBasesEmpiricalOperator");
+    	assertEquals(operator.getOperatorName(), "BasesMultiEmpiricalOperator");
     	assertEquals(operator.getRawParameter(), nBases, 0);
     	assertEquals(operator.getCoercableParameter(), Math.log(nBases-1), 1e-10); 
     	

@@ -3,12 +3,9 @@ package srp.haplotypes;
 import srp.dr.evolution.datatype.ShortReads;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.SimpleAlignment;
-import dr.evolution.datatype.DataType;
 import dr.evolution.datatype.Nucleotides;
 import dr.evolution.sequence.Sequence;
-import dr.evolution.util.Date;
 import dr.evolution.util.Taxon;
-import dr.evolution.util.Units;
 
 public class AlignmentUtils {
 

@@ -1,11 +1,9 @@
 package test.srp.spectrum;
 
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
-
-import junit.framework.AssertionFailedError;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -72,6 +70,7 @@ public class SpectraParameterTest {
 		exception.expect(IllegalArgumentException.class);
 		exception.expectMessage("Frequencies out of bounds 0 < f < 1\t"+ Arrays.toString(frequencies));
 		new SpectraParameter(frequencies);
+
 	}
 	@Test
 	public void testConstructor5()  {

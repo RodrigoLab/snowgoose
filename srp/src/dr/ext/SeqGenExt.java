@@ -1,5 +1,24 @@
 package dr.ext;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import jebl.evolution.alignments.Alignment;
+import jebl.evolution.alignments.BasicAlignment;
+import jebl.evolution.io.NexusExporter;
+import jebl.evolution.sequences.BasicSequence;
+import jebl.evolution.sequences.NucleotideState;
+import jebl.evolution.sequences.Nucleotides;
+import jebl.evolution.sequences.SequenceType;
+import jebl.evolution.sequences.State;
+import jebl.evolution.taxa.Taxon;
+import jebl.math.Random;
 import dr.app.seqgen.SeqGen;
 import dr.evolution.io.Importer;
 import dr.evolution.io.NexusImporter;
@@ -11,21 +30,6 @@ import dr.evomodel.sitemodel.SiteModel;
 import dr.evomodel.substmodel.FrequencyModel;
 import dr.evomodel.substmodel.HKY;
 import dr.evomodel.substmodel.SubstitutionModel;
-import jebl.evolution.alignments.Alignment;
-import jebl.evolution.alignments.BasicAlignment;
-import jebl.evolution.io.NexusExporter;
-import jebl.evolution.sequences.*;
-import jebl.evolution.taxa.Taxon;
-import jebl.math.Random;
-
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author Andrew Rambaut

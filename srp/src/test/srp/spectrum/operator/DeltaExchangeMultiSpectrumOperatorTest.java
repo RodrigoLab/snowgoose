@@ -1,9 +1,7 @@
 package test.srp.spectrum.operator;
 
 
-import static org.junit.Assert.*;
-
-import java.util.Arrays;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -11,17 +9,14 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import dr.inference.operators.CoercionMode;
-import dr.inference.operators.OperatorFailedException;
-
 import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.AlignmentUtils;
-import srp.spectrum.SpectraParameter;
 import srp.spectrum.Spectrum;
 import srp.spectrum.SpectrumAlignmentModel;
 import srp.spectrum.SpectrumOperationRecord;
-import srp.spectrum.likelihood.ShortReadsSpectrumLikelihood;
 import srp.spectrum.operator.DeltaExchangeMultiSpectrumOperator;
+import dr.inference.operators.CoercionMode;
+import dr.inference.operators.OperatorFailedException;
 
 
 public class DeltaExchangeMultiSpectrumOperatorTest {
@@ -52,7 +47,7 @@ public class DeltaExchangeMultiSpectrumOperatorTest {
 		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
 		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 1);
 		DeltaExchangeMultiSpectrumOperator op = new DeltaExchangeMultiSpectrumOperator(
-				spectrumModel, 0.1, 10, CoercionMode.COERCION_OFF);
+				spectrumModel, 0.1, 5, CoercionMode.COERCION_OFF);
 
 		double[][] storedFrequencies = new double[spectrumModel.getSiteCount()][4];
 		Spectrum spectrum = spectrumModel.getSpectrum(0);
@@ -101,9 +96,9 @@ public class DeltaExchangeMultiSpectrumOperatorTest {
 				"..AGGTTC",
 				};
 		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 5);
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 5, 0);
 		DeltaExchangeMultiSpectrumOperator op = new DeltaExchangeMultiSpectrumOperator(
-				spectrumModel, 0.1, 10, CoercionMode.COERCION_OFF);
+				spectrumModel, 0.1, 5, CoercionMode.COERCION_OFF);
 
 		double[][][] storedFrequencies = new double[spectrumModel
 				.getSpectrumCount()][spectrumModel.getSiteCount()][4];
@@ -114,7 +109,7 @@ public class DeltaExchangeMultiSpectrumOperatorTest {
 				storedFrequencies[s][l] = spectrum.getFrequenciesAt(l);
 			}
 		}
-		for (int o = 0; o < 10000; o++) {
+		for (int o = 0; o < 10; o++) {
 			try {
 				op.doOperation();
 				

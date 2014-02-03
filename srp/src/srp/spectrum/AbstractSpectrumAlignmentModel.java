@@ -4,12 +4,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import dr.evolution.alignment.Alignment;
-import dr.evolution.alignment.PatternList;
 import dr.evolution.alignment.SiteList;
 import dr.evolution.datatype.DataType;
-import dr.evolution.sequence.Sequence;
-import dr.evolution.sequence.SequenceList;
 import dr.evolution.util.Taxon;
 import dr.evolution.util.TaxonList;
 import dr.inference.model.AbstractModel;

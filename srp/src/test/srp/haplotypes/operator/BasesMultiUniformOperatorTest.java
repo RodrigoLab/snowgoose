@@ -71,7 +71,7 @@ public class BasesMultiUniformOperatorTest {
 		
 		int nBases = 10;
 		CoercableMCMCOperator operator = new BasesMultiUniformOperator(haplotypeModel, nBases, null);
-    	assertEquals(operator.getOperatorName(), "MultiBasesUniformOperator");
+    	assertEquals(operator.getOperatorName(), "BasesMultiUniformOperator");
     	assertEquals(operator.getPerformanceSuggestion(), "");
 	}
 

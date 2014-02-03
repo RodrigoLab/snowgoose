@@ -3,7 +3,8 @@ package test.srp.spectrum.likelihood;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+
+import java.util.Arrays;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -17,13 +18,12 @@ import srp.haplotypes.AlignmentUtils;
 import srp.spectrum.Spectrum;
 import srp.spectrum.SpectrumAlignmentModel;
 import srp.spectrum.SpectrumOperation;
-import srp.spectrum.SpectrumOperationRecord;
 import srp.spectrum.likelihood.ShortReadsSpectrumLikelihood;
 import srp.spectrum.operator.AbstractSpectrumOperator;
 import srp.spectrum.operator.DeltaExchangeColumnSpectrumOperator;
 import srp.spectrum.operator.DeltaExchangeMultiSpectrumOperator;
-import srp.spectrum.operator.RecombinationSpectrumOperator;
 import srp.spectrum.operator.DeltaExchangeSingleSpectrumOperator;
+import srp.spectrum.operator.RecombinationSpectrumOperator;
 import srp.spectrum.operator.RecombineSectionSpectrumOperator;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.SimpleAlignment;
@@ -49,7 +49,7 @@ public class ShortReadsSpectrumLikelihoodTest {
 	@Before
 	public void setUp() throws Exception {
 
-		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/ABI/unittest/", "HaplotypeModelTest_10_srp.fasta");
+		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/snowgoose/srp/unittest/", "HaplotypeModelTest_10_srp.fasta");
 //		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/ABI/unittest/", "H4_srp.fasta");
 		AlignmentMapping aMap = new AlignmentMapping(alignment);
 			
@@ -115,11 +115,10 @@ public class ShortReadsSpectrumLikelihoodTest {
 				};
 		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
 			
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 1);
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 1, 0);
 		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
 		
 		double[] eachLikelihood = likelihood.getEachLikelihood();
-//		System.out.println(Arrays.toString(eachLikelihood));
 		double[] expecteds = new double[]{ 
 				0+Math.log(0.25*NOT_ERROR+0.75*ERROR)*2,
 				0+Math.log(0.25*NOT_ERROR+0.75*ERROR)*1+Math.log(0.25*NOT_ERROR+0.75*ERROR)*1,

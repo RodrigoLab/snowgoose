@@ -12,18 +12,12 @@ import srp.haplotypes.HaplotypeModel;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.coalescent.CoalescentSimulator;
 import dr.evolution.coalescent.ConstantPopulation;
-import dr.evolution.tree.FlexibleNode;
-import dr.evolution.tree.FlexibleTree;
-import dr.evolution.tree.NodeRef;
-import dr.evolution.tree.SimpleNode;
 import dr.evolution.tree.Tree;
 import dr.evolution.util.Units;
 import dr.evomodel.coalescent.ConstantPopulationModel;
 import dr.evomodelxml.coalescent.ConstantPopulationModelParser;
 import dr.inference.model.Parameter;
-import dr.math.MathUtils;
 import dr.rj.RJTreeModel;
-import dr.rj.RJTreeModel.Node;;
 
 public class RJTreeModelTest {
 

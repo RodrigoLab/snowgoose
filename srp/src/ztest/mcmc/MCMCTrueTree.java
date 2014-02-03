@@ -42,6 +42,7 @@ import dr.inference.operators.OperatorSchedule;
 import dr.inference.operators.SimpleOperatorSchedule;
 import dr.inferencexml.model.CompoundLikelihoodParser;
 
+@Deprecated
 public class MCMCTrueTree {
 
 	@BeforeClass
