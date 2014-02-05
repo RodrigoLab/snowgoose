@@ -14,7 +14,7 @@ import dr.inference.operators.CoercionMode;
 import dr.inference.operators.OperatorFailedException;
 import dr.math.MathUtils;
 
-public class SwapMultiSpectrumOperator extends AbstractSpectrumOperator {
+public class SwapMultiSpectrumOperator extends AbstractSwapSpectrumOperator {
 
 	public static final String OPERATOR_NAME = SwapMultiSpectrumOperator.class.getSimpleName();
 	public static final SpectrumOperation OP = SpectrumOperation.SWAP_MULTI;
@@ -25,7 +25,11 @@ public class SwapMultiSpectrumOperator extends AbstractSpectrumOperator {
     
 	public SwapMultiSpectrumOperator(SpectrumAlignmentModel spectrumModel, 
 			int baseCount, CoercionMode mode) {
-		super(spectrumModel, mode);
+		this(spectrumModel, baseCount, mode, true);
+	}
+	public SwapMultiSpectrumOperator(SpectrumAlignmentModel spectrumModel, 
+			int baseCount, CoercionMode mode, boolean random) {
+		super(spectrumModel, mode, random);
 		
 		
 //		this.delta = delta;
@@ -87,40 +91,8 @@ public class SwapMultiSpectrumOperator extends AbstractSpectrumOperator {
 		//		System.out.println(Arrays.toString(siteIndex));
 		for (int i = 0; i < swapBasesCount; i++) {
 			
-//			siteIndexs[i] = MathUtils.nextInt(spectrumLength);
-//			System.err.println(spectrumIndex +"\tMultiOp\t"+ i +"\t"+ siteIndexs[i]);
 			SpectraParameter spectra = spectrum.getSpectra(siteIndexs[i]);
-			
-//			// get any two dims and swap
-//	        int dim1 = MathUtils.nextInt(DIMENSION);
-//	        int dim2;// = dim1;
-//	        do {
-//	            dim2 = MathUtils.nextInt(DIMENSION);
-//	        }while (dim1 == dim2);
-//	        
-//	        double scalar1 = parameter.getParameterValue(dim1);
-//	        double scalar2 = parameter.getParameterValue(dim2);
-	        
-	        
-			// get freq==1 and swap with others
-			int dim1 = 0;
-			double scalar1 = 0;
-			for (int d = 0; d < DIMENSION; d++) {
-				scalar1 = spectra.getParameterValue(d);
-				if (scalar1 == 1) {
-					dim1 = d;
-					break;
-				}
-			}
-			int dim2;// = dim1;
-			do {
-				dim2 = MathUtils.nextInt(DIMENSION);
-			} while (dim1 == dim2);
-			double scalar2 = spectra.getParameterValue(dim2);        
-
-			spectra.setParameterValue(dim1, scalar2);
-			spectra.setParameterValue(dim2, scalar1);
-
+			swapFrequency(spectra);
 	        
 		}
         // symmetrical move so return a zero hasting ratio

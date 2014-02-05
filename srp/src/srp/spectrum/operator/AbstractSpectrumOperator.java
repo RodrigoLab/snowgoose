@@ -1,5 +1,10 @@
 package srp.spectrum.operator;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import com.google.common.primitives.Ints;
+
 import srp.haplotypes.AlignmentMapping;
 import srp.spectrum.SpectraParameter;
 import srp.spectrum.SpectrumAlignmentModel;
@@ -7,6 +12,7 @@ import srp.spectrum.SpectrumOperation;
 import dr.inference.model.Bounds;
 import dr.inference.operators.AbstractCoercableOperator;
 import dr.inference.operators.CoercionMode;
+import dr.math.MathUtils;
 
 public abstract class AbstractSpectrumOperator extends AbstractCoercableOperator {
 
@@ -42,6 +48,20 @@ public abstract class AbstractSpectrumOperator extends AbstractCoercableOperator
 
 
 	public abstract SpectrumOperation getSpectrumOperation();
+
+	
+	public int[] generateSiteIndexs(int swapBasesCount, int spectrumLength) {
+
+		Set<Integer> generated = new HashSet<Integer>();
+		while (generated.size() < swapBasesCount)
+		{
+		    Integer next = MathUtils.nextInt(spectrumLength);
+		    generated.add(next);
+		}
+		int[] siteIndexs = Ints.toArray(generated);
+
+		return siteIndexs;
+	}
 
 //	public SpectrumOperation getSpectrumOperation() {
 //		// TODO Auto-generated method stub

@@ -135,7 +135,7 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 		}
 	}
 
-	public SpectrumAlignmentModel(AlignmentMapping aMap, int hapCount, Type type) {
+	public SpectrumAlignmentModel(AlignmentMapping aMap, int hapCount, SpectrumType type) {
 		this(aMap, hapCount, type.getCode());
 	}
 
@@ -198,12 +198,12 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 		spectrumOperationRecord.setRecord(op, spectrumIndex, siteIndexs, delta);
 
 	}
-	public void setSpectrumOperationRecord(SpectrumOperation op,
-			int spectrumIndex, int[] siteIndexs) {
-		//recombination
-		spectrumOperationRecord.setRecord(op, spectrumIndex, siteIndexs);
-
-	}
+//	public void setSpectrumOperationRecord(SpectrumOperation op,
+//			int spectrumIndex, int[] siteIndexs) {
+//		//recombination
+//		spectrumOperationRecord.setRecord(op, spectrumIndex, siteIndexs);
+//
+//	}
 
 	public void setSpectrumOperationRecord(SpectrumOperation op,
 			int[] spectrumIndexs, int siteIndex) {
@@ -600,6 +600,9 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 						String[] result = inline.split("\\s");
 						for (int j = 0; j < length; j++) {
 							freqs[i][j] = Double.parseDouble(result[j]);
+							if(freqs[i][j]==0){
+								freqs[i][j]=0.0001;
+							}
 						}
 					}
 					Spectrum spectrum = new Spectrum(freqs);
@@ -626,6 +629,9 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 					double[][] freqs = new double[4][length];
 					for (int j = 0; j < length; j++) {
 						freqs[0][j] = Double.parseDouble(result[j]);
+						if(freqs[0][j]==0){
+							freqs[0][j]=0.0001;
+						}
 					}
 				
 					for (int i = 1; i < 4; i++) {
@@ -633,6 +639,9 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 						result = inline.split("\\s");
 						for (int j = 0; j < length; j++) {
 							freqs[i][j] = Double.parseDouble(result[j]);
+							if(freqs[i][j]==0){
+								freqs[i][j]=0.0001;
+							}
 						}
 					}
 					Spectrum spectrum = new Spectrum(freqs);
@@ -654,13 +663,13 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 	}
 
 
-	public enum Type{
+	public enum SpectrumType{
 		
 		EQUAL(0),
 		ZERO_ONE(1),
 		RANDOM(2);
 		int type;
-		private Type(int t){
+		private SpectrumType(int t){
 			type = t;
 		}
 		public int getCode(){

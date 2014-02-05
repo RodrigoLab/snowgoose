@@ -4,6 +4,7 @@ import static org.junit.Assert.assertTrue;
 
 public class TestUtils {
 
+	public static final double UNITTEST_THRESHOLD = 1e-8;
 	public static void assertExpectationRange(double mean, double value, double error) {
         double upper = value + error;
         double lower = value - error;

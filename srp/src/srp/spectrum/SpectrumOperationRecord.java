@@ -192,7 +192,6 @@ public class SpectrumOperationRecord {
 	}
 
 	public int[] getAllSiteIndexs() {
-	
 		return allSiteIndexs;
 	}
 
@@ -226,17 +225,16 @@ public class SpectrumOperationRecord {
 		this.delta = delta;
 				
 	}
-	public void setRecord(SpectrumOperation op, int spectrumIndex, int[] siteIndexs) {
-		//Swap
-		setOperation(op);
-		this.spectrumIndex = spectrumIndex;
-		this.allSiteIndexs = siteIndexs;
-		
-	}
+//	public void setRecord(SpectrumOperation op, int spectrumIndex, int[] siteIndexs) {
+//		//Swap
+//		setOperation(op);
+//		this.spectrumIndex = spectrumIndex;
+//		this.allSiteIndexs = siteIndexs;
+//	}
 
 
 	public void setRecord(SpectrumOperation op, int spectrumIndex, int[] siteIndexs, double[] delta) {
-		//Multi
+		//Multi //Swap
 		setOperation(op);
 		this.spectrumIndex = spectrumIndex;
 		this.allSiteIndexs = siteIndexs;

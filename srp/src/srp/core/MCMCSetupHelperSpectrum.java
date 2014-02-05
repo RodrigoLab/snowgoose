@@ -8,6 +8,7 @@ import srp.spectrum.SpectrumAlignmentModel;
 import srp.spectrum.operator.DeltaExchangeColumnSpectrumOperator;
 import srp.spectrum.operator.DeltaExchangeMultiSpectrumOperator;
 import srp.spectrum.operator.DeltaExchangeSingleSpectrumOperator;
+import srp.spectrum.operator.DirichletAlphaSpectrumOperator;
 import srp.spectrum.operator.DirichletSpectrumOperator;
 import srp.spectrum.operator.RecombinationSpectrumOperator;
 import srp.spectrum.operator.RecombineSectionSpectrumOperator;
@@ -44,7 +45,7 @@ public class MCMCSetupHelperSpectrum extends MCMCSetupHelper {
 	private static final double opSmall = 3;
 	private static final double opMed = 15;
 	private static final double opLarge = 20;
-	private static final double opSpectrum = 45;
+	private static final double opSpectrum = 60;
 	
 	public static HashMap<String, Object> setupSpectrumTreeLikelihoodSpectrumModel(
 				TreeModel treeModel, SpectrumAlignmentModel spectrumModel) {
@@ -177,13 +178,13 @@ public class MCMCSetupHelperSpectrum extends MCMCSetupHelper {
 		
 		operator = new RecombinationSpectrumOperator(spectrumModel);
 		operator.setWeight(opSpectrum/10); //(3bp)
-		schedule.addOperator(operator);
+//		schedule.addOperator(operator);
 
 
 		operator = new RecombineSectionSpectrumOperator(spectrumModel, 6,
-				CoercionMode.COERCION_ON);
+				CoercionMode.COERCION_OFF);
 		operator.setWeight(opSpectrum*1); //(3bp)
-		schedule.addOperator(operator);
+//		schedule.addOperator(operator);
 
 //		Operator analysis
 //		Operator                                          Tuning   Count      Time     Time/Op  Pr(accept)  Performance suggestion
@@ -192,15 +193,15 @@ public class MCMCSetupHelperSpectrum extends MCMCSetupHelper {
 //		RecombinationSpectrumOperator                             133587     1464373  10.96    0.0425      low	Tuning 12
 //		SwapSectionSpectrumOperator                               133225     63241    0.47     0.0419      low	Tuning 12
 
-		operator = new SwapSingleSpectrumOperator(spectrumModel);
+		operator = new SwapSingleSpectrumOperator(spectrumModel, false);
 		operator.setWeight(opSpectrum*1);
 		schedule.addOperator(operator);
 		
-		operator = new SwapMultiSpectrumOperator(spectrumModel, 6, CoercionMode.COERCION_ON);
+		operator = new SwapMultiSpectrumOperator(spectrumModel, 3, CoercionMode.COERCION_OFF);
 		operator.setWeight(opSpectrum*1);
 //		schedule.addOperator(operator);
 		
-		operator = new SwapColumnSpectrumOperator(spectrumModel, 3, CoercionMode.COERCION_OFF);
+		operator = new SwapColumnSpectrumOperator(spectrumModel, CoercionMode.COERCION_OFF);
 		operator.setWeight(opSpectrum*5);
 //		schedule.addOperator(operator);
 		
@@ -218,11 +219,26 @@ public class MCMCSetupHelperSpectrum extends MCMCSetupHelper {
 		// SwapSubColumnSpectrumOperator 40084 14282 0.36 0.0 very low Tuning 4
 		// SwapSubColumnSpectrumOperator 2.0 40054 12469 0.31 0.2342 good Tuning 2
 
-		operator = new DirichletSpectrumOperator(spectrumModel, 12, CoercionMode.COERCION_ON);
-		operator.setWeight(opSpectrum*1);
+//		operator = new DirichletSpectrumOperator(spectrumModel, 3, CoercionMode.COERCION_OFF);
+//		operator.setWeight(opSpectrum*1);
+//		schedule.addOperator(operator);
+//		operator = new DirichletSpectrumOperator(spectrumModel, 6, CoercionMode.COERCION_OFF);
+//		operator.setWeight(opSpectrum*1);
+//		schedule.addOperator(operator);
+//		operator = new DirichletSpectrumOperator(spectrumModel, 12, CoercionMode.COERCION_OFF);
+//		operator.setWeight(opSpectrum*1);
 //		schedule.addOperator(operator);
 
-		
+		operator = new DirichletAlphaSpectrumOperator(spectrumModel, 100, CoercionMode.COERCION_OFF);
+		operator.setWeight(opSpectrum*1);
+//		schedule.addOperator(operator);
+//		operator = new DirichletAlphaSpectrumOperator(spectrumModel, 10, CoercionMode.COERCION_OFF);
+//		operator.setWeight(opSpectrum*1);
+//		schedule.addOperator(operator);
+//		operator = new DirichletAlphaSpectrumOperator(spectrumModel, 1000, CoercionMode.COERCION_OFF);
+//		operator.setWeight(opSpectrum*1);
+//		schedule.addOperator(operator);
+
 		for (Parameter parameter : parameters) {
 
 			String parameterName = parameter.getParameterName();

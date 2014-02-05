@@ -3,6 +3,8 @@ package test.srp.spectrum.operator;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Arrays;
+
 import org.apache.commons.math3.random.RandomDataGenerator;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -12,12 +14,15 @@ import org.junit.Test;
 
 import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.AlignmentUtils;
+import srp.spectrum.SpectraParameter;
 import srp.spectrum.Spectrum;
 import srp.spectrum.SpectrumAlignmentModel;
 import srp.spectrum.SpectrumOperationRecord;
 import srp.spectrum.operator.DirichletSpectrumOperator;
+import test.TestUtils;
 import dr.inference.operators.CoercionMode;
 import dr.inference.operators.OperatorFailedException;
+import dr.math.GammaFunction;
 import dr.math.MathUtils;
 import dr.math.distributions.GammaDistribution;
 
@@ -25,6 +30,7 @@ import dr.math.distributions.GammaDistribution;
 
 public class DirichletSpectrumOperatorTest {
 
+	public static final int DIMENSION = 4;
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 	}
@@ -43,6 +49,7 @@ public class DirichletSpectrumOperatorTest {
 	
 	@Test
 	public void testDoOperatorOneSpectrum() throws Exception {
+		
 		String[] seqs = new String[]{
 				"AAACGTTT",
 				"AAACGT..",
@@ -53,42 +60,129 @@ public class DirichletSpectrumOperatorTest {
 		DirichletSpectrumOperator op = new DirichletSpectrumOperator(
 				spectrumModel, 1, CoercionMode.COERCION_OFF);
 
-//		double[][] storedFrequencies = new double[spectrumModel.getSiteCount()][4];
-//		Spectrum spectrum = spectrumModel.getSpectrum(0);
-//		for (int i = 0; i < storedFrequencies.length; i++) {
-//			storedFrequencies[i] = spectrum.getFrequenciesAt(i);
-//		}
+		double[][] storedFrequencies = new double[spectrumModel.getSiteCount()][DIMENSION];
+		Spectrum spectrum = spectrumModel.getSpectrum(0);
+		for (int i = 0; i < storedFrequencies.length; i++) {
+			storedFrequencies[i] = spectrum.getFrequenciesAt(i);
+		}
 		
-		for (int o = 0; o < 100; o++) {
+		for (int o = 0; o < 10000; o++) {
 			try {
 				op.doOperation();
 				
-//				SpectrumOperationRecord opRecord = spectrumModel.getSpectrumOperationRecord();
-//				int spectrumIndex = opRecord.getSpectrumIndex();
-//				int[] siteIndexs = opRecord.getAllSiteIndexs();
+				SpectrumOperationRecord opRecord = spectrumModel.getSpectrumOperationRecord();
+				int spectrumIndex = opRecord.getSpectrumIndex();
+				int siteIndex = opRecord.getAllSiteIndexs()[0];
 //				double[] delta = opRecord.getDelta();
-//				
-//				spectrum = spectrumModel.getSpectrum(spectrumIndex);
-//				for (int i = 0; i < siteIndexs.length; i++) {
-//					
-//					double[] frequencies = spectrum.getFrequenciesAt(siteIndexs[i]);
-//					int count = 0;
-//					for (int f = 0; f < frequencies.length; f++) {
-//						if(frequencies[f]!= storedFrequencies[siteIndexs[i]][f]){
-//							count++;
-//							double absDelta = Math.abs(frequencies[f]-storedFrequencies[siteIndexs[i]][f]);
+				
+				double[] frequencies = spectrumModel.getSpecturmFrequencies(spectrumIndex, siteIndex);
+				
+				int count = 0;
+				double delta = 0;
+				double absDelta = 0;
+//					System.out.println(Arrays.toString(frequencies));
+//					System.out.println(Arrays.toString(storedFrequencies[s]));
+				for (int f = 0; f < frequencies.length; f++) {
+					if(frequencies[f]!= storedFrequencies[siteIndex][f]){
+						count++;
+						absDelta += Math.abs(frequencies[f]-storedFrequencies[siteIndex][f]);
+						delta += (frequencies[f]-storedFrequencies[siteIndex][f]);
 //							assertEquals(delta[i], absDelta, 1e-8);
-//						}
-//						storedFrequencies[siteIndexs[i]][f] = frequencies[f];
-//					}
-//					assertEquals(2, count);
-//				}
+					}
+					storedFrequencies[siteIndex][f] = frequencies[f];
+				}
+//					System.out.println(delta +"\t"+ absDelta);
+//					System.out.println();
+				assertEquals(0, delta, TestUtils.UNITTEST_THRESHOLD);
+				assertEquals(4, count);
+			
 			} catch (OperatorFailedException e) {
 //				e.printStackTrace();
 			}	
 		}
 
 	}
+	
+
+	@Test
+	public void testProposalRatio() throws Exception {
+		
+		String[] seqs = new String[]{
+				"AAACGTTT",
+				"AAACGT..",
+				"..AGGTTC",
+				};
+		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 5, 2);
+		DirichletSpectrumOperator op = new DirichletSpectrumOperator(
+				spectrumModel, 1, CoercionMode.COERCION_OFF);
+		double alpha = op.getAlpha();
+		
+		double[][][] storedFrequencies = new double[spectrumModel
+				.getSpectrumCount()][spectrumModel.getSiteCount()][DIMENSION];
+
+		for (int s = 0; s < storedFrequencies.length; s++) {
+			Spectrum spectrum = spectrumModel.getSpectrum(s);
+			for (int l = 0; l < storedFrequencies[s].length; l++) {
+				storedFrequencies[s][l] = spectrum.getFrequenciesAt(l);
+			}
+		}
+		for (int o = 0; o < 10000; o++) {
+			try {
+				double ratio = op.doOperation();
+				
+				SpectrumOperationRecord opRecord = spectrumModel.getSpectrumOperationRecord();
+				int spectrumIndex = opRecord.getSpectrumIndex();
+				int siteIndex = opRecord.getAllSiteIndexs()[0];
+				
+				SpectraParameter spectra = spectrumModel.getSpectrum(spectrumIndex).getSpectra(siteIndex);
+				
+				double[] newFreq = spectra.getFrequencies();
+				double[] oldFreq = storedFrequencies[spectrumIndex][siteIndex];
+				double expected = calculateLogq(alpha, oldFreq, newFreq);
+				assertEquals(expected, ratio, TestUtils.UNITTEST_THRESHOLD);
+				System.arraycopy(newFreq, 0, storedFrequencies[spectrumIndex][siteIndex], 0, DIMENSION);
+			} catch (OperatorFailedException e) {
+//				e.printStackTrace();
+			}	
+		}
+	}
+
+	private static double calculateLogq(double alphaPi, double[] oldPi, double[] newPi){
+		
+		int nStates = DIMENSION;
+		int i;
+		double sum = 0.0;
+		double x, y;
+		//Copied from MrBayes mcmc.c line 34134, same as line 33945
+		sum = 0.0;
+		for (i=0; i<nStates; i++)
+			sum += newPi[i]*alphaPi;
+		x = LnGamma(sum);
+		for (i=0; i<nStates; i++)
+			x -= LnGamma(newPi[i]*alphaPi);
+		for (i=0; i<nStates; i++)
+			x += (newPi[i]*alphaPi-1.0)*log(oldPi[i]);
+		sum = 0.0;
+		for (i=0; i<nStates; i++)
+			sum += oldPi[i]*alphaPi;
+		y = LnGamma(sum);
+		for (i=0; i<nStates; i++)
+			y -= LnGamma(oldPi[i]*alphaPi);
+		for (i=0; i<nStates; i++)
+			y += (oldPi[i]*alphaPi-1.0)*log(newPi[i]);
+		//
+		double ratio = x - y;
+
+		return ratio;
+	}
+	private static double LnGamma(double x){
+		return GammaFunction.lnGamma(x);
+	}
+	private static double log(double x){
+		return Math.log(x);
+	}
+			
 /*
 	 get proposal ratio 
 	sum = 0.0;
@@ -152,7 +246,7 @@ void AutotuneDirichlet (MrBFlt acceptanceRate, MrBFlt targetRate, int batch, MrB
 	
 
 	
-	//	@Test
+	@Test
 	public void testDoOperatorMultiSpectrum() throws Exception {
 		String[] seqs = new String[]{
 				"AAACGTTT",
@@ -180,23 +274,26 @@ void AutotuneDirichlet (MrBFlt acceptanceRate, MrBFlt targetRate, int batch, MrB
 				SpectrumOperationRecord opRecord = spectrumModel.getSpectrumOperationRecord();
 				int spectrumIndex = opRecord.getSpectrumIndex();
 				int[] siteIndexs = opRecord.getAllSiteIndexs();
-				double[] delta = opRecord.getDelta();
+//				double[] delta = opRecord.getDelta();
 				
 				Spectrum spectrum = spectrumModel.getSpectrum(spectrumIndex);
 				for (int i = 0; i < siteIndexs.length; i++) {
 					
 					double[] frequencies = spectrum.getFrequenciesAt(siteIndexs[i]);
 					int count = 0;
+					double delta = 0;
 					double[] spectraFrequencies = storedFrequencies[spectrumIndex][siteIndexs[i]];
 					for (int f = 0; f < frequencies.length; f++) {
 						if(frequencies[f]!= spectraFrequencies[f]){
 							count++;
-							double absDelta = Math.abs(frequencies[f]-spectraFrequencies[f]);
-							assertEquals(delta[i], absDelta, 1e-8);
+							delta += (frequencies[f]-spectraFrequencies[f]);
+//							double absDelta = Math.abs(frequencies[f]-spectraFrequencies[f]);
+//							assertEquals(delta[i], absDelta, 1e-8);
 						}
 						spectraFrequencies[f] = frequencies[f];
 					}
-					assertEquals(2, count);
+					assertEquals(0, delta, TestUtils.UNITTEST_THRESHOLD);
+					assertEquals(4, count);
 				}
 			} catch (OperatorFailedException e) {
 //				e.printStackTrace();
@@ -204,7 +301,8 @@ void AutotuneDirichlet (MrBFlt acceptanceRate, MrBFlt targetRate, int batch, MrB
 		}		
 		
 	}
-
+//RevBayes - simplexMove.cpp & DistributionDirichlet.cpp
+//MrBayes code
 	/*
 		 get proposal ratio 
 		sum = 0.0;

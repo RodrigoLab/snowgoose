@@ -8,7 +8,7 @@ import java.util.HashMap;
 
 import srp.haplotypes.AlignmentMapping;
 import srp.spectrum.SpectrumAlignmentModel;
-import srp.spectrum.SpectrumAlignmentModel.Type;
+import srp.spectrum.SpectrumAlignmentModel.SpectrumType;
 import srp.spectrum.SpectrumLogger;
 import srp.spectrum.likelihood.ShortReadsSpectrumLikelihood;
 import srp.spectrum.treelikelihood.SpectrumTreeLikelihood;
@@ -63,18 +63,19 @@ public class MainMCMCSpectrumFull {
 		int noOfRecoveredHaplotype= Integer.parseInt(args[5]);
 		boolean randomTree = true;
 		boolean randomSpectrum = true;
-		
+		SpectrumType randomSpectrumType = SpectrumAlignmentModel.SpectrumType.ZERO_ONE;
 //		{	
 //			dataDir = "/home/sw167/workspaceSrp/snowgoose/srp/unittest/testData/";
 //			runIndex = 1;
-//			totalSamples = 50;
-//			logInterval = 1000;
+//			totalSamples = 1000;
+//			logInterval = 10000;
 //			
 //			randomTree = true;
-//	//		randomTree = false;
+////			randomTree = false;
 //			
 //			randomSpectrum = true;
-//	//		randomSpectrum = false;
+//			randomSpectrumType = SpectrumAlignmentModel.SpectrumType.ZERO_ONE;
+////			randomSpectrum = false;
 //			
 //			noOfTrueHaplotype = 7;
 //			noOfRecoveredHaplotype=7;
@@ -103,7 +104,7 @@ public class MainMCMCSpectrumFull {
 		
 		SpectrumAlignmentModel spectrumModel;
 		if(randomSpectrum){
-			spectrumModel = new SpectrumAlignmentModel(aMap, noOfRecoveredHaplotype, Type.ZERO_ONE);
+			spectrumModel = new SpectrumAlignmentModel(aMap, noOfRecoveredHaplotype, randomSpectrumType);
 		}
 		else{
 			spectrumModel = SpectrumAlignmentModel.importPartialSpectrumFile(aMap, partialSpectrumName );

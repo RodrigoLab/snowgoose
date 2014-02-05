@@ -63,8 +63,7 @@ public class DeltaExchangeSingleSpectrumOperatorTest {
 				int siteIndex = opRecord.getAllSiteIndexs()[0];
 				double delta = opRecord.getDelta()[0];
 				
-				spectrum = spectrumModel.getSpectrum(spectrumIndex);
-				double[] frequencies = spectrum.getFrequenciesAt(siteIndex);
+				double[] frequencies = spectrumModel.getSpecturmFrequencies(spectrumIndex, siteIndex);
 				
 				int count = 0;
 				for (int f = 0; f < frequencies.length; f++) {

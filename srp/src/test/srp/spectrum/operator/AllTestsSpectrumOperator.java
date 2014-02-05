@@ -8,8 +8,12 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({ 
 	DeltaExchangeColumnSpectrumOperatorTest.class,
 	DeltaExchangeMultiSpectrumOperatorTest.class,
-	RecombineSectionSpectrumOperatorTest.class,
 	DeltaExchangeSingleSpectrumOperatorTest.class,
+	DirichletAlphaSpectrumOperatorTest.class,
+	DirichletSpectrumOperatorTest.class,
+	RecombineSectionSpectrumOperatorTest.class,
+	SwapSingleSpectrumOperatorTest.class
+	
 })
 public class AllTestsSpectrumOperator {
 

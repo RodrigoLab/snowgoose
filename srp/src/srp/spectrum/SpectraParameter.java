@@ -2,7 +2,7 @@ package srp.spectrum;
 
 import java.util.Arrays;
 
-import srp.spectrum.SpectrumAlignmentModel.Type;
+import srp.spectrum.SpectrumAlignmentModel.SpectrumType;
 import dr.inference.model.Bounds;
 import dr.inference.model.Parameter;
 import dr.math.MathUtils;
@@ -18,7 +18,7 @@ public class SpectraParameter extends Parameter.Default{
 	public static final int DIMENSION = 4;
 	public static final Bounds<Double> SPECTRA_BOUNDS = new DefaultBounds(1.0, 0.0, DIMENSION);
 	
-	public SpectraParameter(Type type){
+	public SpectraParameter(SpectrumType type){
 		this(type.getCode());
 	}
 	
@@ -34,12 +34,13 @@ public class SpectraParameter extends Parameter.Default{
 			double[] freq = new double[DIMENSION];
 			double sum = 0;
 			for (int i = 0; i < freq.length; i++) {
-				freq[i] = MathUtils.nextInt(100);
+				freq[i] = 1+MathUtils.nextInt(1000);
 				sum += freq[i];
 			}
 			for (int i = 0; i < freq.length; i++) {
 				freq[i] /= sum;
 			}
+			
 			setFrequenciesQuietly(freq);
 			
 		}
