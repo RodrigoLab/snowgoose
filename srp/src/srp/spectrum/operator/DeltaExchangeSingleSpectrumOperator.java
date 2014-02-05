@@ -43,16 +43,11 @@ public class DeltaExchangeSingleSpectrumOperator extends AbstractSpectrumOperato
 	
 	@Override
 	public double doOperation() throws OperatorFailedException {
-
+	
 		spectrumModel.startSpectrumOperation();
 
-//		int[] posChar = alignmentMapping.getNextBase();
-//		spectrumModel.swapHaplotypeSingleBase(OP, posChar);
 		int spectrumIndex = MathUtils.nextInt(spectrumCount);
 		siteIndex[0] = MathUtils.nextInt(spectrumLength);
-		
-		
-//		System.err.println(spectrumIndex +"\t"+ siteIndex);
 		
 		Spectrum spectrum = spectrumModel.getSpectrum(spectrumIndex);
 		SpectraParameter parameter = spectrum.getSpectra(siteIndex[0]);
@@ -67,8 +62,9 @@ public class DeltaExchangeSingleSpectrumOperator extends AbstractSpectrumOperato
         double scalar1 = parameter.getParameterValue(dim1);
         double scalar2 = parameter.getParameterValue(dim2);
 
+//		double d = delta;
         double d = MathUtils.nextDouble() * delta;
-        d = delta;
+//        d = delta;
         scalar1 -= d;
         scalar2 += d;
 
@@ -81,12 +77,12 @@ public class DeltaExchangeSingleSpectrumOperator extends AbstractSpectrumOperato
 //    		System.out.println(d +"\t"+ spectrumIndex +"\t"+ siteIndex[0] +"\t"+ scalar1 +"\t"+ scalar2 +"\t"+ Arrays.toString(parameter.getFrequencies()));
             throw new OperatorFailedException("proposed values out of range!");
         }
-        
+
         parameter.setParameterValue(dim1, scalar1);
         parameter.setParameterValue(dim2, scalar2);
 
         // symmetrical move so return a zero hasting ratio
-		spectrumModel.setSpectrumOperationRecord(OP, spectrumIndex, siteIndex, d);
+		spectrumModel.setSpectrumOperationRecord(OP, spectrumIndex, siteIndex);
 		
 		spectrumModel.endSpectrumOperation();
 

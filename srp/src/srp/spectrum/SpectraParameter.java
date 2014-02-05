@@ -34,11 +34,14 @@ public class SpectraParameter extends Parameter.Default{
 			double[] freq = new double[DIMENSION];
 			double sum = 0;
 			for (int i = 0; i < freq.length; i++) {
-				freq[i] = 1+MathUtils.nextInt(1000);
+				freq[i] = 1+MathUtils.nextInt(100)+MathUtils.nextInt(100);
 				sum += freq[i];
 			}
 			for (int i = 0; i < freq.length; i++) {
 				freq[i] /= sum;
+				if(freq[i]<=0){
+					System.err.println(Arrays.toString(freq) +"\t"+ sum);
+				}
 			}
 			
 			setFrequenciesQuietly(freq);

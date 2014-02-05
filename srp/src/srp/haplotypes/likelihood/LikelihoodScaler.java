@@ -60,6 +60,7 @@ public class LikelihoodScaler {
 	private static double scale(double logProb, double logScaler) {
 
 		double expB = Math.exp(logProb - logScaler);
+
 		return expB;
 	}
 	@Deprecated

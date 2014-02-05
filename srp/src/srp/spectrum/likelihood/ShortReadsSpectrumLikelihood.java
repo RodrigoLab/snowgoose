@@ -1,6 +1,7 @@
 package srp.spectrum.likelihood;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -10,6 +11,7 @@ import org.w3c.dom.Element;
 
 import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.likelihood.LikelihoodScaler;
+import srp.spectrum.SpectraParameter;
 import srp.spectrum.Spectrum;
 import srp.spectrum.SpectrumAlignmentModel;
 import srp.spectrum.SpectrumOperation;
@@ -133,11 +135,8 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 
 	private AlignmentMapping aMap;
 	
-//	private HaplotypeModel haplotypeModel;
 	private LikelihoodScaler liS;
-//	private SwapInfo swapInfo;
 	
-
 //	private SpectrumOperation operation;
 	private SpectrumAlignmentModel spectrumModel;
 	private DataType dataType;
@@ -146,6 +145,7 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 	private double[][] storedSpectrumLogLikelihood;
 	private boolean[] srpSwitch;
 	
+	private double[] stateLogLikelihood;
 //	public long time;
 	
 	@Override
@@ -169,7 +169,7 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 		this.aMap = this.spectrumModel.getAlignmentMapping();
 		this.dataType = this.spectrumModel.getDataType();
 
-		stateCount = dataType.getStateCount();
+		stateCount = dataType.getStateCount();//4
 //		operation = SpectrumOperation.NONE;
 		likelihoodKnown = false;
 		int srpCount = aMap.getSrpCount();
@@ -205,6 +205,8 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 		eachSrpLikelihood = new double[srpCount];
 		storedEachSrpLikelihood = new double[srpCount];
 
+		stateLogLikelihood = new double[dataType.getAmbiguousStateCount()];//18
+		Arrays.fill(stateLogLikelihood, LOG_ERROR_RATE);
 //		logBinomialDesnity = new HashMap<Integer, double[]>();
 //		scaledLogBinomialDesnity = new HashMap<Integer, double[]>();
 //		
@@ -274,7 +276,7 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 		SpectrumOperation operation = spectrumModel.getSpectrumOperation();
 		double logLikelihood = Double.NEGATIVE_INFINITY;
 //System.err.println("calculateLikelihood\t"+operation);
-		
+
 		switch (operation) {
 			case NONE:
 			case FULL:
@@ -399,8 +401,46 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 	}
 
 	
-	
 	private double calculateSrpLikelihoodSingle() {
+
+
+		SpectrumOperationRecord record = spectrumModel.getSpectrumOperationRecord();
+		int j = record.getSpectrumIndex(); 
+		int k = record.getAllSiteIndexs()[0];
+//
+		Spectrum spectrum = spectrumModel.getSpectrum(j);
+		ArrayList<Integer> mapToSrp = aMap.getMapToSrp(k);
+		
+		stateLogLikelihood = calculateStateLogLikelihood(spectrum, k);
+		
+		for (int i : mapToSrp) {
+			
+			String fullSrp = aMap.getSrpFull(i);
+			updateLikelihoodAtIJK(i, j, k, fullSrp, stateLogLikelihood);
+						
+			updateEachSrpAt(i);
+		}
+
+		double logLikelihood = StatUtils.sum(eachSrpLikelihood);
+	
+		return logLikelihood;
+	}
+	
+
+	private double[] calculateStateLogLikelihood(Spectrum spectrum, int k) {
+		SpectraParameter spectra = spectrum.getSpectra(k);
+		double[] stateLogLikelihood = new double[18];
+//		Arrays.fill(stateLogLikelihood, LOG_ERROR_RATE);
+		for (int state = 0; state < stateCount; state++) {
+			double frequency = spectra.getFrequency(state);
+			stateLogLikelihood[state] = Math.log(
+					frequency * NOT_ERROR_RATE	+ (1 - frequency) * ERROR_RATE);
+		}
+		stateLogLikelihood[17]=LOG_ERROR_RATE;
+		return stateLogLikelihood;
+	}
+	@Deprecated
+	private double calculateSrpLikelihoodSingle_Old() {
 
 
 		SpectrumOperationRecord record = spectrumModel.getSpectrumOperationRecord();
@@ -422,6 +462,62 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 	}
 
 	private double calculateSrpLikelihoodMulti() {
+		
+		SpectrumOperationRecord record = spectrumModel.getSpectrumOperationRecord();
+
+		int[] siteIndexs = record.getAllSiteIndexs();
+		int j= record.getSpectrumIndex(); 
+		Spectrum spectrum = spectrumModel.getSpectrum(j);
+		
+
+		for (int s : siteIndexs) {
+			ArrayList<Integer> mapToSrp = aMap.getMapToSrp(s);
+			for (int i : mapToSrp) {
+				srpSwitch[i] = true;
+			}
+		}
+
+	
+//	Set<Integer> allSrpPos = new HashSet<Integer>();
+//	allSrpPos.clear();
+//	for (int s : siteIndexs) {
+//
+//		ArrayList<Integer> mapToSrp = aMap.getMapToSrp(s);
+//		allSrpPos.addAll(mapToSrp);
+//	}
+
+		
+		
+		double[][] allStateLogLikelihood = new double[siteIndexs.length][]; 
+		for (int s = 0; s < siteIndexs.length; s++) {
+			int k = siteIndexs[s];
+			allStateLogLikelihood[s] = calculateStateLogLikelihood(spectrum, k);
+		}
+//for (int i : allSrpPos) {{
+		
+		for (int i = 0; i < srpSwitch.length; i++) {
+			if(srpSwitch[i]){
+				String fullSrp = aMap.getSrpFull(i);
+			
+				for (int s = 0; s < siteIndexs.length; s++) {
+					int k = siteIndexs[s];
+					if(allLogLikelihood[i][j][k]!=0){
+//						updateLikelihoodAtIJK(i, j, k,spectrum, fullSrp);
+						updateLikelihoodAtIJK(i, j, k, fullSrp, allStateLogLikelihood[s]);
+					}
+				}
+				updateEachSrpAt(i);
+			}
+
+		}
+		double logLikelihood = StatUtils.sum(eachSrpLikelihood);
+
+		return logLikelihood;
+
+	}
+
+	@Deprecated
+	private double calculateSrpLikelihoodMulti2() {
 	
 			SpectrumOperationRecord record = spectrumModel.getSpectrumOperationRecord();
 	
@@ -470,7 +566,7 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 		}
 
 	@Deprecated
-	private double calculateSrpLikelihoodMulti2() {
+	private double calculateSrpLikelihoodMulti3() {
 
 		SpectrumOperationRecord record = spectrumModel.getSpectrumOperationRecord();
 
@@ -689,6 +785,20 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 //		System.out.println(spectrumLogLikelihood[i][j] +"\t"+ logLikelihood);
 	}
 
+
+	private void updateLikelihoodAtIJK(int i, int j, int k, String fullSrp, double[] stateLogLikelihood){
+		char srpChar = fullSrp.charAt(k);
+		int state = dataType.getState(srpChar);
+//		int state = 0;
+		double logLikelihood= stateLogLikelihood[state];
+
+		spectrumLogLikelihood[i][j] -= allLogLikelihood[i][j][k]; 
+		allLogLikelihood[i][j][k] = logLikelihood;
+		spectrumLogLikelihood[i][j] += allLogLikelihood[i][j][k];
+
+		
+	}
+	
 	@Deprecated
 	private void updateLikelihoodAtIJK2(int i, int j, int k, Spectrum spectrum, String fullSrp) {
 		

@@ -89,9 +89,11 @@ public class DirichletAlphaSpectrumOperator extends AbstractDirichletSpectrumOpe
 		SpectraParameter spectra = spectrum.getSpectra(siteIndexs[0]);
 		double sum = 0;
 
-
 		for (int j = 0; j < newFreq.length; j++) {
 			oldFreq[j] = spectra.getFrequency(j);
+			if(oldFreq[j]==0){
+				oldFreq[j] = MIN_FREQ;
+			}
 			oldParameter[j] = oldFreq[j]*alpha;
 			newFreq[j] = MathUtils.nextGamma(oldParameter[j], 1);
 			if(newFreq[j]<MIN_FREQ){
