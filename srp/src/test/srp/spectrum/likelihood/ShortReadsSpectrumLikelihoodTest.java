@@ -27,6 +27,7 @@ import srp.spectrum.operator.RecombinationSpectrumOperator;
 import srp.spectrum.operator.RecombineSectionSpectrumOperator;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.SimpleAlignment;
+import dr.inference.markovchain.MarkovChain;
 import dr.inference.operators.OperatorFailedException;
 import dr.math.MathUtils;
 
@@ -34,6 +35,9 @@ public class ShortReadsSpectrumLikelihoodTest {
 
 	public static final double ERROR = ShortReadsSpectrumLikelihood.ERROR_RATE;
 	public static final double NOT_ERROR = ShortReadsSpectrumLikelihood.NOT_ERROR_RATE;
+	private static final double EVALUATION_TEST_THRESHOLD = MarkovChain.EVALUATION_TEST_THRESHOLD;
+//	private static final double EVALUATION_TEST_THRESHOLD = 1e-8;
+	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 	}
@@ -235,7 +239,8 @@ public class ShortReadsSpectrumLikelihoodTest {
 				ShortReadsSpectrumLikelihood likelihoodFull = new ShortReadsSpectrumLikelihood(spectrumModelFull);
 				logLikelihoodFull = likelihoodFull.getLogLikelihood();
 				assertEquals(SpectrumOperation.NONE, likelihoodFull.getOperation());
-				assertEquals(logLikelihoodFull, logLikelihoodOperator, 1e-8);
+				assertEquals(logLikelihoodFull, logLikelihoodOperator, EVALUATION_TEST_THRESHOLD); 
+
 	
 				double rand = MathUtils.nextDouble();
 				if(rand>0.5){

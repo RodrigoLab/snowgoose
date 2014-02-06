@@ -28,8 +28,8 @@ import dr.math.MathUtils;
 
 public class ShortReadsSpectrumLikelihoodTimeTrialTest {
 
-	public static final double ERROR = ShortReadsSpectrumLikelihood.ERROR_RATE;
-	public static final double NOT_ERROR = ShortReadsSpectrumLikelihood.NOT_ERROR_RATE;
+//	public static final double ERROR = ShortReadsSpectrumLikelihood.ERROR_RATE;
+//	public static final double NOT_ERROR = ShortReadsSpectrumLikelihood.NOT_ERROR_RATE;
 	public ShortReadsSpectrumLikelihood likelihood;
 	public SpectrumAlignmentModel spectrumModel;
 	
@@ -44,6 +44,7 @@ public class ShortReadsSpectrumLikelihoodTimeTrialTest {
 	@Before
 	public void setUp() throws Exception {
 		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/snowgoose/srp/unittest/", "H10_srp.fasta");
+//		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/snowgoose/srp/unittest/", "5000Srp.fasta");
 		AlignmentMapping aMap = new AlignmentMapping(alignment);
 			
 		spectrumModel = new SpectrumAlignmentModel(aMap, 6, 2);
@@ -147,7 +148,7 @@ public class ShortReadsSpectrumLikelihoodTimeTrialTest {
 		System.out.println("");
 	}
 
-	
+	@Test
 	public void testTimeTrialDeltaSingle() throws Exception {
 
 		AbstractSpectrumOperator op = new DeltaExchangeSingleSpectrumOperator(
@@ -162,11 +163,12 @@ public class ShortReadsSpectrumLikelihoodTimeTrialTest {
 
 		DeltaExchangeMultiSpectrumOperator op = new DeltaExchangeMultiSpectrumOperator(
 				spectrumModel, 0.1, 10, CoercionMode.COERCION_OFF);
-		String summary = timeTrialOperator(likelihood, op, 10000);
+		String summary = timeTrialOperator(likelihood, op, 1e4);
 		System.out.println(summary + "\t" + op.getOperatorName());
 
 	}
 
+//	@Test
 	public void testTimeTrialDeltaColumn() throws Exception {
 
 		DeltaExchangeColumnSpectrumOperator op = new DeltaExchangeColumnSpectrumOperator(
@@ -259,9 +261,10 @@ public class ShortReadsSpectrumLikelihoodTimeTrialTest {
 
 }
 
-/*
-TimeTrial: 1387	0.1387/calculation	DeltaExchangeSingleSpectrumOperator
-TimeTrial: 4275	0.4275/calculation	DeltaExchangeMultiSpectrumOperator
+/*H10
+
+TimeTrial: 12199	0.12199/calculation	DeltaExchangeSingleSpectrumOperator
+TimeTrial: 5497	0.5497/calculation	DeltaExchangeMultiSpectrumOperator
 TimeTrial: 2941	0.2941/calculation	DeltaExchangeColumnSpectrumOperator
 TimeTrial: 1108	0.1108/calculation	SwapSingleSpectrumOperator
 TimeTrial: 4377	0.4377/calculation	SwapMultiSpectrumOperator
@@ -275,6 +278,30 @@ TimeTrial: 1324	0.1324/calculation	DeltaExchangeSingleSpectrumOperator
 TimeTrial:	959	0.0959/calculation	Single No store/restore
 TimeTrial:	42	4.2E-4/calculation	StoreRestoreOnly
 
+#####################################
+## only caluclate delta eachSrpLogLikelihood
+TimeTrial: 5815	0.05815/calculation	DeltaExchangeSingleSpectrumOperator
+## update eachSrpAt(i) and sum(eachSrp)
+TimeTrial: 12199	0.12199/calculation	DeltaExchangeSingleSpectrumOperator
+
+
+##########################################
+## calculate freq*error at each ijk
+TimeTrial: 1387	0.1387/calculation	DeltaExchangeSingleSpectrumOperator
+TimeTrial: 7323	0.7323/calculation	DeltaExchangeMultiSpectrumOperator
+## pre calculate freq*error for each k
+TimeTrial: 12199	0.12199/calculation	DeltaExchangeSingleSpectrumOperator
+TimeTrial: 5497	0.5497/calculation	DeltaExchangeMultiSpectrumOperator
+
+#########################################
+## srpArray vs HashSet on multi, 5000reads
+Hashset
+TimeTrial: 60128	6.0128/calculation	DeltaExchangeMultiSpectrumOperator
+sryArray
+TimeTrial: 51010	5.101/calculation	DeltaExchangeMultiSpectrumOperator
+
+
+##############################
 old
 TimeTrial:	889	0.0889/calculation	SwapSectionSpectrumOperator //swap index
 TimeTrial:	1483	0.1483/calculation	SwapSectionSpectrumOperator // full calculation

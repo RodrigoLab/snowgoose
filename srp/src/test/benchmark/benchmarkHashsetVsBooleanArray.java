@@ -15,6 +15,8 @@ import dr.math.MathUtils;
 
 /*
  * 
+ * count: number of random numbers, depth for each position
+ * Element: total size of array
 For count: 100		Element:100		Use HashSet:	152		0.0152
 For count: 1000		Element:1000	Use HashSet:	698		0.0698
 For count: 1000		Element:10000	Use HashSet:	1255	0.1255
@@ -26,6 +28,8 @@ For count: 100000	Element:10000	Use HashSet:	54520	5.452
 
 For count: 100		Element:100			Use boolean[]:	99	0.0099
 For count: 1000		Element:1000		Use boolean[]:	275	0.0275
+For count: 1000		Element:10000		Use boolean[]:	444	0.0444
+For count: 1000		Element:100000		Use boolean[]:	624	0.0624
 
 For count: 10000	Element:10000		Use boolean[]:	2965	0.2965
 For count: 10000	Element:100000		Use boolean[]:	3163	0.3163
@@ -71,7 +75,7 @@ public class benchmarkHashsetVsBooleanArray {
 	public static void main(String[] args) throws Exception {
 
 //		int ite = (int) 1e5;
-////		basicTest();
+		basicTest();
 //		
 //		AlignmentMapping aMap = setup();
 //		useBooleanMapping(ite, 12, aMap);
@@ -155,14 +159,16 @@ public class benchmarkHashsetVsBooleanArray {
 		int ite = 10000;
 //		useBoolean(ite, 100,	100);
 //		useBoolean(ite, 1000,	1000);
+		useBoolean(ite, 1000,	10000);
+		useBoolean(ite, 1000,	100000);
 //		useBoolean(ite, 10000,	10000);
 //		useBoolean(ite, 10000,	100000);
 //		useBoolean(ite, 10000,	1000000);
 //		useBoolean(ite, 10000,	10000000);
 
-		useBoolean(ite, 100000,	1000);
-		useBoolean(ite, 100000,	10000);
-		useBoolean(ite, 100000,	100000);
+//		useBoolean(ite, 100000,	1000);
+//		useBoolean(ite, 100000,	10000);
+//		useBoolean(ite, 100000,	100000);
 //		
 //		
 //		useHashSet(ite, 100,	100);
@@ -183,9 +189,9 @@ public class benchmarkHashsetVsBooleanArray {
 //		useBoolean(ite, 100000,	1000);
 //		useBoolean(ite, 100000,	10000);
 //		useBoolean(ite, 100000,	100000);
-		reuseHashSet(ite, 100000,	1000);
-		reuseHashSet(ite, 100000,	10000);
-		reuseHashSet(ite, 100000,	100000);
+//		reuseHashSet(ite, 100000,	1000);
+//		reuseHashSet(ite, 100000,	10000);
+//		reuseHashSet(ite, 100000,	100000);
 		
 		
 		

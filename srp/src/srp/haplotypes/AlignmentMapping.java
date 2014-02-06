@@ -76,20 +76,42 @@ public class AlignmentMapping {
 		@SuppressWarnings("unchecked")
 		HashSet<Character>[] setsOfAvailableChar = new HashSet[haplotypeLength];
 
-		
-        int[][] frequencies = new int[haplotypeLength][dataType.getAmbiguousStateCount()];
-
 		for (int i = 0; i < setsOfAvailableChar.length; i++) {
 			setsOfAvailableChar[i] = new HashSet<Character>();
 		}
+		
+        int[][] frequencies = new int[haplotypeLength][dataType.getAmbiguousStateCount()];
+
 
 		for (int i = 0; i < srpAlignment.getSequenceCount(); i++) {
 			Sequence s = srpAlignment.getSequence(i);
 			addSequence(s, setsOfAvailableChar, frequencies);
 		}
-
+		//post processing after created the basic framework
 		createConsensusSequence(frequencies);
     
+		//calculated listOfAvailableChar(2)
+//		calculateListOfAvailableChar(setsOfAvailableChar);
+//		calculateCumFreq();
+		
+
+	}
+	
+	@Deprecated
+	private void calculateCumFreq() {
+		cumFreq = new double[] { cumFreq['A'], cumFreq['C'], cumFreq['G'], cumFreq['T'] };
+		for (int i = 1; i < cumFreq.length; i++) {
+			cumFreq[i] = cumFreq[i] + cumFreq[i-1];  
+		}
+		double sum = cumFreq[3];
+		for (int i = 0; i < cumFreq.length; i++) {
+			cumFreq[i] /= sum;  
+		}
+		
+	}
+
+	@Deprecated
+	private void calculateListOfAvailableChar(HashSet<Character>[] setsOfAvailableChar) {
 		for (int i = 0; i < haplotypeLength; i++) {
 			listOfAvailableChar[i] = new ArrayList<Character>(setsOfAvailableChar[i]);
 
@@ -105,26 +127,7 @@ public class AlignmentMapping {
 //			System.out.println(Arrays.toString(  listOfAvailableChar2.get(i)  ));
 //			System.out.println();
 		}
-		
-		cumFreq = new double[] { cumFreq['A'], cumFreq['C'], cumFreq['G'], cumFreq['T'] };
-		for (int i = 1; i < cumFreq.length; i++) {
-			cumFreq[i] = cumFreq[i] + cumFreq[i-1];  
-		}
-		double sum = cumFreq[3];
-		for (int i = 0; i < cumFreq.length; i++) {
-			cumFreq[i] /= sum;  
-		}
-//		System.out.println(mapToSrp.length);
-//		double cut = mapToSrp.length/10.0;
-//		for (int i = 0; i < mapToSrp.length; i++) {
-//			
-//			System.out.print(mapToSrp[i].size() +"\t");
-//			if((i%cut) ==0 ){
-//				System.out.println();
-//			}
-//		}
 	}
-
 
 	private void createConsensusSequence(int[][] frequencies) {
 
@@ -157,10 +160,6 @@ public class AlignmentMapping {
 //        System.out.println();
 		
 	}
-	public int[] getConsensusSequenceState(){
-		return consensus;
-	}
-
 	private void addSequence(Sequence s,
 			HashSet<Character>[] setsOfAvailableChar, 
 			int[][] frequencies) {
@@ -197,6 +196,10 @@ public class AlignmentMapping {
 		}
 		return s;
 
+	}
+
+	public int[] getConsensusSequenceState(){
+		return consensus;
 	}
 
 	public ArrayList<Integer> getMapToSrp(int pos) {

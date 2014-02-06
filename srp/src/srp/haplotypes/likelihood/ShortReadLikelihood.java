@@ -232,7 +232,7 @@ public class ShortReadLikelihood extends AbstractModelLikelihood {
 
 				int dist = LikelihoodUtils.Dist(start, end, srp, haplotypeModel.getAlignedSequenceString(j));
 				allDists[i][j]=dist;
-				liS.addScaledLogProb(logPD[dist]);
+				liS.add(logPD[dist]);
 //				liS.scaleLogProb(logPD[dist]);
 			}	
 			
@@ -315,7 +315,7 @@ public class ShortReadLikelihood extends AbstractModelLikelihood {
 				liS.reset();
 				double[] logPD = scaledLogBinomialDesnity.get(aMap.getSrpLength(srpIndex));
 				for (int j = 0; j < haplotypeCount ; j++) {
-					liS.addScaledLogProb(logPD[allDists[srpIndex][j]]);
+					liS.add(logPD[allDists[srpIndex][j]]);
 				}
 				eachSrpLikelihood[srpIndex] = liS.getLogLikelihood();
 			}
@@ -365,7 +365,7 @@ public class ShortReadLikelihood extends AbstractModelLikelihood {
 					allDists[srpIndex][hapIndex] = newDist;
 
 				}
-				liS.addScaledLogProb(logPD[allDists[srpIndex][hapIndex]]);
+				liS.add(logPD[allDists[srpIndex][hapIndex]]);
 			}
 			eachSrpLikelihood[srpIndex] = liS.getLogLikelihood();
 
@@ -419,7 +419,7 @@ public class ShortReadLikelihood extends AbstractModelLikelihood {
 				liS.reset();
 				double[] logPD = scaledLogBinomialDesnity.get(aMap.getSrpLength(srpIndex));
 				for (int j = 0; j < haplotypeCount ; j++) {
-					liS.addScaledLogProb(logPD[allDists[srpIndex][j]]);
+					liS.add(logPD[allDists[srpIndex][j]]);
 				}
 				eachSrpLikelihood[srpIndex] = liS.getLogLikelihood();
 			}
@@ -459,7 +459,7 @@ public class ShortReadLikelihood extends AbstractModelLikelihood {
 	
 			liS.reset();		
 			for (int j = 0; j < haplotypeCount ; j++) {
-				liS.addScaledLogProb(logPD[allDists[srpIndex][j]]);
+				liS.add(logPD[allDists[srpIndex][j]]);
 			}
 			eachSrpLikelihood[srpIndex] = liS.getLogLikelihood();
 		}
@@ -594,7 +594,7 @@ public class ShortReadLikelihood extends AbstractModelLikelihood {
 			double[] logPD = logBinomialDesnity.get(aMap.getSrpLength(i));
 			for (int j = 0; j < counter.length; j++) {
 				if (counter[j] != 0) {
-					liS.scaleLogProb(logPD[j], counter[j]);
+					liS.addScaleLogProbMulti(logPD[j], counter[j]);
 				}
 			}
 

@@ -2,6 +2,8 @@ package srp.haplotypes.likelihood;
 
 import java.util.ArrayList;
 
+import dr.inference.distribution.LogLinearModel;
+
 public class LikelihoodScaler {
 
 	/*
@@ -35,24 +37,32 @@ public class LikelihoodScaler {
 		sumScaledLikelihood = 0;		
 	}
 
-	public double getLogLikelihood(){
+	public double getLogLikelihood(double sumScaledLikelihood){
+		
 		double logLikelihood = Math.log(sumScaledLikelihood) + logScaler;
 		return logLikelihood;
 	}
 
-	public void scaleLogProb(double logProb){
+	public double getLogLikelihood(){
+		
+		double logLikelihood = Math.log(sumScaledLikelihood) + logScaler;
+		return logLikelihood;
+	}
+
+	public void addScaleLogProb(double logProb){
 		sumScaledLikelihood += scale(logProb, logScaler);
 	}
 
-	public void scaleLogProb(double logProb, int count){
+	public void minusScaleLogProb(double logProb){
+		sumScaledLikelihood -= scale(logProb, logScaler);
+	}
 
+	public void addScaleLogProbMulti(double logProb, int count){
 		double sum = scale(logProb, logScaler) * count;
 		sumScaledLikelihood += sum;
 	}
 
-	public void addScaledLogProb(double scaledLogProb){
-		sumScaledLikelihood += scaledLogProb;
-	}
+
 	public double scale(double logProb){
 		return scale(logProb, logScaler);
 	}
@@ -63,20 +73,7 @@ public class LikelihoodScaler {
 
 		return expB;
 	}
-	@Deprecated
-	private ArrayList<Double> likelihood;
-	@Deprecated
-	public void addToList(double logProb){
-		likelihood.add(scale(logProb, logScaler));
-	}
-	@Deprecated
-	public void sumList(){
-		double sumLikelihood = 0;
-		for (Double d : likelihood) {
-			sumLikelihood += d;
-		}
-		double logLikelihood = Math.log(sumLikelihood) + logScaler;
-	}
+
 
 	
 	public void updateScaledLogProb(double oldScaledLogProb, double newScaledLogProb) {
@@ -84,8 +81,29 @@ public class LikelihoodScaler {
 		
 	}
 
-	public void setSumScaledProb(double logProb) {
-		sumScaledLikelihood = scale(logProb);
+	public void setsumScaledLikelihood(double scaled) {
+		sumScaledLikelihood = scaled;
 		
+	}
+
+	public void add(double scaledLogProb){
+		sumScaledLikelihood += scaledLogProb;
+	}
+	public void minus(double scaledLogProb) {
+		sumScaledLikelihood -= scaledLogProb;
+		
+	}
+
+	public double getSumScaledLikelihood() {
+		return sumScaledLikelihood;
+	}
+
+	public double sumLogLikelihood(double[] scaledLogLikelihood) {
+		double logLikelihood = 0;
+		for (int i = 0; i < scaledLogLikelihood.length; i++) {
+			logLikelihood += Math.log(scaledLogLikelihood[i]) ;
+		}
+		logLikelihood += (logScaler*scaledLogLikelihood.length);
+		return logLikelihood;
 	}
 }
