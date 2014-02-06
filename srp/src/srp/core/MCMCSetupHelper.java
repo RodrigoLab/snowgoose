@@ -34,6 +34,28 @@ import dr.math.distributions.LogNormalDistribution;
 
 public class MCMCSetupHelper {
 
+	public static MCMCOptions setMCMCOptions(int logInterval, int totalSamples) {
+	//		MCMCOptions options = new MCMCOptions();
+	//		options.setChainLength(logInterval * totalSamples);
+	//		options.setUseCoercion(false); // autoOptimize = true
+	//		options.setCoercionDelay((int) (logInterval * 0.01));
+	//		options.setTemperature(1.0);
+	//		options.setFullEvaluationCount((int) (logInterval*0.01));
+		
+		int coercionDelay = logInterval * totalSamples /100;
+		MCMCOptions options = new MCMCOptions(logInterval * totalSamples, 100,
+				0, MarkovChain.EVALUATION_TEST_THRESHOLD, false, coercionDelay, 1.0);
+			//		MCMCOptions(long chainLength, 
+	//				long fullEvaluationCount, //2000
+	//				int minOperatorCountForFullEvaluation, //1 
+	//				double evaluationTestThreshold, 
+	//				boolean coercion, 
+	//				long coercionDelay, //chainLength/100 
+	//				double temperature) 
+		return options;
+		    
+	}
+
 	public static TreeModel setupRandomTreeModel(ConstantPopulationModel popModel, TaxonList taxonList,
 			Type years) {
 		
@@ -104,28 +126,6 @@ public class MCMCSetupHelper {
 	
 	}
 
-	public static MCMCOptions setMCMCOptions(int logInterval, int totalSamples) {
-	//		MCMCOptions options = new MCMCOptions();
-	//		options.setChainLength(logInterval * totalSamples);
-	//		options.setUseCoercion(false); // autoOptimize = true
-	//		options.setCoercionDelay((int) (logInterval * 0.01));
-	//		options.setTemperature(1.0);
-	//		options.setFullEvaluationCount((int) (logInterval*0.01));
-		
-		int coercionDelay = logInterval * totalSamples /100;
-		MCMCOptions options = new MCMCOptions(logInterval * totalSamples, 100,
-				0, MarkovChain.EVALUATION_TEST_THRESHOLD, false, coercionDelay, 1.0);
-			//		MCMCOptions(long chainLength, 
-	//				long fullEvaluationCount, //2000
-	//				int minOperatorCountForFullEvaluation, //1 
-	//				double evaluationTestThreshold, 
-	//				boolean coercion, 
-	//				long coercionDelay, //chainLength/100 
-	//				double temperature) 
-		return options;
-		    
-	}
-	
 	public static SiteModel setupSiteModel(){
 		
 		// clock model

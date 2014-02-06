@@ -18,6 +18,7 @@ public class SpectraParameter extends Parameter.Default{
 	public static final int DIMENSION = 4;
 	public static final Bounds<Double> SPECTRA_BOUNDS = new DefaultBounds(1.0, 0.0, DIMENSION);
 	
+	
 	public SpectraParameter(SpectrumType type){
 		this(type.getCode());
 	}
@@ -136,6 +137,9 @@ public class SpectraParameter extends Parameter.Default{
     protected void storeState() {
 //    	System.err.println("storeState in Spectra");
     	super.storeValues();
+    	
+        System.arraycopy(getParameterValues(), 0, storedFrequency, 0, storedFrequency.length);
+    
 	}
     protected void restoreState() {
 //    	System.err.println("restoreState in Spectra");
@@ -149,5 +153,11 @@ public class SpectraParameter extends Parameter.Default{
     private void addBounds(){
 		addBounds(SPECTRA_BOUNDS);
 	}
-	
+
+	public double getStoredFrequency(int state) {
+//		storedValues
+		
+		return storedFrequency[state];
+	}
+	private double[] storedFrequency = new double[4];
 }

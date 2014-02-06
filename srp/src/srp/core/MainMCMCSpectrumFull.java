@@ -48,38 +48,40 @@ public class MainMCMCSpectrumFull {
 //
 //
 
-//		String dataDir = "/home/sw167/workspaceSrp/snowgoose/srp/unittest/testData/";
-//		int runIndex = 1;
-//		int totalSamples = 10;
-//		int logInterval = 1000;
-//		int noOfTrueHaplotype = 7;
-//		int noOfRecoveredHaplotype=7;
-		
-		String dataDir = args[0];
-		int runIndex = Integer.parseInt(args[1]);
-		int totalSamples = Integer.parseInt(args[2]);
-		int logInterval = Integer.parseInt(args[3]);
-		int noOfTrueHaplotype = Integer.parseInt(args[4]);
-		int noOfRecoveredHaplotype= Integer.parseInt(args[5]);
+		String dataDir;
+		int runIndex;
+		int totalSamples;
+		int logInterval;
+		int noOfTrueHaplotype;
+		int noOfRecoveredHaplotype;
 		boolean randomTree = true;
 		boolean randomSpectrum = true;
 		SpectrumType randomSpectrumType = SpectrumAlignmentModel.SpectrumType.ZERO_ONE;
-//		{	
-//			dataDir = "/home/sw167/workspaceSrp/snowgoose/srp/unittest/testData/";
-//			runIndex = 1;
-//			totalSamples = 1000;
-//			logInterval = 10000;
-//			
-//			randomTree = true;
-////			randomTree = false;
-//			
-//			randomSpectrum = true;
-//			randomSpectrumType = SpectrumAlignmentModel.SpectrumType.ZERO_ONE;
-////			randomSpectrum = false;
-//			
-//			noOfTrueHaplotype = 7;
-//			noOfRecoveredHaplotype=7;
-//		}
+		
+		
+//		dataDir = args[0];
+//		runIndex = Integer.parseInt(args[1]);
+//		totalSamples = Integer.parseInt(args[2]);
+//		logInterval = Integer.parseInt(args[3]);
+//		noOfTrueHaplotype = Integer.parseInt(args[4]);
+//		noOfRecoveredHaplotype= Integer.parseInt(args[5]);
+		{	
+			dataDir = "/home/sw167/workspaceSrp/snowgoose/srp/unittest/testData/";
+			runIndex = 1;
+			totalSamples = 100;
+			logInterval = 100;
+			
+			randomTree = true;
+			randomTree = false;
+			
+			randomSpectrum = true;
+			randomSpectrumType = SpectrumAlignmentModel.SpectrumType.ZERO_ONE;
+			randomSpectrumType = SpectrumAlignmentModel.SpectrumType.RANDOM;
+//			randomSpectrum = false;
+			
+			noOfTrueHaplotype = 7;
+			noOfRecoveredHaplotype=7;
+		}
 		
 		
 		String hapRunIndex = "H"+noOfTrueHaplotype+"_"+runIndex;

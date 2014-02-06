@@ -156,7 +156,7 @@ public class MCMCSetupHelperSpectrum extends MCMCSetupHelper {
 		operator = new DeltaExchangeSingleSpectrumOperator(spectrumModel, 0.2, CoercionMode.COERCION_OFF);
 //		0.05 delta, accept 0.8
 		operator.setWeight(opSpectrum);
-//		schedule.addOperator(operator);
+		schedule.addOperator(operator);
 //		Operator                                          Tuning   Count      Time     Time/Op  Pr(accept) 
 //		SingleSpectrumDeltaExchangeOperator               0.205   1000000    117482   0.12     0.2375      
 
@@ -195,7 +195,7 @@ public class MCMCSetupHelperSpectrum extends MCMCSetupHelper {
 
 		operator = new SwapSingleSpectrumOperator(spectrumModel, false);
 		operator.setWeight(opSpectrum*1);
-		schedule.addOperator(operator);
+//		schedule.addOperator(operator);
 		
 		operator = new SwapMultiSpectrumOperator(spectrumModel, 3, CoercionMode.COERCION_OFF);
 		operator.setWeight(opSpectrum*1);

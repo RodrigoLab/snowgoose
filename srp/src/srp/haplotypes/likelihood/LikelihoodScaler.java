@@ -98,6 +98,8 @@ public class LikelihoodScaler {
 		return sumScaledLikelihood;
 	}
 
+	
+	@Deprecated
 	public double sumLogLikelihood(double[] scaledLogLikelihood) {
 		double logLikelihood = 0;
 		for (int i = 0; i < scaledLogLikelihood.length; i++) {

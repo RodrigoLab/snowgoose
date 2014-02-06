@@ -35,7 +35,7 @@ public class ShortReadsSpectrumLikelihoodTest {
 
 	public static final double ERROR = ShortReadsSpectrumLikelihood.ERROR_RATE;
 	public static final double NOT_ERROR = ShortReadsSpectrumLikelihood.NOT_ERROR_RATE;
-	private static final double EVALUATION_TEST_THRESHOLD = MarkovChain.EVALUATION_TEST_THRESHOLD;
+	private static final double THRESHOLD = MarkovChain.EVALUATION_TEST_THRESHOLD;
 //	private static final double EVALUATION_TEST_THRESHOLD = 1e-8;
 	
 	@BeforeClass
@@ -49,14 +49,14 @@ public class ShortReadsSpectrumLikelihoodTest {
 
 
 	private SpectrumAlignmentModel spectrumModel;
-
+	private AlignmentMapping aMap;
 	@Before
 	public void setUp() throws Exception {
 
-		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/snowgoose/srp/unittest/", "HaplotypeModelTest_10_srp.fasta");
-//		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/ABI/unittest/", "H4_srp.fasta");
-		AlignmentMapping aMap = new AlignmentMapping(alignment);
-			
+//		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/snowgoose/srp/unittest/", "HaplotypeModelTest_10_srp.fasta");
+//		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/snowgoose/srp/unittest/", "H4_srp.fasta");
+		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/snowgoose/srp/unittest/", "SpectrumTest_50srp_200bp.fasta");
+		aMap = new AlignmentMapping(alignment);
 		spectrumModel = new SpectrumAlignmentModel(aMap, 4, 2);
 	}
 
@@ -192,6 +192,32 @@ public class ShortReadsSpectrumLikelihoodTest {
 		
 
 	}
+	@Test
+	public void testFullvsMaster() throws Exception {
+	
+		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
+		
+//		SpectrumOperationRecord record = spectrumModel.getSpectrumOperationRecord();
+//		DeltaExchangeSingleSpectrumOperator op = new DeltaExchangeSingleSpectrumOperator(spectrumModel, 0.25, null);
+		
+		for (int i = 0; i < 1e4; i++) {
+			try {
+				int noSpectrum = 6;//MathUtils.nextInt(9)+3;
+				spectrumModel = new SpectrumAlignmentModel(aMap, noSpectrum, 2);
+//				likelihood.makeDirty();
+				likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
+				double logLikelihoodFull = likelihood.getLogLikelihood();
+//				assertEquals(SpectrumOperation.NONE, likelihood.getOperation());
+				
+//				likelihood.makeDirty();
+//				double logLikelihoodMaster = likelihood.calculateSrpLikelihoodFullMaster();
+//				assertEquals(SpectrumOperation.NONE, likelihood.getOperation());
+//				assertEquals(logLikelihoodMaster, logLikelihoodFull, THRESHOLD);
+
+			} catch (Exception e) {
+			}
+		}
+	}
 	
 	@Test
 	public void testFullvsSingle() throws Exception {
@@ -210,7 +236,7 @@ public class ShortReadsSpectrumLikelihoodTest {
 				likelihood.makeDirty();
 				double logLikelihoodFull = likelihood.getLogLikelihood();
 				assertEquals(SpectrumOperation.FULL, likelihood.getOperation());
-				assertEquals(logLikelihoodFull, logLikelihoodSingle, 1e-8);
+				assertEquals(logLikelihoodFull, logLikelihoodSingle, THRESHOLD);
 				
 			} catch (Exception e) {
 			}
@@ -239,7 +265,7 @@ public class ShortReadsSpectrumLikelihoodTest {
 				ShortReadsSpectrumLikelihood likelihoodFull = new ShortReadsSpectrumLikelihood(spectrumModelFull);
 				logLikelihoodFull = likelihoodFull.getLogLikelihood();
 				assertEquals(SpectrumOperation.NONE, likelihoodFull.getOperation());
-				assertEquals(logLikelihoodFull, logLikelihoodOperator, EVALUATION_TEST_THRESHOLD); 
+				assertEquals(logLikelihoodFull, logLikelihoodOperator, THRESHOLD); 
 
 	
 				double rand = MathUtils.nextDouble();

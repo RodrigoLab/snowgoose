@@ -194,7 +194,7 @@ public class ShortReadsSpectrumLikelihoodTimeTrialTest {
 		System.out.println(summary + "\t" + op.getOperatorName());
 	}
 	
-	
+	@Test
 	public void testTimeTrialDirichlet() throws Exception {
 
 		AbstractSpectrumOperator op = new DirichletSpectrumOperator(
@@ -263,20 +263,20 @@ public class ShortReadsSpectrumLikelihoodTimeTrialTest {
 
 /*H10
 
-TimeTrial: 12199	0.12199/calculation	DeltaExchangeSingleSpectrumOperator
-TimeTrial: 5497	0.5497/calculation	DeltaExchangeMultiSpectrumOperator
-TimeTrial: 2941	0.2941/calculation	DeltaExchangeColumnSpectrumOperator
-TimeTrial: 1108	0.1108/calculation	SwapSingleSpectrumOperator
-TimeTrial: 4377	0.4377/calculation	SwapMultiSpectrumOperator
-TimeTrial: 4432	0.4432/calculation	DirichletSpectrumOperator
-TimeTrial: 1105	0.1105/calculation	DirichletAlphaSpectrumOperator
-TimeTrial: 70782	7.0782/calculation	RecombinationSpectrumOperator
-TimeTrial: 2130	0.213/calculation	RecombineSectionSpectrumOperator
+TimeTrial: 5171	0.05171/calculation	DeltaExchangeSingleSpectrumOperator
+TimeTrial: 4472	0.4472/calculation	DeltaExchangeMultiSpectrumOperator
+TimeTrial: 2539	0.2539/calculation	DeltaExchangeColumnSpectrumOperator
+TimeTrial: 505	0.0505/calculation	SwapSingleSpectrumOperator
+TimeTrial: 2423	0.2423/calculation	SwapMultiSpectrumOperator
+TimeTrial: 3218	0.3218/calculation	DirichletSpectrumOperator
+TimeTrial: 644	0.0644/calculation	DirichletAlphaSpectrumOperator
+TimeTrial: 7026	7.026/calculation	RecombinationSpectrumOperator
+TimeTrial: 2103	0.2103/calculation	RecombineSectionSpectrumOperator
 
-TimeTrial:  	6347	63.47/calculation	Full calculation no operator
-TimeTrial: 1324	0.1324/calculation	DeltaExchangeSingleSpectrumOperator
-TimeTrial:	959	0.0959/calculation	Single No store/restore
-TimeTrial:	42	4.2E-4/calculation	StoreRestoreOnly
+TimeTrial:  	808	8.08/calculation	Full calculation no operator
+TimeTrial:	332	0.0332/calculation	Single No store/restore
+TimeTrial:	12	1.2E-4/calculation	StoreRestoreOnly
+
 
 #####################################
 ## only caluclate delta eachSrpLogLikelihood
