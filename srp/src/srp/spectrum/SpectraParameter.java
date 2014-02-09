@@ -35,7 +35,7 @@ public class SpectraParameter extends Parameter.Default{
 			double[] freq = new double[DIMENSION];
 			double sum = 0;
 			for (int i = 0; i < freq.length; i++) {
-				freq[i] = 1+MathUtils.nextInt(100)+MathUtils.nextInt(100);
+				freq[i] = 0.01+MathUtils.nextDouble();//+MathUtils.nextInt(1000);
 				sum += freq[i];
 			}
 			for (int i = 0; i < freq.length; i++) {

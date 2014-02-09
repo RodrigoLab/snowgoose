@@ -87,9 +87,17 @@ public class SwapSingleSpectrumOperatorTest {
 						}
 					}
 				}
+				if(count != 2){
+					System.out.println(Arrays.toString(frequencies));
+					System.out.println(Arrays.toString(spectraFrequencies));
+				}
 				assertEquals(2, count);
 				for (int f1 = 0; f1 < matches.length; f1++) {
 					if(f1!=matches[f1]){
+						System.out.println(Arrays.toString(frequencies));
+						System.out.println(Arrays.toString(spectraFrequencies));
+						System.out.println(Arrays.toString(matches));
+						System.out.println();
 						assertEquals(f1, matches[matches[f1]]);
 					}
 				}

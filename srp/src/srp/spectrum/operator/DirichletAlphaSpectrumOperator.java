@@ -20,7 +20,7 @@ public class DirichletAlphaSpectrumOperator extends AbstractDirichletSpectrumOpe
 			 
 	public static final String OPERATOR_NAME = DirichletAlphaSpectrumOperator.class.getSimpleName();
 //	public static final SpectrumOperation OP = SpectrumOperation.DIRICHLET;
-	public static final SpectrumOperation OP = SpectrumOperation.DELTA_MULTI;
+	public static final SpectrumOperation OP = SpectrumOperation.DELTA_SINGLE;
 	
 	private static double MIN_FREQ = 0.01;
 	

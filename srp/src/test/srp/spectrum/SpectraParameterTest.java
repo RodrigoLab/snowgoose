@@ -7,6 +7,7 @@ import java.util.Arrays;
 
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -38,18 +39,23 @@ public class SpectraParameterTest {
 	@Test
 	public void testConstructor()  {
 		double[] frequencies = new double[]{0.25, 0.25, 0.25};
+		Assert.assertNotNull(frequencies);
 		exception.expect(IllegalArgumentException.class);
 		exception.expectMessage("Frequencies should have 4 elements, frequencies.length= 3");
 		SpectraParameter spectra = new SpectraParameter(frequencies);
+//		Assert.fail();
 	}
+	
+	
+//	@Test(expected=IllegalArgumentException.class)
 	@Test
 	public void testConstructor1()  {		
 		double[] frequencies = new double[]{0.2, 0.2, 0.2, 0.2, 0.2};
 		exception.expect(IllegalArgumentException.class);
 		exception.expectMessage("Frequencies should have 4 elements, frequencies.length= 5");
 		new SpectraParameter(frequencies);
-
 	}
+	
 	@Test
 	public void testConstructor2()  {
 		double[] frequencies = new double[]{0.25, 0.25, 0.25, 0.15};

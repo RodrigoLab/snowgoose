@@ -319,9 +319,9 @@ public class AbstractSpectrumAlignmentModelTest {
 	@Test
 	public void testPatternList() throws Exception {
 		// getDataType()
-		assertEquals(Nucleotides.INSTANCE, spectrumModel.getDataType());
-		assertEquals(Nucleotides.class, spectrumModel.getDataType().getClass());
-		assertEquals(Nucleotides.DESCRIPTION, spectrumModel.getDataType().getDescription());
+		assertEquals(ShortReads.INSTANCE, spectrumModel.getDataType());
+		assertEquals(ShortReads.class, spectrumModel.getDataType().getClass());
+		assertEquals(ShortReads.DESCRIPTION, spectrumModel.getDataType().getDescription());
 
 		// getPattern(int)
 		// in testSiteList()

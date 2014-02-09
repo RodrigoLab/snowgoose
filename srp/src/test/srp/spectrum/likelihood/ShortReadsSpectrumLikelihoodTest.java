@@ -197,51 +197,45 @@ public class ShortReadsSpectrumLikelihoodTest {
 	
 		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
 		
-//		SpectrumOperationRecord record = spectrumModel.getSpectrumOperationRecord();
-//		DeltaExchangeSingleSpectrumOperator op = new DeltaExchangeSingleSpectrumOperator(spectrumModel, 0.25, null);
-		
 		for (int i = 0; i < 1e4; i++) {
-			try {
-				int noSpectrum = 6;//MathUtils.nextInt(9)+3;
-				spectrumModel = new SpectrumAlignmentModel(aMap, noSpectrum, 2);
+			int noSpectrum = MathUtils.nextInt(7)+3;
+			spectrumModel = new SpectrumAlignmentModel(aMap, noSpectrum, 2);
 //				likelihood.makeDirty();
-				likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
-				double logLikelihoodFull = likelihood.getLogLikelihood();
+			likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
+			double logLikelihoodFull = likelihood.getLogLikelihood();
 //				assertEquals(SpectrumOperation.NONE, likelihood.getOperation());
-				
+			
 //				likelihood.makeDirty();
-//				double logLikelihoodMaster = likelihood.calculateSrpLikelihoodFullMaster();
+			double logLikelihoodMaster = likelihood.calculateSrpLikelihoodFullMaster();
 //				assertEquals(SpectrumOperation.NONE, likelihood.getOperation());
-//				assertEquals(logLikelihoodMaster, logLikelihoodFull, THRESHOLD);
+			assertEquals(logLikelihoodMaster, logLikelihoodFull, THRESHOLD);
 
-			} catch (Exception e) {
-			}
 		}
 	}
-	
-	@Test
-	public void testFullvsSingle() throws Exception {
-	
-		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
-		
-//		SpectrumOperationRecord record = spectrumModel.getSpectrumOperationRecord();
-		DeltaExchangeSingleSpectrumOperator op = new DeltaExchangeSingleSpectrumOperator(spectrumModel, 0.25, null);
-		
-		for (int i = 0; i < 1e4; i++) {
-			try {
-				op.doOperation();
-				double logLikelihoodSingle = likelihood.getLogLikelihood();
-				assertEquals(SpectrumOperation.DELTA_SINGLE, likelihood.getOperation());
-				
-				likelihood.makeDirty();
-				double logLikelihoodFull = likelihood.getLogLikelihood();
-				assertEquals(SpectrumOperation.FULL, likelihood.getOperation());
-				assertEquals(logLikelihoodFull, logLikelihoodSingle, THRESHOLD);
-				
-			} catch (Exception e) {
-			}
-		}
-	}
+//	
+//	@Test
+//	public void testFullvsSingle() throws Exception {
+//	
+//		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
+//		
+////		SpectrumOperationRecord record = spectrumModel.getSpectrumOperationRecord();
+//		DeltaExchangeSingleSpectrumOperator op = new DeltaExchangeSingleSpectrumOperator(spectrumModel, 0.25, null);
+//		
+//		for (int i = 0; i < 1e4; i++) {
+//			try {
+//				op.doOperation();
+//				double logLikelihoodSingle = likelihood.getLogLikelihood();
+//				assertEquals(SpectrumOperation.DELTA_SINGLE, likelihood.getOperation());
+//				
+//				likelihood.makeDirty();
+//				double logLikelihoodFull = likelihood.getLogLikelihood();
+//				assertEquals(SpectrumOperation.FULL, likelihood.getOperation());
+//				assertEquals(logLikelihoodFull, logLikelihoodSingle, THRESHOLD);
+//				
+//			} catch (Exception e) {
+//			}
+//		}
+//	}
 
 	private static void assertLikelihoodOperator(SpectrumAlignmentModel spectrumModel,
 			AbstractSpectrumOperator op) {

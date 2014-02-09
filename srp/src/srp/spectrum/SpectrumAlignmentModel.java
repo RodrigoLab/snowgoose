@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import srp.dr.evolution.datatype.ShortReads;
 import srp.haplotypes.AlignmentMapping;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.datatype.Nucleotides;
@@ -56,7 +57,7 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 		
 		spectrumList = new ArrayList<Spectrum>();
 		storedSpectrumList = new ArrayList<Spectrum>();
-		setDataType(Nucleotides.INSTANCE);
+		setDataType(ShortReads.INSTANCE);
 		spectrumOperationRecord = new SpectrumOperationRecord();
 		
 //		

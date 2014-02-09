@@ -37,7 +37,7 @@ public class DeltaExchangeSingleSpectrumOperatorTest {
 	}
 	
 	@Test
-	public void testDoOperatorOneSpectrum() throws Exception {
+	public void testDoOperation() throws Exception {
 		String[] seqs = new String[]{
 				"AAACGTTT",
 				"AAACGT..",
@@ -134,5 +134,6 @@ public class DeltaExchangeSingleSpectrumOperatorTest {
 		}		
 		
 	}
+
 
 }

@@ -82,7 +82,7 @@ public class DeltaExchangeSingleSpectrumOperator extends AbstractSpectrumOperato
         parameter.setParameterValue(dim2, scalar2);
 
         // symmetrical move so return a zero hasting ratio
-		spectrumModel.setSpectrumOperationRecord(OP, spectrumIndex, siteIndex);
+		spectrumModel.setSpectrumOperationRecord(OP, spectrumIndex, siteIndex, d);
 		
 		spectrumModel.endSpectrumOperation();
 

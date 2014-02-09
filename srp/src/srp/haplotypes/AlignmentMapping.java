@@ -91,9 +91,9 @@ public class AlignmentMapping {
 		createConsensusSequence(frequencies);
     
 		//calculated listOfAvailableChar(2)
-//		calculateListOfAvailableChar(setsOfAvailableChar);
-//		calculateCumFreq();
-		
+		calculateListOfAvailableChar(setsOfAvailableChar);
+		calculateCumFreq();
+		//TODO removed these cause old unit test to fail
 
 	}
 	
