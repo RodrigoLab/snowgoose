@@ -7,7 +7,40 @@ import dr.math.MathUtils;
 public class methodParameters {
 
 	public static void main(String[] args) {
+//		testPassing();
+		testComparing();
 		
+	}
+	private static void testComparing() {
+		int ite =  (int) 1e9;
+		int result = 0;
+		double tt = 0;
+		long time1 = System.currentTimeMillis();
+		for (int t = 0; t < ite; t++) {
+			tt = t;
+			if(t != 100){
+				result += tt;
+			}
+		}
+		System.out.println(tt);
+		long time2 = System.currentTimeMillis();
+
+		System.out.println("Time: "+(time2 - time1) + "\t" + (time2 - time1)/ite +"/caluclation");
+		System.out.println(result);
+		result = 0;
+		time1 = System.currentTimeMillis();
+		for (int t = 0; t > -ite; t--) {
+			tt = t;
+			if(tt != 100000.1){
+				result += tt;
+			}
+		}
+		time2 = System.currentTimeMillis();
+		System.out.println(result);
+		System.out.println("Time: "+(time2 - time1) + "\t" + (time2 - time1)/ite +"/caluclation");
+		
+	}
+	private static void testPassing(){
 		double result = 0;
 		int[] indexArray = new int[200];
 		for (int i = 0; i < indexArray.length; i++) {

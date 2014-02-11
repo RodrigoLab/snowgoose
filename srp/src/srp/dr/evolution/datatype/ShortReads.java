@@ -57,7 +57,7 @@ public class ShortReads extends Nucleotides {
 	
 	protected ShortReads() {
 		stateCount = 4;
-		ambiguousStateCount = 18;
+		ambiguousStateCount = 19;
 	}
 	
 	@Override

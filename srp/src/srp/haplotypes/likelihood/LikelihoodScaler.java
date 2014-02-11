@@ -49,15 +49,15 @@ public class LikelihoodScaler {
 		return logLikelihood;
 	}
 
-	public void addScaleLogProb(double logProb){
+	public void addLogProb(double logProb){
 		sumScaledLikelihood += scale(logProb, logScaler);
 	}
 
-	public void minusScaleLogProb(double logProb){
+	public void minusLogProb(double logProb){
 		sumScaledLikelihood -= scale(logProb, logScaler);
 	}
 
-	public void addScaleLogProbMulti(double logProb, int count){
+	public void addLogProbMulti(double logProb, int count){
 		double sum = scale(logProb, logScaler) * count;
 		sumScaledLikelihood += sum;
 	}
@@ -75,7 +75,7 @@ public class LikelihoodScaler {
 	}
 
 
-	
+	@Deprecated
 	public void updateScaledLogProb(double oldScaledLogProb, double newScaledLogProb) {
 		sumScaledLikelihood = sumScaledLikelihood - oldScaledLogProb + newScaledLogProb;
 		

@@ -39,7 +39,7 @@ public class LikelihoodScalerTest {
 		for (int i = 0; i < 100; i++) {
 			double data = Math.random();
 			expected += data;
-			liS.addScaleLogProb(Math.log(data));
+			liS.addLogProb(Math.log(data));
 		}
 		expected = Math.log(expected);
 		

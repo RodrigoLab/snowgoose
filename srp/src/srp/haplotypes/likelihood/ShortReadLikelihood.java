@@ -594,7 +594,7 @@ public class ShortReadLikelihood extends AbstractModelLikelihood {
 			double[] logPD = logBinomialDesnity.get(aMap.getSrpLength(i));
 			for (int j = 0; j < counter.length; j++) {
 				if (counter[j] != 0) {
-					liS.addScaleLogProbMulti(logPD[j], counter[j]);
+					liS.addLogProbMulti(logPD[j], counter[j]);
 				}
 			}
 
