@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import srp.haplotypes.AlignmentMapping;
+import srp.haplotypes.HaplotypeModel;
 import srp.spectrum.SpectrumAlignmentModel;
 import srp.spectrum.SpectrumAlignmentModel.SpectrumType;
 import srp.spectrum.SpectrumLogger;
@@ -22,6 +23,7 @@ import dr.evomodel.coalescent.ConstantPopulationModel;
 import dr.evomodel.tree.TreeLogger;
 import dr.evomodel.tree.TreeModel;
 import dr.evomodelxml.coalescent.ConstantPopulationModelParser;
+import dr.ext.TreeLikelihoodExt;
 import dr.inference.loggers.MCLogger;
 import dr.inference.loggers.TabDelimitedFormatter;
 import dr.inference.mcmc.MCMC;
@@ -79,7 +81,7 @@ public class MainMCMCSpectrumFull {
 			randomSpectrum = true;
 			randomSpectrumType = SpectrumAlignmentModel.SpectrumType.ZERO_ONE;
 //			randomSpectrumType = SpectrumAlignmentModel.SpectrumType.RANDOM;
-//			randomSpectrum = false;
+			randomSpectrum = false;
 			
 			noOfTrueHaplotype = 7;
 			noOfRecoveredHaplotype=7;
@@ -99,7 +101,7 @@ public class MainMCMCSpectrumFull {
 		String operatorAnalysisFile = prefix+"_operatorAnalysisFile.txt";
 		
 		String partialSpectrumName = prefix+".haplatypepartial";
-		String partialTreeName = "FullTree_"+hapRunIndex+".treespartial_true2";
+		String partialTreeName = "FullTree_"+hapRunIndex+".treespartial";
 //		String partialTreeName = hapRunIndex + "_Srp.tree";
 		
 		DataImporter dataImporter = new DataImporter(dataDir);
@@ -110,6 +112,7 @@ public class MainMCMCSpectrumFull {
 		AlignmentMapping aMap = new AlignmentMapping(shortReads);
 		
 		SpectrumAlignmentModel spectrumModel;
+		
 		if(randomSpectrum){
 			spectrumModel = new SpectrumAlignmentModel(aMap, noOfRecoveredHaplotype, randomSpectrumType);
 
@@ -117,6 +120,7 @@ public class MainMCMCSpectrumFull {
 		else{
 //			spectrumModel = SpectrumAlignmentModel.importPartialSpectrumFile(aMap, partialSpectrumName );
 			spectrumModel = new SpectrumAlignmentModel(aMap, trueAlignment);
+			
 		}
 
 
@@ -138,13 +142,30 @@ public class MainMCMCSpectrumFull {
 		CoalescentLikelihood coalescent = new CoalescentLikelihood(treeModel,null, new ArrayList<TaxonList>(), popModel);
 		coalescent.setId("coalescent");
 
-		// Simulate haplotypes, treeLikelihood
-		HashMap<String, Object> parameterList = MCMCSetupHelperSpectrum.setupSpectrumTreeLikelihoodSpectrumModel(treeModel, spectrumModel);
+		// Simulate  treeLikelihood
+//		HashMap<String, Object> parameterList = MCMCSetupHelperSpectrum.setupSpectrumTreeLikelihoodSpectrumModel(treeModel, spectrumModel);
+//		Parameter kappa = (Parameter) parameterList.get("kappa");
+//		Parameter freqs = (Parameter) parameterList.get("freqs");
+//		Parameter rate = (Parameter) parameterList.get("rate");
+//		StrictClockBranchRates branchRateModel = (StrictClockBranchRates) parameterList.get("branchRateModel");
+//		SpectrumTreeLikelihood treeLikelihood = (SpectrumTreeLikelihood) parameterList.get("treeLikelihood");
+//		
+		
+		//TODO remove later: Treelikelihood is the same!!
+		HaplotypeModel haplotypeModel = new HaplotypeModel(aMap, trueAlignment);
+		HashMap<String, Object> parameterList = MCMCSetupHelperSpectrum
+				.setupSpectrumTreeLikelihoodSpectrumModelTest(treeModel,
+						spectrumModel, haplotypeModel);
 		Parameter kappa = (Parameter) parameterList.get("kappa");
 		Parameter freqs = (Parameter) parameterList.get("freqs");
 		Parameter rate = (Parameter) parameterList.get("rate");
 		StrictClockBranchRates branchRateModel = (StrictClockBranchRates) parameterList.get("branchRateModel");
 		SpectrumTreeLikelihood treeLikelihood = (SpectrumTreeLikelihood) parameterList.get("treeLikelihood");
+		TreeLikelihoodExt hapTreeLikelihood = (TreeLikelihoodExt) parameterList.get("hapTreeLikelihood");
+		System.out.println(treeLikelihood.getLogLikelihood() +"\t"+ hapTreeLikelihood.getLogLikelihood()
+				+"\tDelta:"+ (treeLikelihood.getLogLikelihood()-hapTreeLikelihood.getLogLikelihood()));
+		System.exit(-1);
+		
 		
 		// ShortReadLikelihood
 		ShortReadsSpectrumLikelihood srpLikelihood = new ShortReadsSpectrumLikelihood(spectrumModel);

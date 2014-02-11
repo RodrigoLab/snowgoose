@@ -40,7 +40,7 @@ public class AlignmentUtils {
 
         Taxon[] taxa = new Taxon[sequences.length]; 
         for (int i=0; i < sequences.length; i++) {
-            taxa[i] = new Taxon("Taxa_"+i);
+            taxa[i] = new Taxon("taxa_"+i);
 
             Sequence sequence = new Sequence(sequences[i].toString());
             sequence.setTaxon(taxa[i]);

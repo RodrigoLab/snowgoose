@@ -38,7 +38,7 @@ public class MCMCSetupHelperHaplotype extends MCMCSetupHelper {
 	public static HashMap<String, Object> setupTreeLikelihoodHaplotypeModel(TreeModel treeModel,
 			HaplotypeModel haplotypeModel) {
 		
-		double errorRate = 0.01;
+		double errorRate = 0;
 		
 		// clock model
 		Parameter rateParameter = new Parameter.Default(StrictClockBranchRates.RATE, 1e-5, 0, 1);

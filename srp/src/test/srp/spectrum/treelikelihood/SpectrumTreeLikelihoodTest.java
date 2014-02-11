@@ -14,6 +14,8 @@ import srp.core.MCMCSetupHelper;
 import srp.core.MCMCSetupHelperSpectrum;
 import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.AlignmentUtils;
+import srp.haplotypes.HaplotypeModel;
+import srp.haplotypes.HaplotypeModelUtils;
 import srp.spectrum.SpectraParameter;
 import srp.spectrum.Spectrum;
 import srp.spectrum.SpectrumAlignmentModel;
@@ -37,6 +39,8 @@ import dr.evomodel.tree.TreeModel;
 import dr.evomodel.treelikelihood.TreeLikelihood;
 import dr.evomodelxml.sitemodel.GammaSiteModelParser;
 import dr.evomodelxml.substmodel.HKYParser;
+import dr.ext.TreeLikelihoodExt;
+import dr.inference.markovchain.MarkovChain;
 import dr.inference.mcmc.MCMC;
 import dr.inference.mcmc.MCMCOptions;
 import dr.inference.model.Parameter;
@@ -49,6 +53,7 @@ import dr.math.MathUtils;
 
 public class SpectrumTreeLikelihoodTest {
 
+	private static final double THRESHOLD = MarkovChain.EVALUATION_TEST_THRESHOLD;
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 	}
@@ -510,8 +515,8 @@ public class SpectrumTreeLikelihoodTest {
 		}
 	}
 	
-	
-	public void testMultiCreation() throws Exception {
+	@Test
+	public void testCompareToTreeLikelihood() throws Exception {
 
 		// Sub model
 		Parameter freqs = new Parameter.Default(new double[] { 0.25, 0.25,
@@ -529,49 +534,40 @@ public class SpectrumTreeLikelihoodTest {
 		siteModel.setMutationRateParameter(mu);
 
 		// treeLikelihood
-		Taxon[] taxa = new Taxon[4];
+		Taxon[] taxa = new Taxon[8];
 		for (int i = 0; i < taxa.length; i++) {
 			taxa[i] = new Taxon("taxa_"+i);
 		}
 
 		TreeModel treeModel = createTreeModel(taxa, 0.01);
-		
-		String[] seqs = new String[] {"ACGT"};
+		char[] DANChars = new char[]{'A', 'C', 'G', 'T'};
+		for (int i = 0; i < 1000; i++) {
+			int length = MathUtils.nextInt(100)+10;
+			String[] seqs = new String[taxa.length];
+			for (int t = 0; t < seqs.length; t++) {
+				String s = "";
+				for (int c = 0; c < length; c++) {
+					s+= DANChars[MathUtils.nextInt(4)];
+				}
+				seqs[t] = s;
+			}
+			SimpleAlignment alignment = AlignmentUtils.createAlignment(seqs);
+			AlignmentMapping aMap = new AlignmentMapping(alignment);
 			
-		AlignmentMapping aMap = new AlignmentMapping(AlignmentUtils.createAlignment(seqs));
-//		SimpleAlignment alignment = AlignmentUtils.createAlignment(seqs);
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 4, 2);
-		SpectrumTreeLikelihood spectrumTreeLikelihood = new SpectrumTreeLikelihood(spectrumModel, treeModel,
-				siteModel, null, false, false, true, false, false);
-
-		SimpleMCMCOperator op = new DeltaExchangeSingleSpectrumOperator(spectrumModel, 0.1, null);
-
-
-		for (int i = 0; i < 1e7; i++) {
-			if (i%10000 == 0){
-				double heapSize = Runtime.getRuntime().totalMemory()/1e6; 
-				double heapMaxSize = Runtime.getRuntime().maxMemory()/1e6;
-				double heapFreeSize = Runtime.getRuntime().freeMemory()/1e6; 
+	//		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 4, 2);
+			SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, alignment);
+			SpectrumTreeLikelihood spectrumTreeLikelihood = new SpectrumTreeLikelihood(spectrumModel, treeModel,
+					siteModel, null, false, false, true, false, false);
 	
-				System.out.println(i +"\t"+ heapSize +"\t"+ heapMaxSize +"\t"+ heapFreeSize);
-			}
-			try {
-				SpectrumTreeLikelihood s = new SpectrumTreeLikelihood(spectrumModel, treeModel,
-						siteModel, null, false, false, true, false, false);
-
-
-			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
-//			} catch (OutOfMemoryError e1) {
-//				System.out.println("ite:"+i);
-//				e1.printStackTrace();
-			} catch (Throwable e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			HaplotypeModel haplotypeModel = new HaplotypeModel(aMap, alignment);
+			TreeLikelihoodExt treeLikelihood = new TreeLikelihoodExt(haplotypeModel, treeModel, 
+					siteModel, null, null, false, false, true, false, false);
+			
+			assertEquals(spectrumTreeLikelihood.getLogLikelihood(), 
+					treeLikelihood.getLogLikelihood(), THRESHOLD);
 		}
+
 	}
-	
 	private static TreeModel createTreeModel(Taxon[] taxa, double height) {
 		
 		int length = taxa.length;
@@ -697,5 +693,66 @@ public class SpectrumTreeLikelihoodTest {
 
 		return new TreeModel(tree); // treeModel
 	}
+
+	public void testMultiCreation() throws Exception {
+	
+			// Sub model
+			Parameter freqs = new Parameter.Default(new double[] { 0.25, 0.25,
+					0.25, 0.25 });
+			Parameter kappa = new Parameter.Default(HKYParser.KAPPA, 1.0, 0, 100);
+	
+			FrequencyModel f = new FrequencyModel(Nucleotides.INSTANCE, freqs);
+			HKY hky = new HKY(kappa, f);
+	
+			// siteModel
+			GammaSiteModel siteModel = new GammaSiteModel(hky);
+			Parameter mu = new Parameter.Default(
+					GammaSiteModelParser.MUTATION_RATE, 1.0, 0,
+					Double.POSITIVE_INFINITY);
+			siteModel.setMutationRateParameter(mu);
+	
+			// treeLikelihood
+			Taxon[] taxa = new Taxon[4];
+			for (int i = 0; i < taxa.length; i++) {
+				taxa[i] = new Taxon("taxa_"+i);
+			}
+	
+			TreeModel treeModel = createTreeModel(taxa, 0.01);
+			
+			String[] seqs = new String[] {"ACGT"};
+				
+			AlignmentMapping aMap = new AlignmentMapping(AlignmentUtils.createAlignment(seqs));
+	//		SimpleAlignment alignment = AlignmentUtils.createAlignment(seqs);
+			SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 4, 2);
+			SpectrumTreeLikelihood spectrumTreeLikelihood = new SpectrumTreeLikelihood(spectrumModel, treeModel,
+					siteModel, null, false, false, true, false, false);
+	
+			SimpleMCMCOperator op = new DeltaExchangeSingleSpectrumOperator(spectrumModel, 0.1, null);
+	
+	
+			for (int i = 0; i < 1e7; i++) {
+				if (i%10000 == 0){
+					double heapSize = Runtime.getRuntime().totalMemory()/1e6; 
+					double heapMaxSize = Runtime.getRuntime().maxMemory()/1e6;
+					double heapFreeSize = Runtime.getRuntime().freeMemory()/1e6; 
+		
+					System.out.println(i +"\t"+ heapSize +"\t"+ heapMaxSize +"\t"+ heapFreeSize);
+				}
+				try {
+					SpectrumTreeLikelihood s = new SpectrumTreeLikelihood(spectrumModel, treeModel,
+							siteModel, null, false, false, true, false, false);
+					
+	
+				} catch (IllegalArgumentException e) {
+					e.printStackTrace();
+	//			} catch (OutOfMemoryError e1) {
+	//				System.out.println("ite:"+i);
+	//				e1.printStackTrace();
+				} catch (Throwable e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
 
 }

@@ -91,7 +91,9 @@ public class Spectrum extends AbstractModel implements Attributable {
 //				setFrequencies(site, newFreq);
 			}
 			else{
+				System.out.println(c +"\t"+ state +"\tat:"+ i);
 				spectra = new SpectraParameter(SpectraParameter.EQUAL_FREQ);
+				spectra.setFrequenciesQuietly(new double[]{1,1,1,1});
 			}
 			
 //			SpectraParameter spectra = new SpectraParameter(initFreq);

@@ -1,10 +1,12 @@
 package test;
 
 import static org.junit.Assert.assertTrue;
+import dr.inference.markovchain.MarkovChain;
 
 public class TestUtils {
 
 	public static final double UNITTEST_THRESHOLD = 1e-8;
+	public static final double THRESHOLD = MarkovChain.EVALUATION_TEST_THRESHOLD;
 	public static void assertExpectationRange(double mean, double value, double error) {
         double upper = value + error;
         double lower = value - error;
