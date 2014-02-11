@@ -144,6 +144,7 @@ public class ShortReadLikelihood extends AbstractModelLikelihood {
 			for (int i = 0; i < logBinomD.length; i++) {
 
 				logBinomD[i] = ArithmeticUtils.binomialCoefficientLog(srLength, i)+i*LOG_ERROR_RATE+(srLength-i)*LOG_ONE_MINUS_ERROR_RATE;
+				logBinomD[i] = i*LOG_ERROR_RATE+(srLength-i)*LOG_ONE_MINUS_ERROR_RATE;
 				scaledBinomD[i] = liS.scale(logBinomD[i]); 
 			}
 //			System.out.println(Arrays.toString(logBinomD));

@@ -8,6 +8,7 @@ import java.util.HashMap;
 
 import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.HaplotypeModel;
+import srp.haplotypes.likelihood.ShortReadLikelihood;
 import srp.spectrum.SpectrumAlignmentModel;
 import srp.spectrum.SpectrumAlignmentModel.SpectrumType;
 import srp.spectrum.SpectrumLogger;
@@ -143,33 +144,25 @@ public class MainMCMCSpectrumFull {
 		coalescent.setId("coalescent");
 
 		// Simulate  treeLikelihood
-//		HashMap<String, Object> parameterList = MCMCSetupHelperSpectrum.setupSpectrumTreeLikelihoodSpectrumModel(treeModel, spectrumModel);
-//		Parameter kappa = (Parameter) parameterList.get("kappa");
-//		Parameter freqs = (Parameter) parameterList.get("freqs");
-//		Parameter rate = (Parameter) parameterList.get("rate");
-//		StrictClockBranchRates branchRateModel = (StrictClockBranchRates) parameterList.get("branchRateModel");
-//		SpectrumTreeLikelihood treeLikelihood = (SpectrumTreeLikelihood) parameterList.get("treeLikelihood");
-//		
-		
-		//TODO remove later: Treelikelihood is the same!!
-		HaplotypeModel haplotypeModel = new HaplotypeModel(aMap, trueAlignment);
-		HashMap<String, Object> parameterList = MCMCSetupHelperSpectrum
-				.setupSpectrumTreeLikelihoodSpectrumModelTest(treeModel,
-						spectrumModel, haplotypeModel);
+		HashMap<String, Object> parameterList = MCMCSetupHelperSpectrum.setupSpectrumTreeLikelihoodSpectrumModel(treeModel, spectrumModel);
 		Parameter kappa = (Parameter) parameterList.get("kappa");
 		Parameter freqs = (Parameter) parameterList.get("freqs");
 		Parameter rate = (Parameter) parameterList.get("rate");
 		StrictClockBranchRates branchRateModel = (StrictClockBranchRates) parameterList.get("branchRateModel");
 		SpectrumTreeLikelihood treeLikelihood = (SpectrumTreeLikelihood) parameterList.get("treeLikelihood");
-		TreeLikelihoodExt hapTreeLikelihood = (TreeLikelihoodExt) parameterList.get("hapTreeLikelihood");
-		System.out.println(treeLikelihood.getLogLikelihood() +"\t"+ hapTreeLikelihood.getLogLikelihood()
-				+"\tDelta:"+ (treeLikelihood.getLogLikelihood()-hapTreeLikelihood.getLogLikelihood()));
-		System.exit(-1);
 		
 		
 		// ShortReadLikelihood
 		ShortReadsSpectrumLikelihood srpLikelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
 
+		//REMOVE: test srpLikelihood vs srpHapLikelihood: Differ by binomialCoefficientLog
+		HaplotypeModel haplotypeModel = new HaplotypeModel(aMap, trueAlignment);
+		ShortReadLikelihood srpHapLikelihood = new ShortReadLikelihood(haplotypeModel);
+		System.out.println(srpLikelihood.getLogLikelihood());
+		System.out.println(srpHapLikelihood.getLogLikelihood());
+		System.out.println("Delta: "+( srpLikelihood.getLogLikelihood()-srpHapLikelihood.getLogLikelihood() ));
+		System.exit(0);
+		
 		// CompoundLikelihood
 		HashMap<String, Likelihood> compoundlikelihoods = MCMCSetupHelper.setupCompoundLikelihood(
 				popSize, kappa, coalescent, treeLikelihood, srpLikelihood);
@@ -244,7 +237,22 @@ public class MainMCMCSpectrumFull {
 		mcmc.init(options, posterior, schedule, loggers);
 		mcmc.run();
 		System.out.println(mcmc.getTimer().toString());
+
 		
+//		//TODO remove later: Treelikelihood is the same!!
+//		HaplotypeModel haplotypeModel = new HaplotypeModel(aMap, trueAlignment);
+//		HashMap<String, Object> parameterList = MCMCSetupHelperSpectrum
+//				.setupSpectrumTreeLikelihoodSpectrumModelTest(treeModel,
+//						spectrumModel, haplotypeModel);
+//		Parameter kappa = (Parameter) parameterList.get("kappa");
+//		Parameter freqs = (Parameter) parameterList.get("freqs");
+//		Parameter rate = (Parameter) parameterList.get("rate");
+//		StrictClockBranchRates branchRateModel = (StrictClockBranchRates) parameterList.get("branchRateModel");
+//		SpectrumTreeLikelihood treeLikelihood = (SpectrumTreeLikelihood) parameterList.get("treeLikelihood");
+//		TreeLikelihoodExt hapTreeLikelihood = (TreeLikelihoodExt) parameterList.get("hapTreeLikelihood");
+//		System.out.println(treeLikelihood.getLogLikelihood() +"\t"+ hapTreeLikelihood.getLogLikelihood()
+//				+"\tDelta:"+ (treeLikelihood.getLogLikelihood()-hapTreeLikelihood.getLogLikelihood()));
+//		System.exit(-1);
 //		if (schedule.getOperator(0).getOperatorName().equals("DeltaExchangeSingleSpectrumOperator")){
 //			DeltaExchangeSingleSpectrumOperator oo = (DeltaExchangeSingleSpectrumOperator) schedule.getOperator(0);
 //			System.out.println(oo.failcount);

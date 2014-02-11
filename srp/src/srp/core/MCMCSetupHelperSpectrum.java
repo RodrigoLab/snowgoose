@@ -268,54 +268,5 @@ public class MCMCSetupHelperSpectrum extends MCMCSetupHelper {
 		return schedule;
 
 	}
-
-	public static HashMap<String, Object> setupSpectrumTreeLikelihoodSpectrumModelTest(
-			TreeModel treeModel, SpectrumAlignmentModel spectrumModel,
-			HaplotypeModel haplotypeModel) {
-
-		// clock model
-		Parameter rateParameter = new Parameter.Default(StrictClockBranchRates.RATE, 1e-5, 0, 1);
-		StrictClockBranchRates branchRateModel = new StrictClockBranchRates(rateParameter);
-	
-		Parameter freqs = new Parameter.Default("frequency", new double[]{0.25, 0.25, 0.25, 0.25});
-		Parameter kappa = new Parameter.Default(HKYParser.KAPPA, 1.0, 0, 100.0);
-
-		// Sub model
-		FrequencyModel f = new FrequencyModel(Nucleotides.INSTANCE, freqs);
-		HKY hky = new HKY(kappa, f);
-
-		// siteModel
-		GammaSiteModel siteModel = new GammaSiteModel(hky);
-		Parameter mu = new Parameter.Default(
-				GammaSiteModelParser.MUTATION_RATE, 1, 0, Double.POSITIVE_INFINITY);
-		siteModel.setMutationRateParameter(mu);
-
-//		// Simulate halotypes
-//		if(errorRate>0){
-//			haplotypeModel.simulateSequence(errorRate, siteModel, hky, treeModel);
-//		}
-		
-		// treeLikelihood
-		SpectrumTreeLikelihood treeLikelihood = new SpectrumTreeLikelihood(
-				spectrumModel, treeModel, siteModel, branchRateModel, 
-				false, false, true, false, false);
-		treeLikelihood.setId(TreeLikelihoodParser.TREE_LIKELIHOOD);
-		
-		TreeLikelihoodExt hapTreeLikelihood = new TreeLikelihoodExt(
-				haplotypeModel, treeModel, siteModel, branchRateModel, null,
-				false, false, true, false, false);
-		//	
-		HashMap<String, Object> parameterList = new HashMap<String, Object>();
-		parameterList.put("kappa", kappa);
-		parameterList.put("freqs", freqs);
-		parameterList.put("treeLikelihood", treeLikelihood);
-		parameterList.put("branchRateModel", branchRateModel);
-		parameterList.put("rate", rateParameter);
-		parameterList.put("hapTreeLikelihood", hapTreeLikelihood);
-		return parameterList;
-		
-
-	}
-
 	
 }

@@ -71,7 +71,8 @@ public class Spectrum extends AbstractModel implements Attributable {
 		stateCount = dataType.getStateCount();
 	}
 	
-//	public static SpectrumFactory(Sequence sequence)
+//	spectra.setFrequenciesQuietly(new double[]{1,1,1,1});// - in standardTreeLikelihood calculation
+
 	public Spectrum(Sequence sequence) {
 		//TODO change to static factory method
 		super("Spectrum");
@@ -91,9 +92,7 @@ public class Spectrum extends AbstractModel implements Attributable {
 //				setFrequencies(site, newFreq);
 			}
 			else{
-				System.out.println(c +"\t"+ state +"\tat:"+ i);
 				spectra = new SpectraParameter(SpectraParameter.EQUAL_FREQ);
-				spectra.setFrequenciesQuietly(new double[]{1,1,1,1});
 			}
 			
 //			SpectraParameter spectra = new SpectraParameter(initFreq);
