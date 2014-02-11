@@ -67,35 +67,40 @@ public class MainMCMCSpectrumFull {
 //		noOfRecoveredHaplotype= Integer.parseInt(args[5]);
 		{	
 			dataDir = "/home/sw167/workspaceSrp/snowgoose/srp/unittest/testData/";
-			runIndex = 1;
-			totalSamples = 100;
-			logInterval = 100;
+			runIndex = 50;
+			dataDir += "H7_"+runIndex+"/";
+			
+			totalSamples = 1000	 ;
+			logInterval = 50000;
 			
 			randomTree = true;
 			randomTree = false;
 			
 			randomSpectrum = true;
 			randomSpectrumType = SpectrumAlignmentModel.SpectrumType.ZERO_ONE;
-			randomSpectrumType = SpectrumAlignmentModel.SpectrumType.RANDOM;
+//			randomSpectrumType = SpectrumAlignmentModel.SpectrumType.RANDOM;
 //			randomSpectrum = false;
 			
 			noOfTrueHaplotype = 7;
 			noOfRecoveredHaplotype=7;
 		}
 		
-		
 		String hapRunIndex = "H"+noOfTrueHaplotype+"_"+runIndex;
-		String shortReadFile = hapRunIndex +"_Srp.fasta";
-		String trueHaplotypeFile = hapRunIndex +"_Srp_fullHaplotype.fasta";
-		
 		String prefix = dataDir+"FullTree_"+hapRunIndex;
+		
+		String shortReadFile = hapRunIndex +"_Srp.fasta";
+//		String trueHaplotypeFile = hapRunIndex +"_Srp_fullHaplotype.fasta";
+		String trueHaplotypeFile = "FullTree_H7_"+runIndex+".haplatypepartial";
+//		String trueHaplotypeFile = prefix+".haplatypepartial";
+		
 		String logTracerName = prefix+".log";
 		String logTreeName = prefix+".trees";
 		String logHaplotypeName = prefix+".haplatype";
 		String operatorAnalysisFile = prefix+"_operatorAnalysisFile.txt";
 		
 		String partialSpectrumName = prefix+".haplatypepartial";
-		String partialTreeName = "FullTree_"+hapRunIndex+".treespartial";
+		String partialTreeName = "FullTree_"+hapRunIndex+".treespartial_true2";
+//		String partialTreeName = hapRunIndex + "_Srp.tree";
 		
 		DataImporter dataImporter = new DataImporter(dataDir);
 
@@ -107,11 +112,13 @@ public class MainMCMCSpectrumFull {
 		SpectrumAlignmentModel spectrumModel;
 		if(randomSpectrum){
 			spectrumModel = new SpectrumAlignmentModel(aMap, noOfRecoveredHaplotype, randomSpectrumType);
+
 		}
 		else{
-			spectrumModel = SpectrumAlignmentModel.importPartialSpectrumFile(aMap, partialSpectrumName );
+//			spectrumModel = SpectrumAlignmentModel.importPartialSpectrumFile(aMap, partialSpectrumName );
+			spectrumModel = new SpectrumAlignmentModel(aMap, trueAlignment);
 		}
-//		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, trueAlignment);
+
 
 		// coalescent
 		Parameter popSize = new Parameter.Default(ConstantPopulationModelParser.POPULATION_SIZE, 3000.0, 100, 100000.0);
@@ -135,6 +142,7 @@ public class MainMCMCSpectrumFull {
 		HashMap<String, Object> parameterList = MCMCSetupHelperSpectrum.setupSpectrumTreeLikelihoodSpectrumModel(treeModel, spectrumModel);
 		Parameter kappa = (Parameter) parameterList.get("kappa");
 		Parameter freqs = (Parameter) parameterList.get("freqs");
+		Parameter rate = (Parameter) parameterList.get("rate");
 		StrictClockBranchRates branchRateModel = (StrictClockBranchRates) parameterList.get("branchRateModel");
 		SpectrumTreeLikelihood treeLikelihood = (SpectrumTreeLikelihood) parameterList.get("treeLikelihood");
 		
@@ -179,7 +187,7 @@ public class MainMCMCSpectrumFull {
 		loggers[0] = new MCLogger(logTracerName, logInterval, false, 0);
 		MCMCSetupHelper.addToLogger(loggers[0], posterior, prior, likelihood, shortReadLikelihood,
 				rootHeight, 
-				//rateParameter,
+				rate,
 				popSize, kappa, coalescent,
 				freqs
 				);
@@ -188,6 +196,7 @@ public class MainMCMCSpectrumFull {
 		MCMCSetupHelper.addToLogger(loggers[1],
 //				freqs
 				posterior, prior, likelihood, shortReadLikelihood,
+				rate,
 				popSize, kappa, coalescent, rootHeight
 				);
 		// log Tree
