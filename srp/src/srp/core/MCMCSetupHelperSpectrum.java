@@ -97,6 +97,132 @@ public class MCMCSetupHelperSpectrum extends MCMCSetupHelper {
 			
 		}
 
+	public static OperatorSchedule defalutSpectrumOperators(
+				OperatorSchedule schedule,
+				SpectrumAlignmentModel spectrumModel, Parameter... parameters) {
+	
+	//COERCION_OFF
+	//		Operator                                          Tuning   Count      Time     Time/Op  Pr(accept) 
+	//0.2		SingleSpectrumDeltaExchangeOperator                       667156     75941    0.11     0.0565      
+	//0.1		ColumnSpectrumDeltaExchangeOperator                       3332844    234268   0.07     0.0209   
+			
+			
+			MCMCOperator operator;
+			
+			operator = new DeltaExchangeSingleSpectrumOperator(spectrumModel, 0.2, CoercionMode.COERCION_OFF);
+	//		0.05 delta, accept 0.8
+			operator.setWeight(opSpectrum);
+	//		schedule.addOperator(operator);
+	//		Operator                                          Tuning   Count      Time     Time/Op  Pr(accept) 
+	//		SingleSpectrumDeltaExchangeOperator               0.205   1000000    117482   0.12     0.2375      
+	
+	
+	
+			
+			operator = new DeltaExchangeColumnSpectrumOperator(spectrumModel, 0.05, CoercionMode.COERCION_OFF);
+			operator.setWeight(opSpectrum*10);//fast! 
+	//		schedule.addOperator(operator);
+	//		COERCION_ON
+	//		Operator                                          Tuning   Count      Time     Time/Op  Pr(accept) 
+	//		ColumnSpectrumDeltaExchangeOperator               0.012   1000000    141392   0.14     0.2344 
+			
+			
+			operator = new DeltaExchangeMultiSpectrumOperator(spectrumModel, 0.1,
+					6, CoercionMode.COERCION_OFF);
+			operator.setWeight(opSpectrum*2);//fix delta at 0.02(~7bp) or 0.05(3bp)
+	//		schedule.addOperator(operator);
+			
+			operator = new RecombinationSpectrumOperator(spectrumModel);
+			operator.setWeight(opSpectrum/10); //(3bp)
+	//		schedule.addOperator(operator);
+	
+	
+			operator = new RecombineSectionSpectrumOperator(spectrumModel, 6,
+					CoercionMode.COERCION_ON);
+			operator.setWeight(opMed); //(3bp)
+//			schedule.addOperator(operator);
+	
+	//		Operator analysis
+	//		Operator                                          Tuning   Count      Time     Time/Op  Pr(accept)  Performance suggestion
+	//		SingleSpectrumDeltaExchangeOperator                       67009      8749     0.13     0.0076      low	Tuning 0.2
+	//		ColumnSpectrumDeltaExchangeOperator                       666179     14209    0.02     0.0011      very low	Tuning 0.05
+	//		RecombinationSpectrumOperator                             133587     1464373  10.96    0.0425      low	Tuning 12
+	//		SwapSectionSpectrumOperator                               133225     63241    0.47     0.0419      low	Tuning 12
+	
+			operator = new SwapSingleSpectrumOperator(spectrumModel, false);
+			operator.setWeight(opSpectrum*1);
+			schedule.addOperator(operator);
+			
+			operator = new SwapMultiSpectrumOperator(spectrumModel, 3, CoercionMode.COERCION_ON, true);
+			operator.setWeight(opSpectrum*1);
+//			schedule.addOperator(operator);
+			
+			operator = new SwapColumnSpectrumOperator(spectrumModel, CoercionMode.COERCION_OFF);
+			operator.setWeight(opSpectrum*5);
+	//		schedule.addOperator(operator);
+			
+			operator = new SwapSubColumnSpectrumOperator(spectrumModel, 1, CoercionMode.COERCION_OFF);
+			operator.setWeight(opSpectrum*1);
+	//		schedule.addOperator(operator);
+			
+			operator = new SwapSubColumnSpectrumOperator(spectrumModel, 3, CoercionMode.COERCION_ON);
+			operator.setWeight(opSpectrum*1);
+	//		schedule.addOperator(operator);
+	
+			// SwapSubColumnSpectrumOperator 39971 12299 0.31 0.2589 good Tuning 1
+			// SwapSubColumnSpectrumOperator 40076 13092 0.33 0.0485 low Tuning 2
+			// SwapSubColumnSpectrumOperator 39805 13713 0.34 0.0071 low Tuning 3
+			// SwapSubColumnSpectrumOperator 40084 14282 0.36 0.0 very low Tuning 4
+			// SwapSubColumnSpectrumOperator 2.0 40054 12469 0.31 0.2342 good Tuning 2
+	
+			operator = new DirichletSpectrumOperator(spectrumModel, 3, CoercionMode.COERCION_ON);
+			operator.setWeight(opSpectrum*1);
+//			schedule.addOperator(operator);
+			operator = new DirichletSpectrumOperator(spectrumModel, 1, CoercionMode.COERCION_OFF);
+			operator.setWeight(opSpectrum*1);
+//			schedule.addOperator(operator);
+	//		operator = new DirichletSpectrumOperator(spectrumModel, 12, CoercionMode.COERCION_OFF);
+	//		operator.setWeight(opSpectrum*1);
+	//		schedule.addOperator(operator);
+	
+			operator = new DirichletAlphaSpectrumOperator(spectrumModel, 100, CoercionMode.COERCION_ON);
+			operator.setWeight(opSpectrum*1);
+//			schedule.addOperator(operator);
+	//		operator = new DirichletAlphaSpectrumOperator(spectrumModel, 10, CoercionMode.COERCION_OFF);
+	//		operator.setWeight(opSpectrum*1);
+	//		schedule.addOperator(operator);
+	//		operator = new DirichletAlphaSpectrumOperator(spectrumModel, 1000, CoercionMode.COERCION_OFF);
+	//		operator.setWeight(opSpectrum*1);
+	//		schedule.addOperator(operator);
+	
+			for (Parameter parameter : parameters) {
+	
+				String parameterName = parameter.getParameterName();
+				
+				if("kappa".equals(parameterName)){
+					operator = new ScaleOperator(parameter, 0.75);
+					operator.setWeight(opTiny);
+					schedule.addOperator(operator);
+				}
+				else if("frequency".equals(parameterName)){
+					operator = new DeltaExchangeOperator(parameter, new int[] { 1,
+							1, 1, 1 }, 0.01, 0.1, false, CoercionMode.COERCION_ON);
+					operator.setWeight(opTiny);
+					schedule.addOperator(operator);
+					
+				}
+				else if("populationSize".equals(parameterName)){
+					operator = new ScaleOperator(parameter, 0.75);
+					operator.setWeight(opSmall);
+					schedule.addOperator(operator);
+				}
+				
+			}
+			
+			return schedule;
+	
+		}
+
 	public static OperatorSchedule defalutTreeOperators(
 			OperatorSchedule schedule, TreeModel treeModel) {
 
@@ -110,7 +236,7 @@ public class MCMCSetupHelperSpectrum extends MCMCSetupHelper {
 				new Scalable[] { new Scalable.Default(allInternalHeights) },
 				0.75, 3.0, CoercionMode.COERCION_ON);
 		operator.setWeight(opSmall);
-//		schedule.addOperator(operator);
+		schedule.addOperator(operator);
 
 		Parameter rootHeight = treeModel.getRootHeightParameter();
 		rootHeight.setId("TREE_HEIGHT");
@@ -126,147 +252,22 @@ public class MCMCSetupHelperSpectrum extends MCMCSetupHelper {
 		operator = new SubtreeSlideOperator(treeModel, 15.0, 1.0, true, false,
 				false, false, CoercionMode.COERCION_ON);
 		operator.setWeight(opMed);
-//		schedule.addOperator(operator);
+		schedule.addOperator(operator);
 
 		operator = new ExchangeOperator(ExchangeOperator.NARROW, treeModel, 15.0);
 		operator.setWeight(opMed);
-//		schedule.addOperator(operator);
+		schedule.addOperator(operator);
 
 		operator = new ExchangeOperator(ExchangeOperator.WIDE, treeModel, 3.0);
 		operator.setWeight(opSmall);
-//		schedule.addOperator(operator);
+		schedule.addOperator(operator);
 
 		operator = new WilsonBalding(treeModel, 3.0);
 		operator.setWeight(opSmall);
-//		schedule.addOperator(operator);
+		schedule.addOperator(operator);
 
 		return schedule;
 	}
 
-	public static OperatorSchedule defalutSpectrumOperators(
-			OperatorSchedule schedule,
-			SpectrumAlignmentModel spectrumModel, Parameter... parameters) {
-
-//COERCION_OFF
-//		Operator                                          Tuning   Count      Time     Time/Op  Pr(accept) 
-//0.2		SingleSpectrumDeltaExchangeOperator                       667156     75941    0.11     0.0565      
-//0.1		ColumnSpectrumDeltaExchangeOperator                       3332844    234268   0.07     0.0209   
-		
-		
-		MCMCOperator operator;
-		
-		operator = new DeltaExchangeSingleSpectrumOperator(spectrumModel, 0.2, CoercionMode.COERCION_OFF);
-//		0.05 delta, accept 0.8
-		operator.setWeight(opSpectrum);
-//		schedule.addOperator(operator);
-//		Operator                                          Tuning   Count      Time     Time/Op  Pr(accept) 
-//		SingleSpectrumDeltaExchangeOperator               0.205   1000000    117482   0.12     0.2375      
-
-
-
-		
-		operator = new DeltaExchangeColumnSpectrumOperator(spectrumModel, 0.05, CoercionMode.COERCION_OFF);
-		operator.setWeight(opSpectrum*10);//fast! 
-//		schedule.addOperator(operator);
-//		COERCION_ON
-//		Operator                                          Tuning   Count      Time     Time/Op  Pr(accept) 
-//		ColumnSpectrumDeltaExchangeOperator               0.012   1000000    141392   0.14     0.2344 
-		
-		
-		operator = new DeltaExchangeMultiSpectrumOperator(spectrumModel, 0.1,
-				6, CoercionMode.COERCION_OFF);
-		operator.setWeight(opSpectrum*2);//fix delta at 0.02(~7bp) or 0.05(3bp)
-//		schedule.addOperator(operator);
-		
-		operator = new RecombinationSpectrumOperator(spectrumModel);
-		operator.setWeight(opSpectrum/10); //(3bp)
-//		schedule.addOperator(operator);
-
-
-		operator = new RecombineSectionSpectrumOperator(spectrumModel, 6,
-				CoercionMode.COERCION_ON);
-		operator.setWeight(opMed); //(3bp)
-		schedule.addOperator(operator);
-
-//		Operator analysis
-//		Operator                                          Tuning   Count      Time     Time/Op  Pr(accept)  Performance suggestion
-//		SingleSpectrumDeltaExchangeOperator                       67009      8749     0.13     0.0076      low	Tuning 0.2
-//		ColumnSpectrumDeltaExchangeOperator                       666179     14209    0.02     0.0011      very low	Tuning 0.05
-//		RecombinationSpectrumOperator                             133587     1464373  10.96    0.0425      low	Tuning 12
-//		SwapSectionSpectrumOperator                               133225     63241    0.47     0.0419      low	Tuning 12
-
-		operator = new SwapSingleSpectrumOperator(spectrumModel, false);
-		operator.setWeight(opSpectrum*1);
-//		schedule.addOperator(operator);
-		
-		operator = new SwapMultiSpectrumOperator(spectrumModel, 3, CoercionMode.COERCION_ON);
-		operator.setWeight(opSpectrum*1);
-//		schedule.addOperator(operator);
-		
-		operator = new SwapColumnSpectrumOperator(spectrumModel, CoercionMode.COERCION_OFF);
-		operator.setWeight(opSpectrum*5);
-//		schedule.addOperator(operator);
-		
-		operator = new SwapSubColumnSpectrumOperator(spectrumModel, 1, CoercionMode.COERCION_OFF);
-		operator.setWeight(opSpectrum*1);
-//		schedule.addOperator(operator);
-		
-		operator = new SwapSubColumnSpectrumOperator(spectrumModel, 3, CoercionMode.COERCION_ON);
-		operator.setWeight(opSpectrum*1);
-//		schedule.addOperator(operator);
-
-		// SwapSubColumnSpectrumOperator 39971 12299 0.31 0.2589 good Tuning 1
-		// SwapSubColumnSpectrumOperator 40076 13092 0.33 0.0485 low Tuning 2
-		// SwapSubColumnSpectrumOperator 39805 13713 0.34 0.0071 low Tuning 3
-		// SwapSubColumnSpectrumOperator 40084 14282 0.36 0.0 very low Tuning 4
-		// SwapSubColumnSpectrumOperator 2.0 40054 12469 0.31 0.2342 good Tuning 2
-
-		operator = new DirichletSpectrumOperator(spectrumModel, 3, CoercionMode.COERCION_ON);
-		operator.setWeight(opSpectrum*1);
-		schedule.addOperator(operator);
-		operator = new DirichletSpectrumOperator(spectrumModel, 1, CoercionMode.COERCION_OFF);
-		operator.setWeight(opSpectrum*1);
-		schedule.addOperator(operator);
-//		operator = new DirichletSpectrumOperator(spectrumModel, 12, CoercionMode.COERCION_OFF);
-//		operator.setWeight(opSpectrum*1);
-//		schedule.addOperator(operator);
-
-		operator = new DirichletAlphaSpectrumOperator(spectrumModel, 100, CoercionMode.COERCION_ON);
-		operator.setWeight(opSpectrum*1);
-		schedule.addOperator(operator);
-//		operator = new DirichletAlphaSpectrumOperator(spectrumModel, 10, CoercionMode.COERCION_OFF);
-//		operator.setWeight(opSpectrum*1);
-//		schedule.addOperator(operator);
-//		operator = new DirichletAlphaSpectrumOperator(spectrumModel, 1000, CoercionMode.COERCION_OFF);
-//		operator.setWeight(opSpectrum*1);
-//		schedule.addOperator(operator);
-
-		for (Parameter parameter : parameters) {
-
-			String parameterName = parameter.getParameterName();
-			
-			if("kappa".equals(parameterName)){
-				operator = new ScaleOperator(parameter, 0.75);
-				operator.setWeight(opTiny);
-				schedule.addOperator(operator);
-			}
-			else if("frequency".equals(parameterName)){
-				operator = new DeltaExchangeOperator(parameter, new int[] { 1,
-						1, 1, 1 }, 0.01, 0.1, false, CoercionMode.COERCION_ON);
-				operator.setWeight(opTiny);
-				schedule.addOperator(operator);
-				
-			}
-			else if("populationSize".equals(parameterName)){
-				operator = new ScaleOperator(parameter, 0.75);
-				operator.setWeight(opSmall);
-				schedule.addOperator(operator);
-			}
-			
-		}
-		
-		return schedule;
-
-	}
 	
 }

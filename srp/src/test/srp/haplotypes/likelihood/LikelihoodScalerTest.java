@@ -49,4 +49,27 @@ public class LikelihoodScalerTest {
 		
 	}
 
+	@Test
+	public void testGetLogLikelihoodAdd() {
+		final double C = 1e-200;
+		final double LOG_C = Math.log(C);
+		
+		LikelihoodScaler liS = new LikelihoodScaler(LOG_C);
+		
+		double expected = 0;
+		for (int i = 0; i < 100; i++) {
+			double data = Math.random();
+			expected += data;
+			double logData = liS.scale(Math.log(data));
+			liS.add(logData);
+		}
+		expected = Math.log(expected);
+		
+		double actual = liS.getLogLikelihood();
+		assertEquals(expected, actual, 1e-10);
+		
+		
+	}
+	
+	
 }

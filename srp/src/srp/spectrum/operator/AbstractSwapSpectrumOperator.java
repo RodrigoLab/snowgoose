@@ -64,7 +64,7 @@ public abstract class AbstractSwapSpectrumOperator extends AbstractSpectrumOpera
 				dim2 = MathUtils.nextInt(DIMENSION);
 			} while (dim1 == dim2);
 			double scalar2 = spectra.getParameterValue(dim2);        
-
+			
 	        spectra.setParameterValue(dim1, scalar2);
 	        spectra.setParameterValue(dim2, scalar1);	
 

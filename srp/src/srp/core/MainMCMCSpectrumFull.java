@@ -73,8 +73,8 @@ public class MainMCMCSpectrumFull {
 			runIndex = 50;
 			dataDir += "H7_"+runIndex+"/";
 			
-			totalSamples = 1000	 ;
-			logInterval = 50000;
+			totalSamples = 5000	 ;
+			logInterval = 10000;
 			
 			randomTree = true;
 			randomTree = false;
@@ -92,8 +92,8 @@ public class MainMCMCSpectrumFull {
 		String prefix = dataDir+"FullTree_"+hapRunIndex;
 		
 		String shortReadFile = hapRunIndex +"_Srp.fasta";
-//		String trueHaplotypeFile = hapRunIndex +"_Srp_fullHaplotype.fasta";
-		String trueHaplotypeFile = "FullTree_H7_"+runIndex+".haplatypepartial";
+		String trueHaplotypeFile = hapRunIndex +"_Srp_fullHaplotype.fasta";
+//		String trueHaplotypeFile = "FullTree_H7_"+runIndex+".haplatypepartial";
 //		String trueHaplotypeFile = prefix+".haplatypepartial";
 		
 		String logTracerName = prefix+".log";
@@ -119,8 +119,8 @@ public class MainMCMCSpectrumFull {
 
 		}
 		else{
-//			spectrumModel = SpectrumAlignmentModel.importPartialSpectrumFile(aMap, partialSpectrumName );
-			spectrumModel = new SpectrumAlignmentModel(aMap, trueAlignment);
+			spectrumModel = SpectrumAlignmentModel.importPartialSpectrumFile(aMap, partialSpectrumName );
+//			spectrumModel = new SpectrumAlignmentModel(aMap, trueAlignment);
 			
 		}
 
@@ -154,14 +154,6 @@ public class MainMCMCSpectrumFull {
 		
 		// ShortReadLikelihood
 		ShortReadsSpectrumLikelihood srpLikelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
-
-		//REMOVE: test srpLikelihood vs srpHapLikelihood: Differ by binomialCoefficientLog
-		HaplotypeModel haplotypeModel = new HaplotypeModel(aMap, trueAlignment);
-		ShortReadLikelihood srpHapLikelihood = new ShortReadLikelihood(haplotypeModel);
-		System.out.println(srpLikelihood.getLogLikelihood());
-		System.out.println(srpHapLikelihood.getLogLikelihood());
-		System.out.println("Delta: "+( srpLikelihood.getLogLikelihood()-srpHapLikelihood.getLogLikelihood() ));
-		System.exit(0);
 		
 		// CompoundLikelihood
 		HashMap<String, Likelihood> compoundlikelihoods = MCMCSetupHelper.setupCompoundLikelihood(
@@ -253,6 +245,16 @@ public class MainMCMCSpectrumFull {
 //		System.out.println(treeLikelihood.getLogLikelihood() +"\t"+ hapTreeLikelihood.getLogLikelihood()
 //				+"\tDelta:"+ (treeLikelihood.getLogLikelihood()-hapTreeLikelihood.getLogLikelihood()));
 //		System.exit(-1);
+//		//REMOVE: test srpLikelihood vs srpHapLikelihood: Differ by binomialCoefficientLog
+//		HaplotypeModel haplotypeModel = new HaplotypeModel(aMap, trueAlignment);
+//		ShortReadLikelihood srpHapLikelihood = new ShortReadLikelihood(haplotypeModel);
+//		System.out.println(srpLikelihood.getLogLikelihood());
+//		System.out.println(srpHapLikelihood.getLogLikelihood());
+//		System.out.println("Delta: "+( srpLikelihood.getLogLikelihood()-srpHapLikelihood.getLogLikelihood() ));
+//		System.exit(0);
+//
+//		
+//		
 //		if (schedule.getOperator(0).getOperatorName().equals("DeltaExchangeSingleSpectrumOperator")){
 //			DeltaExchangeSingleSpectrumOperator oo = (DeltaExchangeSingleSpectrumOperator) schedule.getOperator(0);
 //			System.out.println(oo.failcount);

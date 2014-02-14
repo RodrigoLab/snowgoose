@@ -1,4 +1,9 @@
 package srp.core;
+
+import dr.inference.distribution.BetaDistributionModel;
+
+
+
 /*
  -XX:CompileThreshold=50000 -XX:+CITime
   -XX:+DoEscapeAnalysis
@@ -21,28 +26,7 @@ public class Main {
 		char[] cc = {'A','C'};
 		char c = cc[0];
 		for (int t = 0; t < 1e8; t++) {
-//			int a = MathUtils.nextInt(); //8-9k
-//			if(a>0){
-//				c = cc[0];
-//			}
-//			else{
-//				c = cc[1];
-//			}
-//			boolean b = MathUtils.nextBoolean(); //9k
-//			if(b){
-//				c =cc[0];
-//			}
-//			else{
-//				c = cc[1];
-//			}
-
-			//			MathUtils.nextDouble(); //10k
-//			MathUtils.nextByte(); //9k
-			
-//			int a = MathUtils.nextInt(2); //9.5k
-//			c = cc[a];
-			
-//			System.out.println(MathUtils.nextByte());
+//			BetaDistributionModel
 		}
 		long time2 = System.currentTimeMillis();
 
