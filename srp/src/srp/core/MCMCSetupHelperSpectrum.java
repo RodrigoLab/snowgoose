@@ -47,7 +47,7 @@ public class MCMCSetupHelperSpectrum extends MCMCSetupHelper {
 	private static final double opSmall = 3;
 	private static final double opMed = 15;
 	private static final double opLarge = 20;
-	private static final double opSpectrum =150;
+	private static final double opSpectrum =150;//150 works for beta and related
 	
 	public static HashMap<String, Object> setupSpectrumTreeLikelihoodSpectrumModel(
 				TreeModel treeModel, SpectrumAlignmentModel spectrumModel) {

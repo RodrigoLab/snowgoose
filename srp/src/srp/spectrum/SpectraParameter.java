@@ -27,6 +27,7 @@ public class SpectraParameter extends Parameter.Default{
 		this(EQUAL_FREQ);
 		if(type==1){//1 0 0 0
 			double[] freq = new double[DIMENSION];
+
 			int dim = MathUtils.nextInt(DIMENSION);
 			freq[dim]=1;
 			setFrequenciesQuietly(freq);

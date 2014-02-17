@@ -30,6 +30,7 @@ import dr.inference.model.Variable;
 import dr.inference.model.Variable.ChangeType;
 import dr.math.MathUtils;
 import dr.math.distributions.BetaDistribution;
+import dr.math.distributions.ChiSquareDistribution;
 import dr.util.Assert;
 
 /*
@@ -418,28 +419,17 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 						match++;
 					}
 					
-					
-//					double[] frequencies = spectrum.getFrequenciesAt(k);
-//					if(state<STATE_COUNT){
-//						double likelihood = frequencies[state] * NOT_ERROR_RATE
-//								+ (1 - frequencies[state]) * ERROR_RATE;
-//						stateLogLikelihood = Math.log(likelihood);
-//					}
-//					else{
-//						stateLogLikelihood = LOG_ERROR_RATE;
-//					}
-
 					allLogLikelihood[i][j][k] = stateLogLikelihood;
 					spectrumLogLikelihood[i][j] += stateLogLikelihood;
 					
 				}
-				matchCount[i][j] = match;
-				double temp = logBinomialDesnity.get(srLength[i])[match];
-//				spectrumLogLikelihood[i][j] +=ArithmeticUtils.binomialCoefficientLog((end-start), match);
-				spectrumLogLikelihood[i][j] += temp;
-//				spectrumScaledLogLikelihood[i][j] = liS.scale(spectrumLogLikelihood[i][j]);
+				
+				matchCount[i][j] = match; //Binomial
+				double temp = logBinomialDesnity.get(srLength[i])[match]; //Binomial
+				spectrumLogLikelihood[i][j] += temp; //Binomial
 				scaledSpectrumLogLikelihood[i][j] = liS.scale(spectrumLogLikelihood[i][j]);
 				liS.add(scaledSpectrumLogLikelihood[i][j]);
+//				System.out.println(i +"\t"+ j +"\t"+ spectrumLogLikelihood[i][j] +"\t"+ scaledSpectrumLogLikelihood[i][j]);
 //				System.out.println(spectrumLogLikelihood[i][j] +"\t"+ scaledSpectrumLogLikelihood[i][j] +"\t"+ liS.getLogLikelihood());
 			}	
 			sumScaledSrpLogLikelihood[i] = liS.getSumScaledLikelihood();
@@ -866,28 +856,68 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 	}
 
 
-	private final double caluclateStateLogLikelihood(double frequency) {
+	private final double caluclateStateLogLikelihood2(double frequency) {
 		double logLikelihood = Math.log(frequency * NOT_ERROR_RATE
-				+ (1 - frequency) * ERROR_RATE);
+				+ (1 - frequency) * ERROR_RATE)/100;
+		// divided by 10 or 100 doesn't work! rescaling just converge to different and still wrong popsize
+//		double A = (frequency- NOT_ERROR_RATE);
+//		double B = (1-frequency)- ERROR_RATE;
+//		double chi = A*A/NOT_ERROR_RATE+ (B*B/ERROR_RATE);
+//		logLikelihood = Math.log( ChiSquareDistribution.pdf(chi, 1) );// range too big
+		
+//		if(frequency==0){
+//			frequency = 0.7;
+//		}
+//		else{
+//			frequency = 1-0.7;
+//		}
+////		logLikelihood = Math.log( ChiSquareDistribution.pdf(chi, 1) ); range too big
+//		double gt= 2 * (frequency * Math.log(frequency/NOT_ERROR_RATE) + 
+//				(1-frequency) * Math.log((1-frequency)/ERROR_RATE));
+//		System.out.println(frequency * Math.log(frequency/NOT_ERROR_RATE) );
+//		System.out.println( (1-frequency) * Math.log((1-frequency)/ERROR_RATE)  );
+//		System.out.println(logLikelihood);
+//		System.out.println(frequency);
+//		System.out.println();
+		
+//		logLikelihood = Math.log( ChiSquareDistribution.pdf(gt, 1) ); //range too big
+//		System.out.println(logLikelihood);
 		return logLikelihood;
 	}
 	
 	//XXX: beta: don't think this will work
+	//XXX:: beta work!! with /300. new BetaDistribution(296.79, 3.21);
 //	static BetaDistribution betaD = new BetaDistribution(296.79, 3.21);
-//	static double high = betaD.logPdf(0.98);
-//	static double low = LOG_ERROR_RATE;//betaD.logPdf(0.8);
-//	private final double caluclateStateLogLikelihood(double frequency) {
-//		double logLikelihood = Math.log(frequency * NOT_ERROR_RATE
-//				+ (1 - frequency) * ERROR_RATE);
-//		System.out.println(high +"\t"+ low +"\t"+ logLikelihood);
-//		logLikelihood = high;
-//		if(frequency!=1){
-//			logLikelihood = low;
+//	static double high = betaD.logPdf(0.98)/300;
+////	static double low = LOG_ERROR_RATE;// BAD
+//	static double low = betaD.logPdf(0.02)/300;
+	
+	//XXX: MLE at mode
+	//  alpha = 1.9893, beta = 1.0107
+	static BetaDistribution betaD = new BetaDistribution(1.9893, 1.0107);
+	static double high = betaD.logPdf(0.98);
+	static double low = betaD.logPdf(0.02);
+	
+//	static double high = -0.1;
+//	static double low = -6;
+
+	//
+	private final double caluclateStateLogLikelihood(double frequency) {
+
+		double logLikelihood = Math.log(frequency * NOT_ERROR_RATE
+				+ (1 - frequency) * ERROR_RATE);
+////		System.out.println(high +"\t"+ low +"\t"+ logLikelihood);
+//		double logLikelihood = high;//LOG_NOT_ERROR_RATE;
+//		if(frequency<0.1){
+//			logLikelihood = low;//LOG_ERROR_RATE;
 //		}
-////		org.apache.commons.math3.distribution.BetaDistribution b
-////		System.out.println(logLikelihood);
-//		return logLikelihood;
-//	}
+//		System.out.println(LOG_NOT_ERROR_RATE +"\t"+ LOG_ERROR_RATE);
+//		-4.5375115 -0.0107577
+//		System.out.println(frequency +"\t"+ high +"\t"+ low +"\t"+ LOG_NOT_ERROR_RATE +"\t"+ LOG_ERROR_RATE);
+//		org.apache.commons.math3.distribution.BetaDistribution b
+//		System.out.println(logLikelihood);
+		return logLikelihood;
+	}
 
 
 	private double updateLikelihoodAtIJK(int i, int j, int k, int state,
@@ -906,23 +936,17 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 				liS.minus(scaledSpectrumLogLikelihood[i][j]);
 	//			liS.minusScaleLogProb( spectrumLogLikelihood[i][j]);
 	
-				spectrumLogLikelihood[i][j] -= ds[matchCount[i][j]];
-						if(stateLn == LOG_NOT_ERROR_RATE){
-							matchCount[i][j]+=1;
-						}
-						else{
-							matchCount[i][j]-=1;
-						}						
+				spectrumLogLikelihood[i][j] -= ds[matchCount[i][j]]; //Binomial
+				if(stateLn == LOG_NOT_ERROR_RATE){ //Binomial
+					matchCount[i][j]+=1;
+				}
+				else{
+					matchCount[i][j]-=1;
+				}						
 				spectrumLogLikelihood[i][j] -= storedStateLn; 
 				spectrumLogLikelihood[i][j] += stateLn;
-				try {
-					int a = matchCount[i][j];
-					double b = ds[matchCount[i][j]];
-				} catch (Exception e) {
-					System.out.println(i +"\t"+ j +"\t"+ matchCount[i][j] +"\t"+ storedMatchCount[i][j] +"\t"+ ds.length);
-					System.out.println(aMap.getSrpFull(i).charAt(k) +"\t"+ Arrays.toString(spectrumModel.getSpectrum(j).getSpectra(k).getFrequencies()));
-				}
-				spectrumLogLikelihood[i][j] += ds[matchCount[i][j]];
+
+				spectrumLogLikelihood[i][j] += ds[matchCount[i][j]]; //Binomial
 				
 				scaledSpectrumLogLikelihood[i][j] = liS.scale(spectrumLogLikelihood[i][j]);
 				liS.add(scaledSpectrumLogLikelihood[i][j]);
