@@ -212,6 +212,24 @@ public class ShortReadsSpectrumLikelihoodTest {
 
 		}
 	}
+	
+	@Test
+	public void testBivsMaster() throws Exception {
+	
+		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
+		
+		for (int i = 0; i < 1e4; i++) {
+			int noSpectrum = MathUtils.nextInt(7)+3;
+			spectrumModel = new SpectrumAlignmentModel(aMap, noSpectrum, 1);
+			likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
+			
+			double logLikelihoodFull = likelihood.getLogLikelihood();
+			double logLikelihoodMaster = likelihood.calculateSrpLikelihoodFullMaster();
+			double logLikelihoodBinomial= likelihood.calculateSrpLikelihoodFullMasterBinom();
+			assertEquals(logLikelihoodFull, logLikelihoodBinomial, THRESHOLD);
+
+		}
+	}
 //	
 //	@Test
 //	public void testFullvsSingle() throws Exception {

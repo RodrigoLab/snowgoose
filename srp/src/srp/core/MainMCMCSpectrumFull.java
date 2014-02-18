@@ -61,32 +61,35 @@ public class MainMCMCSpectrumFull {
 		boolean randomSpectrum = true;
 		SpectrumType randomSpectrumType = SpectrumAlignmentModel.SpectrumType.ZERO_ONE;
 		
-
-		dataDir = args[0];
-		runIndex = Integer.parseInt(args[1]);
-		totalSamples = Integer.parseInt(args[2]);
-		logInterval = Integer.parseInt(args[3]);
-		noOfTrueHaplotype = Integer.parseInt(args[4]);
-		noOfRecoveredHaplotype= Integer.parseInt(args[5]);
-//		{	
-//			dataDir = "/home/sw167/workspaceSrp/snowgoose/srp/unittest/testData/";
-//			runIndex = 50;
-//			dataDir += "H7_"+runIndex+"/";
-//			
-//			totalSamples = 5000	 ;
-//			logInterval = 10000;
-//			
-//			randomTree = true;
-////			randomTree = false;
-//			
-//			randomSpectrum = true;
-//			randomSpectrumType = SpectrumAlignmentModel.SpectrumType.ZERO_ONE;
-////			randomSpectrumType = SpectrumAlignmentModel.SpectrumType.RANDOM;
-////			randomSpectrum = false;
-//			
-//			noOfTrueHaplotype = 7;
-//			noOfRecoveredHaplotype=7;
-//		}
+		boolean commandLine = true;
+		commandLine = false;
+		if(commandLine){
+			dataDir = args[0];
+			runIndex = Integer.parseInt(args[1]);
+			totalSamples = Integer.parseInt(args[2]);
+			logInterval = Integer.parseInt(args[3]);
+			noOfTrueHaplotype = Integer.parseInt(args[4]);
+			noOfRecoveredHaplotype= Integer.parseInt(args[5]);
+		}
+		else{	
+			dataDir = "/home/sw167/workspaceSrp/snowgoose/srp/unittest/testData/";
+			runIndex = 50;
+			dataDir += "H7_"+runIndex+"/";
+			
+			totalSamples = 5000	 ;
+			logInterval = 10000;
+			
+			randomTree = true;
+//			randomTree = false;
+			
+			randomSpectrum = true;
+			randomSpectrumType = SpectrumAlignmentModel.SpectrumType.ZERO_ONE;
+//			randomSpectrumType = SpectrumAlignmentModel.SpectrumType.RANDOM;
+//			randomSpectrum = false;
+			
+			noOfTrueHaplotype = 7;
+			noOfRecoveredHaplotype=7;
+		}
 		
 		String hapRunIndex = "H"+noOfTrueHaplotype+"_"+runIndex;
 		String prefix = dataDir+"FullTree_"+hapRunIndex;

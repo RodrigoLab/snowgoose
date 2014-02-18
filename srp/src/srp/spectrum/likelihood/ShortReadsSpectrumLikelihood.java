@@ -266,10 +266,6 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 			String srp = aMap.getSrpFragment(s);
 
 			srLength[s] = srp.length();
-//			char[] srCharArray = reads.toCharArray();
-//			double plambda = srLength * ERROR_RATE;
-//			double logPlambda = Math.log(plambda);
-
 			int srLength1 = srLength[s]+1;
 
 			double[] logBinomD = new double[srLength1];
@@ -443,40 +439,6 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 	}
 
 
-	private double calculateSrpLikelihoodSingleBinom() {
-
-
-		SpectrumOperationRecord record = spectrumModel.getSpectrumOperationRecord();
-		int j = record.getSpectrumIndex(); 
-		int k = record.getAllSiteIndexs()[0];
-		int[] siteIndexs = record.getAllSiteIndexs();
-//
-		SpectraParameter spectra = spectrumModel.getSpectrum(j).getSpectra(k);
-		ArrayList<Integer> mapToSrp = aMap.getMapToSrp(k);
-		calculateStatesLogLikelihood(spectra, allStateLogLikelihood[k]);
-		calculateStoredStatesLogLikelihood(spectra, allStoredStateLogLikelihood[k]);
-//		double[] stateLogLikelihood = calculateStatesLogLikelihood(spectrum, k);
-//		double[] storedAllStateLogLikelihood = calculateStoredStatesLogLikelihood(spectrum.getSpectra(k));
-		double totalLogLikelihood = this.logLikelihood;
-//		System.out.println(j +"\t"+ k);
-//		System.out.println(totalLogLikelihood);
-		for (int i : mapToSrp) {
-			String fullSrp = aMap.getSrpFull(i);
-			int state = getStateAtK(fullSrp, k);
-			
-			totalLogLikelihood = updateLikelihoodAtIJK(i, j, k, state,
-					allStateLogLikelihood[k], allStoredStateLogLikelihood[k],
-					totalLogLikelihood);
-		}
-//		for (int i : mapToSrp) {
-//			String fullSrp = aMap.getSrpFull(i);
-//			char srpChar = fullSrp.charAt(k);
-//			int state = dataType.getState(srpChar);
-//				totalLogLikelihood = updateLikelihoodAtIJK(i, j, k, state, 
-//						allStateLogLikelihood[k], allStoredStateLogLikelihood[k], totalLogLikelihood);
-//		}
-		return totalLogLikelihood;
-	}
 	
 	private static int calculateDeltaDist(int srpChar, int newChar, int oldChar){//, boolean isHapEqualNew){
 		
@@ -860,6 +822,7 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 		double logLikelihood = Math.log(frequency * NOT_ERROR_RATE
 				+ (1 - frequency) * ERROR_RATE)/100;
 		// divided by 10 or 100 doesn't work! rescaling just converge to different and still wrong popsize
+		// wait, rescale large beta kind of works
 //		double A = (frequency- NOT_ERROR_RATE);
 //		double B = (1-frequency)- ERROR_RATE;
 //		double chi = A*A/NOT_ERROR_RATE+ (B*B/ERROR_RATE);
@@ -894,23 +857,34 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 	
 	//XXX: MLE at mode
 	//  alpha = 1.9893, beta = 1.0107
-	static BetaDistribution betaD = new BetaDistribution(1.9893, 1.0107);
+//	static BetaDistribution betaD = new BetaDistribution(1.9893, 1.0107);
+//	static double high = betaD.logPdf(0.98);
+//	static double low = betaD.logPdf(0.02);
+	
+	//XXX G-test
+
+	static BetaDistribution betaD = new BetaDistribution(0.9893, 0.0107);
 	static double high = betaD.logPdf(0.98);
 	static double low = betaD.logPdf(0.02);
-	
+
 //	static double high = -0.1;
 //	static double low = -6;
+	static ChiSquareDistribution chiD = new ChiSquareDistribution(1);
+//	static double 
+	
 
 	//
 	private final double caluclateStateLogLikelihood(double frequency) {
 
-		double logLikelihood = Math.log(frequency * NOT_ERROR_RATE
-				+ (1 - frequency) * ERROR_RATE);
+//		double logLikelihood = Math.log(frequency * NOT_ERROR_RATE
+//				+ (1 - frequency) * ERROR_RATE);
+//		double logLikelihood = Math.log(frequency);
 ////		System.out.println(high +"\t"+ low +"\t"+ logLikelihood);
-//		double logLikelihood = high;//LOG_NOT_ERROR_RATE;
-//		if(frequency<0.1){
-//			logLikelihood = low;//LOG_ERROR_RATE;
-//		}
+		double logLikelihood = LOG_NOT_ERROR_RATE;
+		if(frequency<0.1){
+			logLikelihood = LOG_ERROR_RATE;
+//			logLikelihood = Math.log(0.01);//LOG_ERROR_RATE;
+		}
 //		System.out.println(LOG_NOT_ERROR_RATE +"\t"+ LOG_ERROR_RATE);
 //		-4.5375115 -0.0107577
 //		System.out.println(frequency +"\t"+ high +"\t"+ low +"\t"+ LOG_NOT_ERROR_RATE +"\t"+ LOG_ERROR_RATE);
@@ -1469,49 +1443,41 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 
 
 
-	public double calculateSrpLikelihoodFullMasterBinom() {
-		//TODO unittest!!
+	public double calculateSrpLikelihoodFullMasterBinomial() {
 
-		
 		double logLikelihood = 0;
 		double spectrumLogLikelihood = 0;
 		double stateLogLikelihood = 0;
 		
 		for (int i = 0; i < srpCount; i++) {
-
 			String fullSrp = aMap.getSrpFull(i);
 			int start = aMap.getSrpStart(i);
 			int end = aMap.getSrpEnd(i);
-			
 			liS.reset();
+			
 			for (int j = 0; j < spectrumCount; j++) {
-
 				Spectrum spectrum = spectrumModel.getSpectrum(j);
 				spectrumLogLikelihood = 0;
+				int match = 0;
+				
 				for (int k = start; k < end; k++) {
 					double[] frequencies = spectrum.getFrequenciesAt(k);
 					int state = getStateAtK(fullSrp, k);
+					stateLogLikelihood = LOG_ERROR_RATE;
 					if(state<STATE_COUNT){
-						stateLogLikelihood = caluclateStateLogLikelihood(frequencies[state]);
-//						double likelihood = frequencies[state] * NOT_ERROR_RATE
-//								+ (1 - frequencies[state]) * ERROR_RATE;
-//						stateLogLikelihood = Math.log(likelihood);
+						if(frequencies[state] >0.99){
+							stateLogLikelihood = LOG_NOT_ERROR_RATE;
+							match++;
+						}
 					}
-					else{
-						stateLogLikelihood = LOG_ERROR_RATE;
-					}
-					
 					spectrumLogLikelihood += stateLogLikelihood;
-					
 				}
+				double temp = logBinomialDesnity.get(srLength[i])[match]; //Binomial
+				spectrumLogLikelihood += temp; //Binomial
 				liS.addLogProb(spectrumLogLikelihood);
-				
-
 			}	
 			logLikelihood += liS.getLogLikelihood();
 		}
-
-//		double logLikelihood = StatUtils.sum(eachSrpLogLikelihood);
 		return logLikelihood;
 	}
 
