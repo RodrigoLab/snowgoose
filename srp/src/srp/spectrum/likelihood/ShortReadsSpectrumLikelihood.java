@@ -173,15 +173,6 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 	double[][] allStateLogLikelihood = new double[spectrumLength][20]; 
 	double[][] allStoredStateLogLikelihood = new double[spectrumLength][20];
 
-	private int[][] matchCount;
-	private int[][] storedMatchCount;
-	
-
-	private HashMap<Integer, double[]> logBinomialDesnity;
-	private HashMap<Integer, double[]> scaledLogBinomialDesnity;
-	private int[] srLength;
-	
-
 	public ShortReadsSpectrumLikelihood(SpectrumAlignmentModel spectrumModel){
 		super(SHORT_READ_LIKELIHOOD);
 		Arrays.fill(temp, 1e-10);
@@ -238,8 +229,6 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 		scaledSpectrumLogLikelihood = new double[srpCount][spectrumCount];
 		storedScaledSpectrumLogLikelihood = new double[srpCount][spectrumCount];
 		
-		matchCount = new int[srpCount][spectrumCount];
-		storedMatchCount = new int[srpCount][spectrumCount];
 		
 		sumScaledSrpLogLikelihood = new double[srpCount];
 		storedSumSrpLogLikelihood = new double[srpCount];
@@ -255,32 +244,6 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 			Arrays.fill(allStoredStateLogLikelihood[i], LOG_ERROR_RATE);
 
 		}
-		
-		srLength = new int[srpCount];
-
-		logBinomialDesnity = new HashMap<Integer, double[]>();
-		scaledLogBinomialDesnity = new HashMap<Integer, double[]>();
-		
-		//Binom
-		for (int s = 0; s < srpCount; s++) {
-			String srp = aMap.getSrpFragment(s);
-
-			srLength[s] = srp.length();
-			int srLength1 = srLength[s]+1;
-
-			double[] logBinomD = new double[srLength1];
-			double[] scaledBinomD = new double[srLength1];
-			for (int i = 0; i < logBinomD.length; i++) {
-
-				logBinomD[i] = ArithmeticUtils.binomialCoefficientLog(srLength[s], i);
-//				logBinomD[i] = i*LOG_ERROR_RATE+(srLength-i)*LOG_ONE_MINUS_ERROR_RATE;
-				scaledBinomD[i] = liS.scale(logBinomD[i]); 
-			}
-//			System.out.println(Arrays.toString(logBinomD));
-			logBinomialDesnity.put(srLength[s], logBinomD);
-			scaledLogBinomialDesnity.put(srLength[s], scaledBinomD);
-		}
-		
 		
 	}
 
@@ -359,9 +322,7 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 				throw new IllegalArgumentException("Unknown operation type: "+operation);
 	
 			}
-//	    double logLikelihood = calculateShoreReadLikelihood4();
-//	    double logLikelihood = calculateShoreReadLikelihoodBinomialModel2();
-	    
+
 //	    timeTrial();
 //		storeState();
 //		System.out.println("likelihood\t"+ logLikelihood);
@@ -405,24 +366,18 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 
 //				Spectrum spectrum = spectrumModel.getSpectrum(j);
 				spectrumLogLikelihood[i][j] = 0;
-				int match = 0;
+
 				for (int k = start; k < end; k++) {
 					int state = getStateAtK(fullSrp, k);
 					stateLogLikelihood = allStateLogLikelihoodFull[j][k][state];
 					
-//					if(stateLogLikelihood != LOG_ERROR_RATE){
-					if(stateLogLikelihood == LOG_NOT_ERROR_RATE){
-						match++;
-					}
-					
+
 					allLogLikelihood[i][j][k] = stateLogLikelihood;
 					spectrumLogLikelihood[i][j] += stateLogLikelihood;
 					
 				}
 				
-				matchCount[i][j] = match; //Binomial
-				double temp = logBinomialDesnity.get(srLength[i])[match]; //Binomial
-				spectrumLogLikelihood[i][j] += temp; //Binomial
+
 				scaledSpectrumLogLikelihood[i][j] = liS.scale(spectrumLogLikelihood[i][j]);
 				liS.add(scaledSpectrumLogLikelihood[i][j]);
 //				System.out.println(i +"\t"+ j +"\t"+ spectrumLogLikelihood[i][j] +"\t"+ scaledSpectrumLogLikelihood[i][j]);
@@ -876,15 +831,15 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 	//
 	private final double caluclateStateLogLikelihood(double frequency) {
 
-//		double logLikelihood = Math.log(frequency * NOT_ERROR_RATE
-//				+ (1 - frequency) * ERROR_RATE);
+		double logLikelihood = Math.log(frequency * NOT_ERROR_RATE
+				+ (1 - frequency) * ERROR_RATE);
 //		double logLikelihood = Math.log(frequency);
 ////		System.out.println(high +"\t"+ low +"\t"+ logLikelihood);
-		double logLikelihood = LOG_NOT_ERROR_RATE;
-		if(frequency<0.1){
-			logLikelihood = LOG_ERROR_RATE;
-//			logLikelihood = Math.log(0.01);//LOG_ERROR_RATE;
-		}
+//		double logLikelihood = LOG_NOT_ERROR_RATE;
+//		if(frequency<0.1){
+//			logLikelihood = LOG_ERROR_RATE;
+////			logLikelihood = Math.log(0.01);//LOG_ERROR_RATE;
+//		}
 //		System.out.println(LOG_NOT_ERROR_RATE +"\t"+ LOG_ERROR_RATE);
 //		-4.5375115 -0.0107577
 //		System.out.println(frequency +"\t"+ high +"\t"+ low +"\t"+ LOG_NOT_ERROR_RATE +"\t"+ LOG_ERROR_RATE);
@@ -902,7 +857,6 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 			double storedStateLn = storedStatesLogLikelihood[state];
 
 			if(storedStateLn != stateLn){
-				double[] ds = logBinomialDesnity.get(srLength[i]);
 //				System.out.println(storedStateLn +"\t"+ stateLn +"\t"+ LOG_ERROR_RATE);
 				totalLogLikelihood -= eachSrpLogLikelihood[i];
 	
@@ -910,18 +864,9 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 				liS.minus(scaledSpectrumLogLikelihood[i][j]);
 	//			liS.minusScaleLogProb( spectrumLogLikelihood[i][j]);
 	
-				spectrumLogLikelihood[i][j] -= ds[matchCount[i][j]]; //Binomial
-				if(stateLn == LOG_NOT_ERROR_RATE){ //Binomial
-					matchCount[i][j]+=1;
-				}
-				else{
-					matchCount[i][j]-=1;
-				}						
 				spectrumLogLikelihood[i][j] -= storedStateLn; 
 				spectrumLogLikelihood[i][j] += stateLn;
 
-				spectrumLogLikelihood[i][j] += ds[matchCount[i][j]]; //Binomial
-				
 				scaledSpectrumLogLikelihood[i][j] = liS.scale(spectrumLogLikelihood[i][j]);
 				liS.add(scaledSpectrumLogLikelihood[i][j]);
 	//			liS.addScaleLogProb(spectrumLogLikelihood[i][j]);
@@ -1043,7 +988,6 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 				storedSumSrpLogLikelihood[i] = sumScaledSrpLogLikelihood[i];
 				storedSpectrumLogLikelihood[i][j] = spectrumLogLikelihood[i][j];
 				storedScaledSpectrumLogLikelihood[i][j] = scaledSpectrumLogLikelihood[i][j];
-				storedMatchCount[i][j] = matchCount[i][j];
 			}
 			
 		case DELTA_MULTI:
@@ -1210,7 +1154,6 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 				sumScaledSrpLogLikelihood[i] = storedSumSrpLogLikelihood[i]; 
 				spectrumLogLikelihood[i][j] = storedSpectrumLogLikelihood[i][j];
 				scaledSpectrumLogLikelihood[i][j] = storedScaledSpectrumLogLikelihood[i][j];
-				matchCount[i][j] = storedMatchCount[i][j];
 			}
 			
 			
@@ -1321,7 +1264,6 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 //			storedAllLogLikelihood[i][spectrumIndex][siteIndex] = allLogLikelihood[i][spectrumIndex][siteIndex];
 			System.arraycopy(storedSpectrumLogLikelihood[i], 0, spectrumLogLikelihood[i], 0, spectrumCount);
 			System.arraycopy(storedScaledSpectrumLogLikelihood[i], 0, scaledSpectrumLogLikelihood[i], 0, spectrumCount);
-			System.arraycopy(storedMatchCount[i], 0, matchCount[i], 0, spectrumCount);
 			for (int j = 0; j < spectrumCount; j++) {
 //				for (int k = 0; k < spectrumLength; k++) {
 //					if(allLogLikelihood[i][j][k] != storedAllLogLikelihood[i][j][k]){
@@ -1349,7 +1291,6 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 //			storedAllLogLikelihood[i][spectrumIndex][siteIndex] = allLogLikelihood[i][spectrumIndex][siteIndex];
 			System.arraycopy(spectrumLogLikelihood[i],0, storedSpectrumLogLikelihood[i], 0, spectrumCount);
 			System.arraycopy(scaledSpectrumLogLikelihood[i],0, storedScaledSpectrumLogLikelihood[i], 0, spectrumCount);
-			System.arraycopy(matchCount[i], 0, storedMatchCount[i], 0, spectrumCount);
 			for (int j = 0; j < spectrumCount; j++) {
 //				for (int k = 0; k < spectrumLength; k++) {
 //					if(allLogLikelihood[i][j][k] != storedAllLogLikelihood[i][j][k]){
@@ -1443,43 +1384,6 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 
 
 
-	public double calculateSrpLikelihoodFullMasterBinomial() {
-
-		double logLikelihood = 0;
-		double spectrumLogLikelihood = 0;
-		double stateLogLikelihood = 0;
-		
-		for (int i = 0; i < srpCount; i++) {
-			String fullSrp = aMap.getSrpFull(i);
-			int start = aMap.getSrpStart(i);
-			int end = aMap.getSrpEnd(i);
-			liS.reset();
-			
-			for (int j = 0; j < spectrumCount; j++) {
-				Spectrum spectrum = spectrumModel.getSpectrum(j);
-				spectrumLogLikelihood = 0;
-				int match = 0;
-				
-				for (int k = start; k < end; k++) {
-					double[] frequencies = spectrum.getFrequenciesAt(k);
-					int state = getStateAtK(fullSrp, k);
-					stateLogLikelihood = LOG_ERROR_RATE;
-					if(state<STATE_COUNT){
-						if(frequencies[state] >0.99){
-							stateLogLikelihood = LOG_NOT_ERROR_RATE;
-							match++;
-						}
-					}
-					spectrumLogLikelihood += stateLogLikelihood;
-				}
-				double temp = logBinomialDesnity.get(srLength[i])[match]; //Binomial
-				spectrumLogLikelihood += temp; //Binomial
-				liS.addLogProb(spectrumLogLikelihood);
-			}	
-			logLikelihood += liS.getLogLikelihood();
-		}
-		return logLikelihood;
-	}
 
 
 @Deprecated
