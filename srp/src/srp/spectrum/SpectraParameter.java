@@ -10,13 +10,13 @@ import dr.math.MathUtils;
 //public class Spectra implements Parameter{
 public class SpectraParameter extends Parameter.Default{
 	
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = -3519136356577040343L;
 	public static final double[] EQUAL_FREQ = new double[]{0.25, 0.25, 0.25, 0.25};
 	public static final int DIMENSION = 4;
 	public static final Bounds<Double> SPECTRA_BOUNDS = new DefaultBounds(1.0, 0.0, DIMENSION);
+	public static final double MAX_FREQ = 0.99;
+	public static final double MIN_FREQ = 0.001;//MrBayes 0.0001
 	
 	
 	public SpectraParameter(SpectrumType type){

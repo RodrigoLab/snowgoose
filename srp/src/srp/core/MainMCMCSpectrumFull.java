@@ -84,7 +84,8 @@ public class MainMCMCSpectrumFull {
 			
 			randomSpectrum = true;
 			randomSpectrumType = SpectrumAlignmentModel.SpectrumType.ZERO_ONE;
-//			randomSpectrumType = SpectrumAlignmentModel.SpectrumType.RANDOM;
+			randomSpectrumType = SpectrumAlignmentModel.SpectrumType.RANDOM ;
+//			randomSpectrumType = SpectrumAlignmentModel.SpectrumType.EQUAL;
 //			randomSpectrum = false;
 			
 			noOfTrueHaplotype = 7;

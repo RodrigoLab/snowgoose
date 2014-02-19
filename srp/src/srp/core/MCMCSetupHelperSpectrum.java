@@ -47,7 +47,7 @@ public class MCMCSetupHelperSpectrum extends MCMCSetupHelper {
 	private static final double opSmall = 3;
 	private static final double opMed = 15;
 	private static final double opLarge = 20;
-	private static final double opSpectrum =150;//150 works for beta and related
+	private static final double opSpectrum =100;//150 works for beta and related, might be a bit too high?
 	
 	public static HashMap<String, Object> setupSpectrumTreeLikelihoodSpectrumModel(
 				TreeModel treeModel, SpectrumAlignmentModel spectrumModel) {
@@ -149,7 +149,7 @@ public class MCMCSetupHelperSpectrum extends MCMCSetupHelper {
 	//		RecombinationSpectrumOperator                             133587     1464373  10.96    0.0425      low	Tuning 12
 	//		SwapSectionSpectrumOperator                               133225     63241    0.47     0.0419      low	Tuning 12
 	
-			operator = new SwapSingleSpectrumOperator(spectrumModel, false);
+			operator = new SwapSingleSpectrumOperator(spectrumModel, true);
 			operator.setWeight(opSpectrum*1);
 			schedule.addOperator(operator);
 			
@@ -180,7 +180,7 @@ public class MCMCSetupHelperSpectrum extends MCMCSetupHelper {
 //			schedule.addOperator(operator);
 			operator = new DirichletSpectrumOperator(spectrumModel, 1, CoercionMode.COERCION_OFF);
 			operator.setWeight(opSpectrum*1);
-//			schedule.addOperator(operator);
+			schedule.addOperator(operator);
 	//		operator = new DirichletSpectrumOperator(spectrumModel, 12, CoercionMode.COERCION_OFF);
 	//		operator.setWeight(opSpectrum*1);
 	//		schedule.addOperator(operator);

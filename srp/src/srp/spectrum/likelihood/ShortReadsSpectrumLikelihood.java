@@ -31,6 +31,7 @@ import dr.inference.model.Variable.ChangeType;
 import dr.math.MathUtils;
 import dr.math.distributions.BetaDistribution;
 import dr.math.distributions.ChiSquareDistribution;
+import dr.math.distributions.GammaDistribution;
 import dr.util.Assert;
 
 /*
@@ -127,6 +128,10 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 	private final int AMBIGUOUS_STATE_COUNT;
 	private final int STATE_COUNT;
 	
+	private static BetaDistribution betaDMode = new BetaDistribution(1.9893, 1.0107);
+	private static BetaDistribution betaDMean = new BetaDistribution(0.9893, 0.0107);
+	private static GammaDistribution chisqD = new GammaDistribution(1.0/2.0, 2);
+	
 	protected boolean likelihoodKnown;
 	
 	private int spectrumLength;
@@ -141,7 +146,6 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 
 	private double[] sumScaledSrpLogLikelihood;
 	private double[] storedSumSrpLogLikelihood;
-
 	
 	private double[][] spectrumLogLikelihood;
 	private double[][] storedSpectrumLogLikelihood;
@@ -150,7 +154,10 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 	private double[][] storedScaledSpectrumLogLikelihood;
 //	private double[][] spectrumScaledLogLikelihood;
 //	private double[][] storedSpectrumScaledLogLikelihood;
-	
+
+	private double[][] allStateLogLikelihood; 
+	private double[][] allStoredStateLogLikelihood;
+
 	@Deprecated
 	private double[][][] allLogLikelihood;
 	@Deprecated
@@ -166,21 +173,25 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 	
 	private boolean[] srpSwitch;
 	private Set<Integer> allSrpPos;
-	static double[] temp = new double[18];
+//	static double[] temp = new double[18];
 
-	private MultiType type;
-	
-	double[][] allStateLogLikelihood = new double[spectrumLength][20]; 
-	double[][] allStoredStateLogLikelihood = new double[spectrumLength][20];
+	private MultiType multiType;
+	private DistType distType;
 
 	public ShortReadsSpectrumLikelihood(SpectrumAlignmentModel spectrumModel){
 		super(SHORT_READ_LIKELIHOOD);
-		Arrays.fill(temp, 1e-10);
+//		Arrays.fill(temp, 1e-10);
 
 
-		type = MultiType.Array;
+		multiType = MultiType.Array;
 //		type = MultiType.Hash;
 //		type = MultiType.All;
+//		setDistType("flat");
+		setDistType("betaMean");
+//		setDistType("betaMode");
+//		setDistType("gTest");
+//		setDistType("chisq");
+		
 		
 		////
 		
@@ -394,22 +405,7 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 	}
 
 
-	
-	private static int calculateDeltaDist(int srpChar, int newChar, int oldChar){//, boolean isHapEqualNew){
-		
-		int deltaDist = 0;
-	
-		if(newChar!= oldChar){ // if(newChar!= oldChar && isHapEqualNew)
-			if (srpChar==newChar){
-				deltaDist = -1;
-			}
-			else if(srpChar==oldChar){
-				deltaDist = 1;
-			}
-		}
-		return deltaDist;
-		
-	}
+
 	
 	private double calculateSrpLikelihoodSingle() {
 
@@ -465,7 +461,7 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 			calculateStoredStatesLogLikelihood(spectra, allStoredStateLogLikelihood[s]);
 			
 		}
-		if(type==MultiType.Array){
+		if(multiType==MultiType.Array){
 
 			for (int s : siteIndexs) {
 				ArrayList<Integer> mapToSrp = aMap.getMapToSrp(s);
@@ -485,7 +481,7 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 			}
 	
 		}
-		else if(type==MultiType.Hash){
+		else if(multiType==MultiType.Hash){
 			allSrpPos.clear();
 			for (int s : siteIndexs) {
 				ArrayList<Integer> mapToSrp = aMap.getMapToSrp(s);
@@ -499,7 +495,7 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 //				}
 			}
 		}
-		else if(type==MultiType.All){
+		else if(multiType==MultiType.All){
 			for (int s = 0; s < siteIndexs.length; s++) {
 				int k = siteIndexs[s];
 				ArrayList<Integer> mapToSrp = aMap.getMapToSrp(k);
@@ -680,70 +676,6 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 
 	}
 
-	@Deprecated
-	private double calculateSrpLikelihoodRecombination_swap() {
-		
-		SpectrumOperationRecord record = spectrumModel.getSpectrumOperationRecord();
-		int[] twoSpectrums = record.getRecombinationSpectrumIndex();
-		int[] twoPositions = record.getRecombinationPositionIndex();
-
-//		Spectrum[] spectrums = new Spectrum[] {
-//				spectrumModel.getSpectrum(twoSpectrums[0]),
-//				spectrumModel.getSpectrum(twoSpectrums[1]) };
-	
-		int j0 = twoSpectrums[0];
-		int j1 = twoSpectrums[1];
-		
-		for (int k = twoPositions[0]; k < twoPositions[1]; k++) {
-			
-			ArrayList<Integer> mapToSrp = aMap.getMapToSrp(k);
-//			System.out.println("Site: "+k +"\t"+ mapToSrp.size());
-			for (int i : mapToSrp) {
-				srpSwitch[i] = true;
-			}
-		}
-		
-		Set<Integer> allSrpPos = new HashSet<Integer>();
-		allSrpPos.clear();
-		for (int i = twoPositions[0]; i < twoPositions[1]; i++) {
-			ArrayList<Integer> mapToSrp = aMap.getMapToSrp(i);
-			allSrpPos.addAll(mapToSrp);
-		}
-
-
-		for (int i = 0; i < srpSwitch.length; i++) {
-			if(srpSwitch[i]){
-	
-//				String fullSrp = aMap.getSrpFull(i);
-//				for (int r = 0; r < TWO; r++) {
-				double LL0 = storedSpectrumLogLikelihood[i][j0];
-				double LL1 = storedSpectrumLogLikelihood[i][j1];
-				for (int k = twoPositions[0]; k < twoPositions[1]; k++) {
-					if(storedAllLogLikelihood[i][j0][k]!=0){
-
-						double L0 = storedAllLogLikelihood[i][j0][k];
-						double L1 = storedAllLogLikelihood[i][j1][k];
-
-						LL0 += (-L0 + L1);
-						LL1 += (-L1 + L0);
-
-						allLogLikelihood[i][j1][k] = L0;
-						allLogLikelihood[i][j0][k] = L1;
-					}
-
-				}
-				spectrumLogLikelihood[i][j0] = LL0;
-				spectrumLogLikelihood[i][j1] = LL1;
-				updateEachSrpAt(i);
-			}
-
-		}
-	
-		double logLikelihood = StatUtils.sum(eachSrpLogLikelihood);
-		return logLikelihood;
-
-	}
-
 	private double[] calculateStoredStatesLogLikelihood(SpectraParameter spectra, 
 			double[] statesLogLikelihood) {
 		for (int state = 0; state < STATE_COUNT; state++) {
@@ -772,36 +704,6 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 		return state;
 	}
 
-
-	private final double caluclateStateLogLikelihood2(double frequency) {
-		double logLikelihood = Math.log(frequency * NOT_ERROR_RATE
-				+ (1 - frequency) * ERROR_RATE)/100;
-		// divided by 10 or 100 doesn't work! rescaling just converge to different and still wrong popsize
-		// wait, rescale large beta kind of works
-//		double A = (frequency- NOT_ERROR_RATE);
-//		double B = (1-frequency)- ERROR_RATE;
-//		double chi = A*A/NOT_ERROR_RATE+ (B*B/ERROR_RATE);
-//		logLikelihood = Math.log( ChiSquareDistribution.pdf(chi, 1) );// range too big
-		
-//		if(frequency==0){
-//			frequency = 0.7;
-//		}
-//		else{
-//			frequency = 1-0.7;
-//		}
-////		logLikelihood = Math.log( ChiSquareDistribution.pdf(chi, 1) ); range too big
-//		double gt= 2 * (frequency * Math.log(frequency/NOT_ERROR_RATE) + 
-//				(1-frequency) * Math.log((1-frequency)/ERROR_RATE));
-//		System.out.println(frequency * Math.log(frequency/NOT_ERROR_RATE) );
-//		System.out.println( (1-frequency) * Math.log((1-frequency)/ERROR_RATE)  );
-//		System.out.println(logLikelihood);
-//		System.out.println(frequency);
-//		System.out.println();
-		
-//		logLikelihood = Math.log( ChiSquareDistribution.pdf(gt, 1) ); //range too big
-//		System.out.println(logLikelihood);
-		return logLikelihood;
-	}
 	
 	//XXX: beta: don't think this will work
 	//XXX:: beta work!! with /300. new BetaDistribution(296.79, 3.21);
@@ -812,39 +714,52 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 	
 	//XXX: MLE at mode
 	//  alpha = 1.9893, beta = 1.0107
-//	static BetaDistribution betaD = new BetaDistribution(1.9893, 1.0107);
+	
 //	static double high = betaD.logPdf(0.98);
 //	static double low = betaD.logPdf(0.02);
 	
 	//XXX G-test
-
-	static BetaDistribution betaD = new BetaDistribution(0.9893, 0.0107);
-	static double high = betaD.logPdf(0.98);
-	static double low = betaD.logPdf(0.02);
-
-//	static double high = -0.1;
-//	static double low = -6;
-	static ChiSquareDistribution chiD = new ChiSquareDistribution(1);
-//	static double 
 	
-
-	//
-	private final double caluclateStateLogLikelihood(double frequency) {
-
-		double logLikelihood = Math.log(frequency * NOT_ERROR_RATE
-				+ (1 - frequency) * ERROR_RATE);
-//		double logLikelihood = Math.log(frequency);
-////		System.out.println(high +"\t"+ low +"\t"+ logLikelihood);
-//		double logLikelihood = LOG_NOT_ERROR_RATE;
-//		if(frequency<0.1){
-//			logLikelihood = LOG_ERROR_RATE;
-////			logLikelihood = Math.log(0.01);//LOG_ERROR_RATE;
+//	static double high = betaD.logPdf(0.98);
+//	static double low = betaD.logPdf(0.02);
+	static final double LOG100 = Math.log(1);
+	private double caluclateStateLogLikelihood(double frequency) {
+		double logLikelihood = 0;
+//		if(frequency>SpectraParameter.MAX){
+//			frequency = SpectraParameter.MAX;
 //		}
-//		System.out.println(LOG_NOT_ERROR_RATE +"\t"+ LOG_ERROR_RATE);
-//		-4.5375115 -0.0107577
-//		System.out.println(frequency +"\t"+ high +"\t"+ low +"\t"+ LOG_NOT_ERROR_RATE +"\t"+ LOG_ERROR_RATE);
-//		org.apache.commons.math3.distribution.BetaDistribution b
-//		System.out.println(logLikelihood);
+//		if(frequency<SpectraParameter.MIN){
+//			frequency = SpectraParameter.MIN;
+//		}
+		switch (distType) {
+		case flat:
+			logLikelihood = Math.log(frequency * NOT_ERROR_RATE
+				+ (1 - frequency) * ERROR_RATE);
+			break;
+		case betaMean:
+			logLikelihood = betaDMean.logPdf(frequency)-LOG100;
+			break;
+		case betaMode:
+			logLikelihood = betaDMode.logPdf(frequency);
+			break;
+		case gTest:{
+			double nf = 1-frequency;
+			double gt= 2 * (frequency * Math.log(frequency/NOT_ERROR_RATE) + 
+					(nf) * Math.log(nf/ERROR_RATE));
+			logLikelihood = chisqD.logPdf(gt);
+			break;
+		}
+		case chisq:{
+			double A = (frequency- NOT_ERROR_RATE);
+			double B = (1-frequency)- ERROR_RATE;
+			double chi = (A*A/NOT_ERROR_RATE) + (B*B/ERROR_RATE);
+			logLikelihood = chisqD.logPdf(chi);
+
+			break;
+		}
+		default:
+			throw new IllegalArgumentException("Incorrect distType: "+distType);
+		}
 		return logLikelihood;
 	}
 
@@ -995,7 +910,7 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 			j = spectrumOperationRecord.getSpectrumIndex();
 			int[] siteIndexs = spectrumOperationRecord.getAllSiteIndexs();
 
-			if(type==MultiType.Array){
+			if(multiType==MultiType.Array){
 				for (int i = 0; i < srpSwitch.length; i++) {
 					if (srpSwitch[i]) {
 						storedEachSrpLogLikelihood[i] = eachSrpLogLikelihood[i];
@@ -1005,7 +920,7 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 					}
 				}
 			}
-			else if(type==MultiType.Hash){
+			else if(multiType==MultiType.Hash){
 				for (int i : allSrpPos) {
 					storedEachSrpLogLikelihood[i] = eachSrpLogLikelihood[i];
 					storedSumSrpLogLikelihood[i] = sumScaledSrpLogLikelihood[i];
@@ -1013,7 +928,7 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 					storedScaledSpectrumLogLikelihood[i][j] = scaledSpectrumLogLikelihood[i][j];
 				}
 			}
-			else if(type==MultiType.All){
+			else if(multiType==MultiType.All){
 				for (int kk : siteIndexs) {
 //				for (int s = 0; s < siteIndexs.length; s++) {
 //					k = siteIndexs[s];
@@ -1031,7 +946,7 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 			break;
 		case RECOMBINATION:
 			int[] twoSpectrums = spectrumOperationRecord.getRecombinationSpectrumIndex();
-			int[] twoPositions = spectrumOperationRecord.getRecombinationPositionIndex();
+//			int[] twoPositions = spectrumOperationRecord.getRecombinationPositionIndex();
 
 			for (int i = 0; i < srpSwitch.length; i++) {
 				if (srpSwitch[i]) {
@@ -1162,7 +1077,7 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 			j = spectrumOperationRecord.getSpectrumIndex();
 			int[] siteIndexs = spectrumOperationRecord.getAllSiteIndexs();
 			
-			if(type==MultiType.Array){
+			if(multiType==MultiType.Array){
 
 				for (int i = 0; i < srpSwitch.length; i++) {
 					if (srpSwitch[i]) {
@@ -1174,7 +1089,7 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 				}
 			}
 
-			else if(type==MultiType.Hash){
+			else if(multiType==MultiType.Hash){
 				for (int i : allSrpPos) {
 					eachSrpLogLikelihood[i] = storedEachSrpLogLikelihood[i];
 					sumScaledSrpLogLikelihood[i] = storedSumSrpLogLikelihood[i]; 
@@ -1183,7 +1098,7 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 				}
 				
 			}
-			else if(type==MultiType.All){
+			else if(multiType==MultiType.All){
 				for (int kk : siteIndexs) {
 					mapToSrp = aMap.getMapToSrp(kk);
 					for (int i : mapToSrp) {
@@ -1199,7 +1114,7 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 			break;
 		case RECOMBINATION:
 			int[] twoSpectrums = spectrumOperationRecord.getRecombinationSpectrumIndex();
-			int[] twoPositions = spectrumOperationRecord.getRecombinationPositionIndex();
+//			int[] twoPositions = spectrumOperationRecord.getRecombinationPositionIndex();
 
 			for (int i = 0; i < srpSwitch.length; i++) {
 				if (srpSwitch[i]) {
@@ -1304,6 +1219,21 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 			
 		}
 	}
+	
+	public void setMultiType(MultiType type){
+		this.multiType = type;
+	}
+	
+	public void setDistType(String code){
+		try {
+			 this.distType = DistType.valueOf(code);
+		} catch (IllegalArgumentException e) {
+			System.err.println("Invalid distribution type "+code);
+			e.printStackTrace();
+			System.exit(-1);
+		}
+	}
+
 
 	public SpectrumOperation getOperation(){
 		return spectrumModel.getSpectrumOperation();
@@ -1384,6 +1314,71 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 
 
 
+
+
+@Deprecated
+		private double calculateSrpLikelihoodRecombination_swap() {
+			
+			SpectrumOperationRecord record = spectrumModel.getSpectrumOperationRecord();
+			int[] twoSpectrums = record.getRecombinationSpectrumIndex();
+			int[] twoPositions = record.getRecombinationPositionIndex();
+	
+	//		Spectrum[] spectrums = new Spectrum[] {
+	//				spectrumModel.getSpectrum(twoSpectrums[0]),
+	//				spectrumModel.getSpectrum(twoSpectrums[1]) };
+		
+			int j0 = twoSpectrums[0];
+			int j1 = twoSpectrums[1];
+			
+			for (int k = twoPositions[0]; k < twoPositions[1]; k++) {
+				
+				ArrayList<Integer> mapToSrp = aMap.getMapToSrp(k);
+	//			System.out.println("Site: "+k +"\t"+ mapToSrp.size());
+				for (int i : mapToSrp) {
+					srpSwitch[i] = true;
+				}
+			}
+			
+			Set<Integer> allSrpPos = new HashSet<Integer>();
+			allSrpPos.clear();
+			for (int i = twoPositions[0]; i < twoPositions[1]; i++) {
+				ArrayList<Integer> mapToSrp = aMap.getMapToSrp(i);
+				allSrpPos.addAll(mapToSrp);
+			}
+	
+	
+			for (int i = 0; i < srpSwitch.length; i++) {
+				if(srpSwitch[i]){
+		
+	//				String fullSrp = aMap.getSrpFull(i);
+	//				for (int r = 0; r < TWO; r++) {
+					double LL0 = storedSpectrumLogLikelihood[i][j0];
+					double LL1 = storedSpectrumLogLikelihood[i][j1];
+					for (int k = twoPositions[0]; k < twoPositions[1]; k++) {
+						if(storedAllLogLikelihood[i][j0][k]!=0){
+	
+							double L0 = storedAllLogLikelihood[i][j0][k];
+							double L1 = storedAllLogLikelihood[i][j1][k];
+	
+							LL0 += (-L0 + L1);
+							LL1 += (-L1 + L0);
+	
+							allLogLikelihood[i][j1][k] = L0;
+							allLogLikelihood[i][j0][k] = L1;
+						}
+	
+					}
+					spectrumLogLikelihood[i][j0] = LL0;
+					spectrumLogLikelihood[i][j1] = LL1;
+					updateEachSrpAt(i);
+				}
+	
+			}
+		
+			double logLikelihood = StatUtils.sum(eachSrpLogLikelihood);
+			return logLikelihood;
+	
+		}
 
 
 @Deprecated
@@ -1579,3 +1574,16 @@ enum MultiType{
 	All,;
 
 };
+
+enum DistType{
+	betaMean(0),
+	betaMode(1),
+	gTest(2), 
+	chisq(3),
+	flat(9),
+	;
+	int code;
+	private DistType(int code) {
+		this.code = code;
+	}
+}

@@ -23,7 +23,8 @@ public class DirichletSpectrumOperator extends AbstractDirichletSpectrumOperator
 	public static final SpectrumOperation OP = SpectrumOperation.DELTA_MULTI;
 	
 	private static final int MIN_BASE = 1;
-	private static final double MIN_FREQ = 0.001;//MrBayes 0.0001
+	private static final double MIN_FREQ = SpectraParameter.MIN_FREQ;
+	private static final double MAX_FREQ = SpectraParameter.MAX_FREQ;
 	
     private final int[] parameterWeights;
 
@@ -92,13 +93,20 @@ public class DirichletSpectrumOperator extends AbstractDirichletSpectrumOperator
 				oldParameter[j] = oldFreq[j]*alpha;
 
 				newFreq[j] = MathUtils.nextGamma(oldParameter[j], 1);
-				if(newFreq[j]<MIN_FREQ){
-					newFreq[j] = MIN_FREQ;
-				}
+				
 				sum += newFreq[j]; 
 			}
 			for (int j = 0; j < newFreq.length; j++) {
 				newFreq[j] /= sum;
+				if(newFreq[j]<MIN_FREQ){
+					newFreq[j] = MIN_FREQ;
+				}
+				if(newFreq[j]>MAX_FREQ){
+					newFreq[j] = MAX_FREQ;
+				}
+			}
+			for (int j = 0; j < newFreq.length; j++) {
+				
 				newParameter[j] = newFreq[j]*alpha;
 				spectra.setParameterValue(j, newFreq[j]);
 			}
