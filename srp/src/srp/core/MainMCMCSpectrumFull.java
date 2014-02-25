@@ -61,6 +61,7 @@ public class MainMCMCSpectrumFull {
 		boolean randomSpectrum = true;
 		SpectrumType randomSpectrumType = SpectrumAlignmentModel.SpectrumType.ZERO_ONE;
 		
+		String distTypeCode = "betaMode";
 		boolean commandLine = true;
 		commandLine = false;
 		if(commandLine){
@@ -87,6 +88,8 @@ public class MainMCMCSpectrumFull {
 			randomSpectrumType = SpectrumAlignmentModel.SpectrumType.RANDOM ;
 //			randomSpectrumType = SpectrumAlignmentModel.SpectrumType.EQUAL;
 //			randomSpectrum = false;
+			
+			distTypeCode = "betaMean";
 			
 			noOfTrueHaplotype = 7;
 			noOfRecoveredHaplotype=7;
@@ -156,8 +159,9 @@ public class MainMCMCSpectrumFull {
 		SpectrumTreeLikelihood treeLikelihood = (SpectrumTreeLikelihood) parameterList.get("treeLikelihood");
 		
 		
+		
 		// ShortReadLikelihood
-		ShortReadsSpectrumLikelihood srpLikelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
+		ShortReadsSpectrumLikelihood srpLikelihood = new ShortReadsSpectrumLikelihood(spectrumModel, distTypeCode);
 		
 		// CompoundLikelihood
 		HashMap<String, Likelihood> compoundlikelihoods = MCMCSetupHelper.setupCompoundLikelihood(
