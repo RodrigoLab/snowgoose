@@ -46,11 +46,6 @@ public class StateLikelihoodTest {
 	@Before
 	public void setUp() throws Exception {
 
-//		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/snowgoose/srp/unittest/", "HaplotypeModelTest_10_srp.fasta");
-//		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/snowgoose/srp/unittest/", "H4_srp.fasta");
-		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/snowgoose/srp/unittest/", "SpectrumTest_50srp_200bp.fasta");
-//		aMap = new AlignmentMapping(alignment);
-//		spectrumModel = new SpectrumAlignmentModel(aMap, 4, 2);
 		for (int i = 0; i < frequencies.length; i++) {
 			frequencies[i]= i/20.0;
 		}

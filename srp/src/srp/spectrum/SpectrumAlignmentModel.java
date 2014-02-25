@@ -1,9 +1,6 @@
 package srp.spectrum;
 
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -47,10 +44,12 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 	
 //	public long time = 0;
 
-	
+	public static void SpectrumAlignmentModelFactory(int spectrumLength){
+		
+	}
 
-	
-	private SpectrumAlignmentModel(AlignmentMapping aMap){
+	//TODO: this is only for unittest, maybe change to factory method? Can't use dummy aMap for likelihood
+	public SpectrumAlignmentModel(AlignmentMapping aMap){
 		super(MODEL_NAME);
 		this.aMap = aMap;
 		spectrumLength = this.aMap.getLength();
@@ -271,7 +270,7 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 			}
 			for (int i = 0; i < getSpectrumCount(); i++) {
 				spectrum = getSpectrum(i);
-				for (int s = 0; s < spectrumLength; s++) {
+				for (int s = 0; s < getSpectrumLength(); s++) {
 					spectrum.setStoreSiteIndex(s);
 					spectrum.storeState();
 				}
@@ -355,7 +354,7 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 			}
 			for (int i = 0; i < getSpectrumCount(); i++) {
 				spectrum = getSpectrum(i);
-				for (int s = 0; s < spectrumLength; s++) {
+				for (int s = 0; s < getSpectrumLength(); s++) {
 					spectrum.setStoreSiteIndex(s);
 					spectrum.restoreState();
 				}
@@ -578,92 +577,6 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 	}
 
 	
-	public static SpectrumAlignmentModel importPartialSpectrumFile(AlignmentMapping aMap,
-			String partialSpectrumName) throws IOException {
-
-		BufferedReader inFile  = new BufferedReader(new FileReader(partialSpectrumName));
-		String inline;
-		int length = 0;
-		SpectrumAlignmentModel spectrumModel = null;
-		
-		while((inline = inFile.readLine())!=null){
-			
-			if(inline.startsWith(">")){
-				String taxonName = inline.substring(1, inline.length()).trim();
-				Taxon taxon = new Taxon(taxonName);
-//				System.out.println(name);
-				
-				if(length != 0){
-					double[][] freqs = new double[4][length];
-					for (int i = 0; i < 4; i++) {
-						inline = inFile.readLine();
-//						StringTokenizer st = new StringTokenizer(inline);
-						String[] result = inline.split("\\s");
-						for (int j = 0; j < length; j++) {
-							freqs[i][j] = Double.parseDouble(result[j]);
-							if(freqs[i][j]==0){
-								freqs[i][j]=0.0001;
-							}
-						}
-					}
-					Spectrum spectrum = new Spectrum(freqs);
-					spectrum.setTaxon(taxon);
-					
-					int taxonIndex = spectrumModel.getTaxonIndex(taxonName);
-					if(taxonIndex != -1){
-						spectrumModel.removeSpectrum(taxonIndex);
-						System.err.println("remove "+taxonName +"\t"+ taxonIndex);
-					}
-					spectrumModel.addSpectrum(spectrum);
-					
-					
-				}
-				else{
-					inline = inFile.readLine();
-					String[] result = inline.split("\\s");
-					
-					length = result.length;
-					spectrumModel = new SpectrumAlignmentModel(aMap);
-//					spectrumModel.aMap = aMap;
-					
-					
-					double[][] freqs = new double[4][length];
-					for (int j = 0; j < length; j++) {
-						freqs[0][j] = Double.parseDouble(result[j]);
-						if(freqs[0][j]==0){
-							freqs[0][j]=0.0001;
-						}
-					}
-				
-					for (int i = 1; i < 4; i++) {
-						inline = inFile.readLine();
-						result = inline.split("\\s");
-						for (int j = 0; j < length; j++) {
-							freqs[i][j] = Double.parseDouble(result[j]);
-							if(freqs[i][j]==0){
-								freqs[i][j]=0.0001;
-							}
-						}
-					}
-					Spectrum spectrum = new Spectrum(freqs);
-					spectrum.setTaxon(taxon);
-					spectrumModel.addSpectrum(spectrum);
-					
-				}
-				 
-				
-			}
-			
-				
-				
-		}
-//		int length = 0;
-//		SpectrumAlignmentModel model = new SpectrumAlignmentModel(length);
-		inFile.close();
-		return spectrumModel;
-	}
-
-
 	public enum SpectrumType{
 		
 		EQUAL(0),

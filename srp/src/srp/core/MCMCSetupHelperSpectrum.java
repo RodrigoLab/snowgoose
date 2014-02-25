@@ -47,7 +47,7 @@ public class MCMCSetupHelperSpectrum extends MCMCSetupHelper {
 	private static final double opSmall = 3;
 	private static final double opMed = 15;
 	private static final double opLarge = 20;
-	private static final double opSpectrum =100;//150 works for beta and related, might be a bit too high?
+	private static final double opSpectrum =60;//150 works for beta and related, might be a bit too high?
 	
 	public static HashMap<String, Object> setupSpectrumTreeLikelihoodSpectrumModel(
 				TreeModel treeModel, SpectrumAlignmentModel spectrumModel) {

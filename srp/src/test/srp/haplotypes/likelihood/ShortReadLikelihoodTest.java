@@ -34,7 +34,7 @@ import dr.math.MathUtils;
 public class ShortReadLikelihoodTest {
 
 	
-	private HaplotypeModel haplotypeModelH4;
+	private HaplotypeModel haplotypeModel;
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 
@@ -59,7 +59,7 @@ public class ShortReadLikelihoodTest {
 		AlignmentMapping aMap = new AlignmentMapping(shortReads);
 		
 		Alignment trueAlignment = dataImporter.importAlignment(trueAlignmentFile);
-		haplotypeModelH4 = new HaplotypeModel(aMap, trueAlignment.getSequenceCount());
+		haplotypeModel = new HaplotypeModel(aMap, trueAlignment.getSequenceCount());
 	
 	}
 
@@ -325,24 +325,6 @@ public class ShortReadLikelihoodTest {
 	@Test
 	public void testRandomQuickRun() throws Exception{
 
-		String dataDir = "/home/sw167/workspaceSrp/snowgoose/srp/unittest/";
-
-		String trueAlignmentFile = "H4_haplotypes.phyml";
-		String shortReadFile = "H4_srp.fasta";
-		
-		
-		DataImporter dataImporter = new DataImporter(dataDir);
-		
-		Alignment shortReads = dataImporter.importShortReads(shortReadFile);
-		AlignmentMapping aMap = new AlignmentMapping(shortReads);
-		
-		Alignment trueAlignment = dataImporter.importAlignment(trueAlignmentFile);
-//		HaplotypeModel trueHaplotypes = new HaplotypeModel(aMap, trueAlignment);
-		
-//		ShortReadLikelihood srpLikelihood = new ShortReadLikelihood(aMap, trueHaplotypes);
-
-		HaplotypeModel haplotypeModel = new HaplotypeModel(aMap, trueAlignment.getSequenceCount());
-
 		ShortReadLikelihood srpLikelihood = new ShortReadLikelihood(haplotypeModel);
 		
 		double likelihood = srpLikelihood.getLogLikelihood(); 
@@ -425,43 +407,6 @@ public class ShortReadLikelihoodTest {
 
 	@Test
 	public void testCalculateLikelihoodTime() throws Exception {
-
-//		String[] seqs = new String[]{
-//				"AAAAAATTTTT.........",
-//				"..CCCCCCCCCCCCC.....",
-//				"......GGGGGGGGGGG...",
-//				"........TTTTTTTTT...",
-//				"............ACGTACGT",
-//				};
-//		
-//		String[] haps = new String[]{
-//
-//				"CCCCCTTTTTAAAAAGGGGG",
-//				"ACGTACGTACGTACGTACGT",
-//
-//				};
-//		
-//		HaplotypeModel haplotypeModel = AlignmentUtils.createHaplotypeModel(seqs, haps);
-//
-//		ShortReadLikelihood srL = new ShortReadLikelihood(haplotypeModel);
-//
-		
-		
-
-		String dataDir = "/home/sw167/workspaceSrp/snowgoose/srp/unittest/";
-		
-		String trueAlignmentFile = "H4_haplotypes.phyml";
-		String shortReadFile = "H4_srp.fasta";
-		
-		
-		DataImporter dataImporter = new DataImporter(dataDir);
-		
-		Alignment shortReads = dataImporter.importShortReads(shortReadFile);
-		AlignmentMapping aMap = new AlignmentMapping(shortReads);
-		
-		Alignment trueAlignment = dataImporter.importAlignment(trueAlignmentFile);
-
-		HaplotypeModel haplotypeModel = new HaplotypeModel(aMap, trueAlignment.getSequenceCount());
 
 		ShortReadLikelihood srL = new ShortReadLikelihood(haplotypeModel);
 		

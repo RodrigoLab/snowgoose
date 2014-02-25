@@ -181,7 +181,7 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 	private MultiType multiType;
 	private DistType distType;
 	
-	StateLikelihood stateLikelihood;
+	private StateLikelihood stateLikelihood;
 
 	public ShortReadsSpectrumLikelihood(SpectrumAlignmentModel spectrumModel){
 		this(spectrumModel, "flat");

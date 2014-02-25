@@ -59,11 +59,11 @@ public class MainMCMCSpectrumFull {
 		int noOfRecoveredHaplotype;
 		boolean randomTree = true;
 		boolean randomSpectrum = true;
-		SpectrumType randomSpectrumType = SpectrumAlignmentModel.SpectrumType.ZERO_ONE;
+		SpectrumType randomSpectrumType = SpectrumAlignmentModel.SpectrumType.RANDOM;
 		
 		String distTypeCode = "betaMode";
 		boolean commandLine = true;
-		commandLine = false;
+//		commandLine = false;
 		if(commandLine){
 			dataDir = args[0];
 			runIndex = Integer.parseInt(args[1]);
@@ -77,8 +77,8 @@ public class MainMCMCSpectrumFull {
 			runIndex = 50;
 			dataDir += "H7_"+runIndex+"/";
 			
-			totalSamples = 5000	 ;
-			logInterval = 10000;
+			totalSamples = 1000	 ;
+			logInterval = 1000;
 			
 			randomTree = true;
 //			randomTree = false;
@@ -89,7 +89,7 @@ public class MainMCMCSpectrumFull {
 //			randomSpectrumType = SpectrumAlignmentModel.SpectrumType.EQUAL;
 //			randomSpectrum = false;
 			
-			distTypeCode = "betaMean";
+			distTypeCode = "betaMode";
 			
 			noOfTrueHaplotype = 7;
 			noOfRecoveredHaplotype=7;
@@ -108,7 +108,7 @@ public class MainMCMCSpectrumFull {
 		String logHaplotypeName = prefix+".haplatype";
 		String operatorAnalysisFile = prefix+"_operatorAnalysisFile.txt";
 		
-		String partialSpectrumName = prefix+".haplatypepartial";
+		String partialSpectrumName = hapRunIndex+".haplatypepartial";
 		String partialTreeName = "FullTree_"+hapRunIndex+".treespartial";
 //		String partialTreeName = hapRunIndex + "_Srp.tree";
 		
@@ -126,7 +126,7 @@ public class MainMCMCSpectrumFull {
 
 		}
 		else{
-			spectrumModel = SpectrumAlignmentModel.importPartialSpectrumFile(aMap, partialSpectrumName );
+			spectrumModel = dataImporter.importPartialSpectrumFile(aMap, partialSpectrumName );
 //			spectrumModel = new SpectrumAlignmentModel(aMap, trueAlignment);
 			
 		}
@@ -225,7 +225,7 @@ public class MainMCMCSpectrumFull {
 //		AlignmentMapping alignmentMapping = new AlignmentMapping(shortReads);
 //		ShortReadLikelihood trueSrp = new ShortReadLikelihood(HaplotypeModelUtils.factory(shortReads, trueAlignment));
 //		System.err.println("\'trueShortReadLikelihood\': "+trueSrp.getLogLikelihood());
-		loggers[3] = new SpectrumLogger(spectrumModel, trueAlignment, logHaplotypeName, logInterval*totalSamples);
+		loggers[3] = new SpectrumLogger(spectrumModel, trueAlignment, logHaplotypeName, logInterval*totalSamples/10);
 		
 		// MCMC
 		MCMCOptions options = MCMCSetupHelper.setMCMCOptions(logInterval, totalSamples);

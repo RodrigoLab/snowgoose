@@ -25,6 +25,7 @@ public abstract class AbstractSpectrumOperator extends AbstractCoercableOperator
     public SpectrumOperation OP;
     
     protected SpectrumAlignmentModel spectrumModel;
+    @Deprecated
 	protected AlignmentMapping alignmentMapping;
 	
 	protected final int spectrumCount;

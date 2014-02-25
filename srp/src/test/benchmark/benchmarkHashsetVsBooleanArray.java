@@ -146,7 +146,7 @@ public class benchmarkHashsetVsBooleanArray {
 
 	private static AlignmentMapping setup() throws Exception{
 			String dataDir = "/home/sw167/workspaceSrp/ABI/unittest/";
-			String shortReadFile = "5000Srp.fasta";
+			String shortReadFile = "benchmark_5000Srp.fasta";
 			
 			DataImporter dataImporter = new DataImporter(dataDir);
 			Alignment shortReads = dataImporter.importShortReads(shortReadFile);

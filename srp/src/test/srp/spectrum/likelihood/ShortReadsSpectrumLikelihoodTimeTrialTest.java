@@ -44,7 +44,6 @@ public class ShortReadsSpectrumLikelihoodTimeTrialTest {
 	@Before
 	public void setUp() throws Exception {
 		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/snowgoose/srp/unittest/", "H10_srpGap.fasta");
-//		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/snowgoose/srp/unittest/", "5000Srp.fasta");
 		AlignmentMapping aMap = new AlignmentMapping(alignment);
 			
 		spectrumModel = new SpectrumAlignmentModel(aMap, 6, 2);

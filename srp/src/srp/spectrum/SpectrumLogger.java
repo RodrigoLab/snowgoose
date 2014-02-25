@@ -66,6 +66,9 @@ public class SpectrumLogger extends MCLogger {
 						.append("\n");
 			}
 			logLine(buffer.toString());
+			double[][] dist = SpectrumAlignmentUtils.compareSpectrumToTrueAlignment(spectrum, trueAlignment);
+			String s = SpectrumAlignmentUtils.formatter(dist);
+			logLine(s);
     	}
 
     }
