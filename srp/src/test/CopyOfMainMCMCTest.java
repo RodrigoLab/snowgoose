@@ -75,7 +75,8 @@ public class CopyOfMainMCMCTest {
 		
 		Alignment shortReads = dataImporter.importShortReads(shortReadFile);
 		AlignmentMapping aMap = new AlignmentMapping(shortReads);
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, noOfRecoveredHaplotype);
+		int spectrumLength = aMap.getLength();
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(spectrumLength, noOfRecoveredHaplotype);
 		
 		// coalescent
 		Parameter popSize = new Parameter.Default(ConstantPopulationModelParser.POPULATION_SIZE, 3000.0, 100, 100000.0);
@@ -119,7 +120,7 @@ public class CopyOfMainMCMCTest {
 		treeLikelihood.setId(TreeLikelihoodParser.TREE_LIKELIHOOD);
 		
 		// ShortReadLikelihood
-		ShortReadsSpectrumLikelihood srpLikelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
+		ShortReadsSpectrumLikelihood srpLikelihood = new ShortReadsSpectrumLikelihood(spectrumModel, aMap);
 
 		// CompoundLikelihood
 		HashMap<String, Likelihood> compoundlikelihoods = MCMCSetupHelper.setupCompoundLikelihood(
@@ -167,7 +168,7 @@ public class CopyOfMainMCMCTest {
 			TreeModel newTreeModel  = new TreeModel(treeModel);
 			
 			SpectrumAlignmentModel newSpectrumModel = SpectrumAlignmentModel.duplicateSpectrumAlignmentModel(spectrumModel);
-			ShortReadsSpectrumLikelihood newSrpLikelihood = new ShortReadsSpectrumLikelihood(newSpectrumModel);
+			ShortReadsSpectrumLikelihood newSrpLikelihood = new ShortReadsSpectrumLikelihood(newSpectrumModel, aMap);
 
 			// clock model
 			Parameter newRateParameter = new Parameter.Default(StrictClockBranchRates.RATE, 1e-5, 0, 1);
@@ -196,7 +197,7 @@ public class CopyOfMainMCMCTest {
 		TreeModel newTreeModel  = new TreeModel(treeModel);
 		
 		SpectrumAlignmentModel newSpectrumModel = SpectrumAlignmentModel.duplicateSpectrumAlignmentModel(spectrumModel);
-		ShortReadsSpectrumLikelihood newSrpLikelihood = new ShortReadsSpectrumLikelihood(newSpectrumModel);
+		ShortReadsSpectrumLikelihood newSrpLikelihood = new ShortReadsSpectrumLikelihood(newSpectrumModel, aMap);
 
 		// clock model
 		Parameter newRateParameter = new Parameter.Default(StrictClockBranchRates.RATE, 1e-5, 0, 1);

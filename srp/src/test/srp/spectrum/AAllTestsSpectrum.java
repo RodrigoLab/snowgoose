@@ -9,6 +9,7 @@ import org.junit.runners.Suite.SuiteClasses;
 	AbstractSpectrumAlignmentModelTest.class,
 	SpectraParameterTest.class,
 	SpectrumAlignmentModelTest.class,
+	SpectrumAlignmentUtilsTest.class,
 	SpectrumTest.class,
 })
 public class AAllTestsSpectrum {

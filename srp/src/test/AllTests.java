@@ -14,7 +14,7 @@ import org.junit.runners.Suite.SuiteClasses;
 	test.srp.spectrum.AAllTestsSpectrum.class,
 	test.srp.spectrum.likelihood.AllTestsSpectrumLikelihood.class,
 	test.srp.spectrum.operator.AllTestsSpectrumOperator.class,
-	test.srp.spectrum.treelikelihood.AllTestsSpectrumTreeLikelihood.class,
+
 	})
 public class AllTests {
 

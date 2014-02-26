@@ -11,6 +11,7 @@ import srp.core.DataImporter;
 import srp.haplotypes.AlignmentMapping;
 import srp.spectrum.SpectrumAlignmentModel;
 import srp.spectrum.likelihood.ShortReadsSpectrumLikelihood;
+import srp.spectrum.likelihood.ShortReadsSpectrumLikelihood.DistType;
 import srp.spectrum.operator.AbstractSpectrumOperator;
 import srp.spectrum.operator.DeltaExchangeColumnSpectrumOperator;
 import srp.spectrum.operator.DeltaExchangeMultiSpectrumOperator;
@@ -26,7 +27,7 @@ import dr.inference.operators.CoercionMode;
 import dr.inference.operators.OperatorFailedException;
 import dr.math.MathUtils;
 
-public class ShortReadsSpectrumLikelihoodTimeTrialTest {
+public class ShortReadsLikelihoodTimeTrialTest {
 
 //	public static final double ERROR = ShortReadsSpectrumLikelihood.ERROR_RATE;
 //	public static final double NOT_ERROR = ShortReadsSpectrumLikelihood.NOT_ERROR_RATE;
@@ -46,8 +47,9 @@ public class ShortReadsSpectrumLikelihoodTimeTrialTest {
 		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/snowgoose/srp/unittest/", "H10_srpGap.fasta");
 		AlignmentMapping aMap = new AlignmentMapping(alignment);
 			
-		spectrumModel = new SpectrumAlignmentModel(aMap, 6);
-		likelihood = new ShortReadsSpectrumLikelihood(spectrumModel, "betaMean");
+		int spectrumLength = aMap.getLength();
+		spectrumModel = new SpectrumAlignmentModel(spectrumLength,  6);
+		likelihood = new ShortReadsSpectrumLikelihood(spectrumModel, aMap, DistType.betaMean);
 
 	}
 

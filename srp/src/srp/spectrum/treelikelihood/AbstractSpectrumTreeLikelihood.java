@@ -115,7 +115,6 @@ public abstract class AbstractSpectrumTreeLikelihood extends AbstractModelLikeli
 
         int v = 0;
         for (int i = 0; i < patternCount; i++) {
-        	//TODO implement here
             double[] frequencies = spectrumModel.getSpecturmFrequencies(sequenceIndex, i);
             for (int j = 0; j < stateCount; j++) {
             	partials[v] = frequencies[j];

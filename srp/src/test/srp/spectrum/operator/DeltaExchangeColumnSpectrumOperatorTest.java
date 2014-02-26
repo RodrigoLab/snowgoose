@@ -47,7 +47,8 @@ public class DeltaExchangeColumnSpectrumOperatorTest {
 				};
 		int spectrumCount = 4;
 		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, spectrumCount);
+		int spectrumLength = aMap.getLength();
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(spectrumLength, spectrumCount);
 		DeltaExchangeColumnSpectrumOperator op = new DeltaExchangeColumnSpectrumOperator(
 				spectrumModel, 0.1, CoercionMode.COERCION_OFF);
 	}
@@ -60,11 +61,12 @@ public class DeltaExchangeColumnSpectrumOperatorTest {
 				};
 		int spectrumCount = 4;
 		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, spectrumCount);
+		int spectrumLength = aMap.getLength();
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(spectrumLength, spectrumCount);
 		DeltaExchangeColumnSpectrumOperator op = new DeltaExchangeColumnSpectrumOperator(
 				spectrumModel, 0.1, CoercionMode.COERCION_OFF);
 
-		double[][][] storedFrequencies = new double[spectrumCount][spectrumModel.getSiteCount()][4];
+		double[][][] storedFrequencies = new double[spectrumCount][spectrumModel.getSpectrumLength()][4];
 		for (int i = 0; i < storedFrequencies.length; i++) {
 			Spectrum spectrum = spectrumModel.getSpectrum(i);
 			for (int j = 0; j < storedFrequencies[i].length; j++) {
@@ -114,11 +116,12 @@ public class DeltaExchangeColumnSpectrumOperatorTest {
 				};
 		int spectrumCount = 10;
 		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, spectrumCount);
+		int spectrumLength = aMap.getLength();
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(spectrumLength, spectrumCount);
 		DeltaExchangeColumnSpectrumOperator op = new DeltaExchangeColumnSpectrumOperator(
 				spectrumModel, 0.1, CoercionMode.COERCION_OFF);
 
-		double[][][] storedFrequencies = new double[spectrumCount][spectrumModel.getSiteCount()][4];
+		double[][][] storedFrequencies = new double[spectrumCount][spectrumModel.getSpectrumLength()][4];
 		for (int i = 0; i < storedFrequencies.length; i++) {
 			Spectrum spectrum = spectrumModel.getSpectrum(i);
 			for (int j = 0; j < storedFrequencies[i].length; j++) {

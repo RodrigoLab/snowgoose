@@ -47,12 +47,13 @@ public class RecombineSectionSpectrumOperatorTest {
 				"..AGGTTC",
 				};
 		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 5);
+		int spectrumLength = aMap.getLength();
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(spectrumLength, 5);
 		RecombineSectionSpectrumOperator op = new RecombineSectionSpectrumOperator(
 				spectrumModel, 5, CoercionMode.COERCION_OFF);
 
 		double[][][] storedFrequencies = new double[spectrumModel
-				.getSpectrumCount()][spectrumModel.getSiteCount()][4];
+				.getSpectrumCount()][spectrumModel.getSpectrumLength()][4];
 		for (int s = 0; s < storedFrequencies.length; s++) {
 			Spectrum spectrum = spectrumModel.getSpectrum(s);
 			for (int l = 0; l < storedFrequencies[s].length; l++) {
@@ -60,7 +61,7 @@ public class RecombineSectionSpectrumOperatorTest {
 			}
 		}
 		
-		int spectrumLength = spectrumModel.getSpectrumLength();
+
 		for (int o = 0; o < 10000; o++) {
 			try {
 				op.doOperation();

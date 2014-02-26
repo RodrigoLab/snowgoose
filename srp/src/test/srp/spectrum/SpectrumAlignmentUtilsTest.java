@@ -44,14 +44,13 @@ public class SpectrumAlignmentUtilsTest {
 
 		dataDir = "/home/sw167/workspaceSrp/snowgoose/srp/unittest/";
 
-		String trueHaplotypeFile = "H7_fullHaplotype.fasta";
-		String logSpectrumPath = dataDir+"H7_haplotypepartial_01.fasta";
+		String trueHaplotypeFile = "spectrumDist_true.fasta";
+		String logSpectrumPath = "spectrumDist_01.fasta";
 
 		DataImporter dataImporter = new DataImporter(dataDir);
 		Alignment trueAlignment = dataImporter.importAlignment(trueHaplotypeFile);
-		AlignmentMapping aMap = new AlignmentMapping(trueAlignment);
 
-		SpectrumAlignmentModel spectrumModel = dataImporter.importPartialSpectrumFile(aMap, logSpectrumPath );
+		SpectrumAlignmentModel spectrumModel = dataImporter.importPartialSpectrumFile(logSpectrumPath );
 //			
 		SpectrumAlignmentUtils.compareSpectrumToTrueAlignment(spectrumModel, trueAlignment);
 
@@ -75,8 +74,7 @@ public class SpectrumAlignmentUtilsTest {
 		DataImporter dataImporter = new DataImporter(dataDir);
 		Alignment trueAlignment = dataImporter.importAlignment(trueHaplotypeFile);
 		
-		AlignmentMapping aMap = new AlignmentMapping(trueAlignment);
-		SpectrumAlignmentModel spectrumModel = dataImporter.importPartialSpectrumFile(aMap, partialSpectrumFile );
+		SpectrumAlignmentModel spectrumModel = dataImporter.importPartialSpectrumFile(partialSpectrumFile );
 
 		double[][] allDelta = SpectrumAlignmentUtils.compareSpectrumToTrueAlignment(spectrumModel, trueAlignment);
 //		Spectrum1

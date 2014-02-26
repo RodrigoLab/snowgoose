@@ -21,7 +21,7 @@ import srp.spectrum.SpectrumAlignmentModel;
 import dr.evolution.alignment.Alignment;
 
 public class SpectrumAlignmentModelTest {
-	private AlignmentMapping aMap;
+	private int spectrumLength;
 	private String[] expectedSequences;
 
 	@Before
@@ -29,8 +29,6 @@ public class SpectrumAlignmentModelTest {
 
 		String dir = System.getProperty("user.dir")+File.separatorChar+"unittest"+File.separator;
 		Alignment srpAlignment = DataImporter.importShortReads(dir, "HaplotypeModelTest_10_srp.fasta");
-		aMap = new AlignmentMapping(srpAlignment);
-		
 
 		expectedSequences = new String[]{ 
 				".............................................AAGCTCCAACACA*GAGAGCAACTCGTAGGGCGTTGTTCAA..............",
@@ -44,6 +42,7 @@ public class SpectrumAlignmentModelTest {
 				"........................................................CACGAGAGCAACACGTA*GGCGTTG*TCAATTCTAGTTCT....",
 				"..........CAGTCCGCGCCTTGTCA*GGCTCAAAAT*CTG..........................................................",
 		};
+		spectrumLength = expectedSequences[0].length();
 //		expectedTaxons = new Taxon[10];
 ////		char[][] expectedMatrix = new char[matrixS.length][matrixS[0].length()];
 //		expectedList = new ArrayList<Haplotype>();
@@ -75,7 +74,7 @@ public class SpectrumAlignmentModelTest {
 	public void testConstructorEqual() throws Exception {
 		double[] expectedFreq = new double[]{0.25, 0.25, 0.25, 0.25};
 		
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 5, SpectraType.EQUAL);
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(spectrumLength, 5, SpectraType.EQUAL);
 		assertEquals(100, spectrumModel.getSpectrumLength());
 		assertEquals(5, spectrumModel.getSpectrumCount());
 		for (int i = 0; i < spectrumModel.getSpectrumCount(); i++) {
@@ -91,7 +90,7 @@ public class SpectrumAlignmentModelTest {
 	@Test
 	public void testConstructorZeroOne() throws Exception {
 		
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 5, SpectraType.ZERO_ONE);
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(spectrumLength, 5, SpectraType.ZERO_ONE);
 		assertEquals(100, spectrumModel.getSpectrumLength());
 		assertEquals(5, spectrumModel.getSpectrumCount());
 		for (int i = 0; i < spectrumModel.getSpectrumCount(); i++) {
@@ -120,7 +119,7 @@ public class SpectrumAlignmentModelTest {
 	@Test
 	public void testConstructorRandom() throws Exception {
 		
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 5, SpectraType.RANDOM);
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(spectrumLength, 5, SpectraType.RANDOM);
 		assertEquals(100, spectrumModel.getSpectrumLength());
 		assertEquals(5, spectrumModel.getSpectrumCount());
 		for (int i = 0; i < spectrumModel.getSpectrumCount(); i++) {

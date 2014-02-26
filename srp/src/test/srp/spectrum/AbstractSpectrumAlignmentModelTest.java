@@ -105,8 +105,9 @@ public class AbstractSpectrumAlignmentModelTest {
 
 	@Before
 	public void setUp() throws Exception {
-		spectrumModel = new SpectrumAlignmentModel(aMap, srpAlignment);
-		spectrumModelRandom = new SpectrumAlignmentModel(aMap, 5);
+		spectrumModel = new SpectrumAlignmentModel(srpAlignment);
+		int spectrumLength = aMap.getLength();
+		spectrumModelRandom = new SpectrumAlignmentModel(spectrumLength, 5);
 	}
 
 	@After
@@ -226,7 +227,7 @@ public class AbstractSpectrumAlignmentModelTest {
 
 		}
 		
-		spectrumModelRandom = new SpectrumAlignmentModel(aMap, alignmentNoTaxon);
+		spectrumModelRandom = new SpectrumAlignmentModel(alignmentNoTaxon);
 		assertEquals(5, spectrumModelRandom.getTaxonCount());
 		for (int i = 0; i < spectrumModelRandom.getTaxonCount(); i++) {
 			

@@ -4,13 +4,15 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
+import test.srp.spectrum.likelihood.stateLikelihood.StateLikelihoodTest;
 import test.srp.spectrum.treelikelihood.SpectrumTreeLikelihoodTest;
 
 @RunWith(Suite.class)
 @SuiteClasses({ 
 	ShortReadsSpectrumLikelihoodTest.class,
-	ShortReadsSpectrumLikelihoodTimeTrialTest.class,
-	SpectrumTreeLikelihoodTest.class
+//	ShortReadsSpectrumLikelihoodTimeTrialTest.class,
+	SpectrumTreeLikelihoodTest.class,
+	StateLikelihoodTest.class
 	})
 public class AllTestsSpectrumLikelihood {
 

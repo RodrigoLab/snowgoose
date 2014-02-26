@@ -25,8 +25,7 @@ public abstract class AbstractSpectrumOperator extends AbstractCoercableOperator
     public SpectrumOperation OP;
     
     protected SpectrumAlignmentModel spectrumModel;
-    @Deprecated
-	protected AlignmentMapping alignmentMapping;
+
 	
 	protected final int spectrumCount;
 	protected final int spectrumLength;
@@ -44,7 +43,7 @@ public abstract class AbstractSpectrumOperator extends AbstractCoercableOperator
 		this.spectrumModel = spectrumModel;
 		spectrumCount = this.spectrumModel.getSpectrumCount();
 		spectrumLength = this.spectrumModel.getSpectrumLength();
-		alignmentMapping = this.spectrumModel.getAlignmentMapping();
+
 	}
 
 
@@ -64,10 +63,7 @@ public abstract class AbstractSpectrumOperator extends AbstractCoercableOperator
 		return siteIndexs;
 	}
 
-//	public SpectrumOperation getSpectrumOperation() {
-//		// TODO Auto-generated method stub
-//		return OP;
-//	}
+
 	
 //	public AbstractMultiBasesOperator(HaplotypeModel haplotypeModel, int swapLength, CoercionMode mode) {
 //		super(mode);

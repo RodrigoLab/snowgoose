@@ -168,11 +168,7 @@ public class Spectrum extends AbstractModel implements Attributable {
 		return spectrum.size();
 	}
 	
-	@Deprecated
-	public void setFrequencyAt(int site, int state, double value) {
-		getSpectra(site).setFrequency(state, value);
-//		fireModelChanged(this);//TODO check?
-	}
+
 	public void resetFrequencies(int site, double[] values){
 		getSpectra(site).setFrequenciesQuietly(values);
 	}
@@ -423,6 +419,7 @@ public class Spectrum extends AbstractModel implements Attributable {
 		System.err.println("Call handleModelChangedEvent");
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	protected void handleVariableChangedEvent(Variable variable, int index,
 			ChangeType type) {

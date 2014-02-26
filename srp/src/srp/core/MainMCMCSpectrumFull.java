@@ -11,6 +11,7 @@ import srp.spectrum.SpectraParameter.SpectraType;
 import srp.spectrum.SpectrumAlignmentModel;
 import srp.spectrum.SpectrumLogger;
 import srp.spectrum.likelihood.ShortReadsSpectrumLikelihood;
+import srp.spectrum.likelihood.ShortReadsSpectrumLikelihood.DistType;
 import srp.spectrum.treelikelihood.SpectrumTreeLikelihood;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.tree.Tree;
@@ -56,10 +57,10 @@ public class MainMCMCSpectrumFull {
 		boolean randomTree = true;
 		boolean randomSpectrum = true;
 		SpectraType randomSpectrumType = SpectraType.RANDOM;
-		String distTypeCode = "betaMean";
+		DistType distTypeCode = DistType.betaMode;
 		
 		boolean commandLine = true;
-//		commandLine = false;
+		commandLine = false;
 		if(commandLine){
 			dataDir = args[0];
 			runIndex = Integer.parseInt(args[1]);
@@ -86,7 +87,7 @@ public class MainMCMCSpectrumFull {
 //			randomSpectrumType = SpectrumAlignmentModel.SpectrumType.EQUAL;
 //			randomSpectrum = false;
 			
-			distTypeCode = "betaMean";
+			distTypeCode = DistType.betaMean;
 			
 			noOfTrueHaplotype = 7;
 			noOfRecoveredHaplotype=7;
@@ -115,7 +116,7 @@ public class MainMCMCSpectrumFull {
 		
 		Alignment shortReads = dataImporter.importShortReads(shortReadFile);
 		AlignmentMapping aMap = new AlignmentMapping(shortReads);
-		
+		int spectrumLength = aMap.getLength();
 		// SpectrumModel and ShortReadLikelihood
 		SpectrumAlignmentModel spectrumModel;
 		ShortReadsSpectrumLikelihood srpLikelihood;
@@ -123,8 +124,8 @@ public class MainMCMCSpectrumFull {
 		int c = 0;
 		if (randomSpectrum) {
 			do {
-				spectrumModel = new SpectrumAlignmentModel(aMap, noOfRecoveredHaplotype, randomSpectrumType);
-				srpLikelihood = new ShortReadsSpectrumLikelihood(spectrumModel, distTypeCode);
+				spectrumModel = new SpectrumAlignmentModel(spectrumLength, noOfRecoveredHaplotype, randomSpectrumType);
+				srpLikelihood = new ShortReadsSpectrumLikelihood(spectrumModel, aMap, distTypeCode);
 				redo = (srpLikelihood.getLogLikelihood() == Double.NEGATIVE_INFINITY);
 				c++;
 				if(c==100){
@@ -134,8 +135,8 @@ public class MainMCMCSpectrumFull {
 			} while (redo);
 		}		
 		else{
-			spectrumModel = dataImporter.importPartialSpectrumFile(aMap, partialSpectrumName );
-			srpLikelihood = new ShortReadsSpectrumLikelihood(spectrumModel, distTypeCode);
+			spectrumModel = dataImporter.importPartialSpectrumFile(partialSpectrumName );
+			srpLikelihood = new ShortReadsSpectrumLikelihood(spectrumModel, aMap, distTypeCode);
 		}
 
 
@@ -244,78 +245,9 @@ public class MainMCMCSpectrumFull {
 		System.out.println(mcmc.getTimer().toString());
 
 		
-//		//TODO remove later: Treelikelihood is the same!!
-//		HaplotypeModel haplotypeModel = new HaplotypeModel(aMap, trueAlignment);
-//		HashMap<String, Object> parameterList = MCMCSetupHelperSpectrum
-//				.setupSpectrumTreeLikelihoodSpectrumModelTest(treeModel,
-//						spectrumModel, haplotypeModel);
-//		Parameter kappa = (Parameter) parameterList.get("kappa");
-//		Parameter freqs = (Parameter) parameterList.get("freqs");
-//		Parameter rate = (Parameter) parameterList.get("rate");
-//		StrictClockBranchRates branchRateModel = (StrictClockBranchRates) parameterList.get("branchRateModel");
-//		SpectrumTreeLikelihood treeLikelihood = (SpectrumTreeLikelihood) parameterList.get("treeLikelihood");
-//		TreeLikelihoodExt hapTreeLikelihood = (TreeLikelihoodExt) parameterList.get("hapTreeLikelihood");
-//		System.out.println(treeLikelihood.getLogLikelihood() +"\t"+ hapTreeLikelihood.getLogLikelihood()
-//				+"\tDelta:"+ (treeLikelihood.getLogLikelihood()-hapTreeLikelihood.getLogLikelihood()));
-//		System.exit(-1);
-//		//REMOVE: test srpLikelihood vs srpHapLikelihood: Differ by binomialCoefficientLog
-//		HaplotypeModel haplotypeModel = new HaplotypeModel(aMap, trueAlignment);
-//		ShortReadLikelihood srpHapLikelihood = new ShortReadLikelihood(haplotypeModel);
-//		System.out.println(srpLikelihood.getLogLikelihood());
-//		System.out.println(srpHapLikelihood.getLogLikelihood());
-//		System.out.println("Delta: "+( srpLikelihood.getLogLikelihood()-srpHapLikelihood.getLogLikelihood() ));
-//		System.exit(0);
-//
-//		
-//		
-//		if (schedule.getOperator(0).getOperatorName().equals("DeltaExchangeSingleSpectrumOperator")){
-//			DeltaExchangeSingleSpectrumOperator oo = (DeltaExchangeSingleSpectrumOperator) schedule.getOperator(0);
-//			System.out.println(oo.failcount);
-//		}
-//		if (schedule.getOperator(1).getOperatorName().equals("DeltaExchangeSingleSpectrumOperator")){
-//			DeltaExchangeSingleSpectrumOperator oo = (DeltaExchangeSingleSpectrumOperator) schedule.getOperator(0);
-//			System.out.println(oo.failcount);
-//		}
-//		System.out.println("spectrumAlignment time:\t"+spectrumModel.time);
-//		System.out.println("srpLikelihood time:\t"+srpLikelihood.time);
-		
-//		int stateCount = 4;
-//		for (int s = 0; s < stateCount; s++) {
-//			
-//			System.out.println("State: "+s);
-//			for (int j = 0; j < spectrumModel.getSpectrumCount(); j++) {
-//				Spectrum spectrum = spectrumModel.getSpectrum(j);
-//				for (int k = 0; k < 5; k++) {
-//					System.out.print(spectrum.getFrequency(k, s)+"\t");
-//	//				System.out.print("\t");
-//				}
-//				System.out.println();
-//			}
-//			System.out.println();
-//		}
-
-		
-		
-//		for (int j = 0; j < spectrumModel.getSpectrumCount(); j++) {
-//			Spectrum spectrum = spectrumModel.getSpectrum(j);
-//			System.out.println("Specturm:"+j);
-//			for (int s = 0; s < stateCount; s++) {
-//				for (int k = 0; k < 5; k++) {
-//					System.out.print(spectrum.getFrequency(k, s)+"\t");
-//				}
-//			
-//
-//				System.out.println();
-//			}
-//			System.out.println(trueAlignment.getAlignedSequenceString(j));
-//			System.out.println();
-//		}
-//		StringBuffer sbDist = spectrumModel.calculatetoAlignmentDistance(trueAlignment);
-//		System.out.println(sbDist.toString());
 	}
 
 
 }
 
-//10000000	-46310.69881492259	-60.46688487202967	-7411.656643747804	-38838.57528630275	3000.0	1.0	-50.99843521986054	1791.5586323740524	0.04 hours/million states
 

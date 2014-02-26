@@ -15,37 +15,24 @@ public abstract class StateLikelihood {
 	public StateLikelihood() {
 	}
 	
-	public void calculateStatesLogLikelihood(SpectraParameter spectra, 
+	public double[] calculateStatesLogLikelihood(SpectraParameter spectra, 
 			double[] statesLogLikelihood){
 		for (int state = 0; state < STATE_COUNT; state++) {
 			double frequency = spectra.getFrequency(state);
 			statesLogLikelihood[state] = caluclateStateLogLikelihood(frequency);
-			
-//			spectra.setStateLikelihood(state, statesLogLikelihood[state]);//TESTING
 		}
-		spectra.setStateLikelihood(statesLogLikelihood);//TESTING
-		
+		spectra.setStateLikelihood(statesLogLikelihood);
+		return statesLogLikelihood;
 	}
 	
 	
-	public void calculateStoredStatesLogLikelihood(SpectraParameter spectra, 
+	public double[] calculateStoredStatesLogLikelihood(SpectraParameter spectra, 
 			double[] statesLogLikelihood){
 		
-		double[] temp = new double[STATE_COUNT];
-		for (int state = 0; state < STATE_COUNT; state++) {
-//			{//TESTING
-//			double frequency = spectra.getStoredFrequency(state);
-//			temp[state] = caluclateStateLogLikelihood(frequency);
-//			}
-//			{//TESTING
-//			statesLogLikelihood[state] = spectra.getStoredStateLikelihood(state);
-//			}
-		}
 		System.arraycopy(spectra.getStoredStateLikelihood(), 0, statesLogLikelihood, 0, STATE_COUNT);
-//		System.out.println(Arrays.toString(temp));
-//		System.out.println(Arrays.toString(statesLogLikelihood));
-//		System.out.println();
-//		return statesLogLikelihood;
+		return statesLogLikelihood;
+		
+		
 	}
 	
 	public abstract double caluclateStateLogLikelihood(double frequency);

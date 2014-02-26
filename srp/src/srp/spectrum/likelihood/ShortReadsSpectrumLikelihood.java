@@ -40,73 +40,6 @@ import dr.math.distributions.ChiSquareDistribution;
 import dr.math.distributions.GammaDistribution;
 import dr.util.Assert;
 
-/*
-
-Three methods to go through multiple sites
-Method 1: Go through them, might be faster for small srp size/small number of bases change
-
-	for (int k = twoPositions[0]; k < twoPositions[1]; k++) {
-		mapToSrp = aMap.getMapToSrp(k);
-		for (int i : mapToSrp) {
-			for (int r = 0; r < TWO; r++) {
-				j = twoSpectrums[r];
-				storedAllLogLikelihood[i][j][k] = allLogLikelihood[i][j][k];
-				storedSpectrumLogLikelihood[i][j] = spectrumLogLikelihood[i][j];
-				count2++;
-			}
-		}
-	}
-
-
-Method 2:
-get all unique sites with HashSet
-
-	Set<Integer> allSrpPos = new HashSet<Integer>();
-	allSrpPos.clear();
-	for (int i = twoPositions[0]; i < twoPositions[1]; i++) {
-		mapToSrp = aMap.getMapToSrp(i);
-		allSrpPos.addAll(mapToSrp);
-	}
-	for (int i : allSrpPos) {
-		for (int r = 0; r < TWO; r++) {
-			for (int k = twoPositions[0]; k < twoPositions[1]; k++) {
-				j = twoSpectrums[r];
-				if(allLogLikelihood[i][j][k] != 0){
-					storedAllLogLikelihood[i][j][k] = allLogLikelihood[i][j][k];
-					storedSpectrumLogLikelihood[i][j] = spectrumLogLikelihood[i][j];
-				}
-			}
-		}
-	}
-Method 3: boolean index array
-				
-	int srpCount = aMap.getSrpCount();
-	boolean[] srpSwitch = new boolean[srpCount];
-	Arrays.fill(srpSwitch, false);
-	for (int k = twoPositions[0]; k < twoPositions[1]; k++) {
-		mapToSrp = aMap.getMapToSrp(k);
-		for (int i : mapToSrp) {
-			srpSwitch[i] = true;
-		}
-	}
-				
-	for (int i = 0; i < srpSwitch.length; i++) {
-		if(srpSwitch[i]){
-			for (int r = 0; r < TWO; r++) {
-				j = twoSpectrums[r];
-				for (int k = twoPositions[0]; k < twoPositions[1]; k++) {
-					if(allLogLikelihood[i][j][k] != 0){
-						storedAllLogLikelihood[i][j][k] = allLogLikelihood[i][j][k];
-						storedSpectrumLogLikelihood[i][j] = spectrumLogLikelihood[i][j];
-					}
-				}
-			}
-		}
-	}
-				
-
- */
-
 
 public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 
@@ -134,8 +67,7 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 	public final int STATE_COUNT;
 	
 	private final double MIN_LOG_LIKELIHOOD;
-	
-	
+
 	protected boolean likelihoodKnown;
 	
 	private int spectrumLength;
@@ -167,44 +99,40 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 	@Deprecated
 	private double[][][] storedAllLogLikelihood;
 
-
+	private StateLikelihood stateLikelihood;
 	private AlignmentMapping aMap;
-	private LikelihoodScaler liS;
-	
 	private SpectrumAlignmentModel spectrumModel;
+	private LikelihoodScaler liS;
+
 	private DataType dataType;
-	
 	
 	private boolean[] srpSwitch;
 	private Set<Integer> allSrpPos;
-//	static double[] temp = new double[18];
 
 	private MultiType multiType;
 	private DistType distType;
-	
-	private StateLikelihood stateLikelihood;
 
 	
 
-	public ShortReadsSpectrumLikelihood(SpectrumAlignmentModel spectrumModel){
-		this(spectrumModel, "flat");
-		 
+	public ShortReadsSpectrumLikelihood(SpectrumAlignmentModel spectrumModel, AlignmentMapping aMap){
+		this(spectrumModel, aMap, DistType.flat);
 		
 	}
-	public ShortReadsSpectrumLikelihood(SpectrumAlignmentModel spectrumModel, String distTypeCode){
+	
+	public ShortReadsSpectrumLikelihood(SpectrumAlignmentModel spectrumModel, AlignmentMapping aMap, DistType distType){
 		super(SHORT_READ_LIKELIHOOD);
 		this.spectrumModel = spectrumModel;
-		this.aMap = this.spectrumModel.getAlignmentMapping();
-		System.out.println(Double.MIN_VALUE);
+		this.aMap = aMap;
+
 
 		multiType = MultiType.Array;
 //		type = MultiType.Hash;
 //		type = MultiType.All;
 //		distTypeCode = "flat";//"betaMean"  "betaMode" "gTest"
-		setDistType(distTypeCode);
+		setDistType(distType);
 		MIN_LOG_LIKELIHOOD = stateLikelihood.caluclateStateLogLikelihood(SpectraParameter.MIN_FREQ);
 		
-		this.dataType = this.spectrumModel.getDataType();
+		this.dataType = this.spectrumModel.getDataType();//TESTING can make these final static?
 		STATE_COUNT = dataType.getStateCount();//4
 		AMBIGUOUS_STATE_COUNT = dataType.getAmbiguousStateCount();//18
 
@@ -425,7 +353,7 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 		SpectrumOperationRecord record = spectrumModel.getSpectrumOperationRecord();
 		int j = record.getSpectrumIndex(); 
 		int k = record.getAllSiteIndexs()[0];
-		int[] siteIndexs = record.getAllSiteIndexs();
+//		int[] siteIndexs = record.getAllSiteIndexs();
 //
 		SpectraParameter spectra = spectrumModel.getSpectrum(j).getSpectra(k);
 		ArrayList<Integer> mapToSrp = aMap.getMapToSrp(k);
@@ -626,11 +554,10 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 //			allStoredStateLogLikelihood1[s] = calculateStoredStatesLogLikelihood(spectra1);
 			stateLikelihood.calculateStoredStatesLogLikelihood(spectra0, allStateLogLikelihood[s]);
 			stateLikelihood.calculateStoredStatesLogLikelihood(spectra1, allStoredStateLogLikelihood[s]);
-			for (int i = 0; i < STATE_COUNT; i++) {
-				spectra0.setStateLikelihood(i, allStoredStateLogLikelihood[s][i]);//TESTING
-				spectra1.setStateLikelihood(i, allStateLogLikelihood[s][i]);//TESTING
-			}
+			spectra0.setStateLikelihood(allStoredStateLogLikelihood[s]);
+			spectra1.setStateLikelihood(allStateLogLikelihood[s]);
 			
+
 //			System.out.println(Arrays.toString(allStateLogLikelihood[s]));
 //			System.out.println(Arrays.toString(allStoredStateLogLikelihood[s]));
 ////			
@@ -793,9 +720,7 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 			double stateLn= allStateLogLikelihood[s][state];
 			double storedStateLn = storedAllStateLogLikelihood[s][state];
 			
-//			if(state>3){//TESTING
-//				System.out.println(stateLn +"\t"+ storedStateLn);
-//			}
+
 			if(storedStateLn != stateLn){
 				
 				spectrumLogLikelihood[i][j] -= storedStateLn; 
@@ -1217,9 +1142,9 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 		this.multiType = type;
 	}
 
-	private void setDistType(String code) {
+	private void setDistType(DistType distType) {
+//		this.distType = distType;
 		try {
-			this.distType = DistType.valueOf(code);
 
 			switch (distType) {
 			case flat:
@@ -1238,13 +1163,12 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 				stateLikelihood = new ChisqStateLikelihood();
 				break;
 			default:
-				throw new IllegalArgumentException("Incorrect distType: "
-						+ distType);
+				throw new IllegalArgumentException("Invalid distType: " + distType);
 			}
 			likelihoodKnown = false;
 
 		} catch (IllegalArgumentException e) {
-			System.err.println("Invalid distribution type " + code);
+			System.err.println("Invalid distribution type " + distType);
 			e.printStackTrace();
 			System.exit(-1);
 		}
@@ -1269,19 +1193,6 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
         likelihoodKnown = false;
 		
 	}
-
-	public double[] unittestMethodGetEachLikelihood() {
-		double[] copyOfValues = new double[eachSrpLogLikelihood.length];
-        System.arraycopy(eachSrpLogLikelihood, 0, copyOfValues, 0, copyOfValues.length);
-		return copyOfValues;
-	}
-
-
-	@Override
-	public Element createElement(Document d) {
-        throw new RuntimeException("Not implemented yet!");
-    }
-
 
 	public double calculateSrpLikelihoodFullMaster() {
 
@@ -1330,8 +1241,108 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 	}
 
 
+public double[] unittestMethodGetEachLikelihood() {
+		double[] copyOfValues = new double[eachSrpLogLikelihood.length];
+	    System.arraycopy(eachSrpLogLikelihood, 0, copyOfValues, 0, copyOfValues.length);
+		return copyOfValues;
+	}
+@Override
+	public Element createElement(Document d) {
+	    throw new RuntimeException("Not implemented yet!");
+	}
 
-//REMOVE
+
+enum MultiType{
+	Array,
+	Hash,
+	All,;
+
+};
+
+public enum DistType{
+	betaMean(0),
+	betaMode(1),
+	gTest(2), 
+	chisq(3),
+	flat(9),
+	;
+	int code;
+	private DistType(int code) {
+		this.code = code;
+	}
+//	DistType.valueOf(codeString);
+}
+
+//REMOVE after
+
+/*
+
+Three methods to go through multiple sites
+Method 1: Go through them, might be faster for small srp size/small number of bases change
+
+	for (int k = twoPositions[0]; k < twoPositions[1]; k++) {
+		mapToSrp = aMap.getMapToSrp(k);
+		for (int i : mapToSrp) {
+			for (int r = 0; r < TWO; r++) {
+				j = twoSpectrums[r];
+				storedAllLogLikelihood[i][j][k] = allLogLikelihood[i][j][k];
+				storedSpectrumLogLikelihood[i][j] = spectrumLogLikelihood[i][j];
+				count2++;
+			}
+		}
+	}
+
+
+Method 2:
+get all unique sites with HashSet
+
+	Set<Integer> allSrpPos = new HashSet<Integer>();
+	allSrpPos.clear();
+	for (int i = twoPositions[0]; i < twoPositions[1]; i++) {
+		mapToSrp = aMap.getMapToSrp(i);
+		allSrpPos.addAll(mapToSrp);
+	}
+	for (int i : allSrpPos) {
+		for (int r = 0; r < TWO; r++) {
+			for (int k = twoPositions[0]; k < twoPositions[1]; k++) {
+				j = twoSpectrums[r];
+				if(allLogLikelihood[i][j][k] != 0){
+					storedAllLogLikelihood[i][j][k] = allLogLikelihood[i][j][k];
+					storedSpectrumLogLikelihood[i][j] = spectrumLogLikelihood[i][j];
+				}
+			}
+		}
+	}
+Method 3: boolean index array
+				
+	int srpCount = aMap.getSrpCount();
+	boolean[] srpSwitch = new boolean[srpCount];
+	Arrays.fill(srpSwitch, false);
+	for (int k = twoPositions[0]; k < twoPositions[1]; k++) {
+		mapToSrp = aMap.getMapToSrp(k);
+		for (int i : mapToSrp) {
+			srpSwitch[i] = true;
+		}
+	}
+				
+	for (int i = 0; i < srpSwitch.length; i++) {
+		if(srpSwitch[i]){
+			for (int r = 0; r < TWO; r++) {
+				j = twoSpectrums[r];
+				for (int k = twoPositions[0]; k < twoPositions[1]; k++) {
+					if(allLogLikelihood[i][j][k] != 0){
+						storedAllLogLikelihood[i][j][k] = allLogLikelihood[i][j][k];
+						storedSpectrumLogLikelihood[i][j] = spectrumLogLikelihood[i][j];
+					}
+				}
+			}
+		}
+	}
+				
+
+ */
+
+//REMOVE aftre
 ///////////////////////////////////////
 @SuppressWarnings("unused")
 @Deprecated
@@ -1584,24 +1595,4 @@ private double calculateSrpLikelihoodColumn5() {
 //		System.out.println(spectrumLogLikelihood[i][j] +"\t"+ logLikelihood);
 	}
 
-}
-
-enum MultiType{
-	Array,
-	Hash,
-	All,;
-
-};
-
-enum DistType{
-	betaMean(0),
-	betaMode(1),
-	gTest(2), 
-	chisq(3),
-	flat(9),
-	;
-	int code;
-	private DistType(int code) {
-		this.code = code;
-	}
 }

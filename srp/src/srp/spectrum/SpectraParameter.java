@@ -111,9 +111,9 @@ public class SpectraParameter extends AbstractSpectra{
         return getParameterValues();
     }
 
-    public void setStateLikelihood(int s, double likelihood){
-    	stateLikelihood[s] = likelihood;
-    }
+//    public void setStateLikelihood(int s, double likelihood){
+//    	stateLikelihood[s] = likelihood;
+//    }
     public void setStateLikelihood(double[] likelihood){
 //    	stateLikelihood = likelihood;//yfail 
     	System.arraycopy(likelihood, 0, stateLikelihood, 0, DIMENSION);

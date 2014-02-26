@@ -50,11 +50,12 @@ public class DirichletAlphaSpectrumOperatorTest {
 				"..AGGTTC",
 				};
 		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 1);
+		int spectrumLength = aMap.getLength();
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(spectrumLength, 1);
 		DirichletAlphaSpectrumOperator op = new DirichletAlphaSpectrumOperator(
 				spectrumModel, 100, CoercionMode.COERCION_OFF);
 
-		double[][] storedFrequencies = new double[spectrumModel.getSiteCount()][DIMENSION];
+		double[][] storedFrequencies = new double[spectrumModel.getSpectrumLength()][DIMENSION];
 		Spectrum spectrum = spectrumModel.getSpectrum(0);
 		for (int i = 0; i < storedFrequencies.length; i++) {
 			storedFrequencies[i] = spectrum.getFrequenciesAt(i);

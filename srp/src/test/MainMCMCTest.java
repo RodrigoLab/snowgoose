@@ -53,10 +53,10 @@ public class MainMCMCTest {
 	public void test() throws Exception{
 
 
-		String dataDir = "/home/sw167/workspaceSrp/ABI/unittest/testData/";
+		String dataDir = "/home/sw167/workspaceSrp/snowgoose/srp/unittest/testData/";
 		int runIndex = 1;
-		int totalSamples = 2;
-		int logInterval = 1;
+		int totalSamples = 1;
+		int logInterval = 10;
 		int noOfTrueHaplotype = 7;
 		int noOfRecoveredHaplotype=7;
 		String hapRunIndex = "H"+noOfTrueHaplotype+"_"+runIndex;
@@ -74,7 +74,8 @@ public class MainMCMCTest {
 		
 		Alignment shortReads = dataImporter.importShortReads(shortReadFile);
 		AlignmentMapping aMap = new AlignmentMapping(shortReads);
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, noOfRecoveredHaplotype);
+		int spectrumLength = aMap.getLength();
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(spectrumLength, noOfRecoveredHaplotype);
 		
 		// coalescent
 		Parameter popSize = new Parameter.Default(ConstantPopulationModelParser.POPULATION_SIZE, 3000.0, 100, 100000.0);
@@ -95,7 +96,7 @@ public class MainMCMCTest {
 		SpectrumTreeLikelihood treeLikelihood = (SpectrumTreeLikelihood) parameterList.get("treeLikelihood");
 		
 		// ShortReadLikelihood
-		ShortReadsSpectrumLikelihood srpLikelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
+		ShortReadsSpectrumLikelihood srpLikelihood = new ShortReadsSpectrumLikelihood(spectrumModel, aMap);
 
 		// CompoundLikelihood
 		HashMap<String, Likelihood> compoundlikelihoods = MCMCSetupHelper.setupCompoundLikelihood(
@@ -136,7 +137,7 @@ public class MainMCMCTest {
 		TreeModel newTreeModel  = new TreeModel(treeModel);
 		
 		SpectrumAlignmentModel newSpectrumModel = SpectrumAlignmentModel.duplicateSpectrumAlignmentModel(spectrumModel);
-		ShortReadsSpectrumLikelihood newSrpLikelihood = new ShortReadsSpectrumLikelihood(newSpectrumModel);
+		ShortReadsSpectrumLikelihood newSrpLikelihood = new ShortReadsSpectrumLikelihood(newSpectrumModel, aMap);
 
 		// coalescent
 //		Parameter popSize = new Parameter.Default(ConstantPopulationModelParser.POPULATION_SIZE, 3000.0, 100, 100000.0);
@@ -257,15 +258,15 @@ public class MainMCMCTest {
 		Likelihood newPosterior = new CompoundLikelihood(0, likelihoods);
 		newPosterior.setId(CompoundLikelihoodParser.POSTERIOR);
 	
-		assertEquals(prior.getLogLikelihood(), newPrior.getLogLikelihood(), 0);
+		assertEquals(prior.getLogLikelihood(), newPrior.getLogLikelihood(), TestUtils.THRESHOLD);
 		
-		assertEquals(likelihood.getLogLikelihood(), treeLikelihood.getLogLikelihood(), 0);
-		assertEquals(newLikelihood.getLogLikelihood(), newTreeLikelihood.getLogLikelihood(), 0);
+		assertEquals(likelihood.getLogLikelihood(), treeLikelihood.getLogLikelihood(), TestUtils.THRESHOLD);
+		assertEquals(newLikelihood.getLogLikelihood(), newTreeLikelihood.getLogLikelihood(), TestUtils.THRESHOLD);
 		
-		assertEquals(likelihood.getLogLikelihood(), newLikelihood.getLogLikelihood(), 0);
-		assertEquals(treeLikelihood.getLogLikelihood(), newTreeLikelihood.getLogLikelihood(), 0);
-		assertEquals(srpLikelihood.getLogLikelihood(), newShortReadlikelihood.getLogLikelihood(), 0);
-		assertEquals(posterior.getLogLikelihood(), newPosterior.getLogLikelihood(), 0);
+		assertEquals(likelihood.getLogLikelihood(), newLikelihood.getLogLikelihood(), TestUtils.THRESHOLD);
+		assertEquals(treeLikelihood.getLogLikelihood(), newTreeLikelihood.getLogLikelihood(), TestUtils.THRESHOLD);
+		assertEquals(srpLikelihood.getLogLikelihood(), newShortReadlikelihood.getLogLikelihood(), TestUtils.THRESHOLD);
+		assertEquals(posterior.getLogLikelihood(), newPosterior.getLogLikelihood(), TestUtils.THRESHOLD);
 		System.out.println("==============");
 	}
 

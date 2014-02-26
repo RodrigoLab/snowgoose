@@ -2,14 +2,12 @@ package srp.spectrum;
 
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import srp.dr.evolution.datatype.ShortReads;
-import srp.haplotypes.AlignmentMapping;
+
 import srp.spectrum.SpectraParameter.SpectraType;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.datatype.Nucleotides;
-import dr.evolution.sequence.Sequence;
 import dr.evolution.util.Taxon;
 import dr.inference.model.Model;
 import dr.inference.model.Parameter;
@@ -27,88 +25,33 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 	private static final long serialVersionUID = 3458306765918357829L;
 	private static final String MODEL_NAME = "SpectrumModel";
 
-	
-	private static final int NUCLEOTIDE_STATES[] = Nucleotides.NUCLEOTIDE_STATES;
-	private static final char[] VALID_CHARS = initValidChars4();
-	private static final int INDEX_OF_LAST_VALID_CHARS = VALID_CHARS.length-1;
-	
 //	private static final DataType DATA_TYPE = Nucleotides.INSTANCE;
 	public static final char GAP = '-';
 	public static final String TAXON_PREFIX = "taxa_";
 
 //	int haplotypesCount;
-	private AlignmentMapping aMap;
 
-	private boolean isEdit;
+
+	private boolean isEdit;//TODO utilise this!!
 	
 	private SpectrumOperationRecord spectrumOperationRecord;
 	
-//	public long time = 0;
 
-	public static void SpectrumAlignmentModelFactory(int spectrumLength){
-		
+	public SpectrumAlignmentModel(int spectrumLength, int spectrumCount){
+		this(spectrumLength, spectrumCount, SpectraType.RANDOM);
 	}
-
-	//TODO: this is only for unittest, maybe change to factory method? Can't use dummy aMap for likelihood
-	public SpectrumAlignmentModel(AlignmentMapping aMap){
-		super(MODEL_NAME);
-		this.aMap = aMap;
-		spectrumLength = this.aMap.getLength();
-		
-		spectrumList = new ArrayList<Spectrum>();
-		storedSpectrumList = new ArrayList<Spectrum>();
-		setDataType(ShortReads.INSTANCE);
-		spectrumOperationRecord = new SpectrumOperationRecord();
-		
-//		
-//		spectrumLength = this.aMap.getLength();
-//		
-//		spectrumList = new ArrayList<Spectrum>();
-//		storedSpectrumList = new ArrayList<Spectrum>();
-//		setDataType(Nucleotides.INSTANCE);
-//		spectrumOperationRecord = new SpectrumOperationRecord();
-		
-//		storedCumSumFrequency[INDEX_OF_LAST_VALID_CHARS]=1;
-	}
-//	private SpectrumAlignmentModel(Alignment shortReads) {
-//		this(new AlignmentMapping(shortReads));
-//	}
-
-
-	private static char[] initValidChars4() {
-		char[] validChar = new char[4];
-		System.arraycopy(Nucleotides.NUCLEOTIDE_CHARS, 0, validChar, 0, validChar.length);
-		return validChar;
-	}
-
-	public void addSpectrum(Spectrum spectrum) {
-		spectrum.setDataType(getDataType());
-		for (int i = 0; i < spectrumLength; i++) {
-			spectrum.setStoreSiteIndex(i);
-			spectrum.storeState();
-		}
-//		spectrum.storeState()
-	    spectrumList.add(spectrum);
-//	    storedSpectrumList.add(new Spectrum(spectrum));
-	    
-	    
-	    
-	}
-
-	public SpectrumAlignmentModel(AlignmentMapping aMap, int hapCount){
-		this(aMap, hapCount, SpectraType.RANDOM);
-	}
+	
 	/**
 	 * type 0=Equal. 
 	 * 		1=[1 0 0 0].
 	 * 		2=[Random]. 
-	 * @param aMap
-	 * @param hapCount
+	 * @param spectrumLength
+	 * @param spectrumCount
 	 * @param type
 	 */
-	public SpectrumAlignmentModel(AlignmentMapping aMap, int hapCount, SpectraType type) {
-		this(aMap);		
-		for (int i = 0; i < hapCount; i++) {
+	public SpectrumAlignmentModel(int spectrumLength, int spectrumCount, SpectraType type) {
+		this(spectrumLength);		
+		for (int i = 0; i < spectrumCount; i++) {
 			Taxon t = new Taxon(TAXON_PREFIX+i); 
 			Spectrum spectrum = new Spectrum(spectrumLength, type);
 			spectrum.setTaxon(t);
@@ -119,8 +62,8 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 
 	
 	
-	public SpectrumAlignmentModel(AlignmentMapping aMap, Alignment trueAlignment) {
-		this(aMap);
+	public SpectrumAlignmentModel(Alignment trueAlignment) {
+		this(trueAlignment.getSiteCount());
 
 		for (int i = 0; i < trueAlignment.getSequenceCount(); i++) {
 			Spectrum spectrum = new Spectrum(trueAlignment.getSequence(i));
@@ -133,9 +76,19 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 	
 	
 	
+	public SpectrumAlignmentModel(int spectrumLength) {
+		super(MODEL_NAME);
+		this.spectrumLength = spectrumLength;
+		
+		spectrumList = new ArrayList<Spectrum>();
+		storedSpectrumList = new ArrayList<Spectrum>();
+		setDataType(ShortReads.INSTANCE);
+		spectrumOperationRecord = new SpectrumOperationRecord();
+	}
+
 	public static SpectrumAlignmentModel duplicateSpectrumAlignmentModel(SpectrumAlignmentModel oldModel){
 		
-		SpectrumAlignmentModel newSpectrumModel = new SpectrumAlignmentModel(oldModel.getAlignmentMapping());
+		SpectrumAlignmentModel newSpectrumModel = new SpectrumAlignmentModel(oldModel.getSpectrumLength());
 
 		for (int i = 0; i < oldModel.getSpectrumCount(); i++) {
 			Spectrum spectrum = Spectrum.duplicateSpectrum(oldModel.getSpectrum(i));
@@ -146,50 +99,24 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 		return newSpectrumModel;
 	}
 	
-	public AlignmentMapping getAlignmentMapping() {
-		return aMap;	
-	}
-
+	public void addSpectrum(Spectrum spectrum) {
+			spectrum.setDataType(getDataType());
+			for (int i = 0; i < spectrumLength; i++) {
+				spectrum.setStoreSiteIndex(i);
+				spectrum.storeState();
+			}
+	//		spectrum.storeState()
+		    spectrumList.add(spectrum);
+	//	    storedSpectrumList.add(new Spectrum(spectrum));
+		    
+		    
+		    
+		}
 
 	public void resetSpectrumOperation(){
 		spectrumOperationRecord.setOperation(SpectrumOperation.FULL);
 	}
 
-	public void setSpectrumOperationRecord(SpectrumOperation op,
-			int[] twoSpectrumIndex, int[] swapPositionIndex){
-		
-		spectrumOperationRecord.setRecord(op, twoSpectrumIndex, swapPositionIndex);
-	}
-
-	//	public void setSpectrumOperationRecord(SpectrumOperation op, int spectrumIndex,
-//			int siteIndex, double... delta){
-//
-//		spectrumOperationRecord.setRecord(op, spectrumIndex, siteIndex, delta);
-//	}
-
-	public void setSpectrumOperationRecord(SpectrumOperation op, int siteIndex,
-			double... delta) {
-		spectrumOperationRecord.setRecord(op, siteIndex, delta);
-	}
-
-	public void setSpectrumOperationRecord(SpectrumOperation op,
-			int spectrumIndex, int[] siteIndexs, double... delta) {
-		spectrumOperationRecord.setRecord(op, spectrumIndex, siteIndexs, delta);
-
-	}
-//	public void setSpectrumOperationRecord(SpectrumOperation op,
-//			int spectrumIndex, int[] siteIndexs) {
-//		//recombination
-//		spectrumOperationRecord.setRecord(op, spectrumIndex, siteIndexs);
-//
-//	}
-
-	public void setSpectrumOperationRecord(SpectrumOperation op,
-			int[] spectrumIndexs, int siteIndex) {
-		//subcolumn
-		spectrumOperationRecord.setRecord(op, spectrumIndexs, siteIndex);
-		
-	}
 
 
 	public SpectrumOperationRecord getSpectrumOperationRecord() {
@@ -207,6 +134,52 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 	}
 
 
+	//////////////////////////////////////////////////////////////////////////
+	
+	
+	
+	public void removeSpectrum(int i) {
+		spectrumList.remove(i);
+		
+	}
+
+	public void setSpectrumOperationRecord(SpectrumOperation op,
+			int[] twoSpectrumIndex, int[] swapPositionIndex){
+		
+		spectrumOperationRecord.setRecord(op, twoSpectrumIndex, swapPositionIndex);
+	}
+
+	//	public void setSpectrumOperationRecord(SpectrumOperation op, int spectrumIndex,
+	//			int siteIndex, double... delta){
+	//
+	//		spectrumOperationRecord.setRecord(op, spectrumIndex, siteIndex, delta);
+	//	}
+	
+		public void setSpectrumOperationRecord(SpectrumOperation op, int siteIndex,
+				double... delta) {
+			spectrumOperationRecord.setRecord(op, siteIndex, delta);
+		}
+
+	public void setSpectrumOperationRecord(SpectrumOperation op,
+			int spectrumIndex, int[] siteIndexs, double... delta) {
+		spectrumOperationRecord.setRecord(op, spectrumIndex, siteIndexs, delta);
+	
+	}
+
+	//	public void setSpectrumOperationRecord(SpectrumOperation op,
+	//			int spectrumIndex, int[] siteIndexs) {
+	//		//recombination
+	//		spectrumOperationRecord.setRecord(op, spectrumIndex, siteIndexs);
+	//
+	//	}
+	
+		public void setSpectrumOperationRecord(SpectrumOperation op,
+				int[] spectrumIndexs, int siteIndex) {
+			//subcolumn
+			spectrumOperationRecord.setRecord(op, spectrumIndexs, siteIndex);
+			
+		}
+
 	@Override
 	public void fireModelChanged(){
 	//		for (TreeChangedEvent treeChangedEvent : treeChangedEvents) {
@@ -219,6 +192,7 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 		System.err.println("Call handleModelChangedEvent in SpectrumAlignmentModel");
 		
 	}
+	@SuppressWarnings("rawtypes")
 	@Override
 	protected void handleVariableChangedEvent(Variable variable, int index,
 			ChangeType type) {
@@ -399,7 +373,7 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 //		System.err.println("\n!!!startSpectrumOperation");
 		isEdit = true;
 	}
-	//TODO: Implement check system here
+
 	public void endSpectrumOperation(){
 		isEdit = false;
 //		System.err.println("!!!!!!!endSpectrumOperation, fireModelCHanged");
@@ -408,11 +382,6 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 //////////////////////////////////////////////////////////////////////////
 
 	
-
-	public void removeSpectrum(int i) {
-		spectrumList.remove(i);
-		
-	}
 
 	@Override
 	public String toString(){
@@ -441,53 +410,16 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 		
 	}
 
-
-
     
-	
-	@Deprecated
-	public double getLogqFrequency(int oldChar, int newChar){
-		return storedLogqMatrix[NUCLEOTIDE_STATES[oldChar]][NUCLEOTIDE_STATES[newChar]];
+
+	//REMOVE after
+	private static final int NUCLEOTIDE_STATES[] = Nucleotides.NUCLEOTIDE_STATES;
+	private static final char[] VALID_CHARS = initValidChars4();
+	private static final int INDEX_OF_LAST_VALID_CHARS = VALID_CHARS.length-1;
+	private static char[] initValidChars4() {
+		char[] validChar = new char[4];
+		System.arraycopy(Nucleotides.NUCLEOTIDE_CHARS, 0, validChar, 0, validChar.length);
+		return validChar;
 	}
-	@Deprecated
-	public double getLogqFrequencyStates(int oldState, int newState){
-		return storedLogqMatrix[oldState][newState];
-	}
-	@Deprecated
-	private void checkFrequencyParameter(Parameter frequency) {
-
-		for (int i = 0; i < storedFrequency.length; i++) {
-			if(storedFrequency[i]!= frequency.getParameterValue(i)){
-
-				for (int j = i; j < storedFrequency.length; j++) {
-					storedFrequency[j] = frequency.getParameterValue(j);
-					logFreq[j] = Math.log(storedFrequency[j]);
-				}			
-				storedCumSumFrequency[0] = storedFrequency[0];
-				storedCumSumFrequency[1] = storedCumSumFrequency[0]+storedFrequency[1];
-				storedCumSumFrequency[2] = storedCumSumFrequency[1]+storedFrequency[2];
-//				storedCumSumFrequency[2] = storedCumSumFrequency[1]+storedFrequency[2];
-
-				for (int j = 0; j < logFreq.length; j++) {
-					for (int k = j+1; k < logFreq.length; k++) {
-						storedLogqMatrix[j][k] = logFreq[j]-logFreq[k];
-						storedLogqMatrix[k][j] = -storedLogqMatrix[j][k];
-					}
-//					System.out.println(Arrays.toString(storedLogqMatrix[j]));
-				}
-				
-				break;
-			}
-		}
-	}
-
-	private double[] logFreq = new double[4];
-	private double[] storedFrequency = new double[4];
-	private double[] storedCumSumFrequency = new double[INDEX_OF_LAST_VALID_CHARS];
-	private double[][] storedLogqMatrix = new double[4][4];
-
-	@Deprecated
-	public String diagnostic(){
-		return "";
-	}
+		
 }

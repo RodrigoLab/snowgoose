@@ -69,17 +69,14 @@ public class DataImporter {
 		return seq;
 	}
 	
-	public SpectrumAlignmentModel importPartialSpectrumFile(AlignmentMapping aMap,
-			String partialSpectrumName) throws IOException {
+	public SpectrumAlignmentModel importPartialSpectrumFile(String partialSpectrumName) throws IOException {
 		
-		return importPartialSpectrumFile(aMap, dataDir, partialSpectrumName);
+		return importPartialSpectrumFile(dataDir, partialSpectrumName);
 	}
 
 	public static SpectrumAlignmentModel importPartialSpectrumFile(
-			AlignmentMapping aMap, String dataDir, String partialSpectrumName)
-			throws IOException {
-
-		
+			String dataDir, String partialSpectrumName) throws IOException {
+	
 		BufferedReader inFile  = new BufferedReader(new FileReader(dataDir+partialSpectrumName));
 		String inline;
 		int length = 0;
@@ -122,9 +119,7 @@ public class DataImporter {
 					String[] result = inline.split("\\s");
 					
 					length = result.length;
-					spectrumModel = new SpectrumAlignmentModel(aMap);
-//					spectrumModel.aMap = aMap;
-					
+					spectrumModel = new SpectrumAlignmentModel(length);
 					
 					double[][] freqs = new double[4][length];
 					for (int j = 0; j < length; j++) {

@@ -177,30 +177,6 @@ public abstract class AbstractSpectrumAlignmentModel extends AbstractModel imple
     }
 
     /**
-     * Gets the pattern of site as an array of state numbers (one per sequence)
-     *
-     * @return the site pattern at siteIndex
-     */
-    @Override
-	public int[] getSitePattern(int siteIndex) {
-    	//TODO FAIL
-    	throw new IllegalArgumentException("getSitePattern() is not implemented for AbstractSpectrumModel");
-//
-//    	int n = getHaplotypeCount();
-//
-//    	int[] pattern = new int[n];
-//        for (int i = 0; i < n; i++) {
-//            Haplotype hap = getHaplotype(i);
-//
-//            if (siteIndex >= hap.getLength())
-//                pattern[i] = dataType.getGapState();
-//            else
-//                pattern[i] = hap.getState(siteIndex);
-//        }
-//
-//        return pattern;
-    }
-	/**
 	 * Gets the pattern index at a particular site
 	 * @param siteIndex
 	 * @return siteIndex, identical to @param
@@ -210,23 +186,7 @@ public abstract class AbstractSpectrumAlignmentModel extends AbstractModel imple
 	    return siteIndex;
 	}
     
-    /**
-     * @return the sequence state at (taxon, site)
-     */
-    @Override
-	public int getState(int taxonIndex, int siteIndex) {
-    	//TODO FAIL
-    	throw new IllegalArgumentException("getState() is not implemented for AbstractSpectrumModel");
-//        Haplotype hap = getHaplotype(taxonIndex);
-//
-//        if (siteIndex >= hap.getLength()) {
-//            return dataType.getGapState();
-//        }
-//
-//        return hap.getState(siteIndex);
-    }
-
-//    /**
+    //    /**
 //     */
 //    public void setState(int taxonIndex, int siteIndex, int state) {
 //
@@ -272,31 +232,6 @@ public abstract class AbstractSpectrumAlignmentModel extends AbstractModel imple
     }
 
     /**
-     * Gets the pattern as an array of state numbers (one per sequence)
-     *
-     * @return the pattern at patternIndex
-     */
-    @Override
-	public int[] getPattern(int patternIndex) {
-		//TODO Fail
-		throw new IllegalArgumentException("Not implemented for AbstractSpectrumModel");
-//        return getSitePattern(patternIndex);
-    }
-
-    /**
-     * @return state at (taxonIndex, patternIndex)
-     */
-    @Override
-	public int getPatternState(int taxonIndex, int patternIndex) {
-    	//TODO might have to implement this for current likelihood core to work
-//    	Spectrum spectrum = getSpectrum(taxonIndex);???
-//    	double frequency = spectrum.getFrequency(patternIndex);???
-		//TODO Fail
-		throw new IllegalArgumentException("Not implemented for AbstractSpectrumModel");
-//    	return getState(taxonIndex, patternIndex);
-    }
-
-    /**
      * Gets the weight of a site pattern (always 1.0)
      */
     @Override
@@ -316,18 +251,7 @@ public abstract class AbstractSpectrumAlignmentModel extends AbstractModel imple
     }
 
 	
-    /**
-     * @return the frequency of each state
-     */
     @Override
-	public double[] getStateFrequencies() {
-		//TODO Fail
-		throw new IllegalArgumentException("Not implemented for AbstractSpectrumModel");
-//
-//        return PatternList.Utils.empiricalStateFrequencies(this);
-    }
-
-	@Override
 	public DataType getDataType() {
 		return dataType;
 	}
@@ -400,4 +324,56 @@ public abstract class AbstractSpectrumAlignmentModel extends AbstractModel imple
         else
             return attributes.getAttributeNames();
     }
+
+    //Methods can't be implemented for spectrum
+	/**
+	 * Gets the pattern as an array of state numbers (one per sequence)
+	 * 
+	 * @return the pattern at patternIndex
+	 */
+	@Override
+	public int[] getPattern(int patternIndex) {
+		throw new IllegalArgumentException(
+				"Not implemented for AbstractSpectrumModel");
+	}
+
+	/**
+	 * @return state at (taxonIndex, patternIndex)
+	 */
+	@Override
+	public int getPatternState(int taxonIndex, int patternIndex) {
+		throw new IllegalArgumentException(
+				"Not implemented for AbstractSpectrumModel");
+	}
+
+	/**
+	 * Gets the pattern of site as an array of state numbers (one per sequence)
+	 * 
+	 * @return the site pattern at siteIndex
+	 */
+	@Override
+	public int[] getSitePattern(int siteIndex) {
+		throw new IllegalArgumentException(
+				"getSitePattern() is not implemented for AbstractSpectrumModel");
+	}
+
+	/**
+	 * @return the frequency of each state
+	 */
+	@Override
+	public double[] getStateFrequencies() {
+		throw new IllegalArgumentException(
+				"Not implemented for AbstractSpectrumModel");
+		//
+		// return PatternList.Utils.empiricalStateFrequencies(this);
+	}
+
+	/**
+	 * @return the sequence state at (taxon, site)
+	 */
+	@Override
+	public int getState(int taxonIndex, int siteIndex) {
+		throw new IllegalArgumentException(
+				"getState() is not implemented for AbstractSpectrumModel");
+	}
 }

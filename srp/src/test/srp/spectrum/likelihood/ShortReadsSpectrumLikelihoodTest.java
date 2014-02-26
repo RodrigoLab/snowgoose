@@ -69,7 +69,8 @@ public class ShortReadsSpectrumLikelihoodTest {
 //		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/snowgoose/srp/unittest/", "H4_srp.fasta");
 		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/snowgoose/srp/unittest/", "SpectrumTest_50srp_200bp.fasta");
 		aMap = new AlignmentMapping(alignment);
-		spectrumModel = new SpectrumAlignmentModel(aMap, 4);
+		int spectrumLength = aMap.getLength();
+		spectrumModel = new SpectrumAlignmentModel(spectrumLength,  4);
 	}
 
 	@After
@@ -79,7 +80,7 @@ public class ShortReadsSpectrumLikelihoodTest {
 	@Test
 	public void testConstructor(){
 		
-		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
+		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel, aMap);
 		double expectedError = 0.0107;
 		assertEquals(expectedError, ShortReadsSpectrumLikelihood.ERROR_RATE, 0);
 		assertEquals(1-expectedError, ShortReadsSpectrumLikelihood.NOT_ERROR_RATE, 0);
@@ -98,8 +99,8 @@ public class ShortReadsSpectrumLikelihoodTest {
 		
 		SimpleAlignment alignment = AlignmentUtils.createAlignment(seqs);
 		
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, alignment);
-		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(alignment);
+		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel, aMap);
 
 		double logLikelihood = likelihood.getLogLikelihood();
 		double expected = Math.log(1*NOT_ERROR+0*ERROR)*8;
@@ -119,8 +120,8 @@ public class ShortReadsSpectrumLikelihoodTest {
 		seqs = new String[]{"AAA"};
 		SimpleAlignment alignment = AlignmentUtils.createAlignment(seqs);
 		
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, alignment);
-		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(alignment);
+		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel, aMap);
 
 		double[] eachLikelihood = likelihood.unittestMethodGetEachLikelihood();
 //		System.out.println(Arrays.toString(eachLikelihood));
@@ -141,9 +142,9 @@ public class ShortReadsSpectrumLikelihoodTest {
 				".GT"
 				};
 		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
-			
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 1, SpectraType.EQUAL);
-		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
+		int spectrumLength = 3;
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(spectrumLength, 1, SpectraType.EQUAL);
+		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel, aMap);
 
 		double[] eachLikelihood = likelihood.unittestMethodGetEachLikelihood();
 		double[] expecteds = new double[]{ 
@@ -176,7 +177,8 @@ public class ShortReadsSpectrumLikelihoodTest {
 				};
 		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
 		
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 1);
+		int spectrumLength = aMap.getLength();
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(spectrumLength, 1);
 		Spectrum spectrum = spectrumModel.getSpectrum(0);
 		for (int i = 0; i < spectrum.getLength(); i++) {
 			double[] freqs = new double[]{1-(0.1*i*3), 0.1*i, 0.1*i, 0.1*i};
@@ -185,7 +187,7 @@ public class ShortReadsSpectrumLikelihoodTest {
 		}
 //		spectrumModel.setSpectrum(0, spectrum);
 		
-		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
+		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel, aMap);
 
 		double[] eachLikelihood = likelihood.unittestMethodGetEachLikelihood();
 //		System.out.println(Arrays.toString(eachLikelihood));
@@ -218,13 +220,14 @@ public class ShortReadsSpectrumLikelihoodTest {
 	@Test
 	public void testFullvsMaster() throws Exception {
 	
-		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
+		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel, aMap);
 		
 		for (int i = 0; i < 1e3; i++) {
 			int noSpectrum = MathUtils.nextInt(7)+3;
-			spectrumModel = new SpectrumAlignmentModel(aMap, noSpectrum);
+			int spectrumLength = aMap.getLength();
+			spectrumModel = new SpectrumAlignmentModel(spectrumLength, noSpectrum);
 //				likelihood.makeDirty();
-			likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
+			likelihood = new ShortReadsSpectrumLikelihood(spectrumModel, aMap);
 			double logLikelihoodFull = likelihood.getLogLikelihood();
 //				assertEquals(SpectrumOperation.NONE, likelihood.getOperation());
 			
@@ -261,12 +264,12 @@ public class ShortReadsSpectrumLikelihoodTest {
 //		}
 //	}
 
-	private static void assertLikelihoodOperator(SpectrumAlignmentModel spectrumModel,
+	private void assertLikelihoodOperator(SpectrumAlignmentModel spectrumModel,
 			AbstractSpectrumOperator op) {
 		
 		int ite = (int) 1e4;
 		SpectrumOperation expectedSpectrumOperation = op.getSpectrumOperation();
-		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
+		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel, aMap);
 		double logLikelihoodOperator;
 		double logLikelihoodFull;
 
@@ -280,7 +283,7 @@ public class ShortReadsSpectrumLikelihoodTest {
 				assertEquals(expectedSpectrumOperation, likelihood.getOperation());
 				
 				SpectrumAlignmentModel spectrumModelFull = SpectrumAlignmentModel.duplicateSpectrumAlignmentModel(spectrumModel);
-				ShortReadsSpectrumLikelihood likelihoodFull = new ShortReadsSpectrumLikelihood(spectrumModelFull);
+				ShortReadsSpectrumLikelihood likelihoodFull = new ShortReadsSpectrumLikelihood(spectrumModelFull, aMap);
 				logLikelihoodFull = likelihoodFull.getLogLikelihood();
 				assertEquals(SpectrumOperation.NONE, likelihoodFull.getOperation());
 				assertEquals(logLikelihoodFull, logLikelihoodOperator, THRESHOLD); 

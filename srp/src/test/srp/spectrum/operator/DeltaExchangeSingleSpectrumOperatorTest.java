@@ -44,11 +44,12 @@ public class DeltaExchangeSingleSpectrumOperatorTest {
 				"..AGGTTC",
 				};
 		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 1);
+		int spectrumLength = aMap.getLength();
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(spectrumLength, 1);
 		DeltaExchangeSingleSpectrumOperator op = new DeltaExchangeSingleSpectrumOperator(
 				spectrumModel, 0.1, CoercionMode.COERCION_OFF);
 
-		double[][] storedFrequencies = new double[spectrumModel.getSiteCount()][4];
+		double[][] storedFrequencies = new double[spectrumModel.getSpectrumLength()][4];
 		Spectrum spectrum = spectrumModel.getSpectrum(0);
 		for (int i = 0; i < storedFrequencies.length; i++) {
 			storedFrequencies[i] = spectrum.getFrequenciesAt(i);
@@ -92,12 +93,13 @@ public class DeltaExchangeSingleSpectrumOperatorTest {
 				"..AGGTTC",
 				};
 		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 5);
+		int spectrumLength = aMap.getLength();
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(spectrumLength, 5);
 		DeltaExchangeSingleSpectrumOperator op = new DeltaExchangeSingleSpectrumOperator(
 				spectrumModel, 0.1, CoercionMode.COERCION_OFF);
 
 		double[][][] storedFrequencies = new double[spectrumModel
-				.getSpectrumCount()][spectrumModel.getSiteCount()][4];
+				.getSpectrumCount()][spectrumModel.getSpectrumLength()][4];
 		for (int s = 0; s < storedFrequencies.length; s++) {
 			
 			Spectrum spectrum = spectrumModel.getSpectrum(s);
