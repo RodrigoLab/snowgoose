@@ -45,7 +45,7 @@ public class DeltaExchangeMultiSpectrumOperatorTest {
 				"..AGGTTC",
 				};
 		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 1, 2);
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 1);
 		DeltaExchangeMultiSpectrumOperator op = new DeltaExchangeMultiSpectrumOperator(
 				spectrumModel, 0.1, 5, CoercionMode.COERCION_OFF);
 
@@ -83,7 +83,7 @@ public class DeltaExchangeMultiSpectrumOperatorTest {
 //				e.printStackTrace();
 			}	
 		}
-
+		
 	}
 
 	
@@ -96,7 +96,7 @@ public class DeltaExchangeMultiSpectrumOperatorTest {
 				"..AGGTTC",
 				};
 		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 5, 0);
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 5);
 		DeltaExchangeMultiSpectrumOperator op = new DeltaExchangeMultiSpectrumOperator(
 				spectrumModel, 0.1, 5, CoercionMode.COERCION_OFF);
 

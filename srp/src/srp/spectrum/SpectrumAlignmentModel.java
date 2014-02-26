@@ -6,6 +6,7 @@ import java.util.Arrays;
 
 import srp.dr.evolution.datatype.ShortReads;
 import srp.haplotypes.AlignmentMapping;
+import srp.spectrum.SpectraParameter.SpectraType;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.datatype.Nucleotides;
 import dr.evolution.sequence.Sequence;
@@ -92,29 +93,10 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 	    
 	    
 	    
-//	    System.err.println(spectrumLength +"\t"+ getSpectrumCount());
-//	    Spectrum spectrum2 = spectrumList.get(getSpectrumCount()-1);
-//	    for (int i = 0; i < 10; i++) {
-//	    	SpectraParameter spectra = spectrum2.getSpectra(i);
-//	    	System.out.println(Arrays.toString(spectra.getFrequencies()));
-////	    	for (int j = 0; j < 4; j++) {
-////				System.out.print(spectra.getf);
-////			}
-////			System.out.println(spectra );
-//		}
-//	    System.out.println();
-//	    SpectraParameter spectra = spectrum2.getSpectra(1199);
-//    	System.out.println(Arrays.toString(spectra.getFrequencies()));
-	
 	}
 
-	@Deprecated
-	public SpectrumAlignmentModel(Alignment shortReads, int hapCount) {
-		this(new AlignmentMapping(shortReads), hapCount);
-	}
-	@Deprecated
-	public SpectrumAlignmentModel(AlignmentMapping aMap, int hapCount) {
-		this(aMap, hapCount, 1);		
+	public SpectrumAlignmentModel(AlignmentMapping aMap, int hapCount){
+		this(aMap, hapCount, SpectraType.RANDOM);
 	}
 	/**
 	 * type 0=Equal. 
@@ -124,7 +106,7 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 	 * @param hapCount
 	 * @param type
 	 */
-	public SpectrumAlignmentModel(AlignmentMapping aMap, int hapCount, int type) {
+	public SpectrumAlignmentModel(AlignmentMapping aMap, int hapCount, SpectraType type) {
 		this(aMap);		
 		for (int i = 0; i < hapCount; i++) {
 			Taxon t = new Taxon(TAXON_PREFIX+i); 
@@ -135,10 +117,7 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 		}
 	}
 
-	public SpectrumAlignmentModel(AlignmentMapping aMap, int hapCount, SpectrumType type) {
-		this(aMap, hapCount, type.getCode());
-	}
-
+	
 	
 	public SpectrumAlignmentModel(AlignmentMapping aMap, Alignment trueAlignment) {
 		this(aMap);
@@ -430,6 +409,11 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 
 	
 
+	public void removeSpectrum(int i) {
+		spectrumList.remove(i);
+		
+	}
+
 	@Override
 	public String toString(){
 
@@ -502,92 +486,8 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 	private double[] storedCumSumFrequency = new double[INDEX_OF_LAST_VALID_CHARS];
 	private double[][] storedLogqMatrix = new double[4][4];
 
-
+	@Deprecated
 	public String diagnostic(){
-
-//		int spectrumIndex = spectrumOperationRecord.getSpectrumIndex();
-//		int siteIndex = spectrumOperationRecord.getAllSiteIndexs()[0];
-//
-//		Spectrum spectrum = getSpectrum(spectrumIndex);
-//		spectrum.setStoreSiteIndex(siteIndex);
-//		SpectraParameter spectra = spectrum.getSpectra(siteIndex);
-//		return siteIndex +"\t"+ spectrumIndex +"\t"+ spectra.diagnostic();
-//		.restoreState();
-		
-		int[] twoSpectrums = spectrumOperationRecord.getRecombinationSpectrumIndex();
-		int[] twoPositions = spectrumOperationRecord.getRecombinationPositionIndex();
-		for (int i = 0; i < twoSpectrums.length; i++) {
-		
-		}
-		return Arrays.toString(twoSpectrums) +"\t"+ Arrays.toString(twoPositions);
-//		return "";
-	}
-	
-	public static void compareTwoSpectrumModel(
-			SpectrumAlignmentModel spectrumModel,
-			SpectrumAlignmentModel spectrumModel2) {
-
-
-		for (int i = 0; i < spectrumModel.getSpectrumCount(); i++) {
-			Spectrum spectrum = spectrumModel.getSpectrum(i);
-			Spectrum newSpectrum = spectrumModel2.getSpectrum(i);
-			for (int j = 0; j < spectrum.getLength(); j++) {
-				double[] frequencies = spectrum.getFrequenciesAt(j);
-				for (int k = 0; k < frequencies.length; k++) {
-					if(frequencies[k] != newSpectrum.getFrequency(j, k)){
-						System.err.println("DIFFMODEL"+i +"\t"+ j +"\t"+ k +"\t"+ Arrays.toString(frequencies) +"\t"+ Arrays.toString(newSpectrum.getFrequenciesAt(j)));
-					}
-				}
-			}
-			
-		}
-		SpectrumOperationRecord record = spectrumModel.getSpectrumOperationRecord();
-		int spec = record.getSpectrumIndex();
-		int site = record.getAllSiteIndexs()[0];
-		System.out.println("compare two models");
-		System.out.println(Arrays.toString(spectrumModel.getSpectrum(spec).getFrequenciesAt(
-				site)));
-		System.out.println(Arrays.toString(spectrumModel2.getSpectrum(spec).getFrequenciesAt(
-				site)));
-		
-	}
-	public void removeSpectrum(int i) {
-		spectrumList.remove(i);
-		
-	}
-	public StringBuffer calculatetoAlignmentDistance(Alignment trueAlignment) {
-		StringBuffer sb = new StringBuffer();
-		for (int i = 0; i < getSpectrumCount(); i++) {
-			Spectrum spe = getSpectrum(i);
-			double dist = 0;
-			for (int j = 0; j < trueAlignment.getSequenceCount(); j++) {
-				Sequence seq = trueAlignment.getSequence(j);
-				for (int k = 0; k < getSpectrumLength(); k++) {
-					int state = seq.getState(k);
-					double d = spe.getFrequenciesAt(k)[state]; //Match
-					dist += d;
-				}
-				dist /= getSpectrumLength();
-				sb.append(dist).append("\t");
-			}
-			sb.append("\n");
-		}
-		sb.append("\n");
-		return sb;
-	}
-
-	
-	public enum SpectrumType{
-		
-		EQUAL(0),
-		ZERO_ONE(1),
-		RANDOM(2);
-		int type;
-		private SpectrumType(int t){
-			type = t;
-		}
-		public int getCode(){
-			return type;
-		}
+		return "";
 	}
 }

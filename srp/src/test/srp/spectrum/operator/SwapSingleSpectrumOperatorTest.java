@@ -50,7 +50,7 @@ public class SwapSingleSpectrumOperatorTest {
 				"..AGGTTC",
 				};
 		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 5 ,2);
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 5);
 		SwapSingleSpectrumOperator op = new SwapSingleSpectrumOperator(spectrumModel);
 
 		double[][][] storedFrequencies = new double[spectrumModel
@@ -87,17 +87,13 @@ public class SwapSingleSpectrumOperatorTest {
 						}
 					}
 				}
-				if(count != 2){
-					System.out.println(Arrays.toString(frequencies));
-					System.out.println(Arrays.toString(spectraFrequencies));
-				}
 				assertEquals(2, count);
 				for (int f1 = 0; f1 < matches.length; f1++) {
 					if(f1!=matches[f1]){
-						System.out.println(Arrays.toString(frequencies));
-						System.out.println(Arrays.toString(spectraFrequencies));
-						System.out.println(Arrays.toString(matches));
-						System.out.println();
+//						System.out.println(Arrays.toString(frequencies));
+//						System.out.println(Arrays.toString(spectraFrequencies));
+//						System.out.println(Arrays.toString(matches));
+//						System.out.println();
 						assertEquals(f1, matches[matches[f1]]);
 					}
 				}

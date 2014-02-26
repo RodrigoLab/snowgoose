@@ -82,32 +82,13 @@ public class SwapSingleSpectrumOperator extends AbstractSwapSpectrumOperator{
         return delta;
     }
 
-    @Override
-	public double getTargetAcceptanceProbability() {
-        return 0.234;
-    }
 
     @Override
 	public final String getPerformanceSuggestion() {
-//		SpectrumOperationRecord record = spectrumModel.getSpectrumOperationRecord();
-//		String s = record.getSpectrumIndex() +"\t"+ Arrays.toString(record.getAllSiteIndexs()) +"\n";
-//		s+= spectrumModel.diagnostic() +"\n";
-//		s += Arrays.toString(debugList);
-//		spectrumModel.restoreModelState();
+
     	String s = "No tuning"; 
     	return s;
     	
-//        double prob = MCMCOperator.Utils.getAcceptanceProbability(this);
-//        double targetProb = getTargetAcceptanceProbability();
-//
-////        double d = OperatorUtils.optimizeWindowSize(delta, parameter.getParameterValue(0) * 2.0, prob, targetProb);
-//        double d = OperatorUtils.optimizeWindowSize(delta, 0.25 , prob, targetProb);
-//
-//        if (prob < getMinimumGoodAcceptanceLevel()) {
-//            return "Try decreasing delta to about " + d;
-//        } else if (prob > getMaximumGoodAcceptanceLevel()) {
-//            return "Try increasing delta to about " + d;
-//        } else return "";
     }
 
     @Override

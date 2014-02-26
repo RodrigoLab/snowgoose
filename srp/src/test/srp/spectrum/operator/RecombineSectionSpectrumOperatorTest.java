@@ -47,7 +47,7 @@ public class RecombineSectionSpectrumOperatorTest {
 				"..AGGTTC",
 				};
 		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 5 ,2);
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 5);
 		RecombineSectionSpectrumOperator op = new RecombineSectionSpectrumOperator(
 				spectrumModel, 5, CoercionMode.COERCION_OFF);
 

@@ -104,7 +104,7 @@ public class DirichletAlphaSpectrumOperator extends AbstractDirichletSpectrumOpe
 		for (int j = 0; j < newFreq.length; j++) {
 			newFreq[j] /= sum;
 			newParameter[j] = newFreq[j]*alpha;
-			spectra.setParameterValue(j, newFreq[j]);
+			spectra.setFrequency(j, newFreq[j]);
 		}
 		
 		

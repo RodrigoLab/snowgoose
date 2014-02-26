@@ -3,6 +3,7 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import srp.spectrum.SpectraParameter.SpectraType;
 import dr.evolution.datatype.DataType;
 import dr.evolution.datatype.Nucleotides;
 import dr.evolution.sequence.Sequence;
@@ -35,7 +36,7 @@ public class Spectrum extends AbstractModel implements Attributable {
 //	}
 
 	public Spectrum(int length) {
-		this(length, 0);
+		this(length, SpectraType.EQUAL);
 	}
 
 
@@ -52,13 +53,13 @@ public class Spectrum extends AbstractModel implements Attributable {
 	}
 
 	/**
-	 * type 0=Equal. 
-	 * 		1=[1 0 0 0].
-	 * 		2=[Random]. 
+	 * type EQUAL   = Equal. 
+	 * 		ZERO_ONE= [1 0 0 0].
+	 * 		RANDOM  = [Random]. 
 	 * @param length
 	 * @param type
 	 */
-	public Spectrum(int length, int type){
+	public Spectrum(int length, SpectraType type){
 		
 		super("Spectrum");
 		spectrum = new ArrayList<SpectraParameter>();
@@ -140,8 +141,9 @@ public class Spectrum extends AbstractModel implements Attributable {
 		newSpectrum.setTaxon(newTaxon);
 		for (int i = 0; i < oldSpectrum.getLength(); i++) {
 			double[] frequencies = oldSpectrum.getFrequenciesAt(i);
-			newSpectrum.resetFrequencies(i, frequencies);
 //			SpectraParameter spectra = new SpectraParameter(frequencies);
+			newSpectrum.resetFrequencies(i, frequencies);
+//			
 //			addVariable(spectra);
 //			spectrum.add(spectra);
 		}

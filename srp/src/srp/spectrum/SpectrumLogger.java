@@ -11,48 +11,36 @@ import dr.inference.loggers.TabDelimitedFormatter;
 
 public class SpectrumLogger extends MCLogger {
 
-	
-
 	private Alignment trueAlignment;
+
+	protected SpectrumAlignmentModel spectrum;
+	protected String[] taxaList;
+	protected int count;
 	
-
-
 	public SpectrumLogger(SpectrumAlignmentModel alignment, Alignment trueAlignment, String fileName,
 			int logEvery) throws IOException {
 		this(alignment, fileName, logEvery);
 		this.trueAlignment = trueAlignment;
 		
 	}
-	
 
-	protected SpectrumAlignmentModel spectrum;
-	protected String[] taxaList;
-	protected int count;
+	public SpectrumLogger(SpectrumAlignmentModel spectrumModel, String fileName, int logEvery) throws IOException {
+			this(spectrumModel, new TabDelimitedFormatter(new PrintWriter(new FileWriter(fileName))),logEvery);
+	//		TabDelimitedFormatter formatter = new TabDelimitedFormatter(new PrintWriter(new FileOutputStream(new File(fileName))));
+	//		TabDelimitedFormatter formatter = new TabDelimitedFormatter(new PrintWriter(new FileWriter(fileName)));
+		}
 
-
-	public SpectrumLogger(SpectrumAlignmentModel alignment, String fileName, int logEvery) throws IOException {
-		this(alignment, new TabDelimitedFormatter(new PrintWriter(new FileWriter(fileName))),logEvery);
-//		TabDelimitedFormatter formatter = new TabDelimitedFormatter(new PrintWriter(new FileOutputStream(new File(fileName))));
-//		TabDelimitedFormatter formatter = new TabDelimitedFormatter(new PrintWriter(new FileWriter(fileName)));
-	}
-
-	public SpectrumLogger(SpectrumAlignmentModel alignment, LogFormatter formatter, int logEvery) {
+	public SpectrumLogger(SpectrumAlignmentModel spectrumModel, LogFormatter formatter, int logEvery) {
 		super(formatter, logEvery, false);
-		this.spectrum = alignment;
-		count = alignment.getSpectrumCount();
+		this.spectrum = spectrumModel;
+		count = spectrumModel.getSpectrumCount();
 		taxaList = new String[count];
 		for (int i = 0; i < taxaList.length; i++) {
-			taxaList[i] = ">"+alignment.getTaxonId(i)+"\t";
+			taxaList[i] = ">"+spectrumModel.getTaxonId(i)+"\t";
 		}
 	}
 
-
-    @Override
-	public void startLogging() {
-    	logLine("START!!");
-    }
-
-    @Override
+	@Override
 	public void log(long state) {
 
     	if (logEvery > 0 && (state % logEvery == 0)) {
@@ -73,12 +61,6 @@ public class SpectrumLogger extends MCLogger {
 
     }
 
-    @Override
-	public void stopLogging() {
-    
-        super.stopLogging();
-    }
-    
     //Contain true alignment? how is that useful? 
     //calculate the frequency delta?
 	public void logTrue(long state) {
@@ -98,5 +80,16 @@ public class SpectrumLogger extends MCLogger {
     	}
 
     
+    }
+
+    @Override
+	public void startLogging() {
+    	logLine("START!!");
+    }
+    
+    @Override
+	public void stopLogging() {
+    
+        super.stopLogging();
     }
 }

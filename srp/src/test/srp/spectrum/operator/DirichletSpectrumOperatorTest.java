@@ -6,6 +6,7 @@ import static org.junit.Assert.assertEquals;
 import java.util.Arrays;
 
 import org.apache.commons.math3.random.RandomDataGenerator;
+import org.apache.commons.math3.stat.StatUtils;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -39,6 +40,11 @@ public class DirichletSpectrumOperatorTest {
 	public static void tearDownAfterClass() throws Exception {
 	}
 
+
+
+	private double SPECTRA_MIN = SpectraParameter.MIN_FREQ;
+	private double SPECTRA_MAX = SpectraParameter.MAX_FREQ;
+
 	@Before
 	public void setUp() throws Exception {
 	}
@@ -56,7 +62,7 @@ public class DirichletSpectrumOperatorTest {
 				"..AGGTTC",
 				};
 		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 1, 2);
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 1);
 		DirichletSpectrumOperator op = new DirichletSpectrumOperator(
 				spectrumModel, 1, CoercionMode.COERCION_OFF);
 
@@ -89,11 +95,14 @@ public class DirichletSpectrumOperatorTest {
 						delta += (frequencies[f]-storedFrequencies[siteIndex][f]);
 //							assertEquals(delta[i], absDelta, 1e-8);
 					}
+					else if(frequencies[f]==SPECTRA_MIN | frequencies[f]==SPECTRA_MAX){
+						count++;
+					}
 					storedFrequencies[siteIndex][f] = frequencies[f];
 				}
 //					System.out.println(delta +"\t"+ absDelta);
 //					System.out.println();
-				assertEquals(0, delta, TestUtils.UNITTEST_THRESHOLD);
+				assertEquals(0, delta, 1-SPECTRA_MAX);
 				assertEquals(4, count);
 			
 			} catch (OperatorFailedException e) {
@@ -113,7 +122,7 @@ public class DirichletSpectrumOperatorTest {
 				"..AGGTTC",
 				};
 		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 5, 2);
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 5);
 		DirichletSpectrumOperator op = new DirichletSpectrumOperator(
 				spectrumModel, 1, CoercionMode.COERCION_OFF);
 		double alpha = op.getAlpha();
@@ -254,7 +263,7 @@ void AutotuneDirichlet (MrBFlt acceptanceRate, MrBFlt targetRate, int batch, MrB
 				"..AGGTTC",
 				};
 		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 5, 2);
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 5);
 		DirichletSpectrumOperator op = new DirichletSpectrumOperator(
 				spectrumModel,  10, CoercionMode.COERCION_OFF);
 
@@ -282,17 +291,21 @@ void AutotuneDirichlet (MrBFlt acceptanceRate, MrBFlt targetRate, int batch, MrB
 					double[] frequencies = spectrum.getFrequenciesAt(siteIndexs[i]);
 					int count = 0;
 					double delta = 0;
+					double absDelta = 0;
 					double[] spectraFrequencies = storedFrequencies[spectrumIndex][siteIndexs[i]];
 					for (int f = 0; f < frequencies.length; f++) {
 						if(frequencies[f]!= spectraFrequencies[f]){
 							count++;
 							delta += (frequencies[f]-spectraFrequencies[f]);
-//							double absDelta = Math.abs(frequencies[f]-spectraFrequencies[f]);
+							absDelta += Math.abs(frequencies[f]-spectraFrequencies[f]);
 //							assertEquals(delta[i], absDelta, 1e-8);
+						}
+						else if(frequencies[f]==SPECTRA_MIN | frequencies[f]==SPECTRA_MAX){
+							count++;
 						}
 						spectraFrequencies[f] = frequencies[f];
 					}
-					assertEquals(0, delta, TestUtils.UNITTEST_THRESHOLD);
+					assertEquals(0, delta, 1-SPECTRA_MAX);
 					assertEquals(4, count);
 				}
 			} catch (OperatorFailedException e) {

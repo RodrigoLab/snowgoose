@@ -15,6 +15,7 @@ import srp.core.MCMCSetupHelper;
 import srp.core.MCMCSetupHelperSpectrum;
 import srp.haplotypes.AlignmentMapping;
 import srp.spectrum.SpectrumAlignmentModel;
+import srp.spectrum.SpectrumAlignmentUtils;
 import srp.spectrum.likelihood.ShortReadsSpectrumLikelihood;
 import srp.spectrum.treelikelihood.SpectrumTreeLikelihood;
 import dr.evolution.alignment.Alignment;
@@ -74,7 +75,7 @@ public class CopyOfMainMCMCTest {
 		
 		Alignment shortReads = dataImporter.importShortReads(shortReadFile);
 		AlignmentMapping aMap = new AlignmentMapping(shortReads);
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, noOfRecoveredHaplotype, 2);
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, noOfRecoveredHaplotype);
 		
 		// coalescent
 		Parameter popSize = new Parameter.Default(ConstantPopulationModelParser.POPULATION_SIZE, 3000.0, 100, 100000.0);
@@ -265,7 +266,7 @@ public class CopyOfMainMCMCTest {
 			}
 			
 		}
-		SpectrumAlignmentModel.compareTwoSpectrumModel(
+		SpectrumAlignmentUtils.compareTwoSpectrumModel(
 				spectrumModel, newSpectrumModel);
 		SpectrumTreeLikelihood newTreeLikelihood = new SpectrumTreeLikelihood(
 				newSpectrumModel, newTreeModel, newSiteModel, null, 

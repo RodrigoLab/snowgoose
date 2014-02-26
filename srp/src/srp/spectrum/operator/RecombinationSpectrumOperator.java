@@ -81,8 +81,8 @@ public class RecombinationSpectrumOperator extends AbstractSpectrumOperator {
 //					Arrays.toString(spectra2.getParameterValues()));
 			for (int j = 0; j < DIMENSION; j++) {
 				double tempFreq = spectra1.getFrequency(j);
-				spectra1.setParameterValueQuietly(j, spectra2.getFrequency(j));
-				spectra2.setParameterValueQuietly(j, tempFreq);
+				spectra1.setFrequency(j, spectra2.getFrequency(j));
+				spectra2.setFrequency(j, tempFreq);
 				
 			}
 //			System.err.println("After");

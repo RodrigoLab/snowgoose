@@ -43,10 +43,10 @@ public abstract class AbstractSwapSpectrumOperator extends AbstractSpectrumOpera
 	            dim2 = MathUtils.nextInt(DIMENSION);
 	        }while (dim1 == dim2);
 	        
-	        double scalar1 = spectra.getParameterValue(dim1);
-	        double scalar2 = spectra.getParameterValue(dim2);
-	        spectra.setParameterValue(dim1, scalar2);
-	        spectra.setParameterValue(dim2, scalar1);	
+	        double scalar1 = spectra.getFrequency(dim1);
+	        double scalar2 = spectra.getFrequency(dim2);
+	        spectra.setFrequency(dim1, scalar2);
+	        spectra.setFrequency(dim2, scalar1);	
 		}
 
 		else {//0 and 1 only
@@ -65,8 +65,8 @@ public abstract class AbstractSwapSpectrumOperator extends AbstractSpectrumOpera
 			} while (dim1 == dim2);
 			double scalar2 = spectra.getParameterValue(dim2);        
 			
-	        spectra.setParameterValue(dim1, scalar2);
-	        spectra.setParameterValue(dim2, scalar1);	
+	        spectra.setFrequency(dim1, scalar2);
+	        spectra.setFrequency(dim2, scalar1);	
 
 			
 		}

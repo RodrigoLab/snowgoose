@@ -97,11 +97,7 @@ public class SwapColumnSpectrumOperator extends AbstractSwapSpectrumOperator {
 
     @Override
 	public final String getPerformanceSuggestion() {
-//		SpectrumOperationRecord record = spectrumModel.getSpectrumOperationRecord();
-//		String s = record.getSpectrumIndex() +"\t"+ record.getColumnIndex() +"\n";
-//		s+= spectrumModel.diagnostic() +"\n";
-//		s += Arrays.toString(debugList);
-//		spectrumModel.restoreModelState();
+
     	String s = "Tuning "+delta; 
     	return s;
 

@@ -7,10 +7,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import srp.haplotypes.AlignmentMapping;
-import srp.haplotypes.HaplotypeModel;
-import srp.haplotypes.likelihood.ShortReadLikelihood;
+import srp.spectrum.SpectraParameter.SpectraType;
 import srp.spectrum.SpectrumAlignmentModel;
-import srp.spectrum.SpectrumAlignmentModel.SpectrumType;
 import srp.spectrum.SpectrumLogger;
 import srp.spectrum.likelihood.ShortReadsSpectrumLikelihood;
 import srp.spectrum.treelikelihood.SpectrumTreeLikelihood;
@@ -24,14 +22,12 @@ import dr.evomodel.coalescent.ConstantPopulationModel;
 import dr.evomodel.tree.TreeLogger;
 import dr.evomodel.tree.TreeModel;
 import dr.evomodelxml.coalescent.ConstantPopulationModelParser;
-import dr.ext.TreeLikelihoodExt;
 import dr.inference.loggers.MCLogger;
 import dr.inference.loggers.TabDelimitedFormatter;
 import dr.inference.mcmc.MCMC;
 import dr.inference.mcmc.MCMCOptions;
 import dr.inference.model.Likelihood;
 import dr.inference.model.Parameter;
-import dr.inference.operators.MCMCOperator;
 import dr.inference.operators.OperatorSchedule;
 import dr.inference.operators.SimpleOperatorSchedule;
 import dr.inferencexml.model.CompoundLikelihoodParser;
@@ -59,9 +55,9 @@ public class MainMCMCSpectrumFull {
 		int noOfRecoveredHaplotype;
 		boolean randomTree = true;
 		boolean randomSpectrum = true;
-		SpectrumType randomSpectrumType = SpectrumAlignmentModel.SpectrumType.RANDOM;
+		SpectraType randomSpectrumType = SpectraType.RANDOM;
+		String distTypeCode = "betaMean";
 		
-		String distTypeCode = "betaMode";
 		boolean commandLine = true;
 //		commandLine = false;
 		if(commandLine){
@@ -74,22 +70,23 @@ public class MainMCMCSpectrumFull {
 		}
 		else{	
 			dataDir = "/home/sw167/workspaceSrp/snowgoose/srp/unittest/testData/";
-			runIndex = 50;
+			runIndex = 54;
 			dataDir += "H7_"+runIndex+"/";
 			
 			totalSamples = 1000	 ;
-			logInterval = 1000;
+			logInterval = 10;
 			
 			randomTree = true;
 //			randomTree = false;
 			
 			randomSpectrum = true;
-			randomSpectrumType = SpectrumAlignmentModel.SpectrumType.ZERO_ONE;
-			randomSpectrumType = SpectrumAlignmentModel.SpectrumType.RANDOM ;
+			randomSpectrumType = SpectraType.ZERO_ONE;
+			randomSpectrumType = SpectraType.RANDOM ;
+			
 //			randomSpectrumType = SpectrumAlignmentModel.SpectrumType.EQUAL;
 //			randomSpectrum = false;
 			
-			distTypeCode = "betaMode";
+			distTypeCode = "betaMean";
 			
 			noOfTrueHaplotype = 7;
 			noOfRecoveredHaplotype=7;
@@ -119,16 +116,26 @@ public class MainMCMCSpectrumFull {
 		Alignment shortReads = dataImporter.importShortReads(shortReadFile);
 		AlignmentMapping aMap = new AlignmentMapping(shortReads);
 		
+		// SpectrumModel and ShortReadLikelihood
 		SpectrumAlignmentModel spectrumModel;
-		
-		if(randomSpectrum){
-			spectrumModel = new SpectrumAlignmentModel(aMap, noOfRecoveredHaplotype, randomSpectrumType);
-
-		}
+		ShortReadsSpectrumLikelihood srpLikelihood;
+		boolean redo = true;
+		int c = 0;
+		if (randomSpectrum) {
+			do {
+				spectrumModel = new SpectrumAlignmentModel(aMap, noOfRecoveredHaplotype, randomSpectrumType);
+				srpLikelihood = new ShortReadsSpectrumLikelihood(spectrumModel, distTypeCode);
+				redo = (srpLikelihood.getLogLikelihood() == Double.NEGATIVE_INFINITY);
+				c++;
+				if(c==100){
+					System.err.println("After 100 try, ShortreadLikelihood= "+ srpLikelihood.getLogLikelihood());
+					System.exit(-1);
+				}
+			} while (redo);
+		}		
 		else{
 			spectrumModel = dataImporter.importPartialSpectrumFile(aMap, partialSpectrumName );
-//			spectrumModel = new SpectrumAlignmentModel(aMap, trueAlignment);
-			
+			srpLikelihood = new ShortReadsSpectrumLikelihood(spectrumModel, distTypeCode);
 		}
 
 
@@ -150,6 +157,7 @@ public class MainMCMCSpectrumFull {
 		CoalescentLikelihood coalescent = new CoalescentLikelihood(treeModel,null, new ArrayList<TaxonList>(), popModel);
 		coalescent.setId("coalescent");
 
+		
 		// Simulate  treeLikelihood
 		HashMap<String, Object> parameterList = MCMCSetupHelperSpectrum.setupSpectrumTreeLikelihoodSpectrumModel(treeModel, spectrumModel);
 		Parameter kappa = (Parameter) parameterList.get("kappa");
@@ -159,9 +167,6 @@ public class MainMCMCSpectrumFull {
 		SpectrumTreeLikelihood treeLikelihood = (SpectrumTreeLikelihood) parameterList.get("treeLikelihood");
 		
 		
-		
-		// ShortReadLikelihood
-		ShortReadsSpectrumLikelihood srpLikelihood = new ShortReadsSpectrumLikelihood(spectrumModel, distTypeCode);
 		
 		// CompoundLikelihood
 		HashMap<String, Likelihood> compoundlikelihoods = MCMCSetupHelper.setupCompoundLikelihood(

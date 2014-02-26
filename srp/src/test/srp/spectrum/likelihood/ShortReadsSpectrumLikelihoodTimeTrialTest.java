@@ -46,8 +46,8 @@ public class ShortReadsSpectrumLikelihoodTimeTrialTest {
 		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/snowgoose/srp/unittest/", "H10_srpGap.fasta");
 		AlignmentMapping aMap = new AlignmentMapping(alignment);
 			
-		spectrumModel = new SpectrumAlignmentModel(aMap, 6, 2);
-		likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
+		spectrumModel = new SpectrumAlignmentModel(aMap, 6);
+		likelihood = new ShortReadsSpectrumLikelihood(spectrumModel, "betaMean");
 
 	}
 
@@ -164,7 +164,7 @@ public class ShortReadsSpectrumLikelihoodTimeTrialTest {
 
 	}
 
-	@Test
+//	@Test
 	public void testTimeTrialDeltaMulti() throws Exception {
 		int bases = 10;
 		DeltaExchangeMultiSpectrumOperator op = new DeltaExchangeMultiSpectrumOperator(
@@ -218,7 +218,7 @@ public class ShortReadsSpectrumLikelihoodTimeTrialTest {
 		System.out.println(summary + "\t" + op.getOperatorName());
 	}
 
-	@Test
+//	@Test
 	public void testTimeTrialRecombination() throws Exception {
 
 		RecombinationSpectrumOperator op = new RecombinationSpectrumOperator(
@@ -228,15 +228,15 @@ public class ShortReadsSpectrumLikelihoodTimeTrialTest {
 
 	}
 
-	@Test
+//	@Test
 	public void testTimeTrialRecombineSectionLarge() throws Exception {
-		int base = 200;
+		int base = 100;
 		AbstractSpectrumOperator op = new RecombineSectionSpectrumOperator(
 				spectrumModel, base, null);
 		String summary = timeTrialOperator(likelihood, op, 10000);
 		System.out.println(summary + "\t" + op.getOperatorName() +"\t"+ base);
 	}
-	@Test
+//	@Test
 	public void testTimeTrialRecombineSectionSmall() throws Exception {
 		int base = 10;
 		AbstractSpectrumOperator op = new RecombineSectionSpectrumOperator(
@@ -246,7 +246,8 @@ public class ShortReadsSpectrumLikelihoodTimeTrialTest {
 	}
 
 	public static String timeTrialOperator(
-			ShortReadsSpectrumLikelihood likelihood, AbstractSpectrumOperator op, double ite) {
+			ShortReadsSpectrumLikelihood likelihood,
+			AbstractSpectrumOperator op, double ite) {
 		
 		int count = 0;
 		long totalTime = 0;
@@ -277,7 +278,52 @@ public class ShortReadsSpectrumLikelihoodTimeTrialTest {
 }
 
 /*H10
+betaMean
+swap
+TimeTrial: 4606	0.04606/calculation	100000.0 ite.	DeltaExchangeSingleSpectrumOperator
+TimeTrial: 2482	0.2482/calculation	10000.0 ite.	DeltaExchangeMultiSpectrumOperator	10
+TimeTrial: 2564	0.2564/calculation	10000.0 ite.	DeltaExchangeColumnSpectrumOperator
+TimeTrial: 524	0.0524/calculation	10000.0 ite.	SwapSingleSpectrumOperator
+TimeTrial: 2526	0.2526/calculation	10000.0 ite.	SwapMultiSpectrumOperator	10
+TimeTrial: 2451	0.2451/calculation	10000.0 ite.	DirichletSpectrumOperator	10
+TimeTrial: 376	0.0376/calculation	10000.0 ite.	DirichletAlphaSpectrumOperator
+TimeTrial: 6233	6.233/calculation	1000.0 ite.	RecombinationSpectrumOperator
+TimeTrial: 10405	1.0405/calculation	10000.0 ite.	RecombineSectionSpectrumOperator	100
+TimeTrial: 3707	0.3707/calculation	10000.0 ite.	RecombineSectionSpectrumOperator	10
 
+cal
+TimeTrial: 4447	0.04447/calculation	100000.0 ite.	DeltaExchangeSingleSpectrumOperator
+TimeTrial: 2709	0.2709/calculation	10000.0 ite.	DeltaExchangeMultiSpectrumOperator	10
+TimeTrial: 2535	0.2535/calculation	10000.0 ite.	DeltaExchangeColumnSpectrumOperator
+TimeTrial: 486	0.0486/calculation	10000.0 ite.	SwapSingleSpectrumOperator
+TimeTrial: 2232	0.2232/calculation	10000.0 ite.	SwapMultiSpectrumOperator	10
+TimeTrial: 2174	0.2174/calculation	10000.0 ite.	DirichletSpectrumOperator	10
+TimeTrial: 351	0.0351/calculation	10000.0 ite.	DirichletAlphaSpectrumOperator
+TimeTrial: 6813	6.813/calculation	1000.0 ite.	RecombinationSpectrumOperator
+TimeTrial: 10904	1.0904/calculation	10000.0 ite.	RecombineSectionSpectrumOperator	100
+TimeTrial: 3746	0.3746/calculation	10000.0 ite.	RecombineSectionSpectrumOperator	10
+flat
+TimeTrial: 2271	0.02271/calculation	100000.0 ite.	DeltaExchangeSingleSpectrumOperator
+TimeTrial: 2139	0.2139/calculation	10000.0 ite.	DeltaExchangeMultiSpectrumOperator	10
+TimeTrial: 2105	0.2105/calculation	10000.0 ite.	DeltaExchangeColumnSpectrumOperator
+TimeTrial: 445	0.0445/calculation	10000.0 ite.	SwapSingleSpectrumOperator
+TimeTrial: 2222	0.2222/calculation	10000.0 ite.	SwapMultiSpectrumOperator	10
+TimeTrial: 2457	0.2457/calculation	10000.0 ite.	DirichletSpectrumOperator	10
+TimeTrial: 476	0.0476/calculation	10000.0 ite.	DirichletAlphaSpectrumOperator
+TimeTrial: 6626	6.626/calculation	1000.0 ite.	RecombinationSpectrumOperator
+TimeTrial: 11252	1.1252/calculation	10000.0 ite.	RecombineSectionSpectrumOperator	100
+TimeTrial: 4126	0.4126/calculation	10000.0 ite.	RecombineSectionSpectrumOperator	10
+
+TimeTrial: 2158	0.02158/calculation	100000.0 ite.	DeltaExchangeSingleSpectrumOperator
+TimeTrial: 2171	0.2171/calculation	10000.0 ite.	DeltaExchangeMultiSpectrumOperator	10
+TimeTrial: 2439	0.2439/calculation	10000.0 ite.	DeltaExchangeColumnSpectrumOperator
+TimeTrial: 446	0.0446/calculation	10000.0 ite.	SwapSingleSpectrumOperator
+TimeTrial: 2134	0.2134/calculation	10000.0 ite.	SwapMultiSpectrumOperator	10
+TimeTrial: 2289	0.2289/calculation	10000.0 ite.	DirichletSpectrumOperator	10
+TimeTrial: 446	0.0446/calculation	10000.0 ite.	DirichletAlphaSpectrumOperator
+TimeTrial: 6262	6.262/calculation	1000.0 ite.	RecombinationSpectrumOperator
+TimeTrial: 20865	2.0865/calculation	10000.0 ite.	RecombineSectionSpectrumOperator	200
+TimeTrial: 4143	0.4143/calculation	10000.0 ite.	RecombineSectionSpectrumOperator	10
 
 TimeTrial: 2928	0.02928/calculation	100000.0 ite.	DeltaExchangeSingleSpectrumOperator
 TimeTrial: 1615	0.1615/calculation	10000.0 ite.	DeltaExchangeMultiSpectrumOperator	10

@@ -90,8 +90,8 @@ public class DeltaExchangeMultiSpectrumOperator extends AbstractSpectrumOperator
 	            dim2[i] = MathUtils.nextInt(DIMENSION);
 	        }while (dim1[i] == dim2[i]);
     
-	        scalar1[i] = spectra[i].getParameterValue(dim1[i]);
-	        scalar2[i]= spectra[i].getParameterValue(dim2[i]);
+	        scalar1[i] = spectra[i].getFrequency(dim1[i]);
+	        scalar2[i]= spectra[i].getFrequency(dim2[i]);
 	
 	        d[i] = MathUtils.nextDouble() * delta;
 	        d[i] = delta;
@@ -110,8 +110,8 @@ public class DeltaExchangeMultiSpectrumOperator extends AbstractSpectrumOperator
 		}
 		for (int i = 0; i < swapBasesCount; i++) {
 			
-			spectra[i].setParameterValue(dim1[i], scalar1[i]);
-			spectra[i].setParameterValue(dim2[i], scalar2[i]);
+			spectra[i].setFrequency(dim1[i], scalar1[i]);
+			spectra[i].setFrequency(dim2[i], scalar2[i]);
 
 		}
         // symmetrical move so return a zero hasting ratio

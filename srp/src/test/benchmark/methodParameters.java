@@ -8,8 +8,42 @@ public class methodParameters {
 
 	public static void main(String[] args) {
 //		testPassing();
-		testComparing();
+//		testComparing();
+		testArraySwapVsCopy();
+	}
+	private static void testArraySwapVsCopy() {
+		double zzz = 0;
+		double[] a = new double[]{Math.random(), Math.random(), Math.random(), Math.random()}; 
+		double[] b = new double[]{Math.random(), Math.random(), Math.random(), Math.random()};
+		long time1 = System.currentTimeMillis();
+		for (int t = 0; t < 1e9; t++) {
+			double[] temp = a;
+	    	a = b;
+	    	b= temp;
+	    	zzz+=1;
+		}
+		long time2 = System.currentTimeMillis();
+
+		System.out.println((time2 - time1) + "\t");
+		System.out.println(Arrays.toString(a) +"\t"+ Arrays.toString(b));
 		
+		time1 = System.currentTimeMillis();
+		for (int t = 0; t < 1e9; t++) {
+	    	System.arraycopy(a, 0, b, 0, 4);
+	    	zzz+=1;
+		}
+		time2 = System.currentTimeMillis();
+
+		System.out.println((time2 - time1) + "\t");
+		System.out.println(zzz);
+		time1 = System.currentTimeMillis();
+		for (int t = 0; t < 1e9; t++) {
+			zzz += 1;
+		}
+		time2 = System.currentTimeMillis();
+
+		System.out.println((time2 - time1) + "\t");
+		System.out.println(zzz);
 	}
 	private static void testComparing() {
 		int ite =  (int) 1e9;

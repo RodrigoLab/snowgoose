@@ -32,6 +32,7 @@ import org.junit.rules.ExpectedException;
 import srp.core.DataImporter;
 import srp.dr.evolution.datatype.ShortReads;
 import srp.haplotypes.AlignmentMapping;
+import srp.spectrum.SpectraParameter.SpectraType;
 import srp.spectrum.Spectrum;
 import srp.spectrum.SpectrumAlignmentModel;
 //import srp.haplotypes.Haplotype;
@@ -105,7 +106,7 @@ public class AbstractSpectrumAlignmentModelTest {
 	@Before
 	public void setUp() throws Exception {
 		spectrumModel = new SpectrumAlignmentModel(aMap, srpAlignment);
-		spectrumModelRandom = new SpectrumAlignmentModel(aMap, 5, 2);
+		spectrumModelRandom = new SpectrumAlignmentModel(aMap, 5);
 	}
 
 	@After

@@ -4,12 +4,15 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.math3.stat.StatUtils;
+
 import srp.spectrum.SpectraParameter;
 import srp.spectrum.Spectrum;
 import srp.spectrum.SpectrumAlignmentModel;
 import srp.spectrum.SpectrumOperation;
 
 import com.google.common.primitives.Ints;
+import com.sun.org.glassfish.external.statistics.Stats;
 
 import dr.inference.operators.CoercionMode;
 import dr.inference.operators.OperatorFailedException;
@@ -93,7 +96,6 @@ public class DirichletSpectrumOperator extends AbstractDirichletSpectrumOperator
 				oldParameter[j] = oldFreq[j]*alpha;
 
 				newFreq[j] = MathUtils.nextGamma(oldParameter[j], 1);
-				
 				sum += newFreq[j]; 
 			}
 			for (int j = 0; j < newFreq.length; j++) {
@@ -101,14 +103,14 @@ public class DirichletSpectrumOperator extends AbstractDirichletSpectrumOperator
 				if(newFreq[j]<MIN_FREQ){
 					newFreq[j] = MIN_FREQ;
 				}
-				if(newFreq[j]>MAX_FREQ){
+				else if(newFreq[j]>MAX_FREQ){
 					newFreq[j] = MAX_FREQ;
 				}
 			}
+			
 			for (int j = 0; j < newFreq.length; j++) {
-				
 				newParameter[j] = newFreq[j]*alpha;
-				spectra.setParameterValue(j, newFreq[j]);
+				spectra.setFrequency(j, newFreq[j]);
 			}
 			
 //			 get proposal ratio

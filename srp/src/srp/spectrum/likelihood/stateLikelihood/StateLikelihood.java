@@ -1,5 +1,7 @@
 package srp.spectrum.likelihood.stateLikelihood;
 
+import java.util.Arrays;
+
 import srp.dr.evolution.datatype.ShortReads;
 import srp.spectrum.SpectraParameter;
 import srp.spectrum.likelihood.ShortReadsSpectrumLikelihood;
@@ -13,25 +15,37 @@ public abstract class StateLikelihood {
 	public StateLikelihood() {
 	}
 	
-	public double[] calculateStatesLogLikelihood(SpectraParameter spectra, 
+	public void calculateStatesLogLikelihood(SpectraParameter spectra, 
 			double[] statesLogLikelihood){
 		for (int state = 0; state < STATE_COUNT; state++) {
 			double frequency = spectra.getFrequency(state);
 			statesLogLikelihood[state] = caluclateStateLogLikelihood(frequency);
+			
+//			spectra.setStateLikelihood(state, statesLogLikelihood[state]);//TESTING
 		}
+		spectra.setStateLikelihood(statesLogLikelihood);//TESTING
 		
-		return statesLogLikelihood;
-	
 	}
 	
 	
-	public double[] calculateStoredStatesLogLikelihood(SpectraParameter spectra, 
+	public void calculateStoredStatesLogLikelihood(SpectraParameter spectra, 
 			double[] statesLogLikelihood){
+		
+		double[] temp = new double[STATE_COUNT];
 		for (int state = 0; state < STATE_COUNT; state++) {
-			double frequency = spectra.getStoredFrequency(state);
-			statesLogLikelihood[state] = caluclateStateLogLikelihood(frequency);
+//			{//TESTING
+//			double frequency = spectra.getStoredFrequency(state);
+//			temp[state] = caluclateStateLogLikelihood(frequency);
+//			}
+//			{//TESTING
+//			statesLogLikelihood[state] = spectra.getStoredStateLikelihood(state);
+//			}
 		}
-		return statesLogLikelihood;
+		System.arraycopy(spectra.getStoredStateLikelihood(), 0, statesLogLikelihood, 0, STATE_COUNT);
+//		System.out.println(Arrays.toString(temp));
+//		System.out.println(Arrays.toString(statesLogLikelihood));
+//		System.out.println();
+//		return statesLogLikelihood;
 	}
 	
 	public abstract double caluclateStateLogLikelihood(double frequency);

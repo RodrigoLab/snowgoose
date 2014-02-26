@@ -1,9 +1,10 @@
 package test.srp.spectrum.likelihood.stateLikelihood;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -13,7 +14,9 @@ import org.junit.Test;
 
 import srp.core.DataImporter;
 import srp.haplotypes.AlignmentMapping;
+import srp.spectrum.SpectraParameter;
 import srp.spectrum.SpectrumAlignmentModel;
+import srp.spectrum.SpectraParameter.SpectraType;
 import srp.spectrum.likelihood.ShortReadsSpectrumLikelihood;
 import srp.spectrum.likelihood.stateLikelihood.BetaMeanStateLikelihood;
 import srp.spectrum.likelihood.stateLikelihood.BetaModeStateLikelihood;
@@ -57,6 +60,54 @@ public class StateLikelihoodTest {
 	public void tearDown() throws Exception {
 	}
 
+	
+	@Test
+	public void testCalculateStatesLogLikelihood() throws Exception {
+		
+		double spectraFrequencies[][] = new double[5][4];
+		for (int i = 0; i < spectraFrequencies.length; i++) {
+			System.arraycopy(frequencies, 4*i, spectraFrequencies[i], 0, 4);
+			System.out.println(Arrays.toString(spectraFrequencies[i]));
+			
+			
+		}
+		StateLikelihood stateLikelihood = new ProbabilityStateLikelihood();
+		double[] statesLogLikelihood = new double[4];
+		double[] expectedLogLikelihood = new double[4];
+		double[] expecteds = new double[] { -4.4499971717799,
+				-2.81959647584712, -2.22045226345552, -1.84839331479565,
+				-1.57784235084435, -1.36512012588848, -1.18980694885304,
+				-1.04069249808234, -0.910954992284636, -0.796132740880369,
+				-0.693147180559945, -0.599784350155737, -0.514398666152773,
+				-0.43573361212845, -0.362807998442184, -0.294840969650261,
+				-0.231200924941943, -0.17136974738986, -0.114917146243339,
+				-0.0614818641436684};
+		double[] expectedLast = new double[]{-0.0117473304903028, -0.0117473304903028, -0.0117473304903028, -0.0117473304903028}; 
+		for (int i = 0; i < spectraFrequencies.length; i++) {
+			SpectraParameter sp = new SpectraParameter(SpectraType.EQUAL);
+			for (int j = 0; j < spectraFrequencies[i].length; j++) {
+				sp.setFrequency(j, spectraFrequencies[i][j]);
+			}
+			
+			stateLikelihood.calculateStatesLogLikelihood(sp, statesLogLikelihood);
+			System.arraycopy(expecteds, 4*i, expectedLogLikelihood, 0, 4);
+			assertArrayEquals(expectedLogLikelihood, statesLogLikelihood, THRESHOLD);
+			
+			sp.storeState();
+			for (int j = 0; j < spectraFrequencies[i].length; j++) {
+				sp.setFrequency(j, 0.999);
+			}
+			stateLikelihood.calculateStoredStatesLogLikelihood(sp, statesLogLikelihood);
+			assertArrayEquals(expectedLogLikelihood, statesLogLikelihood, THRESHOLD);
+			
+			stateLikelihood.calculateStatesLogLikelihood(sp, statesLogLikelihood);
+			assertArrayEquals(expectedLast, statesLogLikelihood, THRESHOLD);
+			
+		}
+		
+		
+		
+	}
 
 	@Test
 	public void testCalculateStateLogLikelihoodFlat() throws Exception{

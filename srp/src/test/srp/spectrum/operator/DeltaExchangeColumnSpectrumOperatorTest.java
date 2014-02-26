@@ -1,7 +1,7 @@
 package test.srp.spectrum.operator;
 
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -39,6 +39,19 @@ public class DeltaExchangeColumnSpectrumOperatorTest {
 	}
 	
 	@Test
+	public void testConstructor() throws Exception {
+		String[] seqs = new String[]{
+				"AAAC",
+				"AACT",
+				"ACGT"
+				};
+		int spectrumCount = 4;
+		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, spectrumCount);
+		DeltaExchangeColumnSpectrumOperator op = new DeltaExchangeColumnSpectrumOperator(
+				spectrumModel, 0.1, CoercionMode.COERCION_OFF);
+	}
+	@Test
 	public void testDoOperator() throws Exception {
 		String[] seqs = new String[]{
 				"AAAC",
@@ -47,7 +60,7 @@ public class DeltaExchangeColumnSpectrumOperatorTest {
 				};
 		int spectrumCount = 4;
 		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, spectrumCount, 2);
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, spectrumCount);
 		DeltaExchangeColumnSpectrumOperator op = new DeltaExchangeColumnSpectrumOperator(
 				spectrumModel, 0.1, CoercionMode.COERCION_OFF);
 
@@ -101,7 +114,7 @@ public class DeltaExchangeColumnSpectrumOperatorTest {
 				};
 		int spectrumCount = 10;
 		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, spectrumCount, 2);
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, spectrumCount);
 		DeltaExchangeColumnSpectrumOperator op = new DeltaExchangeColumnSpectrumOperator(
 				spectrumModel, 0.1, CoercionMode.COERCION_OFF);
 

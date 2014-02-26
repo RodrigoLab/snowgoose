@@ -50,7 +50,7 @@ public class DirichletAlphaSpectrumOperatorTest {
 				"..AGGTTC",
 				};
 		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 1, 2);
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 1);
 		DirichletAlphaSpectrumOperator op = new DirichletAlphaSpectrumOperator(
 				spectrumModel, 100, CoercionMode.COERCION_OFF);
 

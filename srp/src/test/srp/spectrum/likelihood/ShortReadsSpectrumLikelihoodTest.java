@@ -16,6 +16,7 @@ import org.junit.Test;
 import srp.core.DataImporter;
 import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.AlignmentUtils;
+import srp.spectrum.SpectraParameter.SpectraType;
 import srp.spectrum.Spectrum;
 import srp.spectrum.SpectrumAlignmentModel;
 import srp.spectrum.SpectrumOperation;
@@ -68,7 +69,7 @@ public class ShortReadsSpectrumLikelihoodTest {
 //		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/snowgoose/srp/unittest/", "H4_srp.fasta");
 		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/snowgoose/srp/unittest/", "SpectrumTest_50srp_200bp.fasta");
 		aMap = new AlignmentMapping(alignment);
-		spectrumModel = new SpectrumAlignmentModel(aMap, 4, 2);
+		spectrumModel = new SpectrumAlignmentModel(aMap, 4);
 	}
 
 	@After
@@ -141,7 +142,7 @@ public class ShortReadsSpectrumLikelihoodTest {
 				};
 		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
 			
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 1, 0);
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 1, SpectraType.EQUAL);
 		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
 
 		double[] eachLikelihood = likelihood.unittestMethodGetEachLikelihood();
@@ -175,7 +176,7 @@ public class ShortReadsSpectrumLikelihoodTest {
 				};
 		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
 		
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 1, 2);
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 1);
 		Spectrum spectrum = spectrumModel.getSpectrum(0);
 		for (int i = 0; i < spectrum.getLength(); i++) {
 			double[] freqs = new double[]{1-(0.1*i*3), 0.1*i, 0.1*i, 0.1*i};
@@ -219,9 +220,9 @@ public class ShortReadsSpectrumLikelihoodTest {
 	
 		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
 		
-		for (int i = 0; i < 1e4; i++) {
+		for (int i = 0; i < 1e3; i++) {
 			int noSpectrum = MathUtils.nextInt(7)+3;
-			spectrumModel = new SpectrumAlignmentModel(aMap, noSpectrum, 2);
+			spectrumModel = new SpectrumAlignmentModel(aMap, noSpectrum);
 //				likelihood.makeDirty();
 			likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
 			double logLikelihoodFull = likelihood.getLogLikelihood();
@@ -334,7 +335,7 @@ public class ShortReadsSpectrumLikelihoodTest {
 	public void testFullvsSwapSectionStoreRestore() throws Exception {
 
 		RecombineSectionSpectrumOperator op = new RecombineSectionSpectrumOperator(
-				spectrumModel, 10, null);
+				spectrumModel, 2, null);
 		assertLikelihoodOperator(spectrumModel, op);
 	}
 

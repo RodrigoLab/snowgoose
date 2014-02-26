@@ -9,7 +9,7 @@ import javax.swing.text.TabableView;
 import srp.core.DataImporter;
 import srp.dr.evolution.datatype.ShortReads;
 import srp.haplotypes.AlignmentMapping;
-import srp.spectrum.SpectrumAlignmentModel.SpectrumType;
+import srp.spectrum.SpectraParameter.SpectraType;
 import dr.evolution.alignment.Alignment;
 
 public class SpectrumAlignmentUtils {
@@ -111,5 +111,34 @@ public class SpectrumAlignmentUtils {
 		int state = dataType.getState(srpChar);
 	
 		return state;
+	}
+	
+	public static void compareTwoSpectrumModel(
+			SpectrumAlignmentModel spectrumModel,
+			SpectrumAlignmentModel spectrumModel2) {
+	
+	
+		for (int i = 0; i < spectrumModel.getSpectrumCount(); i++) {
+			Spectrum spectrum = spectrumModel.getSpectrum(i);
+			Spectrum newSpectrum = spectrumModel2.getSpectrum(i);
+			for (int j = 0; j < spectrum.getLength(); j++) {
+				double[] frequencies = spectrum.getFrequenciesAt(j);
+				for (int k = 0; k < frequencies.length; k++) {
+					if(frequencies[k] != newSpectrum.getFrequency(j, k)){
+						System.err.println("DIFFMODEL"+i +"\t"+ j +"\t"+ k +"\t"+ Arrays.toString(frequencies) +"\t"+ Arrays.toString(newSpectrum.getFrequenciesAt(j)));
+					}
+				}
+			}
+			
+		}
+		SpectrumOperationRecord record = spectrumModel.getSpectrumOperationRecord();
+		int spec = record.getSpectrumIndex();
+		int site = record.getAllSiteIndexs()[0];
+		System.out.println("compare two models");
+		System.out.println(Arrays.toString(spectrumModel.getSpectrum(spec).getFrequenciesAt(
+				site)));
+		System.out.println(Arrays.toString(spectrumModel2.getSpectrum(spec).getFrequenciesAt(
+				site)));
+		
 	}
 }

@@ -34,68 +34,6 @@ public class DeltaExchangeColumnSpectrumOperator extends AbstractSpectrumOperato
 	private double[] debugList = new double[8];
 	
 	
-	public double doOperation2() throws OperatorFailedException {
-
-		spectrumModel.startSpectrumOperation();
-
-//		int[] posChar = alignmentMapping.getNextBase();
-//		spectrumModel.swapHaplotypeSingleBase(OP, posChar);
-//		int spectrumIndex = MathUtils.nextInt(spectrumCount);
-		int siteIndex = MathUtils.nextInt(spectrumLength);
-        
-    	
-        SpectraParameter[] spectra = new SpectraParameter[spectrumCount];
-        double[] scalar1 = new double[spectrumCount];
-        double[] scalar2 = new double[spectrumCount];
-        
-        final int dim1 = MathUtils.nextInt(DIMENSION);
-        int dim2;// = dim1;
-        do {
-            dim2 = MathUtils.nextInt(DIMENSION);
-        }while (dim1 == dim2);
-
-		for (int i = 0; i < spectrumCount; i++) {
-			
-			
-			int spectrumIndex = i;
-//			System.err.println(spectrumIndex +"\t"+ siteIndex +"\t"+ dim1 +"\t"+ dim2);
-			
-			Spectrum spectrum = spectrumModel.getSpectrum(spectrumIndex);
-			spectra[i] = spectrum.getSpectra(siteIndex);
-	        // get two dimensions
-	        
-	        scalar1[i] = spectra[i].getParameterValue(dim1);
-	        scalar2[i]= spectra[i].getParameterValue(dim2);
-	
-	        double d = MathUtils.nextDouble() * delta;
-	        d = delta;
-	        scalar1[i] -= d;
-	        scalar2[i] += d;
-	
-	        if (scalar1[i] < BOUNDS_LOWER ||
-	                scalar1[i] > BOUNDS_UPPER ||
-	                scalar2[i] < BOUNDS_LOWER ||
-	                scalar2[i] > BOUNDS_UPPER ) {
-//	        	System.err.println("throw");
-	            throw new OperatorFailedException("proposed values out of range!");
-	        }
-	        
-		}
-		for (int i = 0; i < spectrumCount; i++) {
-			
-			spectra[i].setParameterValue(dim1, scalar1[i]);
-			spectra[i].setParameterValue(dim2, scalar2[i]);
-
-		}
-        // symmetrical move so return a zero hasting ratio
-		spectrumModel.setSpectrumOperationRecord(OP, siteIndex);
-		
-		spectrumModel.endSpectrumOperation();
-
-		return 0.0;
-	}
-
-	
 	
 	@Override
 	public double doOperation() throws OperatorFailedException {
@@ -130,8 +68,8 @@ public class DeltaExchangeColumnSpectrumOperator extends AbstractSpectrumOperato
 	            dim2[i] = MathUtils.nextInt(DIMENSION);
 	        }while (dim1[i] == dim2[i]);
     
-	        scalar1[i] = spectra[i].getParameterValue(dim1[i]);
-	        scalar2[i]= spectra[i].getParameterValue(dim2[i]);
+	        scalar1[i] = spectra[i].getFrequency(dim1[i]);
+	        scalar2[i]= spectra[i].getFrequency(dim2[i]);
 	
 	        d[i] = MathUtils.nextDouble() * delta;
 	        d[i] = delta;
@@ -151,8 +89,8 @@ public class DeltaExchangeColumnSpectrumOperator extends AbstractSpectrumOperato
 		}
 		for (int i = 0; i < spectrumCount; i++) {
 			
-			spectra[i].setParameterValue(dim1[i], scalar1[i]);
-			spectra[i].setParameterValue(dim2[i], scalar2[i]);
+			spectra[i].setFrequency(dim1[i], scalar1[i]);
+			spectra[i].setFrequency(dim2[i], scalar2[i]);
 
 		}
         // symmetrical move so return a zero hasting ratio
@@ -197,31 +135,10 @@ public class DeltaExchangeColumnSpectrumOperator extends AbstractSpectrumOperato
     }
 
     @Override
-	public double getTargetAcceptanceProbability() {
-        return 0.234;
-    }
-
-    @Override
 	public final String getPerformanceSuggestion() {
-//		SpectrumOperationRecord record = spectrumModel.getSpectrumOperationRecord();
-//		String s = record.getSpectrumIndex() +"\t"+ record.getColumnIndex() +"\n";
-//		s+= spectrumModel.diagnostic() +"\n";
-//		s += Arrays.toString(debugList);
-//		spectrumModel.restoreModelState();
+
     	String s = "Tuning "+delta; 
     	return s;
-
-//        double prob = MCMCOperator.Utils.getAcceptanceProbability(this);
-//        double targetProb = getTargetAcceptanceProbability();
-//
-////        double d = OperatorUtils.optimizeWindowSize(delta, parameter.getParameterValue(0) * 2.0, prob, targetProb);
-//        double d = OperatorUtils.optimizeWindowSize(delta, 0.25 , prob, targetProb);
-//
-//        if (prob < getMinimumGoodAcceptanceLevel()) {
-//            return "Try decreasing delta to about " + d;
-//        } else if (prob > getMaximumGoodAcceptanceLevel()) {
-//            return "Try increasing delta to about " + d;
-//        } else return "";
     }
 
     @Override

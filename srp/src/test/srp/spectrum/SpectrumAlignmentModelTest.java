@@ -4,6 +4,7 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
+import java.util.Arrays;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -13,6 +14,8 @@ import org.junit.Test;
 
 import srp.core.DataImporter;
 import srp.haplotypes.AlignmentMapping;
+import srp.spectrum.SpectraParameter;
+import srp.spectrum.SpectraParameter.SpectraType;
 import srp.spectrum.Spectrum;
 import srp.spectrum.SpectrumAlignmentModel;
 import dr.evolution.alignment.Alignment;
@@ -69,20 +72,76 @@ public class SpectrumAlignmentModelTest {
 	}
 
 	@Test
-	public void testConstructor() throws Exception {
+	public void testConstructorEqual() throws Exception {
 		double[] expectedFreq = new double[]{0.25, 0.25, 0.25, 0.25};
 		
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 5, 0);
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 5, SpectraType.EQUAL);
 		assertEquals(100, spectrumModel.getSpectrumLength());
 		assertEquals(5, spectrumModel.getSpectrumCount());
 		for (int i = 0; i < spectrumModel.getSpectrumCount(); i++) {
 			Spectrum spectrum = spectrumModel.getSpectrum(i);
 			assertArrayEquals(expectedFreq , spectrum.getFrequenciesAt(0), 0);
+			assertArrayEquals(expectedFreq , spectrum.getFrequenciesAt(1), 0);
+			assertArrayEquals(expectedFreq , spectrum.getFrequenciesAt(2), 0);
+			assertArrayEquals(expectedFreq , spectrum.getFrequenciesAt(3), 0);
 		}
 		
 	}
 	
+	@Test
+	public void testConstructorZeroOne() throws Exception {
+		
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 5, SpectraType.ZERO_ONE);
+		assertEquals(100, spectrumModel.getSpectrumLength());
+		assertEquals(5, spectrumModel.getSpectrumCount());
+		for (int i = 0; i < spectrumModel.getSpectrumCount(); i++) {
+			Spectrum spectrum = spectrumModel.getSpectrum(i);
+			for (int j = 0; j < spectrum.getLength(); j++) {
+				SpectraParameter spectra = spectrum.getSpectra(j);
+				int count0 = 0;
+				int count1 = 0;
+				for (int k = 0; k < spectra.getDimension(); k++) {
+					double freq = spectra.getFrequency(k);
+					if(freq==0){
+						count0++;
+					}
+					else if(freq==1){
+						count1++;
+					}
+				}
+				assertEquals(3, count0);
+				assertEquals(1, count1);
+			}
+		}
+		
+	}
 
+
+	@Test
+	public void testConstructorRandom() throws Exception {
+		
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 5, SpectraType.RANDOM);
+		assertEquals(100, spectrumModel.getSpectrumLength());
+		assertEquals(5, spectrumModel.getSpectrumCount());
+		for (int i = 0; i < spectrumModel.getSpectrumCount(); i++) {
+			Spectrum spectrum = spectrumModel.getSpectrum(i);
+			for (int j = 0; j < spectrum.getLength(); j++) {
+				SpectraParameter spectra = spectrum.getSpectra(j);
+				double[] frequencies = spectra.getFrequencies();
+				int count = 0;
+				for (int k = 0; k < frequencies.length; k++) {
+					for (int k2 = k+1; k2 < frequencies.length; k2++) {
+						if(frequencies[k]!=frequencies[k2]){
+							count++;
+						}
+					}
+					
+				}
+				assertEquals(Arrays.toString(frequencies), 6, count);
+			}
+		}
+		
+	}
 	@Test
 	public void testStoreRestore() throws Exception {
 		

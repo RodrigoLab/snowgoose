@@ -96,7 +96,7 @@ public class SwapSubColumnSpectrumOperator extends AbstractSpectrumOperator {
 			int dim1 = 0;
 			double scalar1 = 0;
 			for (int d = 0; d < DIMENSION; d++) {
-				scalar1 = spectra.getParameterValue(d);
+				scalar1 = spectra.getFrequency(d);
 				if (scalar1 == 1) {
 					dim1 = d;
 					break;
@@ -106,10 +106,10 @@ public class SwapSubColumnSpectrumOperator extends AbstractSpectrumOperator {
 			do {
 				dim2 = MathUtils.nextInt(DIMENSION);
 			} while (dim1 == dim2);
-			double scalar2 = spectra.getParameterValue(dim2);        
+			double scalar2 = spectra.getFrequency(dim2);        
 
-	        spectra.setParameterValue(dim1, scalar2);
-	        spectra.setParameterValue(dim2, scalar1);
+	        spectra.setFrequency(dim1, scalar2);
+	        spectra.setFrequency(dim2, scalar1);
 
 
 	        
@@ -166,25 +166,11 @@ public class SwapSubColumnSpectrumOperator extends AbstractSpectrumOperator {
 
     @Override
 	public final String getPerformanceSuggestion() {
-//		SpectrumOperationRecord record = spectrumModel.getSpectrumOperationRecord();
-//		String s = record.getSpectrumIndex() +"\t"+ record.getColumnIndex() +"\n";
-//		s+= spectrumModel.diagnostic() +"\n";
-//		s += Arrays.toString(debugList);
-//		spectrumModel.restoreModelState();
+
     	String s = "Tuning "+swapSpectrumCount; 
     	return s;
 
-//        double prob = MCMCOperator.Utils.getAcceptanceProbability(this);
-//        double targetProb = getTargetAcceptanceProbability();
-//
-////        double d = OperatorUtils.optimizeWindowSize(delta, parameter.getParameterValue(0) * 2.0, prob, targetProb);
-//        double d = OperatorUtils.optimizeWindowSize(delta, 0.25 , prob, targetProb);
-//
-//        if (prob < getMinimumGoodAcceptanceLevel()) {
-//            return "Try decreasing delta to about " + d;
-//        } else if (prob > getMaximumGoodAcceptanceLevel()) {
-//            return "Try increasing delta to about " + d;
-//        } else return "";
+
     }
 
     @Override

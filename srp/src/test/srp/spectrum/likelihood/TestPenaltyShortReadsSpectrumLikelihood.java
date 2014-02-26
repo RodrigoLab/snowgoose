@@ -12,11 +12,13 @@ import org.junit.Test;
 
 import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.AlignmentUtils;
+import srp.spectrum.SpectraParameter.SpectraType;
 import srp.spectrum.Spectrum;
 import srp.spectrum.SpectrumAlignmentModel;
 import srp.spectrum.likelihood.ShortReadsSpectrumLikelihood;
 import dr.evolution.alignment.SimpleAlignment;
 
+@Deprecated
 public class TestPenaltyShortReadsSpectrumLikelihood {
 
 	public static final double ERROR = ShortReadsSpectrumLikelihood.ERROR_RATE;
@@ -167,7 +169,7 @@ public class TestPenaltyShortReadsSpectrumLikelihood {
 				};
 		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
 			
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 1, 0);
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 1, SpectraType.EQUAL);
 		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
 		
 		double loglLikelihood = likelihood.getLogLikelihood();
@@ -183,7 +185,7 @@ public class TestPenaltyShortReadsSpectrumLikelihood {
 		
 
 		
-		spectrumModel = new SpectrumAlignmentModel(aMap, 2, 0);
+		spectrumModel = new SpectrumAlignmentModel(aMap, 2, SpectraType.EQUAL);
 		likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
 		
 		double loglLikelihood2 = likelihood.getLogLikelihood();
@@ -224,7 +226,7 @@ public class TestPenaltyShortReadsSpectrumLikelihood {
 				};
 		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
 		
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 1, 1);
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 1);
 		Spectrum spectrum = spectrumModel.getSpectrum(0);
 		for (int i = 0; i < spectrum.getLength(); i++) {
 			double[] freqs = new double[]{1-(0.1*i*3), 0.1*i, 0.1*i, 0.1*i};
