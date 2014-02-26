@@ -1,4 +1,4 @@
-package test.srp.haplotypes;
+package test.srp.shortreads;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -14,9 +14,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import srp.core.DataImporter;
-import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.AlignmentUtils;
-import srp.haplotypes.ShortRead;
+import srp.shortreads.AlignmentMapping;
+import srp.shortreads.ShortRead;
 import test.TestUtils;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.sequence.Sequence;

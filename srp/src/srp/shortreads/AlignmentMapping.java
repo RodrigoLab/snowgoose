@@ -1,4 +1,4 @@
-package srp.haplotypes;
+package srp.shortreads;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,9 +31,8 @@ every position ~ 100ish reads.
 public class AlignmentMapping {
 
 	private static final int GAP = '-';
-	private static final DataType dataType =Nucleotides.INSTANCE;
-//	private static final char[] VALID_CHARS = Nucleotides.NUCLEOTIDE_CHARS;
-//	char[] x = Nucleotides.INSTANCE.getValidChars();
+	private static final DataType DATA_TYPE =Nucleotides.INSTANCE;
+
 	private static final double[] EQUAL_FREQ = new double[]{0.25, 0.5, 0.75, 1};
 	
 	private ArrayList<Integer>[] mapToSrp; // each [] = position, each ArrayList
@@ -80,7 +79,7 @@ public class AlignmentMapping {
 			setsOfAvailableChar[i] = new HashSet<Character>();
 		}
 		
-        int[][] frequencies = new int[haplotypeLength][dataType.getAmbiguousStateCount()];
+        int[][] frequencies = new int[haplotypeLength][DATA_TYPE.getAmbiguousStateCount()];
 
 
 		for (int i = 0; i < srpAlignment.getSequenceCount(); i++) {
@@ -151,10 +150,10 @@ public class AlignmentMapping {
 
         StringBuffer buffer = new StringBuffer();
         for (int i = 0; i < consensus.length; i++) {
-            buffer.append(dataType.getChar(    consensus[i] ));
+            buffer.append(DATA_TYPE.getChar(    consensus[i] ));
         }
         Sequence sequence = new Sequence(new Taxon("con"),buffer.toString());
-        sequence.setDataType(dataType);
+        sequence.setDataType(DATA_TYPE);
 //        System.out.println();
 //        System.err.println(sequence.getSequenceString());
 //        System.out.println();
@@ -172,7 +171,7 @@ public class AlignmentMapping {
 			for (int j = srp.getStart(); j < srp.getEnd(); j++) {
 				mapToSrp[j].add(srpCount);
 				char c = srp.getFullSrpCharAt(j);
-				int state = dataType.getState(c);
+				int state = DATA_TYPE.getState(c);
 				if (c!= GAP){
 					setsOfAvailableChar[j].add(c);
 					frequencies[j][state] += 1;
@@ -372,7 +371,7 @@ public class AlignmentMapping {
 		double d = MathUtils.nextDouble();
 		for (int i = 0; i < cumFreq.length; i++) {
 			if (d <= cumFreq[i]) {
-				return dataType.getChar(i); //TODO: test
+				return DATA_TYPE.getChar(i); //TODO: test
 			}
 		}
 		return GAP;

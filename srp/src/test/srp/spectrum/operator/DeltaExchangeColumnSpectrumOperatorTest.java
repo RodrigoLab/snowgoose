@@ -9,8 +9,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.AlignmentUtils;
+import srp.shortreads.AlignmentMapping;
 import srp.spectrum.Spectrum;
 import srp.spectrum.SpectrumAlignmentModel;
 import srp.spectrum.SpectrumOperationRecord;
@@ -46,8 +46,7 @@ public class DeltaExchangeColumnSpectrumOperatorTest {
 				"ACGT"
 				};
 		int spectrumCount = 4;
-		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
-		int spectrumLength = aMap.getLength();
+		int spectrumLength = seqs[0].length();
 		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(spectrumLength, spectrumCount);
 		DeltaExchangeColumnSpectrumOperator op = new DeltaExchangeColumnSpectrumOperator(
 				spectrumModel, 0.1, CoercionMode.COERCION_OFF);
@@ -60,8 +59,7 @@ public class DeltaExchangeColumnSpectrumOperatorTest {
 				"ACGT"
 				};
 		int spectrumCount = 4;
-		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
-		int spectrumLength = aMap.getLength();
+		int spectrumLength = seqs[0].length();
 		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(spectrumLength, spectrumCount);
 		DeltaExchangeColumnSpectrumOperator op = new DeltaExchangeColumnSpectrumOperator(
 				spectrumModel, 0.1, CoercionMode.COERCION_OFF);
@@ -115,8 +113,7 @@ public class DeltaExchangeColumnSpectrumOperatorTest {
 				"..AGGTTC",
 				};
 		int spectrumCount = 10;
-		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
-		int spectrumLength = aMap.getLength();
+		int spectrumLength = seqs[0].length();
 		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(spectrumLength, spectrumCount);
 		DeltaExchangeColumnSpectrumOperator op = new DeltaExchangeColumnSpectrumOperator(
 				spectrumModel, 0.1, CoercionMode.COERCION_OFF);

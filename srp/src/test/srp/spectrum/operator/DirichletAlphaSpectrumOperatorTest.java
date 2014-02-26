@@ -8,8 +8,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.AlignmentUtils;
+import srp.shortreads.AlignmentMapping;
 import srp.spectrum.Spectrum;
 import srp.spectrum.SpectrumAlignmentModel;
 import srp.spectrum.SpectrumOperationRecord;
@@ -49,8 +49,7 @@ public class DirichletAlphaSpectrumOperatorTest {
 				"AAACGT..",
 				"..AGGTTC",
 				};
-		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
-		int spectrumLength = aMap.getLength();
+		int spectrumLength = seqs[0].length();
 		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(spectrumLength, 1);
 		DirichletAlphaSpectrumOperator op = new DirichletAlphaSpectrumOperator(
 				spectrumModel, 100, CoercionMode.COERCION_OFF);

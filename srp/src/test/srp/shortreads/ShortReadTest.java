@@ -1,4 +1,4 @@
-package test.srp.haplotypes;
+package test.srp.shortreads;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -10,7 +10,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import srp.haplotypes.ShortRead;
+import srp.shortreads.ShortRead;
 import dr.evolution.sequence.Sequence;
 import dr.evolution.util.Taxon;
 

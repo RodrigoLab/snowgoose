@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import srp.dr.evolution.datatype.ShortReads;
 import dr.evolution.alignment.SiteList;
 import dr.evolution.datatype.DataType;
 import dr.evolution.util.Taxon;
@@ -19,11 +20,13 @@ public abstract class AbstractSpectrumAlignmentModel extends AbstractModel imple
 	}
 
 	private static final long serialVersionUID = -214692337132875593L;
-	private DataType dataType = null;
+	private static final DataType DATA_TYPE = ShortReads.INSTANCE;
+//	private static final int STATE_COUNT = DATA_TYPE.getStateCount();
+
 
 	protected int spectrumLength;
 	protected ArrayList<Spectrum> spectrumList;
-	protected ArrayList<Spectrum> storedSpectrumList;
+//	protected ArrayList<Spectrum> storedSpectrumList;
 
 	public String getSpectrumString(int i) {
 		return spectrumList.get(i).toString();
@@ -253,7 +256,7 @@ public abstract class AbstractSpectrumAlignmentModel extends AbstractModel imple
 	
     @Override
 	public DataType getDataType() {
-		return dataType;
+		return DATA_TYPE;
 	}
 	
     // **************************************************************
@@ -261,9 +264,9 @@ public abstract class AbstractSpectrumAlignmentModel extends AbstractModel imple
     // **************************************************************
 
 //	@Override
-	public void setDataType(DataType dataType) {
-		this.dataType = dataType;
-	}
+//	public void setDataType(DataType dataType) {
+//		this.dataType = dataType;
+//	}
 
     // **************************************************************
     // Identifiable IMPLEMENTATION

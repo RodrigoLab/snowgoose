@@ -14,8 +14,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import srp.core.DataImporter;
-import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.AlignmentUtils;
+import srp.shortreads.AlignmentMapping;
+import srp.shortreads.ShortReadMapping;
 import srp.spectrum.SpectraParameter.SpectraType;
 import srp.spectrum.Spectrum;
 import srp.spectrum.SpectrumAlignmentModel;
@@ -58,19 +59,17 @@ public class ShortReadsSpectrumLikelihoodTest {
 	public static void tearDownAfterClass() throws Exception {
 	}
 
-
-
 	private SpectrumAlignmentModel spectrumModel;
-	private AlignmentMapping aMap;
+	private ShortReadMapping srpMap;
+
 	@Before
 	public void setUp() throws Exception {
 
 //		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/snowgoose/srp/unittest/", "HaplotypeModelTest_10_srp.fasta");
 //		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/snowgoose/srp/unittest/", "H4_srp.fasta");
 		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/snowgoose/srp/unittest/", "SpectrumTest_50srp_200bp.fasta");
-		aMap = new AlignmentMapping(alignment);
-		int spectrumLength = aMap.getLength();
-		spectrumModel = new SpectrumAlignmentModel(spectrumLength,  4);
+		srpMap = new ShortReadMapping(alignment);
+		spectrumModel = new SpectrumAlignmentModel(alignment.getSiteCount(),  4);
 	}
 
 	@After
@@ -80,7 +79,7 @@ public class ShortReadsSpectrumLikelihoodTest {
 	@Test
 	public void testConstructor(){
 		
-		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel, aMap);
+		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel, srpMap);
 		double expectedError = 0.0107;
 		assertEquals(expectedError, ShortReadsSpectrumLikelihood.ERROR_RATE, 0);
 		assertEquals(1-expectedError, ShortReadsSpectrumLikelihood.NOT_ERROR_RATE, 0);
@@ -94,13 +93,13 @@ public class ShortReadsSpectrumLikelihoodTest {
 
 		String[] seqs = new String[]{"AACCGGTT"};
 	
-		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
-//		SimpleAlignment alignment = AlignmentUtils.createAlignment(seqs);
-		
 		SimpleAlignment alignment = AlignmentUtils.createAlignment(seqs);
+		ShortReadMapping srpMap = new ShortReadMapping(alignment);
 		
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(alignment);
-		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel, aMap);
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(
+				alignment);
+		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(
+				spectrumModel, srpMap);
 
 		double logLikelihood = likelihood.getLogLikelihood();
 		double expected = Math.log(1*NOT_ERROR+0*ERROR)*8;
@@ -115,13 +114,15 @@ public class ShortReadsSpectrumLikelihoodTest {
 				".AC",
 				".GT"
 				};
-		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
+		SimpleAlignment shortreadAlignment = AlignmentUtils.createAlignment(seqs);
+		ShortReadMapping srpMap = new ShortReadMapping(shortreadAlignment);
+		
 		
 		seqs = new String[]{"AAA"};
 		SimpleAlignment alignment = AlignmentUtils.createAlignment(seqs);
 		
 		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(alignment);
-		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel, aMap);
+		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel, srpMap);
 
 		double[] eachLikelihood = likelihood.unittestMethodGetEachLikelihood();
 //		System.out.println(Arrays.toString(eachLikelihood));
@@ -141,10 +142,12 @@ public class ShortReadsSpectrumLikelihoodTest {
 				".AC",
 				".GT"
 				};
-		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
+		SimpleAlignment alignment = AlignmentUtils.createAlignment(seqs);
+		ShortReadMapping srpMap = new ShortReadMapping(alignment);
+		
 		int spectrumLength = 3;
 		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(spectrumLength, 1, SpectraType.EQUAL);
-		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel, aMap);
+		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel, srpMap);
 
 		double[] eachLikelihood = likelihood.unittestMethodGetEachLikelihood();
 		double[] expecteds = new double[]{ 
@@ -175,9 +178,11 @@ public class ShortReadsSpectrumLikelihoodTest {
 				"AACT",
 				"ACGT"
 				};
-		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
 		
-		int spectrumLength = aMap.getLength();
+		SimpleAlignment alignment = AlignmentUtils.createAlignment(seqs);
+		ShortReadMapping srpMap = new ShortReadMapping(alignment);
+		
+		int spectrumLength = seqs[0].length();
 		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(spectrumLength, 1);
 		Spectrum spectrum = spectrumModel.getSpectrum(0);
 		for (int i = 0; i < spectrum.getLength(); i++) {
@@ -187,7 +192,7 @@ public class ShortReadsSpectrumLikelihoodTest {
 		}
 //		spectrumModel.setSpectrum(0, spectrum);
 		
-		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel, aMap);
+		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel, srpMap);
 
 		double[] eachLikelihood = likelihood.unittestMethodGetEachLikelihood();
 //		System.out.println(Arrays.toString(eachLikelihood));
@@ -220,14 +225,14 @@ public class ShortReadsSpectrumLikelihoodTest {
 	@Test
 	public void testFullvsMaster() throws Exception {
 	
-		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel, aMap);
+		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel, srpMap);
 		
 		for (int i = 0; i < 1e3; i++) {
 			int noSpectrum = MathUtils.nextInt(7)+3;
-			int spectrumLength = aMap.getLength();
+			int spectrumLength = srpMap.getLength();
 			spectrumModel = new SpectrumAlignmentModel(spectrumLength, noSpectrum);
 //				likelihood.makeDirty();
-			likelihood = new ShortReadsSpectrumLikelihood(spectrumModel, aMap);
+			likelihood = new ShortReadsSpectrumLikelihood(spectrumModel, srpMap);
 			double logLikelihoodFull = likelihood.getLogLikelihood();
 //				assertEquals(SpectrumOperation.NONE, likelihood.getOperation());
 			
@@ -269,7 +274,7 @@ public class ShortReadsSpectrumLikelihoodTest {
 		
 		int ite = (int) 1e4;
 		SpectrumOperation expectedSpectrumOperation = op.getSpectrumOperation();
-		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel, aMap);
+		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel, srpMap);
 		double logLikelihoodOperator;
 		double logLikelihoodFull;
 
@@ -283,7 +288,7 @@ public class ShortReadsSpectrumLikelihoodTest {
 				assertEquals(expectedSpectrumOperation, likelihood.getOperation());
 				
 				SpectrumAlignmentModel spectrumModelFull = SpectrumAlignmentModel.duplicateSpectrumAlignmentModel(spectrumModel);
-				ShortReadsSpectrumLikelihood likelihoodFull = new ShortReadsSpectrumLikelihood(spectrumModelFull, aMap);
+				ShortReadsSpectrumLikelihood likelihoodFull = new ShortReadsSpectrumLikelihood(spectrumModelFull, srpMap);
 				logLikelihoodFull = likelihoodFull.getLogLikelihood();
 				assertEquals(SpectrumOperation.NONE, likelihoodFull.getOperation());
 				assertEquals(logLikelihoodFull, logLikelihoodOperator, THRESHOLD); 

@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import srp.core.DataImporter;
-import srp.haplotypes.AlignmentMapping;
+import srp.shortreads.AlignmentMapping;
 
 import com.google.common.primitives.Ints;
 

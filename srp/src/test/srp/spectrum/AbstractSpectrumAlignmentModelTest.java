@@ -31,7 +31,7 @@ import org.junit.rules.ExpectedException;
 
 import srp.core.DataImporter;
 import srp.dr.evolution.datatype.ShortReads;
-import srp.haplotypes.AlignmentMapping;
+import srp.shortreads.AlignmentMapping;
 import srp.spectrum.SpectraParameter.SpectraType;
 import srp.spectrum.Spectrum;
 import srp.spectrum.SpectrumAlignmentModel;
@@ -46,13 +46,15 @@ import dr.evolution.util.Taxon;
 public class AbstractSpectrumAlignmentModelTest {
 
 
-	private static AlignmentMapping aMap;
+
 	private static Alignment srpAlignment;
 	
 	private static Taxon[] expectedTaxons;
 	private static String[] expectedSequences;
 	private static ArrayList<Spectrum> expectedList;
 	private static HashMap<Character, Integer> charToState;
+
+	private static int expectedSpectrumLength;
 	
 	private SpectrumAlignmentModel spectrumModel;
 	private SpectrumAlignmentModel spectrumModelRandom;
@@ -65,7 +67,7 @@ public class AbstractSpectrumAlignmentModelTest {
 
 		String dir = System.getProperty("user.dir")+File.separatorChar+"unittest"+File.separator;
 		srpAlignment = DataImporter.importShortReads(dir, "HaplotypeModelTest_10_srp.fasta");
-		aMap = new AlignmentMapping(srpAlignment);
+
 		
 
 		expectedSequences = new String[]{ 
@@ -80,8 +82,10 @@ public class AbstractSpectrumAlignmentModelTest {
 				"........................................................CACGAGAGCAACACGTA*GGCGTTG*TCAATTCTAGTTCT....",
 				"..........CAGTCCGCGCCTTGTCA*GGCTCAAAAT*CTG..........................................................",
 		};
-		expectedTaxons = new Taxon[10];
+		expectedSpectrumLength = expectedSequences[0].length();
+		
 //			char[][] expectedMatrix = new char[matrixS.length][matrixS[0].length()];
+		expectedTaxons = new Taxon[10];
 		expectedList = new ArrayList<Spectrum>();
 		for (int i = 0; i < expectedSequences.length; i++) {
 			expectedTaxons[i] = new Taxon("taxa_"+i);
@@ -105,9 +109,9 @@ public class AbstractSpectrumAlignmentModelTest {
 
 	@Before
 	public void setUp() throws Exception {
+		
 		spectrumModel = new SpectrumAlignmentModel(srpAlignment);
-		int spectrumLength = aMap.getLength();
-		spectrumModelRandom = new SpectrumAlignmentModel(spectrumLength, 5);
+		spectrumModelRandom = new SpectrumAlignmentModel(expectedSpectrumLength, 5);
 	}
 
 	@After

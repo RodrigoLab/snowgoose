@@ -7,10 +7,10 @@ import java.util.List;
 
 import jebl.evolution.sequences.Sequence;
 import srp.haplotypes.AbstractHaplotypeModel;
-import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.Haplotype;
 import srp.haplotypes.Operation;
 import srp.haplotypes.SwapInfo;
+import srp.shortreads.AlignmentMapping;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.datatype.DataType;
 import dr.evolution.datatype.Nucleotides;

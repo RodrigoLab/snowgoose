@@ -2,9 +2,9 @@ package srp.haplotypes.operator;
 
 import java.util.Arrays;
 
-import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.HaplotypeModel;
 import srp.haplotypes.Operation;
+import srp.shortreads.AlignmentMapping;
 import dr.inference.operators.AbstractCoercableOperator;
 import dr.inference.operators.CoercionMode;
 

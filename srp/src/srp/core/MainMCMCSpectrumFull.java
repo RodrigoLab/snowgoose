@@ -6,7 +6,8 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import srp.haplotypes.AlignmentMapping;
+import srp.shortreads.AlignmentMapping;
+import srp.shortreads.ShortReadMapping;
 import srp.spectrum.SpectraParameter.SpectraType;
 import srp.spectrum.SpectrumAlignmentModel;
 import srp.spectrum.SpectrumLogger;
@@ -115,8 +116,8 @@ public class MainMCMCSpectrumFull {
 		Alignment trueAlignment = dataImporter.importAlignment(trueHaplotypeFile);
 		
 		Alignment shortReads = dataImporter.importShortReads(shortReadFile);
-		AlignmentMapping aMap = new AlignmentMapping(shortReads);
-		int spectrumLength = aMap.getLength();
+		ShortReadMapping srpMap = new ShortReadMapping(shortReads);
+		int spectrumLength = srpMap.getLength();
 		// SpectrumModel and ShortReadLikelihood
 		SpectrumAlignmentModel spectrumModel;
 		ShortReadsSpectrumLikelihood srpLikelihood;
@@ -125,7 +126,7 @@ public class MainMCMCSpectrumFull {
 		if (randomSpectrum) {
 			do {
 				spectrumModel = new SpectrumAlignmentModel(spectrumLength, noOfRecoveredHaplotype, randomSpectrumType);
-				srpLikelihood = new ShortReadsSpectrumLikelihood(spectrumModel, aMap, distTypeCode);
+				srpLikelihood = new ShortReadsSpectrumLikelihood(spectrumModel, srpMap, distTypeCode);
 				redo = (srpLikelihood.getLogLikelihood() == Double.NEGATIVE_INFINITY);
 				c++;
 				if(c==100){
@@ -136,7 +137,7 @@ public class MainMCMCSpectrumFull {
 		}		
 		else{
 			spectrumModel = dataImporter.importPartialSpectrumFile(partialSpectrumName );
-			srpLikelihood = new ShortReadsSpectrumLikelihood(spectrumModel, aMap, distTypeCode);
+			srpLikelihood = new ShortReadsSpectrumLikelihood(spectrumModel, srpMap, distTypeCode);
 		}
 
 

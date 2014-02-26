@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import srp.shortreads.AlignmentMapping;
 import jebl.evolution.sequences.Sequence;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.datatype.DataType;

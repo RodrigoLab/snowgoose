@@ -13,11 +13,11 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.AlignmentUtils;
 import srp.haplotypes.HaplotypeModel;
 import srp.haplotypes.likelihood.ShortReadLikelihood;
 import srp.haplotypes.operator.BaseSingleOperator;
+import srp.shortreads.AlignmentMapping;
 import dr.evolution.alignment.SimpleAlignment;
 import dr.evomodelxml.substmodel.HKYParser;
 import dr.inference.loggers.ArrayLogFormatter;

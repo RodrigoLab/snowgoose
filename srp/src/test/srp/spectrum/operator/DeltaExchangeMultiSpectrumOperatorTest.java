@@ -9,8 +9,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.AlignmentUtils;
+import srp.shortreads.AlignmentMapping;
 import srp.spectrum.Spectrum;
 import srp.spectrum.SpectrumAlignmentModel;
 import srp.spectrum.SpectrumOperationRecord;
@@ -44,8 +44,7 @@ public class DeltaExchangeMultiSpectrumOperatorTest {
 				"AAACGT..",
 				"..AGGTTC",
 				};
-		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
-		int spectrumLength = aMap.getLength();
+		int spectrumLength = seqs[0].length();
 		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(spectrumLength, 1);
 		DeltaExchangeMultiSpectrumOperator op = new DeltaExchangeMultiSpectrumOperator(
 				spectrumModel, 0.1, 5, CoercionMode.COERCION_OFF);
@@ -96,8 +95,7 @@ public class DeltaExchangeMultiSpectrumOperatorTest {
 				"AAACGT..",
 				"..AGGTTC",
 				};
-		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
-		int spectrumLength = aMap.getLength();
+		int spectrumLength = seqs[0].length();
 		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(spectrumLength, 5);
 		DeltaExchangeMultiSpectrumOperator op = new DeltaExchangeMultiSpectrumOperator(
 				spectrumModel, 0.1, 5, CoercionMode.COERCION_OFF);

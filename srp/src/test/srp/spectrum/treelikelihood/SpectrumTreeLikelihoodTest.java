@@ -12,10 +12,10 @@ import org.junit.Test;
 
 import srp.core.MCMCSetupHelper;
 import srp.core.MCMCSetupHelperSpectrum;
-import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.AlignmentUtils;
 import srp.haplotypes.HaplotypeModel;
 import srp.haplotypes.HaplotypeModelUtils;
+import srp.shortreads.AlignmentMapping;
 import srp.spectrum.SpectraParameter;
 import srp.spectrum.Spectrum;
 import srp.spectrum.SpectrumAlignmentModel;
@@ -111,7 +111,6 @@ public class SpectrumTreeLikelihoodTest {
 				"C",
 				"C"};
 			
-		AlignmentMapping aMap = new AlignmentMapping(AlignmentUtils.createAlignment(seqs));
 		alignment = AlignmentUtils.createAlignment(seqs);
 		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(alignment);
 		SpectrumTreeLikelihood spectrumTreeLikelihood = new SpectrumTreeLikelihood(spectrumModel, treeModel,
@@ -151,9 +150,7 @@ public class SpectrumTreeLikelihoodTest {
 				"C",
 				"C"};
 			
-		AlignmentMapping aMap = new AlignmentMapping(AlignmentUtils.createAlignment(seqs));
-				
-		int spectrumLength = aMap.getLength();
+		int spectrumLength = seqs[0].length();
 		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(spectrumLength, 1);
 		spectrumModel.removeSpectrum(0);
 					
@@ -171,7 +168,7 @@ public class SpectrumTreeLikelihoodTest {
 		int stateCount = 4;
 		
 		double[] node1 = new double[]{0.9802314196914651, 1.096410868086927E-5, 1.096410868086935E-5, 1.096410868086927E-5};
-		Spectrum s = new Spectrum(aMap.getLength());
+		Spectrum s = new Spectrum(spectrumLength);
 		for (int i = 0; i < s.getLength(); i++) {
 			SpectraParameter spectra = s.getSpectra(i); 
 			for (int j = 0; j < stateCount; j++) {
@@ -181,7 +178,7 @@ public class SpectrumTreeLikelihoodTest {
 		s.setTaxon(taxa[0]);
 		spectrumModel.addSpectrum(s);
 		
-		s = new Spectrum(aMap.getLength());
+		s = new Spectrum(spectrumLength);
 		double[] node2 = new double[]{1.0964108663326694E-5, 0.9802314196862197, 1.0964108663326694E-5, 1.0964108663326615E-5};
 		for (int i = 0; i < s.getLength(); i++) {
 			SpectraParameter spectra = s.getSpectra(i); 
@@ -192,14 +189,6 @@ public class SpectrumTreeLikelihoodTest {
 		s.setTaxon(taxa[1]);
 		spectrumModel.addSpectrum(s);
 		
-//		s = new Spectrum(aMap.getLength(), new double[]{1, 1, 0, 0});
-//		s.setTaxon(taxa[2]);
-//		spectrumModel.addSpectrum(s);
-//		
-//		s = new Spectrum(aMap.getLength(), new double[]{0, 1, 0, 0});
-//		s.setTaxon(taxa[3]);
-//		spectrumModel.addSpectrum(s);
-//		
 		
 		SpectrumTreeLikelihood treeLikelihood = new SpectrumTreeLikelihood(spectrumModel, treeModel,
 				siteModel, null, false, false, true, false, false);
@@ -234,8 +223,7 @@ public class SpectrumTreeLikelihoodTest {
 		
 		String[] seqs = new String[] {"ACGTTTA"};
 			
-		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
-		int spectrumLength = aMap.getLength();
+		int spectrumLength = seqs[0].length();
 		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(spectrumLength, taxaCount);
 		SpectrumTreeLikelihood spectrumTreeLikelihood = new SpectrumTreeLikelihood(spectrumModel, treeModel,
 				siteModel, null, false, false, true, false, false);
@@ -326,8 +314,7 @@ public class SpectrumTreeLikelihoodTest {
 		};
 
 			
-		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
-		int spectrumLength = aMap.getLength();
+		int spectrumLength = seqs[0].length();
 		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(spectrumLength, taxaCount);
 		SpectrumTreeLikelihood spectrumTreeLikelihood = new SpectrumTreeLikelihood(spectrumModel, treeModel,
 				siteModel, null, false, false, true, false, false);
@@ -447,8 +434,7 @@ public class SpectrumTreeLikelihoodTest {
 		
 		String[] seqs = new String[] {"ACGTTGCA"};
 			
-		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
-		int spectrumLength = aMap.getLength();
+		int spectrumLength = seqs[0].length();
 		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(spectrumLength, taxaCount);
 		SpectrumTreeLikelihood spectrumTreeLikelihood = new SpectrumTreeLikelihood(spectrumModel, treeModel,
 				siteModel, null, false, false, true, false, false);
@@ -491,8 +477,7 @@ public class SpectrumTreeLikelihoodTest {
 		
 		String[] seqs = new String[] {"ACGTTGCA"};
 		
-		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
-		int spectrumLength = aMap.getLength();
+		int spectrumLength = seqs[0].length();
 		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(spectrumLength, taxaCount);
 		SpectrumTreeLikelihood spectrumTreeLikelihood = new SpectrumTreeLikelihood(spectrumModel, treeModel,
 				siteModel, null, false, false, true, false, false);
@@ -723,8 +708,8 @@ public class SpectrumTreeLikelihoodTest {
 			
 			String[] seqs = new String[] {"ACGT"};
 				
-			AlignmentMapping aMap = new AlignmentMapping(AlignmentUtils.createAlignment(seqs));
-			int spectrumLength = aMap.getLength();
+			
+			int spectrumLength = seqs[0].length();
 			SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(spectrumLength, 4);
 			SpectrumTreeLikelihood spectrumTreeLikelihood = new SpectrumTreeLikelihood(spectrumModel, treeModel,
 					siteModel, null, false, false, true, false, false);

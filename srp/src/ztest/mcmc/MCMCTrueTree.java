@@ -16,10 +16,10 @@ import org.junit.Test;
 
 import srp.core.DataImporter;
 import srp.core.MCMCSetupHelperHaplotype;
-import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.HaplotypeLoggerWithTrueHaplotype;
 import srp.haplotypes.HaplotypeModel;
 import srp.haplotypes.likelihood.ShortReadLikelihood;
+import srp.shortreads.AlignmentMapping;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.tree.Tree;
 import dr.evolution.util.TaxonList;

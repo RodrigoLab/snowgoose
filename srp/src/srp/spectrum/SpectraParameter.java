@@ -10,16 +10,13 @@ import dr.math.MathUtils;
 public class SpectraParameter extends AbstractSpectra{
 	
 	private static final long serialVersionUID = 3708765314559863330L;
-	
+
+	public static final int TOTAL_STATE_COUNT = ShortReads.INSTANCE.getAmbiguousStateCount();
 	public static final double MAX_FREQ = 0.99;
 	public static final double MIN_FREQ = 0.001;//MrBayes 0.0001
-
-	private static final int TOTAL_STATE_COUNT = ShortReads.INSTANCE.getAmbiguousStateCount();
+	
 	private double[] storedstateLikelihood;
 	private double[] stateLikelihood;
-	
-	
-//	private double[] storedFrequency = new double[4];
 	
 	public SpectraParameter(SpectraType type){
 		this(EQUAL_FREQ);
@@ -111,29 +108,14 @@ public class SpectraParameter extends AbstractSpectra{
         return getParameterValues();
     }
 
-//    public void setStateLikelihood(int s, double likelihood){
-//    	stateLikelihood[s] = likelihood;
-//    }
     public void setStateLikelihood(double[] likelihood){
-//    	stateLikelihood = likelihood;//yfail 
     	System.arraycopy(likelihood, 0, stateLikelihood, 0, DIMENSION);
-//    	System.out.println(Arrays.toString(stateLikelihood));
     }
-public double[] getStoredStateLikelihood() {
+    public double[] getStoredStateLikelihood() {
 		return storedstateLikelihood;
-	
 	}
 
-
-
-	public double getStoredStateLikelihood(int state) {
-		return storedstateLikelihood[state];
-	}
-
-
-
-	//    
-    public void storeState() {
+	public void storeState() {
 //    	System.err.println("storeState in Spectra");
     	super.storeValues();
     	

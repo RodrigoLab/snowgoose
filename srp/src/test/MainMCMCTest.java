@@ -13,7 +13,8 @@ import org.junit.Test;
 import srp.core.DataImporter;
 import srp.core.MCMCSetupHelper;
 import srp.core.MCMCSetupHelperSpectrum;
-import srp.haplotypes.AlignmentMapping;
+import srp.shortreads.AlignmentMapping;
+import srp.shortreads.ShortReadMapping;
 import srp.spectrum.SpectrumAlignmentModel;
 import srp.spectrum.SpectrumAlignmentUtils;
 import srp.spectrum.likelihood.ShortReadsSpectrumLikelihood;
@@ -73,8 +74,8 @@ public class MainMCMCTest {
 		Alignment trueAlignment = dataImporter.importAlignment(trueHaplotypeFile);
 		
 		Alignment shortReads = dataImporter.importShortReads(shortReadFile);
-		AlignmentMapping aMap = new AlignmentMapping(shortReads);
-		int spectrumLength = aMap.getLength();
+		ShortReadMapping srpMap = new ShortReadMapping(shortReads);
+		int spectrumLength = srpMap.getLength();
 		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(spectrumLength, noOfRecoveredHaplotype);
 		
 		// coalescent
@@ -96,7 +97,7 @@ public class MainMCMCTest {
 		SpectrumTreeLikelihood treeLikelihood = (SpectrumTreeLikelihood) parameterList.get("treeLikelihood");
 		
 		// ShortReadLikelihood
-		ShortReadsSpectrumLikelihood srpLikelihood = new ShortReadsSpectrumLikelihood(spectrumModel, aMap);
+		ShortReadsSpectrumLikelihood srpLikelihood = new ShortReadsSpectrumLikelihood(spectrumModel, srpMap);
 
 		// CompoundLikelihood
 		HashMap<String, Likelihood> compoundlikelihoods = MCMCSetupHelper.setupCompoundLikelihood(
@@ -137,7 +138,7 @@ public class MainMCMCTest {
 		TreeModel newTreeModel  = new TreeModel(treeModel);
 		
 		SpectrumAlignmentModel newSpectrumModel = SpectrumAlignmentModel.duplicateSpectrumAlignmentModel(spectrumModel);
-		ShortReadsSpectrumLikelihood newSrpLikelihood = new ShortReadsSpectrumLikelihood(newSpectrumModel, aMap);
+		ShortReadsSpectrumLikelihood newSrpLikelihood = new ShortReadsSpectrumLikelihood(newSpectrumModel, srpMap);
 
 		// coalescent
 //		Parameter popSize = new Parameter.Default(ConstantPopulationModelParser.POPULATION_SIZE, 3000.0, 100, 100000.0);

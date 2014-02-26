@@ -10,12 +10,12 @@ import org.apache.commons.math3.util.ArithmeticUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.Haplotype;
 import srp.haplotypes.HaplotypeModel;
 import srp.haplotypes.Operation;
-import srp.haplotypes.ShortRead;
 import srp.haplotypes.SwapInfo;
+import srp.shortreads.AlignmentMapping;
+import srp.shortreads.ShortRead;
 import dr.inference.model.AbstractModelLikelihood;
 import dr.inference.model.Model;
 import dr.inference.model.Variable;

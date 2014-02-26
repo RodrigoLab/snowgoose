@@ -2,6 +2,7 @@ package srp.haplotypes;
 
 import java.util.Arrays;
 
+import srp.shortreads.AlignmentMapping;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.SimpleAlignment;
 

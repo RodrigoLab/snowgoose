@@ -8,18 +8,16 @@ import javax.swing.text.TabableView;
 
 import srp.core.DataImporter;
 import srp.dr.evolution.datatype.ShortReads;
-import srp.haplotypes.AlignmentMapping;
+import srp.shortreads.AlignmentMapping;
 import srp.spectrum.SpectraParameter.SpectraType;
 import dr.evolution.alignment.Alignment;
 
 public class SpectrumAlignmentUtils {
 
 	public static final int DIM = SpectraParameter.DIMENSION;
-	
-	public static ShortReads dataType = ShortReads.INSTANCE;
-	private final static NumberFormat formatter = NumberFormat.getNumberInstance();
-	
-	
+	public static final ShortReads DATA_TYPE = ShortReads.INSTANCE;
+
+	private static final NumberFormat formatter = NumberFormat.getNumberInstance();
 	
 	public static double[][] compareSpectrumToTrueAlignment(SpectrumAlignmentModel spectrumModel,
 			Alignment alignment){
@@ -108,7 +106,7 @@ public class SpectrumAlignmentUtils {
 	}
 	private static int getStateAtK(String fullSrp, int k) {
 		char srpChar = fullSrp.charAt(k);
-		int state = dataType.getState(srpChar);
+		int state = DATA_TYPE.getState(srpChar);
 	
 		return state;
 	}

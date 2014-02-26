@@ -8,7 +8,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import srp.core.DataImporter;
-import srp.haplotypes.AlignmentMapping;
+import srp.shortreads.AlignmentMapping;
+import srp.shortreads.ShortReadMapping;
 import srp.spectrum.SpectrumAlignmentModel;
 import srp.spectrum.likelihood.ShortReadsSpectrumLikelihood;
 import srp.spectrum.likelihood.ShortReadsSpectrumLikelihood.DistType;
@@ -45,11 +46,11 @@ public class ShortReadsLikelihoodTimeTrialTest {
 	@Before
 	public void setUp() throws Exception {
 		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/snowgoose/srp/unittest/", "H10_srpGap.fasta");
-		AlignmentMapping aMap = new AlignmentMapping(alignment);
+		ShortReadMapping srpMap = new ShortReadMapping(alignment);
 			
-		int spectrumLength = aMap.getLength();
+		int spectrumLength = srpMap.getLength();
 		spectrumModel = new SpectrumAlignmentModel(spectrumLength,  6);
-		likelihood = new ShortReadsSpectrumLikelihood(spectrumModel, aMap, DistType.betaMean);
+		likelihood = new ShortReadsSpectrumLikelihood(spectrumModel, srpMap, DistType.betaMean);
 
 	}
 
@@ -106,12 +107,6 @@ public class ShortReadsLikelihoodTimeTrialTest {
 	@Test
 	public void testTimeTrialSingleNoStoreRestore() throws Exception {
 
-//		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/ABI/unittest/", "H4_srp.fasta");
-//		AlignmentMapping aMap = new AlignmentMapping(alignment);
-//			
-//		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 4);
-//		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
-
 		DeltaExchangeSingleSpectrumOperator op = new DeltaExchangeSingleSpectrumOperator(spectrumModel, 0.1, null);
 
 		double trial = 1e4;
@@ -136,13 +131,7 @@ public class ShortReadsLikelihoodTimeTrialTest {
 
 	@Test
 	public void testTimeTrialStoreRestoreOnly() throws Exception {
-
-//		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/ABI/unittest/", "H4_srp.fasta");
-//		AlignmentMapping aMap = new AlignmentMapping(alignment);
-//			
-//		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(aMap, 4);
-//		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
-		
+	
 		double trial = 1e5;
 		long totalTime = 0;
 		for (int t = 0; t < trial; t++) {

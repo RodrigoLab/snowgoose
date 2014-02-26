@@ -13,7 +13,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import srp.core.DataImporter;
-import srp.haplotypes.AlignmentMapping;
+import srp.shortreads.AlignmentMapping;
 import srp.spectrum.SpectraParameter;
 import srp.spectrum.SpectrumAlignmentModel;
 import srp.spectrum.SpectraParameter.SpectraType;
@@ -31,7 +31,7 @@ public class StateLikelihoodTest {
 
 	private static final double THRESHOLD = MarkovChain.EVALUATION_TEST_THRESHOLD;
 //	private SpectrumAlignmentModel spectrumModel;
-//	private AlignmentMapping aMap;
+
 	double[] frequencies = new double[21];
 	
 

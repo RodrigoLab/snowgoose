@@ -7,7 +7,7 @@ import java.io.IOException;
 
 import srp.dr.evolution.datatype.ShortReads;
 import srp.dr.evolution.io.ShortReadImporter;
-import srp.haplotypes.AlignmentMapping;
+import srp.shortreads.AlignmentMapping;
 import srp.spectrum.SpectraParameter;
 import srp.spectrum.Spectrum;
 import srp.spectrum.SpectrumAlignmentModel;

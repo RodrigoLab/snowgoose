@@ -5,7 +5,7 @@ import java.util.Set;
 
 import com.google.common.primitives.Ints;
 
-import srp.haplotypes.AlignmentMapping;
+import srp.shortreads.AlignmentMapping;
 import srp.spectrum.SpectraParameter;
 import srp.spectrum.SpectrumAlignmentModel;
 import srp.spectrum.SpectrumOperation;

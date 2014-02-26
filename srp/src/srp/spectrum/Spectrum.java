@@ -3,9 +3,10 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import srp.dr.evolution.datatype.ShortReads;
 import srp.spectrum.SpectraParameter.SpectraType;
+import dr.app.beagle.evomodel.utilities.HistoryFilter.SetFilter;
 import dr.evolution.datatype.DataType;
-import dr.evolution.datatype.Nucleotides;
 import dr.evolution.sequence.Sequence;
 import dr.evolution.util.Taxon;
 import dr.inference.model.AbstractModel;
@@ -17,18 +18,14 @@ import dr.util.Attributable;
 //public class Spectrum implements Identifiable, Attributable{// extends AbstractModel{
 public class Spectrum extends AbstractModel implements Attributable {
 
-
-
 	private static final long serialVersionUID = -728370884996776301L;
 
-//	private Parameter frequencyParameter;
+	private static final DataType DATA_TYPE = ShortReads.INSTANCE;
+	private static final int STATE_COUNT = DATA_TYPE.getStateCount();
+
 	private ArrayList<SpectraParameter> spectrum;
-	private ArrayList<SpectraParameter> storeSpectrum;
 	
     protected Taxon taxon = null;
-//    private StringBuffer sequenceString = null;
-    protected DataType dataType = null;
-    protected int stateCount;
     private int storeSiteIndex;
     
 //	public Spectra() {
@@ -68,67 +65,26 @@ public class Spectrum extends AbstractModel implements Attributable {
 			addVariable(spectra);
 			spectrum.add(spectra);
 		}
-		dataType = Nucleotides.INSTANCE;
-		stateCount = dataType.getStateCount();
+		
 	}
-	
-//	spectra.setFrequenciesQuietly(new double[]{1,1,1,1});// - in standardTreeLikelihood calculation
 
+	
 	public Spectrum(Sequence sequence) {
-		//TODO change to static factory method
-		super("Spectrum");
+		this(sequence.getLength());
 		
-		dataType = Nucleotides.INSTANCE;
-		stateCount = dataType.getStateCount();
-		
-		spectrum = new ArrayList<SpectraParameter>();
-		SpectraParameter spectra;
 		for (int i = 0; i < sequence.getLength(); i++) {
+			SpectraParameter spectra = getSpectra(i);
 			char c = sequence.getChar(i);
-			int state = dataType.getState(c);
-			if (state < stateCount) {
-				double[] newFreq = new double[stateCount];
-				newFreq[state]=1;
-				spectra = new SpectraParameter(newFreq);
-//				setFrequencies(site, newFreq);
+			int state = DATA_TYPE.getState(c);
+			for (int j = 0; j < STATE_COUNT; j++) {
+				if(j==state){
+					spectra.setFrequency(j, 1);
+				}
+				else{
+					spectra.setFrequency(j, 0);
+				}
 			}
-			else{
-				spectra = new SpectraParameter(SpectraParameter.EQUAL_FREQ);
-			}
-			
-//			SpectraParameter spectra = new SpectraParameter(initFreq);
-			addVariable(spectra);
-			spectrum.add(spectra);
 		}
-//		dataType = Nucleotides.INSTANCE;
-//		stateCount = dataType.getStateCount();
-		
-		
-		
-		
-		
-		
-		
-//			this(sequence.getLength());
-	//		setDataType(sequence.getDataType());
-	//		super("Spectrum");
-//			dataType = Nucleotides.INSTANCE;
-//			stateCount = dataType.getStateCount();
-//			for (int site = 0; site < sequence.getLength(); site++) {
-//				char c = sequence.getChar(site);
-//				int state = dataType.getState(c);
-//				if (state < stateCount) {
-//					double[] newFreq = new double[stateCount];
-//					newFreq[state]=1;
-//					setFrequencies(site, newFreq);
-//				}
-//				else{
-//					setFrequencyAt(site, 0, 0.25);
-//					setFrequencyAt(site, 1, 0.25);
-//					setFrequencyAt(site, 2, 0.25);
-//					setFrequencyAt(site, 3, 0.25);
-//				}
-//			}
 		
 		}
 
@@ -339,15 +295,6 @@ public class Spectrum extends AbstractModel implements Attributable {
 //    }
 
     
-    public void setDataType(DataType dataType) {
-        this.dataType = dataType;
-    }
-
-	public DataType getDataType() {
-        return dataType;
-    }
-	
-
 
 /////////////////////////
 

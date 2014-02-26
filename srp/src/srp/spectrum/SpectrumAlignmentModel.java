@@ -81,8 +81,8 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 		this.spectrumLength = spectrumLength;
 		
 		spectrumList = new ArrayList<Spectrum>();
-		storedSpectrumList = new ArrayList<Spectrum>();
-		setDataType(ShortReads.INSTANCE);
+//		storedSpectrumList = new ArrayList<Spectrum>();
+//		setDataType(ShortReads.INSTANCE);
 		spectrumOperationRecord = new SpectrumOperationRecord();
 	}
 
@@ -100,18 +100,14 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 	}
 	
 	public void addSpectrum(Spectrum spectrum) {
-			spectrum.setDataType(getDataType());
-			for (int i = 0; i < spectrumLength; i++) {
-				spectrum.setStoreSiteIndex(i);
-				spectrum.storeState();
-			}
-	//		spectrum.storeState()
-		    spectrumList.add(spectrum);
-	//	    storedSpectrumList.add(new Spectrum(spectrum));
-		    
-		    
-		    
+
+		for (int i = 0; i < spectrumLength; i++) {
+			spectrum.setStoreSiteIndex(i);
+			spectrum.storeState();
 		}
+		spectrumList.add(spectrum);
+
+	}
 
 	public void resetSpectrumOperation(){
 		spectrumOperationRecord.setOperation(SpectrumOperation.FULL);

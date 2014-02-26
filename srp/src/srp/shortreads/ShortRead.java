@@ -1,4 +1,4 @@
-package srp.haplotypes;
+package srp.shortreads;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

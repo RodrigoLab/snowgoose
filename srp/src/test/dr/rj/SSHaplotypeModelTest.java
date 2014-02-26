@@ -16,9 +16,9 @@ import org.junit.Test;
 
 import srp.core.DataImporter;
 import srp.haplotypes.AbstractHaplotypeModel;
-import srp.haplotypes.AlignmentMapping;
 import srp.haplotypes.Haplotype;
 import srp.haplotypes.Operation;
+import srp.shortreads.AlignmentMapping;
 import test.TestUtils;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.datatype.DataType;
