@@ -3,6 +3,8 @@ package srp.spectrum.operator;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.math3.util.FastMath;
+
 import srp.spectrum.SpectraParameter;
 import srp.spectrum.SpectrumAlignmentModel;
 import srp.spectrum.SpectrumOperation;
@@ -137,7 +139,7 @@ public class SwapSubColumnSpectrumOperator extends AbstractSpectrumOperator {
 	private void convertFromAutoOptimizeToValue(double autoOpt) {
     	autoOptimize = autoOpt;
 //    	swapHapCount =  1 + (int) Math.exp(autoOptimize*scaleFactor);
-    	swapSpectrumCount =  1 + (int) Math.exp(autoOptimize);
+    	swapSpectrumCount =  1 + (int) FastMath.exp(autoOptimize);
 		
 		checkParameterIsValid();
     }

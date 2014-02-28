@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.math3.util.FastMath;
+
 import srp.spectrum.SpectraParameter;
 import srp.spectrum.Spectrum;
 import srp.spectrum.SpectrumAlignmentModel;
@@ -68,7 +70,7 @@ public class DirichletAlphaSpectrumOperator extends AbstractDirichletSpectrumOpe
 //        org.apache.commons.math3.distribution.GammaDistribution commonGamma = new org.apache.commons.math3.distribution.GammaDistribution(alpha, 1);
 //        commonGamma.sample();
         
-
+        unittestIndexCount = 0;//REMOVE later, only for unittest
 	}
 	private double[] debugList = new double[8];
 	
@@ -122,7 +124,36 @@ public class DirichletAlphaSpectrumOperator extends AbstractDirichletSpectrumOpe
 		return ratio;
 	}
 
+	private static int unittestIndexCount = 0;
+	public double doUnittestOperation() throws OperatorFailedException{
 
+		spectrumModel.startSpectrumOperation();
+
+		int spectrumIndex = 0;
+		Spectrum spectrum = spectrumModel.getSpectrum(spectrumIndex);
+		
+		
+		siteIndexs[0] = unittestIndexCount;
+		unittestIndexCount++;
+		if(unittestIndexCount==spectrumLength){
+			unittestIndexCount=0;
+		}
+		SpectraParameter spectra = spectrum.getSpectra(siteIndexs[0]);
+		double sum = 0;
+
+		for (int j = 0; j < newFreq.length; j++) {
+			newFreq[j] = MathUtils.nextDouble();
+			sum += newFreq[j]; 
+		}
+		for (int j = 0; j < newFreq.length; j++) {
+			newFreq[j] /= sum;
+			spectra.setFrequency(j, newFreq[j]);
+		}
+		
+		spectrumModel.setSpectrumOperationRecord(OP, spectrumIndex, siteIndexs);
+		spectrumModel.endSpectrumOperation();
+		return 0;
+	}
 	@Override
 	public String getOperatorName() {
 	
@@ -154,7 +185,7 @@ public class DirichletAlphaSpectrumOperator extends AbstractDirichletSpectrumOpe
 	private void convertFromAutoOptimizeToValue(double autoOpt) {
     	autoOptimize = autoOpt;
 //    	swapBasesCount =  MIN_BASE + (int) Math.exp(autoOptimize);
-    	alpha =  Math.exp(autoOptimize);
+    	alpha =  FastMath.exp(autoOptimize);
 //    	checkParameterIsValid();
 		
     }

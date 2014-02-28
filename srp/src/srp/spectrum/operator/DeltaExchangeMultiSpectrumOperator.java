@@ -3,6 +3,8 @@ package srp.spectrum.operator;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.math3.util.FastMath;
+
 import srp.spectrum.SpectraParameter;
 import srp.spectrum.Spectrum;
 import srp.spectrum.SpectrumAlignmentModel;
@@ -153,7 +155,7 @@ public class DeltaExchangeMultiSpectrumOperator extends AbstractSpectrumOperator
 
 	private void convertFromAutoOptimizeToValue(double autoOpt) {
 	    	autoOptimize = autoOpt;
-	    	swapBasesCount =  MIN_BASE + (int) Math.exp(autoOptimize);
+	    	swapBasesCount =  MIN_BASE + (int) FastMath.exp(autoOptimize);
 //			System.out.println(autoOptimize +"\t"+ Math.exp(autoOptimize*scaleFactor));
 			
 //			System.out.print("A=" + swapLength + "\t" + autoOptimize + "\t" +

@@ -76,7 +76,7 @@ public class MainMCMCSpectrumFull {
 			dataDir += "H7_"+runIndex+"/";
 			
 			totalSamples = 1000	 ;
-			logInterval = 10;
+			logInterval = 10000;
 			
 			randomTree = true;
 //			randomTree = false;
@@ -118,29 +118,31 @@ public class MainMCMCSpectrumFull {
 		Alignment shortReads = dataImporter.importShortReads(shortReadFile);
 		ShortReadMapping srpMap = new ShortReadMapping(shortReads);
 		int spectrumLength = srpMap.getLength();
-		// SpectrumModel and ShortReadLikelihood
-		SpectrumAlignmentModel spectrumModel;
-		ShortReadsSpectrumLikelihood srpLikelihood;
-		boolean redo = true;
-		int c = 0;
+//		 SpectrumModel and ShortReadLikelihood;
+		
+		SpectrumAlignmentModel spectrumModel ;
+		ShortReadsSpectrumLikelihood srpLikelihood ;
+		
+//		boolean redo = true;
+//		int c = 0;
 		if (randomSpectrum) {
-			do {
+//			do {
 				spectrumModel = new SpectrumAlignmentModel(spectrumLength, noOfRecoveredHaplotype, randomSpectrumType);
 				srpLikelihood = new ShortReadsSpectrumLikelihood(spectrumModel, srpMap, distTypeCode);
-				redo = (srpLikelihood.getLogLikelihood() == Double.NEGATIVE_INFINITY);
-				c++;
-				if(c==100){
-					System.err.println("After 100 try, ShortreadLikelihood= "+ srpLikelihood.getLogLikelihood());
-					System.exit(-1);
-				}
-			} while (redo);
+//				redo = (srpLikelihood.getLogLikelihood() == Double.NEGATIVE_INFINITY);
+//				c++;
+//				if(c==100){
+//					System.err.println("After 100 try, ShortreadLikelihood= "+ srpLikelihood.getLogLikelihood());
+//					System.exit(-1);
+//				}
+//			} while (redo);
 		}		
 		else{
 			spectrumModel = dataImporter.importPartialSpectrumFile(partialSpectrumName );
 			srpLikelihood = new ShortReadsSpectrumLikelihood(spectrumModel, srpMap, distTypeCode);
 		}
-
-
+//		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(spectrumLength, noOfRecoveredHaplotype, randomSpectrumType);
+//		srpLikelihood = new ShortReadsSpectrumLikelihood(spectrumModel, srpMap, distTypeCode);
 		// coalescent
 		Parameter popSize = new Parameter.Default(ConstantPopulationModelParser.POPULATION_SIZE, 3000.0, 100, 100000.0);
 		

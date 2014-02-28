@@ -2,6 +2,8 @@ package srp.spectrum.operator;
 
 import java.util.Arrays;
 
+import org.apache.commons.math3.util.FastMath;
+
 import srp.spectrum.SpectraParameter;
 import srp.spectrum.Spectrum;
 import srp.spectrum.SpectrumAlignmentModel;
@@ -128,7 +130,7 @@ public class RecombineSectionSpectrumOperator extends AbstractSpectrumOperator {
 
 	private void convertFromAutoOptimizeToValue(double autoOpt) {
 	    	autoOptimize = autoOpt;
-			swapLength =  SWAP_MIN + (int) Math.exp(autoOptimize);
+			swapLength =  SWAP_MIN + (int) FastMath.exp(autoOptimize);
 
 			checkParameterIsValid();
 //			int count = MCMCOperator.Utils.getOperationCount(this);

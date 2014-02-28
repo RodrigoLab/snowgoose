@@ -1,6 +1,9 @@
 package test.srp.spectrum.likelihood;
 
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -62,6 +65,7 @@ public class ShortReadsLikelihoodTimeTrialTest {
 @Test
 	public void testTimeTrialAllOperators() throws Exception {
 		System.out.println();
+		
 		testTimeTrialDeltaSingle();
 		testTimeTrialDeltaMulti();
 		testTimeTrialDeltaColumn();
@@ -78,6 +82,23 @@ public class ShortReadsLikelihoodTimeTrialTest {
 		System.out.println("");
 	}
 
+//	@Test
+//	public void testTimeTrialUpdateIJ() throws Exception{
+////		private double updateLikelihoodAtIJ(int i, int j, int[] siteIndexs, 
+////				double[][] allStateLogLikelihood, double[][] storedAllStateLogLikelihood, 
+////				double currentLogLikelihood) {
+//
+////		ShortReadsSpectrumLikelihood srpLikelihood = new ShortReadsSpectrumLikelihood(spectrumModel);
+//		Method method = ShortReadsSpectrumLikelihood.class.getDeclaredMethod("updateLikelihoodAtIJ", 
+//				int.class, int.class, int[].class, double[][].class, double[][].class, double.class);
+//		method.setAccessible(true);
+//		int i = 0; 
+//		int j = 1;
+//		int[] siteIndexs = new int[]{0,1,2,3,4};
+//		
+//		double log = (Double) method.invoke(likelihood, 0.5);
+//
+//	}
 		@Test
 	public void testTimeTrialFull() throws Exception {
 		double trial = 100;
@@ -183,6 +204,7 @@ public class ShortReadsLikelihoodTimeTrialTest {
 		System.out.println(summary + "\t" + op.getOperatorName());
 	}
 
+	@Test
 	public void testTimeTrialSwapMulti() throws Exception {
 		int bases = 10;
 		AbstractSpectrumOperator op = new SwapMultiSpectrumOperator(
@@ -200,12 +222,13 @@ public class ShortReadsLikelihoodTimeTrialTest {
 		System.out.println(summary + "\t" + op.getOperatorName() +"\t"+ bases);
 	}
 
+
 	@Test
 	public void testTimeTrialDirichletAlpha() throws Exception {
 
 		AbstractSpectrumOperator op = new DirichletAlphaSpectrumOperator(
 				spectrumModel, 100, null);
-		String summary = timeTrialOperator(likelihood, op, 10000);
+		String summary = timeTrialOperator(likelihood, op, 100000);
 		System.out.println(summary + "\t" + op.getOperatorName());
 	}
 
@@ -239,13 +262,14 @@ public class ShortReadsLikelihoodTimeTrialTest {
 	public static String timeTrialOperator(
 			ShortReadsSpectrumLikelihood likelihood,
 			AbstractSpectrumOperator op, double ite) {
-		
+		System.gc();
 		int count = 0;
 		long totalTime = 0;
 		do {
 			try {
 				long time1 = System.currentTimeMillis();
-//				likelihood.storeModelState();
+//				long time1 = System.nanoTime();
+				likelihood.storeModelState();
 				op.doOperation();
 
 				likelihood.getLogLikelihood();
@@ -253,9 +277,10 @@ public class ShortReadsLikelihoodTimeTrialTest {
 				if (rand > 0.5) {
 					likelihood.acceptModelState();
 				} else {
-//					likelihood.restoreModelState();
+					likelihood.restoreModelState();
 				}
 				totalTime += (System.currentTimeMillis() - time1);
+//				totalTime += (System.nanoTime() - time1);
 
 				count++;
 			} catch (OperatorFailedException e) {

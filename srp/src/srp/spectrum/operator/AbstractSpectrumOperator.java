@@ -12,6 +12,7 @@ import srp.spectrum.SpectrumOperation;
 import dr.inference.model.Bounds;
 import dr.inference.operators.AbstractCoercableOperator;
 import dr.inference.operators.CoercionMode;
+import dr.inference.operators.OperatorFailedException;
 import dr.math.MathUtils;
 
 public abstract class AbstractSpectrumOperator extends AbstractCoercableOperator {
@@ -62,6 +63,11 @@ public abstract class AbstractSpectrumOperator extends AbstractCoercableOperator
 
 		return siteIndexs;
 	}
+
+
+	 public double doUnittestOperation() throws OperatorFailedException{
+		 return doOperation();
+	 }
 
 
 	

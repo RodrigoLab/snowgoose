@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.math3.stat.StatUtils;
+import org.apache.commons.math3.util.FastMath;
 
 import srp.spectrum.SpectraParameter;
 import srp.spectrum.Spectrum;
@@ -172,7 +173,7 @@ public class DirichletSpectrumOperator extends AbstractDirichletSpectrumOperator
 
 	private void convertFromAutoOptimizeToValue(double autoOpt) {
     	autoOptimize = autoOpt;
-    	swapBasesCount =  MIN_BASE + (int) Math.exp(autoOptimize);
+    	swapBasesCount =  MIN_BASE + (int) FastMath.exp(autoOptimize);
 
     	checkParameterIsValid();
 		

@@ -2,6 +2,8 @@ package srp.haplotypes.likelihood;
 
 import java.util.ArrayList;
 
+import org.apache.commons.math3.util.FastMath;
+
 import dr.inference.distribution.LogLinearModel;
 
 public class LikelihoodScaler {
@@ -65,11 +67,21 @@ public class LikelihoodScaler {
 
 	public double scale(double logProb){
 		return scale(logProb, logScaler);
+//		return Math.exp(logProb - logScaler);
+//		return (logProb - logScaler);
+//		double a = Math.exp(logProb - logScaler);
+//		double b = FastMath.exp(logProb - logScaler);
+//		if(  ( Math.log(a) + logScaler  ) !=( Math.log(b) + logScaler  )  ){
+//			System.out.println(a +"\t"+ b +"\t"+(a-b) +"\t"+ (Math.log( (a-b) ) + logScaler) +"\t"+  logProb);
+//			System.out.println( (( Math.log(a) + logScaler  ) ==( Math.log(b) + logScaler  ) ) +"\t"+  ( Math.log(a) + logScaler  ) +"\t"+ ( Math.log(b) + logScaler  ) );
+//			System.out.println();
+//		}
+//		return FastMath.exp(logProb - logScaler);
 	}
 
 	private static double scale(double logProb, double logScaler) {
-
-		double expB = Math.exp(logProb - logScaler);
+//		double expB = Math.exp(logProb - logScaler);
+		double expB = FastMath.exp(logProb - logScaler);
 
 		return expB;
 	}

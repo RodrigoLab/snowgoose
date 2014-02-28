@@ -1,5 +1,7 @@
 package srp.spectrum.operator;
 
+import org.apache.commons.math3.util.FastMath;
+
 import srp.spectrum.SpectraParameter;
 import srp.spectrum.Spectrum;
 import srp.spectrum.SpectrumAlignmentModel;
@@ -110,7 +112,7 @@ public class DeltaExchangeSingleSpectrumOperator extends AbstractSpectrumOperato
 //    	if(mm%1000 == 0){
 //    		System.out.println(value +"\t"+ delta +"\t"+ getAcceptanceProbability());
 //    	}
-        delta = Math.exp(value);
+        delta = FastMath.exp(value);
 //        double t = Math.exp(value);
 //        delta = t/(t+1);
 

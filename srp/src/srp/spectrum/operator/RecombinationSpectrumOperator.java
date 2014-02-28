@@ -1,5 +1,7 @@
 package srp.spectrum.operator;
 
+import org.apache.commons.math3.util.FastMath;
+
 import srp.spectrum.SpectraParameter;
 import srp.spectrum.Spectrum;
 import srp.spectrum.SpectrumAlignmentModel;
@@ -115,7 +117,7 @@ public class RecombinationSpectrumOperator extends AbstractSpectrumOperator {
 
 	private void convertFromAutoOptimizeToValue(double autoOpt) {
 	    	autoOptimize = autoOpt;
-			swapLength =  1 + (int) Math.exp(autoOptimize);
+			swapLength =  1 + (int) FastMath.exp(autoOptimize);
 	    }
 
 	private double convertToAutoOptimize(int length) {
