@@ -13,6 +13,7 @@ import srp.shortreads.AlignmentMapping;
 import srp.spectrum.Spectrum;
 import srp.spectrum.SpectrumAlignmentModel;
 import srp.spectrum.SpectrumOperationRecord;
+import srp.spectrum.operator.AbstractDirichletSpectrumOperator;
 import srp.spectrum.operator.DeltaExchangeSingleSpectrumOperator;
 import srp.spectrum.operator.DirichletAlphaSpectrumOperator;
 import srp.spectrum.operator.DirichletSpectrumOperator;
@@ -51,7 +52,7 @@ public class DirichletAlphaSpectrumOperatorTest {
 				};
 		int spectrumLength = seqs[0].length();
 		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(spectrumLength, 1);
-		DirichletAlphaSpectrumOperator op = new DirichletAlphaSpectrumOperator(
+		AbstractDirichletSpectrumOperator op = new DirichletAlphaSpectrumOperator(
 				spectrumModel, 100, CoercionMode.COERCION_OFF);
 
 		double[][] storedFrequencies = new double[spectrumModel.getSpectrumLength()][DIMENSION];

@@ -210,7 +210,7 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 		switch (operation) {
 		case NONE:
 			if(DEBUG){
-				System.out.println("StoreState in SpectrumAlignment:\ts"+operation);
+				System.out.println("StoreState in SpectrumAlignment:\t"+operation);
 			}
 			break;
 		case FULL:

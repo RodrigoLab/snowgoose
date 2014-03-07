@@ -89,6 +89,7 @@ public class MainMCMCSpectrumFull {
 //			randomSpectrum = false;
 			
 			distTypeCode = DistType.betaMean;
+			distTypeCode = DistType.flat;
 			
 			noOfTrueHaplotype = 7;
 			noOfRecoveredHaplotype=7;

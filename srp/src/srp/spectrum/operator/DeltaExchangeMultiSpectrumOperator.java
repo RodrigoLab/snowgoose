@@ -46,7 +46,7 @@ public class DeltaExchangeMultiSpectrumOperator extends AbstractSpectrumOperator
 	private double autoOptimize;
 //	private int scaleFactor=1;
 	
-	
+	public static double totalCount = 0;
 	@Override
 	public double doOperation() throws OperatorFailedException {
 
@@ -63,20 +63,12 @@ public class DeltaExchangeMultiSpectrumOperator extends AbstractSpectrumOperator
         int[] dim1 = new int[swapBasesCount];
 		int[] dim2 = new int[swapBasesCount];
         
-		int[] siteIndexs = new int[swapBasesCount]; 
+//		int[] siteIndexs = new int[swapBasesCount]; 
 				
 		Spectrum spectrum = spectrumModel.getSpectrum(spectrumIndex);
 		
-
-		Set<Integer> generated = new HashSet<Integer>();
-		while (generated.size() < swapBasesCount)
-		{
-		    Integer next = MathUtils.nextInt(spectrumLength);
-		    generated.add(next);
-		}
-//		generated.toArray(siteIndex);
-		siteIndexs = Ints.toArray(generated);
-//		System.out.println(Arrays.toString(siteIndex));
+		int[] siteIndexs = generateUniqueSamples(swapBasesCount, spectrumLength);
+		
 		for (int i = 0; i < swapBasesCount; i++) {
 			
 //			siteIndexs[i] = MathUtils.nextInt(spectrumLength);
@@ -87,16 +79,15 @@ public class DeltaExchangeMultiSpectrumOperator extends AbstractSpectrumOperator
 			
 			
 	        // get two dimensions
+
 	        dim1[i] = MathUtils.nextInt(DIMENSION);
-	        do {
-	            dim2[i] = MathUtils.nextInt(DIMENSION);
-	        }while (dim1[i] == dim2[i]);
+	        dim2[i] = getAnotherDimension(dim1[i]);
     
 	        scalar1[i] = spectra[i].getFrequency(dim1[i]);
-	        scalar2[i]= spectra[i].getFrequency(dim2[i]);
+	        scalar2[i] = spectra[i].getFrequency(dim2[i]);
 	
 	        d[i] = MathUtils.nextDouble() * delta;
-	        d[i] = delta;
+//	        d[i] = delta;
 	        scalar1[i] -= d[i];
 	        scalar2[i] += d[i];
 	

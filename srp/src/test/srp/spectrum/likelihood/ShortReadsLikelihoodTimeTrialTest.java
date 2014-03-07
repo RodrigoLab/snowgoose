@@ -4,11 +4,15 @@ package test.srp.spectrum.likelihood;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import javax.swing.text.TabableView;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import com.sun.org.apache.bcel.internal.generic.BASTORE;
 
 import srp.core.DataImporter;
 import srp.shortreads.AlignmentMapping;
@@ -33,7 +37,9 @@ import dr.math.MathUtils;
 
 public class ShortReadsLikelihoodTimeTrialTest {
 
-//	public static final double ERROR = ShortReadsSpectrumLikelihood.ERROR_RATE;
+	private static boolean combine = false;;
+
+	//	public static final double ERROR = ShortReadsSpectrumLikelihood.ERROR_RATE;
 //	public static final double NOT_ERROR = ShortReadsSpectrumLikelihood.NOT_ERROR_RATE;
 	public ShortReadsSpectrumLikelihood likelihood;
 	public SpectrumAlignmentModel spectrumModel;
@@ -178,10 +184,11 @@ public class ShortReadsLikelihoodTimeTrialTest {
 
 //	@Test
 	public void testTimeTrialDeltaMulti() throws Exception {
-		int bases = 10;
+		int bases = 1;
+		int ite = (int) 1e4;
 		DeltaExchangeMultiSpectrumOperator op = new DeltaExchangeMultiSpectrumOperator(
 				spectrumModel, 0.1, bases, CoercionMode.COERCION_OFF);
-		String summary = timeTrialOperator(likelihood, op, 1e4);
+		String summary = timeTrialOperator(likelihood, op, ite);
 		System.out.println(summary + "\t" + op.getOperatorName() +"\t"+ bases);
 
 	}
@@ -207,10 +214,16 @@ public class ShortReadsLikelihoodTimeTrialTest {
 	@Test
 	public void testTimeTrialSwapMulti() throws Exception {
 		int bases = 10;
+		int ite = (int)	1e5;
 		AbstractSpectrumOperator op = new SwapMultiSpectrumOperator(
 				spectrumModel, bases, CoercionMode.COERCION_OFF, true);
-		String summary = timeTrialOperator(likelihood, op, 10000);
+		String summary = timeTrialOperator(likelihood, op, ite);
 		System.out.println(summary + "\t" + op.getOperatorName() +"\t"+ bases);
+		
+		System.out.println(op.time/ite/1e3);
+		System.out.println(op.time2/ite/1e3);
+		System.out.println(op.time3/ite/1e3);
+		System.out.println(ite*bases);
 	}
 	
 	@Test
@@ -221,8 +234,6 @@ public class ShortReadsLikelihoodTimeTrialTest {
 		String summary = timeTrialOperator(likelihood, op, 10000);
 		System.out.println(summary + "\t" + op.getOperatorName() +"\t"+ bases);
 	}
-
-
 	@Test
 	public void testTimeTrialDirichletAlpha() throws Exception {
 
@@ -231,6 +242,7 @@ public class ShortReadsLikelihoodTimeTrialTest {
 		String summary = timeTrialOperator(likelihood, op, 100000);
 		System.out.println(summary + "\t" + op.getOperatorName());
 	}
+
 
 //	@Test
 	public void testTimeTrialRecombination() throws Exception {
@@ -262,6 +274,18 @@ public class ShortReadsLikelihoodTimeTrialTest {
 	public static String timeTrialOperator(
 			ShortReadsSpectrumLikelihood likelihood,
 			AbstractSpectrumOperator op, double ite) {
+	
+		if(combine){
+			return timeTrialOperatorCombine(likelihood, op, ite);
+		}
+		else{
+			return timeTrialOperatorEach(likelihood, op, ite);
+		}
+	}
+	
+	public static String timeTrialOperatorCombine(
+			ShortReadsSpectrumLikelihood likelihood,
+			AbstractSpectrumOperator op, double ite) {
 		System.gc();
 		int count = 0;
 		long totalTime = 0;
@@ -288,6 +312,51 @@ public class ShortReadsLikelihoodTimeTrialTest {
 		} while (count < ite);
 		String summary = "TimeTrial: " + totalTime + "\t" + totalTime / ite
 				+ "/calculation\t"+ite+" ite.";
+		return summary;
+	}
+
+
+	public static String timeTrialOperatorEach(
+			ShortReadsSpectrumLikelihood likelihood,
+			AbstractSpectrumOperator op, double ite) {
+		System.gc();
+		int count = 0;
+		long operatorTime = 0;
+		long likelihoodTime = 0;
+		long storeTime = 0;
+		
+		
+		do {
+			try {
+				long time0 = System.nanoTime();
+				likelihood.storeModelState();
+				storeTime += (System.nanoTime() - time0);
+				
+				time0 = System.nanoTime();
+				op.doOperation();
+				operatorTime += (System.nanoTime() - time0);
+				
+				time0 = System.nanoTime();
+				likelihood.getLogLikelihood();
+				likelihoodTime += (System.nanoTime() - time0);
+				
+				double rand = MathUtils.nextDouble();
+				time0 = System.nanoTime();
+				if (rand > 0.5) {
+					likelihood.acceptModelState();
+				} else {
+					likelihood.restoreModelState();
+				}
+				storeTime += (System.nanoTime() - time0);
+//				totalTime += (System.nanoTime() - time1);
+
+				count++;
+			} catch (OperatorFailedException e) {
+			}
+		} while (count < ite);
+		String summary = "TimeTrial: " + operatorTime/1e3/ite + "\t" + likelihoodTime/1e3/ite
+				+ "\t" + storeTime/1e3/ite + "\t" +
+				"/calculation\t" + ite + " ite.";
 		return summary;
 	}
 

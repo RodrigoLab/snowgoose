@@ -19,12 +19,14 @@ import dr.math.GammaFunction;
 import dr.math.MathUtils;
 
 public class DirichletAlphaSpectrumOperator extends AbstractDirichletSpectrumOperator {
-			 
+
+	
 	public static final String OPERATOR_NAME = DirichletAlphaSpectrumOperator.class.getSimpleName();
 //	public static final SpectrumOperation OP = SpectrumOperation.DIRICHLET;
 	public static final SpectrumOperation OP = SpectrumOperation.DELTA_SINGLE;
 	
-	private static double MIN_FREQ = 0.01;
+	
+	
 	
 //    private Parameter parameter = null;
 
@@ -70,12 +72,15 @@ public class DirichletAlphaSpectrumOperator extends AbstractDirichletSpectrumOpe
 //        org.apache.commons.math3.distribution.GammaDistribution commonGamma = new org.apache.commons.math3.distribution.GammaDistribution(alpha, 1);
 //        commonGamma.sample();
         
-        unittestIndexCount = 0;//REMOVE later, only for unittest
+
 	}
 	private double[] debugList = new double[8];
 	
+	
 //	private int scaleFactor=1;
 	
+//	TimeTrial: 22998342634	2299/calculation	10000000 ite.	DirichletAlphaSpectrumOperator	Operator only
+//	2349/calculation
 	
 	@Override
 	public double doOperation() throws OperatorFailedException {
@@ -86,35 +91,15 @@ public class DirichletAlphaSpectrumOperator extends AbstractDirichletSpectrumOpe
 		Spectrum spectrum = spectrumModel.getSpectrum(spectrumIndex);
 
 		siteIndexs[0] = MathUtils.nextInt(spectrumLength);
-		double ratio = 0;
 
 		SpectraParameter spectra = spectrum.getSpectra(siteIndexs[0]);
-		double sum = 0;
-
-		for (int j = 0; j < newFreq.length; j++) {
-			oldFreq[j] = spectra.getFrequency(j);
-			if(oldFreq[j]==0){
-				oldFreq[j] = MIN_FREQ;
-			}
-			oldParameter[j] = oldFreq[j]*alpha;
-			newFreq[j] = MathUtils.nextGamma(oldParameter[j], 1);
-			if(newFreq[j]<MIN_FREQ){
-				newFreq[j] = MIN_FREQ;
-			}
-			sum += newFreq[j]; 
-		}
-		for (int j = 0; j < newFreq.length; j++) {
-			newFreq[j] /= sum;
-			newParameter[j] = newFreq[j]*alpha;
-			spectra.setFrequency(j, newFreq[j]);
-		}
-		
+		nextDirichlet(spectra, alpha, oldFreq, oldParameter, newFreq, newParameter);
 		
 //			 get proposal ratio
 		double x = dirichletLnPdf(newParameter, oldFreq);
 		double y = dirichletLnPdf(oldParameter, newFreq);
 		
-		ratio += (x - y);
+		double ratio = (x - y);
 		
 		spectrumModel.setSpectrumOperationRecord(OP, spectrumIndex, siteIndexs);
 		
@@ -124,53 +109,12 @@ public class DirichletAlphaSpectrumOperator extends AbstractDirichletSpectrumOpe
 		return ratio;
 	}
 
-	private static int unittestIndexCount = 0;
-	public double doUnittestOperation() throws OperatorFailedException{
-
-		spectrumModel.startSpectrumOperation();
-
-		int spectrumIndex = 0;
-		Spectrum spectrum = spectrumModel.getSpectrum(spectrumIndex);
-		
-		
-		siteIndexs[0] = unittestIndexCount;
-		unittestIndexCount++;
-		if(unittestIndexCount==spectrumLength){
-			unittestIndexCount=0;
-		}
-		SpectraParameter spectra = spectrum.getSpectra(siteIndexs[0]);
-		double sum = 0;
-
-		for (int j = 0; j < newFreq.length; j++) {
-			newFreq[j] = MathUtils.nextDouble();
-			sum += newFreq[j]; 
-		}
-		for (int j = 0; j < newFreq.length; j++) {
-			newFreq[j] /= sum;
-			spectra.setFrequency(j, newFreq[j]);
-		}
-		
-		spectrumModel.setSpectrumOperationRecord(OP, spectrumIndex, siteIndexs);
-		spectrumModel.endSpectrumOperation();
-		return 0;
-	}
 	@Override
 	public String getOperatorName() {
 	
 		return OPERATOR_NAME;
 	}
 
-
-//    @Override
-//	public double getCoercableParameter() {
-//        return Math.log(delta);
-//    }
-//
-//    @Override
-//	public void setCoercableParameter(double value) {
-//        delta = Math.exp(value);
-//
-//    }
 
 	@Override
 	public double getCoercableParameter() {

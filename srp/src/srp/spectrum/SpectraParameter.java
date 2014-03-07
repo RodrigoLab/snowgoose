@@ -35,9 +35,6 @@ public class SpectraParameter extends AbstractSpectra{
 			}
 			for (int i = 0; i < freq.length; i++) {
 				freq[i] /= sum;
-				if(freq[i]<=0){
-					System.err.println(Arrays.toString(freq) +"\t"+ sum);
-				}
 			}
 			setFrequenciesQuietly(freq);
 			break;
@@ -141,10 +138,10 @@ public class SpectraParameter extends AbstractSpectra{
 
 	
 	public enum SpectraType{
-		EQUAL,
-		ZERO_ONE,
+		@Deprecated EQUAL,
+		@Deprecated ZERO_ONE,
 		RANDOM, 
-		CATEGORY;
+		@Deprecated CATEGORY;
 
 	}
 }

@@ -386,7 +386,6 @@ public class Spectrum extends AbstractModel implements Attributable {
 		getSpectra(storeSiteIndex).storeState();
 //		for (int i = 0; i < spectrum.size(); i++) {
 //			storeSpectrum.set(i, spectrum.get(i));
-		
 //		}
 	}
 

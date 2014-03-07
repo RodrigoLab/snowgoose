@@ -42,8 +42,8 @@ public class DirichletSpectrumOperatorTest {
 
 
 
-	private double SPECTRA_MIN = SpectraParameter.MIN_FREQ;
-	private double SPECTRA_MAX = SpectraParameter.MAX_FREQ;
+	private double MIN_FREQ = SpectraParameter.MIN_FREQ;
+	private double MAX_FREQ = SpectraParameter.MAX_FREQ;
 
 	@Before
 	public void setUp() throws Exception {
@@ -95,14 +95,14 @@ public class DirichletSpectrumOperatorTest {
 						delta += (frequencies[f]-storedFrequencies[siteIndex][f]);
 //							assertEquals(delta[i], absDelta, 1e-8);
 					}
-					else if(frequencies[f]==SPECTRA_MIN | frequencies[f]==SPECTRA_MAX){
+					else if(frequencies[f]==MIN_FREQ | frequencies[f]==MAX_FREQ){
 						count++;
 					}
 					storedFrequencies[siteIndex][f] = frequencies[f];
 				}
 //					System.out.println(delta +"\t"+ absDelta);
 //					System.out.println();
-				assertEquals(0, delta, 1-SPECTRA_MAX);
+				assertEquals(0, delta, 1-MAX_FREQ);
 				assertEquals(4, count);
 			
 			} catch (OperatorFailedException e) {
@@ -300,12 +300,12 @@ void AutotuneDirichlet (MrBFlt acceptanceRate, MrBFlt targetRate, int batch, MrB
 							absDelta += Math.abs(frequencies[f]-spectraFrequencies[f]);
 //							assertEquals(delta[i], absDelta, 1e-8);
 						}
-						else if(frequencies[f]==SPECTRA_MIN | frequencies[f]==SPECTRA_MAX){
+						else if(frequencies[f]==MIN_FREQ | frequencies[f]==MAX_FREQ){
 							count++;
 						}
 						spectraFrequencies[f] = frequencies[f];
 					}
-					assertEquals(0, delta, 1-SPECTRA_MAX);
+					assertEquals(0, delta, 1-MAX_FREQ);
 					assertEquals(4, count);
 				}
 			} catch (OperatorFailedException e) {

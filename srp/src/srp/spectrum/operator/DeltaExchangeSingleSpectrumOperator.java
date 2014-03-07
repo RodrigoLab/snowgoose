@@ -55,11 +55,8 @@ public class DeltaExchangeSingleSpectrumOperator extends AbstractSpectrumOperato
 		SpectraParameter spectra = spectrum.getSpectra(siteIndex[0]);
         // get two dimensions
 
-        final int dim1 = MathUtils.nextInt(DIMENSION);
-        int dim2;// = dim1;
-        do {
-            dim2 = MathUtils.nextInt(DIMENSION);
-        }while (dim1 == dim2);
+        int dim1 = MathUtils.nextInt(DIMENSION);
+        int dim2 = getAnotherDimension(dim1);
 
         double scalar1 = spectra.getFrequency(dim1);
         double scalar2 = spectra.getFrequency(dim2);

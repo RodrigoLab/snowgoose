@@ -1,6 +1,8 @@
 package srp.spectrum.operator;
 
 import java.util.HashSet;
+import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 import com.google.common.primitives.Ints;
@@ -8,6 +10,7 @@ import com.google.common.primitives.Ints;
 import srp.shortreads.AlignmentMapping;
 import srp.spectrum.SpectraParameter;
 import srp.spectrum.SpectrumAlignmentModel;
+import srp.spectrum.SpectrumLogger;
 import srp.spectrum.SpectrumOperation;
 import dr.inference.model.Bounds;
 import dr.inference.operators.AbstractCoercableOperator;
@@ -30,6 +33,7 @@ public abstract class AbstractSpectrumOperator extends AbstractCoercableOperator
 	
 	protected final int spectrumCount;
 	protected final int spectrumLength;
+	private int[] spectrumLengthArray;
 
 
 //	protected int swapLength;
@@ -44,30 +48,117 @@ public abstract class AbstractSpectrumOperator extends AbstractCoercableOperator
 		this.spectrumModel = spectrumModel;
 		spectrumCount = this.spectrumModel.getSpectrumCount();
 		spectrumLength = this.spectrumModel.getSpectrumLength();
-
+		spectrumLengthArray = new int[spectrumLength];
+		for (int i = 0; i < spectrumLengthArray.length; i++) {
+			spectrumLengthArray[i] = i;
+		}
 	}
 
 
 	public abstract SpectrumOperation getSpectrumOperation();
 
-	
-	public int[] generateSiteIndexs(int swapBasesCount, int spectrumLength) {
+	HashSet<Integer> generated = new HashSet<Integer>();
+	public long time = 0;
+	public long time2 = 0;
+	public long time3 = 0;
+	private long timeStart = 0;
 
-		Set<Integer> generated = new HashSet<Integer>();
-		while (generated.size() < swapBasesCount)
+	public int[] generateUniqueSamples(int m, int total) {
+		int[] siteIndexs;
+		timeStart = System.nanoTime();
+		randomSiteHashSet(m);
+		time += (System.nanoTime() - timeStart);
+		
+		timeStart  = System.nanoTime();		
+		siteIndexs = randomSampleSites(m);
+		time2 += (System.nanoTime() - timeStart);
+		
+		timeStart  = System.nanoTime();		
+		siteIndexs = randomSiteFloyd(m);
+		time3 += (System.nanoTime() - timeStart);
+		
+		return siteIndexs;
+	}
+	public int[] randomSiteHashSet(int m){
+		generated.clear();
+		while (generated.size() < m) //time: 1.2/1.3
 		{
 		    Integer next = MathUtils.nextInt(spectrumLength);
 		    generated.add(next);
 		}
-		int[] siteIndexs = Ints.toArray(generated);
-
+		
+//		int[] siteIndexs = new int[noSample]; //time: ~0.4/0.5
+//		int count = 0;
+//		for (Integer i : generated) {
+//			siteIndexs[count] = i;
+//			count++;
+//		}
+		int[] siteIndexs = Ints.toArray(generated); //time: 0.6
 		return siteIndexs;
 	}
+	public int[] randomSampleSites(int m){ //time:0.5
+		int[] sites = new int[m];
+	    for(int i=0;i<m;i++){
+	        int pos = i + MathUtils.nextInt(spectrumLength - i);
+//	        T tmp = items.get(pos);
+//	        items.set(pos, items.get(i));
+//	        items.set(i, tmp);
+	        int tmp = spectrumLengthArray[pos];
+	        spectrumLengthArray[pos] = spectrumLengthArray[i];
+	        spectrumLengthArray[i] = tmp;
+	        sites[i] = tmp;
+	        
+	    }
+//	    return items.subList(0, m);
+	    return sites;
+	}
 
-
-	 public double doUnittestOperation() throws OperatorFailedException{
-		 return doOperation();
-	 }
+	public int[] randomSiteFloyd(int m){
+	    generated.clear();
+	    int n = spectrumLength;
+	    for(int i=n-m;i<n;i++){
+	        int pos = MathUtils.nextInt(i+1);
+	        int item = spectrumLengthArray[pos];
+	        if (generated.contains(item))
+	        	generated.add(spectrumLengthArray[i]);
+	        else
+	        	generated.add(item);
+	    }
+	    int[] siteIndexs = Ints.toArray(generated); 
+	    return siteIndexs;
+	}
+	
+	public static <T> List<T> randomSampleSwap(List<T> items, int m){
+	    for(int i=0;i<m;i++){
+	        int pos = i + MathUtils.nextInt(items.size() - i);
+	        T tmp = items.get(pos);
+	        items.set(pos, items.get(i));
+	        items.set(i, tmp);
+	    }
+	    return items.subList(0, m);
+	}
+	
+	public static <T> Set<T> randomSampleFloyd(List<T> items, int m){
+	    HashSet<T> res = new HashSet<T>(m);
+	    int n = items.size();
+	    for(int i=n-m;i<n;i++){
+	        int pos = MathUtils.nextInt(i+1);
+	        T item = items.get(pos);
+	        if (res.contains(item))
+	            res.add(items.get(i));
+	        else
+	            res.add(item);
+	    }
+	    return res;
+	}
+	protected int getAnotherDimension(int dim1) {
+		// get any two dims and swap
+        int dim2;// = dim1;
+        do {
+            dim2 = MathUtils.nextInt(DIMENSION);
+        }while (dim1 == dim2);
+		return dim2;
+	}
 
 
 	

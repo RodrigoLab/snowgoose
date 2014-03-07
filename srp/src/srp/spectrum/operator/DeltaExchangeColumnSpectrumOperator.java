@@ -65,16 +65,14 @@ public class DeltaExchangeColumnSpectrumOperator extends AbstractSpectrumOperato
 			Spectrum spectrum = spectrumModel.getSpectrum(spectrumIndex);
 			spectra[i] = spectrum.getSpectra(siteIndex);
 	        // get two dimensions
-	        dim1[i] = MathUtils.nextInt(DIMENSION);
-	        do {
-	            dim2[i] = MathUtils.nextInt(DIMENSION);
-	        }while (dim1[i] == dim2[i]);
-    
+			dim1[i] = MathUtils.nextInt(DIMENSION);
+	        dim2[i] = getAnotherDimension(dim1[i]);
+	    
 	        scalar1[i] = spectra[i].getFrequency(dim1[i]);
 	        scalar2[i]= spectra[i].getFrequency(dim2[i]);
 	
 	        d[i] = MathUtils.nextDouble() * delta;
-	        d[i] = delta;
+//	        d[i] = delta;
 	        scalar1[i] -= d[i];
 	        scalar2[i] += d[i];
 	

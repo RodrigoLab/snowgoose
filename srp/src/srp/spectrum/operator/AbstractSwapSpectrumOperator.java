@@ -36,12 +36,8 @@ public abstract class AbstractSwapSpectrumOperator extends AbstractSpectrumOpera
 
 	public void swapFrequency(SpectraParameter spectra, boolean random) {
 		if(random){
-			// get any two dims and swap
-	        int dim1 = MathUtils.nextInt(DIMENSION);
-	        int dim2;// = dim1;
-	        do {
-	            dim2 = MathUtils.nextInt(DIMENSION);
-	        }while (dim1 == dim2);
+			int dim1 = MathUtils.nextInt(DIMENSION);
+			int dim2 = getAnotherDimension(dim1);
 	        
 	        double scalar1 = spectra.getFrequency(dim1);
 	        double scalar2 = spectra.getFrequency(dim2);
@@ -72,6 +68,5 @@ public abstract class AbstractSwapSpectrumOperator extends AbstractSpectrumOpera
 		}
 		
 	}
-
 
 }

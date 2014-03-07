@@ -2,10 +2,14 @@ package srp.shortreads;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+//import java.util.BitSet;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import cern.colt.bitvector.BitVector;
+
+import com.carrotsearch.hppc.BitSet;
 import com.google.common.primitives.Ints;
 
 import dr.evolution.alignment.Alignment;
@@ -56,6 +60,8 @@ public class ShortReadMapping {
 	private int[] consensus;
 	private String[] srpArray;
 	private int[][] mapToSrpArray;
+	private BitSet[] bitSetArray;
+	private BitVector[] bitVectorArray;
 	private void init(int l) {
 		haplotypeLength = l;
 		srpCount = 0;
@@ -96,6 +102,7 @@ public class ShortReadMapping {
 
 		createSrpArray();
 		createMapToSrpArray();
+		createBitSetArray();
 		//calculated listOfAvailableChar(2)
 		calculateListOfAvailableChar(setsOfAvailableChar);
 		calculateCumFreq();
@@ -103,6 +110,25 @@ public class ShortReadMapping {
 
 	}
 	
+	private void createBitSetArray() {
+		bitSetArray = new BitSet[mapToSrp.length];
+		bitVectorArray = new BitVector[mapToSrp.length];
+		for (int i = 0; i < bitSetArray.length; i++) {
+			bitSetArray[i] = new BitSet(srpCount);
+			bitVectorArray[i] = new BitVector(srpCount);
+			for (int s : mapToSrp[i]) {
+				bitSetArray[i].set(s);
+				bitVectorArray[i].set(s);
+			}
+		}
+		
+	}
+	public BitSet getBitSet(int i){
+		return bitSetArray[i];
+	}
+	public BitVector getBitVector(int i){
+		return bitVectorArray[i];
+	}
 	private void createSrpArray() {
 		srpArray = new String[srpCount];
 		for (int i = 0; i < srpArray.length; i++) {

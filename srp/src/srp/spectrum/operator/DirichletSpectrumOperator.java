@@ -27,10 +27,7 @@ public class DirichletSpectrumOperator extends AbstractDirichletSpectrumOperator
 	public static final SpectrumOperation OP = SpectrumOperation.DELTA_MULTI;
 	
 	private static final int MIN_BASE = 1;
-	private static final double MIN_FREQ = SpectraParameter.MIN_FREQ;
-	private static final double MAX_FREQ = SpectraParameter.MAX_FREQ;
-	
-    private final int[] parameterWeights;
+	private final int[] parameterWeights;
 
 
     private int swapBasesCount;
@@ -82,37 +79,12 @@ public class DirichletSpectrumOperator extends AbstractDirichletSpectrumOperator
 		int spectrumIndex = MathUtils.nextInt(spectrumCount);
 		Spectrum spectrum = spectrumModel.getSpectrum(spectrumIndex);
 
-		int[] siteIndexs = generateSiteIndexs(swapBasesCount, spectrumLength);
+		int[] siteIndexs = generateUniqueSamples(swapBasesCount, spectrumLength);
 		double ratio = 0;
 		for (int i = 0; i < swapBasesCount; i++) {
 			
 			SpectraParameter spectra = spectrum.getSpectra(siteIndexs[i]);
-			double sum = 0;
-
-			for (int j = 0; j < newFreq.length; j++) {
-				oldFreq[j] = spectra.getFrequency(j);
-				if(oldFreq[j]==0){
-					oldFreq[j] = MIN_FREQ;
-				}
-				oldParameter[j] = oldFreq[j]*alpha;
-
-				newFreq[j] = MathUtils.nextGamma(oldParameter[j], 1);
-				sum += newFreq[j]; 
-			}
-			for (int j = 0; j < newFreq.length; j++) {
-				newFreq[j] /= sum;
-				if(newFreq[j]<MIN_FREQ){
-					newFreq[j] = MIN_FREQ;
-				}
-				else if(newFreq[j]>MAX_FREQ){
-					newFreq[j] = MAX_FREQ;
-				}
-			}
-			
-			for (int j = 0; j < newFreq.length; j++) {
-				newParameter[j] = newFreq[j]*alpha;
-				spectra.setFrequency(j, newFreq[j]);
-			}
+			nextDirichlet(spectra, alpha, oldFreq, oldParameter, newFreq, newParameter);
 			
 //			 get proposal ratio
 //			DirichletUtils.calculatelogq(oldFreq, newFreq, oldParameter, newParameter);			
