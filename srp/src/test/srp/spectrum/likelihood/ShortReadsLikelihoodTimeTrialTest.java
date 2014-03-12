@@ -202,7 +202,7 @@ public class ShortReadsLikelihoodTimeTrialTest {
 		System.out.println(summary + "\t" + op.getOperatorName());
 
 	}
-
+	
 	public void testTimeTrialSwapSingle() throws Exception {
 
 		AbstractSpectrumOperator op = new SwapSingleSpectrumOperator(
@@ -242,10 +242,14 @@ public class ShortReadsLikelihoodTimeTrialTest {
 	@Test
 	public void testTimeTrialDirichletAlpha() throws Exception {
 
+		for (int i = 0; i < 10; i++) {
+			System.out.println("Run "+i);
+		
 		AbstractSpectrumOperator op = new DirichletAlphaSpectrumOperator(
 				spectrumModel, 100, null);
-		String summary = timeTrialOperator(likelihood, op, 100000);
+		String summary = timeTrialOperator(likelihood, op, 500000);
 		System.out.println(summary + "\t" + op.getOperatorName());
+		}
 	}
 
 
@@ -331,9 +335,7 @@ public class ShortReadsLikelihoodTimeTrialTest {
 		long likelihoodTime = 0;
 		long storeTime = 0;
 		long totalTime = System.nanoTime();
-		likelihood.m1Time = 0;
-		likelihood.m2Time = 0;
-		likelihood.liTime = 0;
+
 		do {
 			try {
 				long time0 = System.nanoTime();
@@ -365,7 +367,7 @@ public class ShortReadsLikelihoodTimeTrialTest {
 		String summary = "TimeTrial: " + operatorTime/scale + "\t" + likelihoodTime/scale
 				+ "\t" + storeTime/scale + "\t" + (System.nanoTime()-totalTime)/scale +
 				"/calculation\t" + ite + " ite.";
-		System.out.println(likelihood.m1Time/scale +"\t"+ likelihood.m2Time/scale +"\t"+ likelihood.liTime/scale);
+
 		return summary;
 	}
 

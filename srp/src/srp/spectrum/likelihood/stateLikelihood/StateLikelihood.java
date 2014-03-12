@@ -15,7 +15,7 @@ public abstract class StateLikelihood {
 	public StateLikelihood() {
 	}
 	
-	public double[] calculateStatesLogLikelihood(SpectraParameter spectra, 
+	public double[] calculateStatesLogLikelihood2D(SpectraParameter spectra, 
 			double[] statesLogLikelihood){
 		for (int state = 0; state < STATE_COUNT; state++) {
 			double frequency = spectra.getFrequency(state);
@@ -26,7 +26,7 @@ public abstract class StateLikelihood {
 	}
 	
 	
-	public double[] calculateStoredStatesLogLikelihood(SpectraParameter spectra, 
+	public double[] calculateStoredStatesLogLikelihood2D(SpectraParameter spectra, 
 			double[] statesLogLikelihood){
 		
 		System.arraycopy(spectra.getStoredStateLikelihood(), 0, statesLogLikelihood, 0, STATE_COUNT);
@@ -36,6 +36,28 @@ public abstract class StateLikelihood {
 	}
 	
 	public abstract double caluclateStateLogLikelihood(double frequency);
+
+	
+	public void calculateStatesLogLikelihood(SpectraParameter spectra,
+			int kOffset, double[] stateLikelihood) {
+
+		for (int state = 0; state < STATE_COUNT; state++) {
+			double frequency = spectra.getFrequency(state);
+			int offset = kOffset+state; 
+			stateLikelihood[offset] = caluclateStateLogLikelihood(frequency);
+			spectra.setStateLikelihood(state, stateLikelihood[offset]);
+		}
+//			m3State[offset] = stateLikelihood.caluclateStateLogLikelihood(frequency);
+//			m3StoreState[offset] = storedStateLikelihood[state];
+//		}		
+	}
+
+	public void calculateStoredStatesLogLikelihood(SpectraParameter spectra,
+			int kOffset, double[] statesLogLikelihood) {
+		System.arraycopy(spectra.getStoredStateLikelihood(), 0, statesLogLikelihood, kOffset, STATE_COUNT);
+		
+		
+	}
 
 
 	
