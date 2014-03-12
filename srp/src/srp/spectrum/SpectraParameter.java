@@ -144,6 +144,12 @@ public class SpectraParameter extends AbstractSpectra{
 		@Deprecated CATEGORY;
 
 	}
+
+
+
+	public void setStateLikelihood(double d, int state) {
+		stateLikelihood[state] = d;
+	}
 }
 
 abstract class AbstractSpectra extends Parameter.Abstract {		

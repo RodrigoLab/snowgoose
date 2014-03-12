@@ -45,6 +45,13 @@ public class LikelihoodScaler {
 		return logLikelihood;
 	}
 
+	public static double getLogLikelihood(double sumScaledLikelihood, double logScaler){
+		
+		double logLikelihood = Math.log(sumScaledLikelihood) + logScaler;
+		return logLikelihood;
+	}
+
+
 	public double getLogLikelihood(){
 		
 		double logLikelihood = Math.log(sumScaledLikelihood) + logScaler;
@@ -79,7 +86,7 @@ public class LikelihoodScaler {
 //		return FastMath.exp(logProb - logScaler);
 	}
 
-	private static double scale(double logProb, double logScaler) {
+	public static double scale(double logProb, double logScaler) {
 //		double expB = Math.exp(logProb - logScaler);
 		double expB = FastMath.exp(logProb - logScaler);
 

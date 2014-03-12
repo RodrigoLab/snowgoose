@@ -58,7 +58,7 @@ public class MainMCMCSpectrumFull {
 		boolean randomTree = true;
 		boolean randomSpectrum = true;
 		SpectraType randomSpectrumType = SpectraType.RANDOM;
-		DistType distTypeCode = DistType.betaMode;
+		DistType distTypeCode = DistType.flat;
 		
 		boolean commandLine = true;
 		commandLine = false;

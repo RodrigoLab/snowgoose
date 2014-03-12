@@ -2,6 +2,8 @@ package test.srp.spectrum.operator;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Arrays;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -10,6 +12,7 @@ import org.junit.Test;
 
 import srp.haplotypes.AlignmentUtils;
 import srp.shortreads.AlignmentMapping;
+import srp.spectrum.SpectraParameter;
 import srp.spectrum.Spectrum;
 import srp.spectrum.SpectrumAlignmentModel;
 import srp.spectrum.SpectrumOperationRecord;
@@ -20,6 +23,7 @@ import srp.spectrum.operator.DirichletSpectrumOperator;
 import test.TestUtils;
 import dr.inference.operators.CoercionMode;
 import dr.inference.operators.OperatorFailedException;
+import dr.math.MathUtils;
 
 public class DirichletAlphaSpectrumOperatorTest {
 
@@ -31,6 +35,10 @@ public class DirichletAlphaSpectrumOperatorTest {
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
 	}
+
+
+	private double MIN_FREQ = SpectraParameter.MIN_FREQ;
+	private double MAX_FREQ = SpectraParameter.MAX_FREQ;
 
 	@Before
 	public void setUp() throws Exception {
@@ -63,6 +71,10 @@ public class DirichletAlphaSpectrumOperatorTest {
 		
 		for (int o = 0; o < 10000; o++) {
 			try {
+				int alpha = MathUtils.nextInt(1000)+1;
+				op = new DirichletAlphaSpectrumOperator(
+						spectrumModel, alpha, CoercionMode.COERCION_OFF);
+
 				op.doOperation();
 				
 				SpectrumOperationRecord opRecord = spectrumModel.getSpectrumOperationRecord();
@@ -79,9 +91,13 @@ public class DirichletAlphaSpectrumOperatorTest {
 						count++;
 						delta += (frequencies[f]-storedFrequencies[siteIndex][f]);
 					}
+					else if(frequencies[f]==MIN_FREQ | frequencies[f]==MAX_FREQ){
+						count++;
+					}
 					storedFrequencies[siteIndex][f] = frequencies[f];
 				}
-				assertEquals(0, delta, TestUtils.UNITTEST_THRESHOLD);
+				assertEquals(Arrays.toString(storedFrequencies[siteIndex]) +"\n"+Arrays.toString(frequencies),
+						0, delta, 1-MAX_FREQ);
 				assertEquals(4, count);
 			
 			} catch (OperatorFailedException e) {

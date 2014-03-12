@@ -213,6 +213,9 @@ public class ShortReadsLikelihoodTimeTrialTest {
 
 	@Test
 	public void testTimeTrialSwapMulti() throws Exception {
+		for (int i = 0; i < 10; i++) {
+			
+		System.out.println("Run "+i);
 		int bases = 10;
 		int ite = (int)	1e5;
 		AbstractSpectrumOperator op = new SwapMultiSpectrumOperator(
@@ -220,10 +223,12 @@ public class ShortReadsLikelihoodTimeTrialTest {
 		String summary = timeTrialOperator(likelihood, op, ite);
 		System.out.println(summary + "\t" + op.getOperatorName() +"\t"+ bases);
 		
-		System.out.println(op.time/ite/1e3);
-		System.out.println(op.time2/ite/1e3);
-		System.out.println(op.time3/ite/1e3);
-		System.out.println(ite*bases);
+//		System.out.println(op.time/ite/1e3);
+//		System.out.println(op.time2/ite/1e3);
+//		System.out.println(op.time3/ite/1e3);
+//		System.out.println(ite*bases);
+		
+		}
 	}
 	
 	@Test
@@ -320,12 +325,15 @@ public class ShortReadsLikelihoodTimeTrialTest {
 			ShortReadsSpectrumLikelihood likelihood,
 			AbstractSpectrumOperator op, double ite) {
 		System.gc();
+		double scale = ite*1e3;
 		int count = 0;
 		long operatorTime = 0;
 		long likelihoodTime = 0;
 		long storeTime = 0;
-		
-		
+		long totalTime = System.nanoTime();
+		likelihood.m1Time = 0;
+		likelihood.m2Time = 0;
+		likelihood.liTime = 0;
 		do {
 			try {
 				long time0 = System.nanoTime();
@@ -354,9 +362,10 @@ public class ShortReadsLikelihoodTimeTrialTest {
 			} catch (OperatorFailedException e) {
 			}
 		} while (count < ite);
-		String summary = "TimeTrial: " + operatorTime/1e3/ite + "\t" + likelihoodTime/1e3/ite
-				+ "\t" + storeTime/1e3/ite + "\t" +
+		String summary = "TimeTrial: " + operatorTime/scale + "\t" + likelihoodTime/scale
+				+ "\t" + storeTime/scale + "\t" + (System.nanoTime()-totalTime)/scale +
 				"/calculation\t" + ite + " ite.";
+		System.out.println(likelihood.m1Time/scale +"\t"+ likelihood.m2Time/scale +"\t"+ likelihood.liTime/scale);
 		return summary;
 	}
 

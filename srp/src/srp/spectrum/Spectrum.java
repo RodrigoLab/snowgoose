@@ -27,6 +27,8 @@ public class Spectrum extends AbstractModel implements Attributable {
 	
     protected Taxon taxon = null;
     private int storeSiteIndex;
+
+	private SpectraParameter[] spectrumArray;
     
 //	public Spectra() {
 //		sequenceString = new StringBuilder();
@@ -59,11 +61,13 @@ public class Spectrum extends AbstractModel implements Attributable {
 	public Spectrum(int length, SpectraType type){
 		
 		super("Spectrum");
+		spectrumArray = new SpectraParameter[length];
 		spectrum = new ArrayList<SpectraParameter>();
 		for (int i = 0; i < length; i++) {
 			SpectraParameter spectra = new SpectraParameter(type);
 			addVariable(spectra);
 			spectrum.add(spectra);
+			spectrumArray[i] = spectra;
 		}
 		
 	}
@@ -145,7 +149,11 @@ public class Spectrum extends AbstractModel implements Attributable {
 	public SpectraParameter getSpectra(int site) {
 	    return spectrum.get(site);
 	}
-	
+
+	public SpectraParameter getSpectraArray(int site) {
+	    return spectrumArray[site];
+	}
+
 	private final NumberFormat formatter = NumberFormat.getNumberInstance();
 	@Override
 	public String toString(){

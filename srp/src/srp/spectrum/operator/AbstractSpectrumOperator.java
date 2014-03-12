@@ -65,17 +65,17 @@ public abstract class AbstractSpectrumOperator extends AbstractCoercableOperator
 
 	public int[] generateUniqueSamples(int m, int total) {
 		int[] siteIndexs;
-		timeStart = System.nanoTime();
-		randomSiteHashSet(m);
-		time += (System.nanoTime() - timeStart);
+//		timeStart = System.nanoTime();
+//		randomSiteHashSet(m);
+//		time += (System.nanoTime() - timeStart);
 		
-		timeStart  = System.nanoTime();		
+//		timeStart  = System.nanoTime();		
 		siteIndexs = randomSampleSites(m);
-		time2 += (System.nanoTime() - timeStart);
+//		time2 += (System.nanoTime() - timeStart);
 		
-		timeStart  = System.nanoTime();		
-		siteIndexs = randomSiteFloyd(m);
-		time3 += (System.nanoTime() - timeStart);
+//		timeStart  = System.nanoTime();		
+//		siteIndexs = randomSiteFloyd(m);
+//		time3 += (System.nanoTime() - timeStart);
 		
 		return siteIndexs;
 	}
