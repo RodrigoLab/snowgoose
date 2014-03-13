@@ -108,9 +108,17 @@ public class SpectraParameter extends AbstractSpectra{
     public void setStateLikelihood(double[] likelihood){
     	System.arraycopy(likelihood, 0, stateLikelihood, 0, DIMENSION);
     }
-    public void setStateLikelihood(double[] likelihood, int offset){
-    	System.arraycopy(likelihood, offset, stateLikelihood, 0, DIMENSION);
+    
+    public void setStateLikelihood(double[] allStateLikelihood, int offset){
+    	System.arraycopy(allStateLikelihood, offset, stateLikelihood, 0, DIMENSION);
     }
+	public void setStateLikelihood(int state, double ln) {
+		stateLikelihood[state] = ln;
+	}
+	@Deprecated
+	public double[] getStateLikelihood() {
+		return stateLikelihood;
+	}
     public double[] getStoredStateLikelihood() {
 		return storedstateLikelihood;
 	}
@@ -150,9 +158,7 @@ public class SpectraParameter extends AbstractSpectra{
 
 
 
-	public void setStateLikelihood(int state, double ln) {
-		stateLikelihood[state] = ln;
-	}
+
 }
 
 abstract class AbstractSpectra extends Parameter.Abstract {		

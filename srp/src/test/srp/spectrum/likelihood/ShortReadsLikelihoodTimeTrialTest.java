@@ -233,11 +233,15 @@ public class ShortReadsLikelihoodTimeTrialTest {
 	
 	@Test
 	public void testTimeTrialDirichlet() throws Exception {
-		int bases = 10;
-		AbstractSpectrumOperator op = new DirichletSpectrumOperator(
-				spectrumModel, bases, null);
-		String summary = timeTrialOperator(likelihood, op, 10000);
-		System.out.println(summary + "\t" + op.getOperatorName() +"\t"+ bases);
+		for (int i = 0; i < 10; i++) {
+			System.out.println("Run "+i);
+		
+			int bases = 10;
+			AbstractSpectrumOperator op = new DirichletSpectrumOperator(
+					spectrumModel, bases, null);
+			String summary = timeTrialOperator(likelihood, op, 10000);
+			System.out.println(summary + "\t" + op.getOperatorName() +"\t"+ bases);
+		}
 	}
 	@Test
 	public void testTimeTrialDirichletAlpha() throws Exception {
@@ -245,10 +249,10 @@ public class ShortReadsLikelihoodTimeTrialTest {
 		for (int i = 0; i < 10; i++) {
 			System.out.println("Run "+i);
 		
-		AbstractSpectrumOperator op = new DirichletAlphaSpectrumOperator(
-				spectrumModel, 100, null);
-		String summary = timeTrialOperator(likelihood, op, 500000);
-		System.out.println(summary + "\t" + op.getOperatorName());
+			AbstractSpectrumOperator op = new DirichletAlphaSpectrumOperator(
+					spectrumModel, 100, null);
+			String summary = timeTrialOperator(likelihood, op, 500000);
+			System.out.println(summary + "\t" + op.getOperatorName());
 		}
 	}
 
