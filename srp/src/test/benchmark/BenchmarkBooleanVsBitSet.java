@@ -2,7 +2,7 @@ package test.benchmark;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.BitSet;
+//import java.util.BitSet;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -10,7 +10,7 @@ import srp.core.DataImporter;
 import srp.shortreads.ShortReadMapping;
 import cern.colt.bitvector.BitVector;
 
-//import com.carrotsearch.hppc.BitSet;
+import com.carrotsearch.hppc.BitSet;
 import com.google.common.primitives.Ints;
 
 import dr.evolution.alignment.Alignment;

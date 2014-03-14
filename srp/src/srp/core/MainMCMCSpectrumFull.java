@@ -58,10 +58,10 @@ public class MainMCMCSpectrumFull {
 		boolean randomTree = true;
 		boolean randomSpectrum = true;
 		SpectraType randomSpectrumType = SpectraType.RANDOM;
-		DistType distTypeCode = DistType.flat;
+		DistType distTypeCode = DistType.betaMode;
 		
 		boolean commandLine = true;
-		commandLine = false;
+//		commandLine = false;
 		if(commandLine){
 			dataDir = args[0];
 			runIndex = Integer.parseInt(args[1]);
@@ -75,8 +75,8 @@ public class MainMCMCSpectrumFull {
 			runIndex = 54;
 			dataDir += "H7_"+runIndex+"/";
 			
-			totalSamples = 1000	 ;
-			logInterval = 10000;
+			totalSamples = 10	;
+			logInterval = 100 ;
 			
 			randomTree = true;
 //			randomTree = false;
@@ -89,8 +89,17 @@ public class MainMCMCSpectrumFull {
 //			randomSpectrum = false;
 			
 			distTypeCode = DistType.betaMean;
-			distTypeCode = DistType.flat;
-			
+//			distTypeCode = DistType.flat;
+//			SwapMultiSpectrumOperator                         5.0     6286197    1785241  0.28     0.1363      good	Tuning 5
+//			DirichletSpectrumOperator                         6.0     6284851    1867438  0.3      0.2052      good	Tuning 6
+//			DirichletAlphaSpectrumOperator                    9.529   6287903    1230997  0.2      0.2325      good	Tuning alpha: 9.529066888713698
+//			DirichletAlphaSpectrumOperator                            6287173    1228655  0.2      0.6481      high	Tuning alpha: 100.0
+
+			//betaMean
+//			SwapMultiSpectrumOperator                         6.0     2096272    645831   0.31     0.1233      good	Tuning 6
+//			DirichletSpectrumOperator                         12.0    2094432    848784   0.41     0.0483      low	Tuning 12
+//			DirichletAlphaSpectrumOperator                    5.942   2095967    411286   0.2      0.2214      good	Tuning alpha: 5.941843414146467
+//			DirichletAlphaSpectrumOperator                            2095423    413344   0.2      0.6218      high	Tuning alpha: 100.0
 			noOfTrueHaplotype = 7;
 			noOfRecoveredHaplotype=7;
 		}

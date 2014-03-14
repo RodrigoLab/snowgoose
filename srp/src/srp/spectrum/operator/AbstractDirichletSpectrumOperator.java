@@ -1,5 +1,7 @@
 package srp.spectrum.operator;
 
+import java.util.Arrays;
+
 import srp.spectrum.SpectraParameter;
 import srp.spectrum.SpectrumAlignmentModel;
 import dr.inference.operators.CoercionMode;
@@ -59,6 +61,10 @@ public abstract class AbstractDirichletSpectrumOperator extends AbstractSpectrum
 		return x;
 	}
 
+	/*
+	 * small alpha -> less similar then oldFreq
+	 */
+	
 	protected void nextDirichlet(SpectraParameter spectra, double alpha,
 			double[] oldFreq, double[] oldParameter, double[] newFreq, double[] newParameter) {
 
@@ -87,6 +93,7 @@ public abstract class AbstractDirichletSpectrumOperator extends AbstractSpectrum
 			newParameter[j] = newFreq[j]*alpha;
 			spectra.setFrequency(j, newFreq[j]);
 		}
+
 	}
 
 }

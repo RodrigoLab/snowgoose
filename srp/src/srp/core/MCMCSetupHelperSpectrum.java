@@ -153,9 +153,9 @@ public class MCMCSetupHelperSpectrum extends MCMCSetupHelper {
 			operator.setWeight(opSpectrum*1);
 //			schedule.addOperator(operator);
 			
-			operator = new SwapMultiSpectrumOperator(spectrumModel, 3, CoercionMode.COERCION_ON, true);
+			operator = new SwapMultiSpectrumOperator(spectrumModel, 5, CoercionMode.COERCION_ON, true);
 			operator.setWeight(opSpectrum*1);
-//			schedule.addOperator(operator);
+			schedule.addOperator(operator);
 			
 			operator = new SwapColumnSpectrumOperator(spectrumModel, CoercionMode.COERCION_OFF);
 			operator.setWeight(opSpectrum*5);
@@ -175,17 +175,20 @@ public class MCMCSetupHelperSpectrum extends MCMCSetupHelper {
 			// SwapSubColumnSpectrumOperator 40084 14282 0.36 0.0 very low Tuning 4
 			// SwapSubColumnSpectrumOperator 2.0 40054 12469 0.31 0.2342 good Tuning 2
 	
-			operator = new DirichletSpectrumOperator(spectrumModel, 3, CoercionMode.COERCION_ON);
+			operator = new DirichletSpectrumOperator(spectrumModel, 5, 100, CoercionMode.COERCION_ON);
 			operator.setWeight(opSpectrum*1);
 			schedule.addOperator(operator);
-			operator = new DirichletSpectrumOperator(spectrumModel, 1, CoercionMode.COERCION_OFF);
+			operator = new DirichletSpectrumOperator(spectrumModel, 5, 50, CoercionMode.COERCION_ON);
 			operator.setWeight(opSpectrum*1);
-//			schedule.addOperator(operator);
+			schedule.addOperator(operator);
 	//		operator = new DirichletSpectrumOperator(spectrumModel, 12, CoercionMode.COERCION_OFF);
 	//		operator.setWeight(opSpectrum*1);
 	//		schedule.addOperator(operator);
 	
 			operator = new DirichletAlphaSpectrumOperator(spectrumModel, 100, CoercionMode.COERCION_ON);
+			operator.setWeight(opSpectrum*1);
+			schedule.addOperator(operator);
+			operator = new DirichletAlphaSpectrumOperator(spectrumModel, 100, CoercionMode.COERCION_OFF);
 			operator.setWeight(opSpectrum*1);
 //			schedule.addOperator(operator);
 	//		operator = new DirichletAlphaSpectrumOperator(spectrumModel, 10, CoercionMode.COERCION_OFF);

@@ -8,7 +8,7 @@ import dr.math.MathUtils;
 
 public abstract class AbstractSwapSpectrumOperator extends AbstractSpectrumOperator{
 
-	private boolean random = true;
+	protected boolean random = true;
 	public AbstractSwapSpectrumOperator(SpectrumAlignmentModel spectrumModel,
 			CoercionMode mode, boolean random) {
 		super(spectrumModel, mode);

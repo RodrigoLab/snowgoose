@@ -238,7 +238,7 @@ public class ShortReadsLikelihoodTimeTrialTest {
 		
 			int bases = 10;
 			AbstractSpectrumOperator op = new DirichletSpectrumOperator(
-					spectrumModel, bases, null);
+					spectrumModel, bases, 100, null);
 			String summary = timeTrialOperator(likelihood, op, 10000);
 			System.out.println(summary + "\t" + op.getOperatorName() +"\t"+ bases);
 		}

@@ -18,7 +18,7 @@ public class SwapMultiSpectrumOperator extends AbstractSwapSpectrumOperator {
 
 	public static final String OPERATOR_NAME = SwapMultiSpectrumOperator.class.getSimpleName();
 	public static final SpectrumOperation OP = SpectrumOperation.SWAP_MULTI;
-	private static final int MIN_BASE = 3;
+	private static final int MIN_BASE = 1;
     private final int[] parameterWeights;
 //    private double delta = 0.05;
     private int swapBasesCount = 3;
@@ -101,7 +101,7 @@ public class SwapMultiSpectrumOperator extends AbstractSwapSpectrumOperator {
 	@Override
 	public String getOperatorName() {
 	
-		return OPERATOR_NAME;
+		return OPERATOR_NAME+"(random="+random+")";
 	}
 
 

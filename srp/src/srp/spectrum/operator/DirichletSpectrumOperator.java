@@ -40,7 +40,7 @@ public class DirichletSpectrumOperator extends AbstractDirichletSpectrumOperator
 
     
 	public DirichletSpectrumOperator(SpectrumAlignmentModel spectrumModel, 
-			int baseCount, CoercionMode mode) {
+			int baseCount, int alpha, CoercionMode mode) {
 		super(spectrumModel, mode);
 		
 		
@@ -54,7 +54,7 @@ public class DirichletSpectrumOperator extends AbstractDirichletSpectrumOperator
             parameterWeights[i] = 1;
         }
         
-        alpha = 100;
+        this.alpha = alpha;
         convertToAutoOptimize(this.swapBasesCount);
 //        double[] alphas = new double[]{alpha, alpha, alpha, alpha};
 //        DirichletDistribution dd = new DirichletDistribution(alphas);
@@ -118,7 +118,7 @@ public class DirichletSpectrumOperator extends AbstractDirichletSpectrumOperator
 	@Override
 	public String getOperatorName() {
 	
-		return OPERATOR_NAME;
+		return OPERATOR_NAME+"(alpha="+alpha+")";
 	}
 
 
@@ -177,7 +177,7 @@ public class DirichletSpectrumOperator extends AbstractDirichletSpectrumOperator
 
     @Override
 	public final String getPerformanceSuggestion() {
-    	String s = "Tuning "+swapBasesCount; 
+    	String s = "Tuning BasesCount: "+swapBasesCount; 
     	return s;
 
     }

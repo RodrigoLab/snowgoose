@@ -64,7 +64,7 @@ public class DirichletSpectrumOperatorTest {
 		int spectrumLength = seqs[0].length();
 		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(spectrumLength, 1);
 		DirichletSpectrumOperator op = new DirichletSpectrumOperator(
-				spectrumModel, 1, CoercionMode.COERCION_OFF);
+				spectrumModel, 1, 100, CoercionMode.COERCION_OFF);
 
 		double[][] storedFrequencies = new double[spectrumModel.getSpectrumLength()][DIMENSION];
 		Spectrum spectrum = spectrumModel.getSpectrum(0);
@@ -124,7 +124,7 @@ public class DirichletSpectrumOperatorTest {
 		int spectrumLength = seqs[0].length();
 		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(spectrumLength, 5);
 		DirichletSpectrumOperator op = new DirichletSpectrumOperator(
-				spectrumModel, 1, CoercionMode.COERCION_OFF);
+				spectrumModel, 1, 100, CoercionMode.COERCION_OFF);
 		double alpha = op.getAlpha();
 		
 		double[][][] storedFrequencies = new double[spectrumModel
@@ -265,7 +265,7 @@ void AutotuneDirichlet (MrBFlt acceptanceRate, MrBFlt targetRate, int batch, MrB
 		int spectrumLength = seqs[0].length();
 		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(spectrumLength, 5);
 		DirichletSpectrumOperator op = new DirichletSpectrumOperator(
-				spectrumModel,  10, CoercionMode.COERCION_OFF);
+				spectrumModel,  10, 100, CoercionMode.COERCION_OFF);
 
 		double[][][] storedFrequencies = new double[spectrumModel
 				.getSpectrumCount()][spectrumModel.getSpectrumLength()][4];

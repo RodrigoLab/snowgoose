@@ -128,16 +128,14 @@ public class DirichletAlphaSpectrumOperator extends AbstractDirichletSpectrumOpe
 
 	private void convertFromAutoOptimizeToValue(double autoOpt) {
     	autoOptimize = autoOpt;
-//    	swapBasesCount =  MIN_BASE + (int) Math.exp(autoOptimize);
-    	alpha =  FastMath.exp(autoOptimize);
-//    	checkParameterIsValid();
+//    	alpha =  1/FastMath.exp(autoOptimize);
+    	alpha =  FastMath.exp(-autoOptimize);
 		
     }
 
 	private double convertToAutoOptimize() {
-//		swapBasesCount = length;
-//		checkParameterIsValid();
-		autoOptimize = Math.log(alpha);
+//		autoOptimize = Math.log(1/alpha);
+		autoOptimize = -Math.log(alpha);
 	    return autoOptimize;
 	}
 
