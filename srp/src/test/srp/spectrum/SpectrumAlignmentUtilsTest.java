@@ -13,6 +13,8 @@ import srp.shortreads.AlignmentMapping;
 import srp.spectrum.SpectraParameter;
 import srp.spectrum.SpectrumAlignmentModel;
 import srp.spectrum.SpectrumAlignmentUtils;
+import srp.spectrum.SpectrumAlignmentUtils.Dist;
+import srp.spectrum.likelihood.ShortReadsSpectrumLikelihood.DistType;
 import dr.evolution.alignment.Alignment;
 
 public class SpectrumAlignmentUtilsTest {
@@ -52,7 +54,7 @@ public class SpectrumAlignmentUtilsTest {
 
 		SpectrumAlignmentModel spectrumModel = dataImporter.importPartialSpectrumFile(logSpectrumPath );
 //			
-		SpectrumAlignmentUtils.compareSpectrumToTrueAlignment(spectrumModel, trueAlignment);
+		SpectrumAlignmentUtils.compareSpectrumToTrueAlignment(spectrumModel, trueAlignment, Dist.euclidean);
 
 	}
 	
@@ -76,7 +78,7 @@ public class SpectrumAlignmentUtilsTest {
 		
 		SpectrumAlignmentModel spectrumModel = dataImporter.importPartialSpectrumFile(partialSpectrumFile );
 
-		double[][] allDelta = SpectrumAlignmentUtils.compareSpectrumToTrueAlignment(spectrumModel, trueAlignment);
+		double[][] allDelta = SpectrumAlignmentUtils.compareSpectrumToTrueAlignment(spectrumModel, trueAlignment, Dist.euclidean);
 //		Spectrum1
 //		>hap_0	GTGCA MMMMM
 //		>hap_1	ATGTA XMMXM

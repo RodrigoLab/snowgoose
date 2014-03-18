@@ -58,10 +58,10 @@ public class MainMCMCSpectrumFull {
 		boolean randomTree = true;
 		boolean randomSpectrum = true;
 		SpectraType randomSpectrumType = SpectraType.RANDOM;
-		DistType distTypeCode = DistType.betaMode;
+		DistType distTypeCode = DistType.flat;
 		
 		boolean commandLine = true;
-//		commandLine = false;
+		commandLine = false;
 		if(commandLine){
 			dataDir = args[0];
 			runIndex = Integer.parseInt(args[1]);
@@ -70,6 +70,7 @@ public class MainMCMCSpectrumFull {
 			noOfTrueHaplotype = Integer.parseInt(args[4]);
 			noOfRecoveredHaplotype= Integer.parseInt(args[5]);
 		}
+		
 		else{	
 			dataDir = "/home/sw167/workspaceSrp/snowgoose/srp/unittest/testData/";
 			runIndex = 54;
@@ -114,10 +115,10 @@ public class MainMCMCSpectrumFull {
 		
 		String logTracerName = prefix+".log";
 		String logTreeName = prefix+".trees";
-		String logHaplotypeName = prefix+".haplatype";
+		String logHaplotypeName = prefix+".haplotype";
 		String operatorAnalysisFile = prefix+"_operatorAnalysisFile.txt";
 		
-		String partialSpectrumName = hapRunIndex+".haplatypepartial";
+		String partialSpectrumName = hapRunIndex+".haplotypepartial";
 		String partialTreeName = "FullTree_"+hapRunIndex+".treespartial";
 //		String partialTreeName = hapRunIndex + "_Srp.tree";
 		

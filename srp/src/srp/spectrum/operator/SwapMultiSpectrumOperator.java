@@ -18,10 +18,12 @@ public class SwapMultiSpectrumOperator extends AbstractSwapSpectrumOperator {
 
 	public static final String OPERATOR_NAME = SwapMultiSpectrumOperator.class.getSimpleName();
 	public static final SpectrumOperation OP = SpectrumOperation.SWAP_MULTI;
-	private static final int MIN_BASE = 1;
+
     private final int[] parameterWeights;
 //    private double delta = 0.05;
-    private int swapBasesCount = 3;
+    
+    private int swapBasesCount;
+    private double autoOptimize;
     
 	public SwapMultiSpectrumOperator(SpectrumAlignmentModel spectrumModel, 
 			int baseCount, CoercionMode mode) {
@@ -44,11 +46,10 @@ public class SwapMultiSpectrumOperator extends AbstractSwapSpectrumOperator {
 
 	}
 
-	private double[] debugList = new double[8];
-	private double autoOptimize;
+//	private double[] debugList = new double[8];
 //	private int scaleFactor=1;
-	
-	public static int totalCount = 0;
+//	public static int totalCount = 0;
+
 	@Override
 	public double doOperation() throws OperatorFailedException {
 
@@ -80,7 +81,7 @@ public class SwapMultiSpectrumOperator extends AbstractSwapSpectrumOperator {
 //	    
 //	    
 		int[] siteIndexs = 
-				generateUniqueSamples(swapBasesCount, spectrumLength);
+				generateUniqueSites(swapBasesCount);
 //		int[] siteIndexs = randomSampleSites(swapBasesCount);
 		//		System.out.println(Arrays.toString(siteIndex));
 		for (int i = 0; i < swapBasesCount; i++) {

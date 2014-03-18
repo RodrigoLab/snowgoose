@@ -73,7 +73,7 @@ public class DataImporter {
 		
 		return importPartialSpectrumFile(dataDir, partialSpectrumName);
 	}
-
+	
 	public static SpectrumAlignmentModel importPartialSpectrumFile(
 			String dataDir, String partialSpectrumName) throws IOException {
 	
@@ -108,7 +108,7 @@ public class DataImporter {
 					int taxonIndex = spectrumModel.getTaxonIndex(taxonName);
 					if(taxonIndex != -1){
 						spectrumModel.removeSpectrum(taxonIndex);
-						System.err.println("remove "+taxonName +"\t"+ taxonIndex);
+//						System.err.println("remove "+taxonName +"\t"+ taxonIndex);
 					}
 					spectrumModel.addSpectrum(spectrum);
 					
@@ -148,7 +148,9 @@ public class DataImporter {
 				
 			}
 			
-				
+//			else if(!inline.equals("")){
+//				System.out.println(inline);
+//			}
 				
 		}
 //		int length = 0;
@@ -156,7 +158,7 @@ public class DataImporter {
 		inFile.close();
 		return spectrumModel;
 	}
-
+	
 	public static Sequence importRefSeq(String dataDir, String fileName) throws Exception{
 
 		

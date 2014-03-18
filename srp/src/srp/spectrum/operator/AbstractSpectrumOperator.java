@@ -28,11 +28,16 @@ public abstract class AbstractSpectrumOperator extends AbstractCoercableOperator
 
     public SpectrumOperation OP;
     
+    protected static final int MIN_BASE = 1;
     protected SpectrumAlignmentModel spectrumModel;
 
-	
+    protected final int[] fixSpectrumIndexArray;
+    
 	protected final int spectrumCount;
 	protected final int spectrumLength;
+	
+	
+	
 	private int[] spectrumLengthArray;
 
 
@@ -52,6 +57,10 @@ public abstract class AbstractSpectrumOperator extends AbstractCoercableOperator
 		for (int i = 0; i < spectrumLengthArray.length; i++) {
 			spectrumLengthArray[i] = i;
 		}
+		fixSpectrumIndexArray = new int[spectrumCount];
+        for (int i = 0; i < fixSpectrumIndexArray.length; i++) {
+        	fixSpectrumIndexArray[i] = i;
+		}
 	}
 
 
@@ -63,14 +72,14 @@ public abstract class AbstractSpectrumOperator extends AbstractCoercableOperator
 	public long time3 = 0;
 	private long timeStart = 0;
 
-	public int[] generateUniqueSamples(int m, int total) {
+	public int[] generateUniqueSites(int m) {
 		int[] siteIndexs;
 //		timeStart = System.nanoTime();
 //		randomSiteHashSet(m);
 //		time += (System.nanoTime() - timeStart);
 		
 //		timeStart  = System.nanoTime();		
-		siteIndexs = randomSampleSites(m);
+		siteIndexs = randomSampleSites(m, spectrumLengthArray);
 //		time2 += (System.nanoTime() - timeStart);
 		
 //		timeStart  = System.nanoTime();		
@@ -79,11 +88,11 @@ public abstract class AbstractSpectrumOperator extends AbstractCoercableOperator
 		
 		return siteIndexs;
 	}
-	public int[] randomSiteHashSet(int m){
+	public int[] randomSiteHashSet(int m, int total){
 		generated.clear();
 		while (generated.size() < m) //time: 1.2/1.3
 		{
-		    Integer next = MathUtils.nextInt(spectrumLength);
+		    Integer next = MathUtils.nextInt(total);
 		    generated.add(next);
 		}
 		
@@ -96,16 +105,31 @@ public abstract class AbstractSpectrumOperator extends AbstractCoercableOperator
 		int[] siteIndexs = Ints.toArray(generated); //time: 0.6
 		return siteIndexs;
 	}
-	public int[] randomSampleSites(int m){ //time:0.5
+	
+//	public int[] randomSampleSites(int m){ //time:0.5
+//		int[] sites = new int[m];
+//	    for(int i=0;i<m;i++){
+//	        int pos = i + MathUtils.nextInt(spectrumLength - i);
+//	        int tmp = spectrumLengthArray[pos];
+//	        spectrumLengthArray[pos] = spectrumLengthArray[i];
+//	        spectrumLengthArray[i] = tmp;
+//	        sites[i] = tmp;
+//	        
+//	    }
+//	    return sites;
+//	}
+	
+	public int[] randomSampleSites(int m, int[] sampleArray){ //time:0.5
 		int[] sites = new int[m];
-	    for(int i=0;i<m;i++){
-	        int pos = i + MathUtils.nextInt(spectrumLength - i);
+		int length = sampleArray.length;
+		for (int i = 0; i < m; i++) {
+	        int pos = i + MathUtils.nextInt(length - i);
 //	        T tmp = items.get(pos);
 //	        items.set(pos, items.get(i));
 //	        items.set(i, tmp);
-	        int tmp = spectrumLengthArray[pos];
-	        spectrumLengthArray[pos] = spectrumLengthArray[i];
-	        spectrumLengthArray[i] = tmp;
+	        int tmp = sampleArray[pos];
+	        sampleArray[pos] = sampleArray[i];
+	        sampleArray[i] = tmp;
 	        sites[i] = tmp;
 	        
 	    }

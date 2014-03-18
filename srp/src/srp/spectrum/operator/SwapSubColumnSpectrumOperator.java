@@ -15,7 +15,7 @@ import dr.inference.operators.CoercionMode;
 import dr.inference.operators.OperatorFailedException;
 import dr.math.MathUtils;
 
-public class SwapSubColumnSpectrumOperator extends AbstractSpectrumOperator {
+public class SwapSubColumnSpectrumOperator extends AbstractSwapSpectrumOperator {
 
 	public static final String OPERATOR_NAME = SwapSubColumnSpectrumOperator.class.getSimpleName();
 	public static final SpectrumOperation OP = SpectrumOperation.SWAP_SUBCOLUMN;
@@ -24,20 +24,17 @@ public class SwapSubColumnSpectrumOperator extends AbstractSpectrumOperator {
 //    private double swapHapCount = 0.05;
 
 
-	private double[] debugList = new double[8];
 	private int swapSpectrumCount;
 	private double autoOptimize;
-	private int spectrumCount;
 //	private double scaleFactor;
 
 	
 	public SwapSubColumnSpectrumOperator(SpectrumAlignmentModel spectrumModel, 
-			int swapHapCount, CoercionMode mode) {
-		super(spectrumModel, mode);
+			int swapSpectrumCount, CoercionMode mode) {
+		super(spectrumModel, mode, true);
 		
-		
-		this.swapSpectrumCount = swapHapCount;
-		this.spectrumCount = spectrumModel.getSpectrumCount();
+		this.swapSpectrumCount = swapSpectrumCount;
+//		this.spectrumCount = spectrumModel.getSpectrumCount();
         setWeight(1.0);
 
         parameterWeights = new int[this.spectrumModel.getDataType().getStateCount()];
@@ -61,64 +58,16 @@ public class SwapSubColumnSpectrumOperator extends AbstractSpectrumOperator {
 		spectrumModel.startSpectrumOperation();
 		int siteIndex = MathUtils.nextInt(spectrumLength);
 
-//        SpectraParameter[] spectra = new SpectraParameter[spectrumCount];
-//        double[] d = new double[spectrumCount];
-//        double[] scalar1 = new double[spectrumCount];
-//        double[] scalar2 = new double[spectrumCount];
-//        int[] dim1 = new int[spectrumCount];
-//		int[] dim2 = new int[spectrumCount];
-		
-		
-		Set<Integer> generated = new HashSet<Integer>();
-		while (generated.size() < swapSpectrumCount)
-		{
-		    Integer next = MathUtils.nextInt(spectrumCount);
-		    generated.add(next);
-		}
-//		generated.toArray(siteIndex);
-		int[] spectrumIndexs = Ints.toArray(generated);
-		
-		//		System.out.println(Arrays.toString(siteIndex));
-		for (int h = 0; h < swapSpectrumCount; h++) {
-			int i = spectrumIndexs[h];
-			SpectraParameter spectra = spectrumModel.getSpectrum(i).getSpectra(siteIndex);
+		int[] spectrumIndexs = randomSiteHashSet(swapSpectrumCount, spectrumLength);
 
-//			// get any two dims and swap
-//	        int dim1 = MathUtils.nextInt(DIMENSION);
-//	        int dim2;// = dim1;
-//	        do {
-//	            dim2 = MathUtils.nextInt(DIMENSION);
-//	        }while (dim1 == dim2);
-//	        
-//	        double scalar1 = parameter.getParameterValue(dim1);
-//	        double scalar2 = parameter.getParameterValue(dim2);
-	        
-	        
-			// get freq==1 and swap with others
-			int dim1 = 0;
-			double scalar1 = 0;
-			for (int d = 0; d < DIMENSION; d++) {
-				scalar1 = spectra.getFrequency(d);
-				if (scalar1 == 1) {
-					dim1 = d;
-					break;
-				}
-			}
-			int dim2;// = dim1;
-			do {
-				dim2 = MathUtils.nextInt(DIMENSION);
-			} while (dim1 == dim2);
-			double scalar2 = spectra.getFrequency(dim2);        
-
-	        spectra.setFrequency(dim1, scalar2);
-	        spectra.setFrequency(dim2, scalar1);
-
-
-	        
+		for (int i = 0; i < swapSpectrumCount; i++) {
+			int s = spectrumIndexs[i];
+//			SpectraParameter spectra = spectrum.getSpectra(spectrumIndexs[i]);
+			SpectraParameter spectra = spectrumModel.getSpectrum(s).getSpectra(siteIndex);
+			swapFrequency(spectra);
 		}
 
 		spectrumModel.setSpectrumOperationRecord(OP, spectrumIndexs, siteIndex);
-		//TODO: finish implement calculation/store/restore
 		spectrumModel.endSpectrumOperation();
 
 		return 0.0;

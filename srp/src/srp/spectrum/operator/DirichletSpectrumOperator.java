@@ -32,6 +32,10 @@ public class DirichletSpectrumOperator extends AbstractDirichletSpectrumOperator
 
     private int swapBasesCount;
     private double alpha;
+
+	private double autoOptimize;
+//	private int scaleFactor=1;
+
 	
 	double[] oldParameter = new double[DIMENSION];
 	double[] newParameter = new double[DIMENSION];
@@ -66,9 +70,6 @@ public class DirichletSpectrumOperator extends AbstractDirichletSpectrumOperator
         
 
 	}
-	private double[] debugList = new double[8];
-	private double autoOptimize;
-//	private int scaleFactor=1;
 	
 	
 	@Override
@@ -79,7 +80,7 @@ public class DirichletSpectrumOperator extends AbstractDirichletSpectrumOperator
 		int spectrumIndex = MathUtils.nextInt(spectrumCount);
 		Spectrum spectrum = spectrumModel.getSpectrum(spectrumIndex);
 
-		int[] siteIndexs = generateUniqueSamples(swapBasesCount, spectrumLength);
+		int[] siteIndexs = generateUniqueSites(swapBasesCount);
 		double ratio = 0;
 		for (int i = 0; i < swapBasesCount; i++) {
 			

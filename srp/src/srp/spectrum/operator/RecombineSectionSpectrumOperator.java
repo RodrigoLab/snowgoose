@@ -60,9 +60,6 @@ public class RecombineSectionSpectrumOperator extends AbstractSpectrumOperator {
 		
 	}
 
-	private double[] debugList = new double[8];
-	
-	
 	
 	@Override
 	public double doOperation() throws OperatorFailedException {

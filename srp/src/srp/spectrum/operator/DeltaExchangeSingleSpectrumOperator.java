@@ -19,11 +19,11 @@ public class DeltaExchangeSingleSpectrumOperator extends AbstractSpectrumOperato
 //    private Parameter parameter = null;
     private final int[] parameterWeights;
     
-    private int[] siteIndex;
-    private double delta = 0.1;
-
-    private double[] debugList = new double[8];
-	private int mm;
+    private double delta;
+    
+//  private int[] siteIndex;
+//    private double[] debugList = new double[8];
+//	private int mm;
 //	public int failcount = 0;
 	
 	public DeltaExchangeSingleSpectrumOperator(SpectrumAlignmentModel spectrumModel, 
@@ -32,7 +32,7 @@ public class DeltaExchangeSingleSpectrumOperator extends AbstractSpectrumOperato
 		
 		
 		this.delta = delta;
-		this.siteIndex = new int[1];
+//		this.siteIndex = new int[1];
         setWeight(1.0);
 
         parameterWeights = new int[this.spectrumModel.getDataType().getStateCount()];
@@ -49,10 +49,10 @@ public class DeltaExchangeSingleSpectrumOperator extends AbstractSpectrumOperato
 		spectrumModel.startSpectrumOperation();
 
 		int spectrumIndex = MathUtils.nextInt(spectrumCount);
-		siteIndex[0] = MathUtils.nextInt(spectrumLength);
+		int siteIndex = MathUtils.nextInt(spectrumLength);
 		
 		Spectrum spectrum = spectrumModel.getSpectrum(spectrumIndex);
-		SpectraParameter spectra = spectrum.getSpectra(siteIndex[0]);
+		SpectraParameter spectra = spectrum.getSpectra(siteIndex);
         // get two dimensions
 
         int dim1 = MathUtils.nextInt(DIMENSION);

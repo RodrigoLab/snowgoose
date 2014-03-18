@@ -25,15 +25,12 @@ public class DirichletAlphaSpectrumOperator extends AbstractDirichletSpectrumOpe
 //	public static final SpectrumOperation OP = SpectrumOperation.DIRICHLET;
 	public static final SpectrumOperation OP = SpectrumOperation.DELTA_SINGLE;
 	
-	
-	
-	
 //    private Parameter parameter = null;
 
-	private static final int MIN_BASE = 1;
+
     private final int[] parameterWeights;
 //    private double delta = 0.05;
-    private final int swapBasesCount=1;
+//    private final int swapBasesCount;
 	
     private double autoOptimize;
     private double alpha = 100;
@@ -43,8 +40,9 @@ public class DirichletAlphaSpectrumOperator extends AbstractDirichletSpectrumOpe
 	double[] oldFreq = new double[DIMENSION];
 	double[] newFreq = new double[DIMENSION];
 
-	int[] siteIndexs; 
-
+//	int[] siteIndexs; 
+//	private double[] debugList = new double[8];
+	
     
 	public DirichletAlphaSpectrumOperator(SpectrumAlignmentModel spectrumModel, 
 			double alpha, CoercionMode mode) {
@@ -54,7 +52,7 @@ public class DirichletAlphaSpectrumOperator extends AbstractDirichletSpectrumOpe
 //		this.delta = delta;
 //		baseCount = 
 		this.alpha = alpha;
-		this.siteIndexs = new int[swapBasesCount];
+//		this.siteIndexs = new int[swapBasesCount];
         setWeight(1.0);
 
         parameterWeights = new int[this.spectrumModel.getDataType().getStateCount()];
@@ -74,7 +72,6 @@ public class DirichletAlphaSpectrumOperator extends AbstractDirichletSpectrumOpe
         
 
 	}
-	private double[] debugList = new double[8];
 	
 	
 //	private int scaleFactor=1;
@@ -90,9 +87,9 @@ public class DirichletAlphaSpectrumOperator extends AbstractDirichletSpectrumOpe
 		int spectrumIndex = MathUtils.nextInt(spectrumCount);
 		Spectrum spectrum = spectrumModel.getSpectrum(spectrumIndex);
 
-		siteIndexs[0] = MathUtils.nextInt(spectrumLength);
+		int siteIndex = MathUtils.nextInt(spectrumLength);
 
-		SpectraParameter spectra = spectrum.getSpectra(siteIndexs[0]);
+		SpectraParameter spectra = spectrum.getSpectra(siteIndex);
 		nextDirichlet(spectra, alpha, oldFreq, oldParameter, newFreq, newParameter);
 		
 //			 get proposal ratio
@@ -101,7 +98,7 @@ public class DirichletAlphaSpectrumOperator extends AbstractDirichletSpectrumOpe
 		
 		double ratio = (x - y);
 		
-		spectrumModel.setSpectrumOperationRecord(OP, spectrumIndex, siteIndexs);
+		spectrumModel.setSpectrumOperationRecord(OP, spectrumIndex, siteIndex);
 		
 		spectrumModel.endSpectrumOperation();
 //		System.out.print("diriAlpha: "+ratio +"\t");

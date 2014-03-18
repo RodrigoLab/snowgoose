@@ -20,11 +20,16 @@ public class DeltaExchangeMultiSpectrumOperator extends AbstractSpectrumOperator
 
 	public static final String OPERATOR_NAME = DeltaExchangeMultiSpectrumOperator.class.getSimpleName();
 	public static final SpectrumOperation OP = SpectrumOperation.DELTA_MULTI;
-	private static final int MIN_BASE = 3;
+	
     private final int[] parameterWeights;
-    private double delta = 0.05;
-    private int swapBasesCount = 3;
+    private double delta;
+    private int swapBasesCount;
+    private double autoOptimize;
     
+//    private double[] debugList = new double[8];
+//	private int scaleFactor=1;
+//	public static double totalCount = 0;
+	
 	public DeltaExchangeMultiSpectrumOperator(SpectrumAlignmentModel spectrumModel, 
 			double delta, int baseCount, CoercionMode mode) {
 		super(spectrumModel, mode);
@@ -42,11 +47,7 @@ public class DeltaExchangeMultiSpectrumOperator extends AbstractSpectrumOperator
 
 	}
 
-	private double[] debugList = new double[8];
-	private double autoOptimize;
-//	private int scaleFactor=1;
 	
-	public static double totalCount = 0;
 	@Override
 	public double doOperation() throws OperatorFailedException {
 
@@ -67,7 +68,7 @@ public class DeltaExchangeMultiSpectrumOperator extends AbstractSpectrumOperator
 				
 		Spectrum spectrum = spectrumModel.getSpectrum(spectrumIndex);
 		
-		int[] siteIndexs = generateUniqueSamples(swapBasesCount, spectrumLength);
+		int[] siteIndexs = generateUniqueSites(swapBasesCount);
 		
 		for (int i = 0; i < swapBasesCount; i++) {
 			
@@ -77,7 +78,7 @@ public class DeltaExchangeMultiSpectrumOperator extends AbstractSpectrumOperator
 			
 			spectra[i] = spectrum.getSpectra(siteIndexs[i]);
 			
-			
+				
 	        // get two dimensions
 
 	        dim1[i] = MathUtils.nextInt(DIMENSION);

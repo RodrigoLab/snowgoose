@@ -1,7 +1,5 @@
 package srp.spectrum.operator;
 
-import java.util.Arrays;
-
 import srp.spectrum.SpectraParameter;
 import srp.spectrum.Spectrum;
 import srp.spectrum.SpectrumAlignmentModel;
@@ -16,8 +14,8 @@ public class SwapSingleSpectrumOperator extends AbstractSwapSpectrumOperator{
 	public static final SpectrumOperation OP = SpectrumOperation.DELTA_SINGLE;
 //    private Parameter parameter = null;
     private final int[] parameterWeights;
-    private int[] siteIndexs;
-    private double delta = Double.NaN;
+//    private int[] siteIndexs;
+    
 
     public SwapSingleSpectrumOperator(SpectrumAlignmentModel spectrumModel) {
 		this(spectrumModel, true);
@@ -27,7 +25,7 @@ public class SwapSingleSpectrumOperator extends AbstractSwapSpectrumOperator{
 		
 		
 //		this.delta = delta;
-		this.siteIndexs = new int[1];
+//		this.siteIndexs = new int[1];
         setWeight(1.0);
 
         parameterWeights = new int[this.spectrumModel.getDataType().getStateCount()];
@@ -37,7 +35,6 @@ public class SwapSingleSpectrumOperator extends AbstractSwapSpectrumOperator{
 
 	}
 
-	private double[] debugList = new double[8];
 
 	@Override
 	public double doOperation() throws OperatorFailedException {
@@ -45,15 +42,15 @@ public class SwapSingleSpectrumOperator extends AbstractSwapSpectrumOperator{
 		spectrumModel.startSpectrumOperation();
 
 		int spectrumIndex = MathUtils.nextInt(spectrumCount);
-		siteIndexs[0] = MathUtils.nextInt(spectrumLength);
+		int siteIndex = MathUtils.nextInt(spectrumLength);
 		
 		Spectrum spectrum = spectrumModel.getSpectrum(spectrumIndex);
-		SpectraParameter spectra = spectrum.getSpectra(siteIndexs[0]);
+		SpectraParameter spectra = spectrum.getSpectra(siteIndex);
 
 		swapFrequency(spectra);
         // symmetrical move so return a zero hasting ratio
 
-		spectrumModel.setSpectrumOperationRecord(OP, spectrumIndex, siteIndexs);
+		spectrumModel.setSpectrumOperationRecord(OP, spectrumIndex, siteIndex);
 		
 		spectrumModel.endSpectrumOperation();
 
@@ -79,7 +76,7 @@ public class SwapSingleSpectrumOperator extends AbstractSwapSpectrumOperator{
 
     @Override
 	public double getRawParameter() {
-        return delta;
+        return Double.NaN;
     }
 
 

@@ -321,7 +321,7 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 				
 				break;
 			case SWAP_SUBCOLUMN:
-				logLikelihood = calculateSrpLikelihoodSwapSubColumn();
+				logLikelihood = calculateSrpLikelihoodSubColumn();
 				break;
 			case RECOMBINATION:
 				logLikelihood = calculateSrpLikelihoodRecombination();
@@ -475,40 +475,29 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 		int[] siteIndexs = record.getAllSiteIndexs();
 		int j= record.getSpectrumIndex(); 
 		Spectrum spectrum = spectrumModel.getSpectrum(j);
-		double currentLogLikelihood = getStoredLogLikelihood();
 		
-//		stateLikelihood.calculateStatesLogLikelihood(spectra, allStateLogLikelihood[k]);
-//		stateLikelihood.calculateStoredStatesLogLikelihood(spectra, allStoredStateLogLikelihood[k]);
+//		stateLikelihood.calculateStatesLogLikelihood(spectra, allStateLogLikelihood2D[k]);
+//		stateLikelihood.calculateStoredStatesLogLikelihood(spectra, allStoredStateLogLikelihood2D[k]);
 		
-		for (int s = 0; s < siteIndexs.length; s++) {
-			int k = siteIndexs[s];
+		for (int k : siteIndexs) {
 			SpectraParameter spectra = spectrum.getSpectra(k);
 			int kOffset = k*STATE_COUNT;
 			stateLikelihood.calculateStatesLogLikelihood(spectra, kOffset, allStateLogLikelihood);
 			stateLikelihood.calculateStoredStatesLogLikelihood(spectra, kOffset, allStoredStateLogLikelihood);
-			
 		}
-
 		
 		int multihere;
+		
+		double currentLogLikelihood = getStoredLogLikelihood();
 		if(multiType == MultiType.BitSet){
-
-			bitSet.clear();
-//			BitSet bitSet = new BitSet(srpCount);
-			for (int s : siteIndexs) {
-				BitSet tempSet = srpMap.getBitSet(s);
-				bitSet.or(tempSet);
-			}
+			recalculateBitSet(siteIndexs);
 			
-//			srpIndexCount= 0;
 			int count = 0;
 			for (int i = bitSet.nextSetBit(0); i >= 0; i = bitSet.nextSetBit(i+1)) {
-				srpIndex[count] = i;
-				count++;
+				srpIndex[count++] = i;
 
 				currentLogLikelihood = updateLikelihoodAtIJ_Local1DArray(i, j,
 						siteIndexs, allStateLogLikelihood, allStoredStateLogLikelihood, currentLogLikelihood);
-
 
 			}
 			srpIndexCount = count;
@@ -516,14 +505,7 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 			
 		}
 		else if(multiType==MultiType.Array){
-
-			for (int s : siteIndexs) {
-//				ArrayList<Integer> mapToSrp = srpMap.getMapToSrp(s);
-//				for (int i : mapToSrp) {
-				for (int i : mapToSrpArray[s]){
-					srpSwitch[i] = true;
-				}
-			}
+			recalculateArray(siteIndexs);
 
 			for (int i = 0; i < srpSwitch.length; i++) {
 				if(srpSwitch[i]){
@@ -536,17 +518,11 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 	
 		}
 		else if(multiType==MultiType.Hash){
-			allSrpPos.clear();
-			
-			for (int s : siteIndexs) {
-				ArrayList<Integer> mapToSrp = srpMap.getMapToSrp(s);
-				allSrpPos.addAll(mapToSrp);
-			}
+			recalculateHashSet(siteIndexs);
+
 			for (int i : allSrpPos) {
 				currentLogLikelihood = updateLikelihoodAtIJ_Local1DArray(i, j, siteIndexs,
 						allStateLogLikelihood, allStoredStateLogLikelihood, currentLogLikelihood);
-
-//				}
 			}
 		}
 		else if(multiType==MultiType.All){
@@ -573,36 +549,63 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 	}
 
 
+	private void recalculateArray(int[] siteIndexs) {
+		for (int s : siteIndexs) {
+			for (int i : mapToSrpArray[s]){
+				srpSwitch[i] = true;
+			}
+		}
+	}
+
+	private void recalculateHashSet(int[] siteIndexs) {
+		allSrpPos.clear();
+		for (int s : siteIndexs) {
+			ArrayList<Integer> mapToSrp = srpMap.getMapToSrp(s);
+			allSrpPos.addAll(mapToSrp);
+		}
+	}
+
+	private void recalculateBitSet(int[] siteIndexs) {
+		bitSet.clear();
+//		BitSet bitSet = new BitSet(srpCount);
+		for (int s : siteIndexs) {
+			BitSet tempSet = srpMap.getBitSet(s);
+			bitSet.or(tempSet);
+		}
+	}
+
 	private double calculateSrpLikelihoodColumn() {
 
 		SpectrumOperationRecord record = spectrumModel.getSpectrumOperationRecord();
 		int k = record.getColumnIndex();
 		ArrayList<Integer> mapToSrp = srpMap.getMapToSrp(k);
-
+		int[] allSpectrumIndexs = record.getAllSpectrumIndexs();
 		double currentLogLikelihood = getStoredLogLikelihood();
 		
-		for (int j = 0; j < spectrumCount; j++) {
+		for (int j : allSpectrumIndexs) {
 			SpectraParameter spectra = spectrumModel.getSpectrum(j).getSpectra(k);
 			
 			stateLikelihood.calculateStatesLogLikelihood2D(spectra, allStateLogLikelihood2D[j]);
 			stateLikelihood.calculateStoredStatesLogLikelihood2D(spectra, allStoredStateLogLikelihood2D[j]);
+			int kOffset = j*STATE_COUNT;
+			stateLikelihood.calculateStatesLogLikelihood(spectra, kOffset, allStateLogLikelihood);
+			stateLikelihood.calculateStoredStatesLogLikelihood(spectra, kOffset, allStoredStateLogLikelihood);
 		}
-		
 		for (int i : mapToSrp) {
-			
-//			String fullSrp = srpMap.getSrpFull(i);
-//			int state = getStateAtK(fullSrp, k);
 			int state = allSrpState2D[i][k];
-			for (int j = 0; j < spectrumCount; j++) {
-				currentLogLikelihood = updateLikelihoodAtIJK(i, j, state, allStateLogLikelihood2D[j],
-						allStoredStateLogLikelihood2D[j], currentLogLikelihood);
-
+			for (int j : allSpectrumIndexs) {
+//				currentLogLikelihood = updateLikelihoodAtIJK(i, j, state, allStateLogLikelihood2D[j],
+//						allStoredStateLogLikelihood2D[j], currentLogLikelihood);
+				if (state < STATE_COUNT) {
+					currentLogLikelihood = updateLikelihoodAtIJK(i, j, j*STATE_COUNT+state,
+							currentLogLikelihood);
+				}
 			}
 		}
 		return currentLogLikelihood;
 	}
 	
-	private double calculateSrpLikelihoodSwapSubColumn() {
+	private double calculateSrpLikelihoodSubColumn() {
 
 		SpectrumOperationRecord record = spectrumModel.getSpectrumOperationRecord();
 		int k = record.getColumnIndex();
@@ -617,6 +620,10 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 			
 			stateLikelihood.calculateStatesLogLikelihood2D(spectra, allStateLogLikelihood2D[j]);
 			stateLikelihood.calculateStoredStatesLogLikelihood2D(spectra, allStoredStateLogLikelihood2D[j]);
+			int kOffset = j*spectrumCount;
+			stateLikelihood.calculateStatesLogLikelihood(spectra, kOffset, allStateLogLikelihood);
+			stateLikelihood.calculateStoredStatesLogLikelihood(spectra, kOffset, allStoredStateLogLikelihood);
+	
 		}
 		
 		for (int i : mapToSrp) {
@@ -663,8 +670,8 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 			}
 		}
 
-		for (int s = 0; s < siteIndexs.length; s++) {
-			int k = siteIndexs[s];
+		for (int k : siteIndexs) {
+			
 			SpectraParameter spectra0 = spectrum0.getSpectra(k);
 			SpectraParameter spectra1 = spectrum1.getSpectra(k);
 			int kOffset = k*STATE_COUNT;
@@ -676,114 +683,64 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 			spectra0.setStateLikelihood(allStoredStateLogLikelihood, kOffset);
 			spectra1.setStateLikelihood(allStateLogLikelihood, kOffset);
 		
-//		for (int s = 0; s < siteIndexs.length; s++) {
-//			
-//			int k = siteIndexs[s];
-////			System.out.println(s +"\t"+ k);
-//			SpectraParameter spectra0 = spectrum0.getSpectra(k);
-//			SpectraParameter spectra1 = spectrum1.getSpectra(k);
-////			allStoredStateLogLikelihood0[s] = calculateStoredStatesLogLikelihood(spectra0);
-////			allStoredStateLogLikelihood1[s] = calculateStoredStatesLogLikelihood(spectra1);
-//			stateLikelihood.calculateStoredStatesLogLikelihood2D(spectra0, allStateLogLikelihood2D[s]);
-//			stateLikelihood.calculateStoredStatesLogLikelihood2D(spectra1, allStoredStateLogLikelihood2D[s]);
-//			spectra0.setStateLikelihood(allStoredStateLogLikelihood2D[s]);
-//			spectra1.setStateLikelihood(allStateLogLikelihood2D[s]);
-//			
-//			
-
-
-//			System.out.println(Arrays.toString(allStateLogLikelihood[s]));
-//			System.out.println(Arrays.toString(allStoredStateLogLikelihood[s]));
-////			
-//			double[] temp = new double[4];
-//			stateLikelihood.calculateStatesLogLikelihood(spectra1, temp);
-//			for (int i = 0; i < temp.length; i++) {
-//				if(temp[i]!= allStateLogLikelihood[s][i]){
-//					System.out.println(i);
-//					System.out.println(Arrays.toString(temp));
-//					System.out.println(Arrays.toString(allStateLogLikelihood[s]));
-//					System.exit(-1);
-//				}
-//			}
-//			stateLikelihood.calculateStatesLogLikelihood(spectra0, temp);
-//			for (int i = 0; i < temp.length; i++) {
-//				if(temp[i]!= allStoredStateLogLikelihood[s][i]){
-//					System.out.println(i );
-//					System.out.println(Arrays.toString(temp));
-//					System.out.println(Arrays.toString(allStoredStateLogLikelihood[s]));
-//					System.exit(-2);
-//				}
-//			}
-			
-//			System.exit(-1);
-//			allStateLogLikelihood0[s] = calculateStatesLogLikelihood(spectrum0, k);
-//			allStateLogLikelihood1[s] = calculateStatesLogLikelihood(spectrum1, k);
-
 		}
-		
-		
-//		Set<Integer> allSrpPos = new HashSet<Integer>();
-//		allSrpPos.clear();
-//		for (int i = twoPositions[0]; i < twoPositions[1]; i++) {
-//			ArrayList<Integer> mapToSrp = srpMap.getMapToSrp(i);
-//			allSrpPos.addAll(mapToSrp);
-//		}
 
+		int multihere;
 		double currentLogLikelihood = getStoredLogLikelihood();
-		for (int i = 0; i < srpSwitch.length; i++) {
-			if(srpSwitch[i]){
-	
-//				String fullSrp = srpMap.getSrpFull(i);
+		if(multiType == MultiType.BitSet){
+
+			bitSet.clear();
+//			BitSet bitSet = new BitSet(srpCount);
+			for (int s : siteIndexs) {
+				BitSet tempSet = srpMap.getBitSet(s);
+				bitSet.or(tempSet);
+			}
+			
+			int count = 0;
+			for (int i = bitSet.nextSetBit(0); i >= 0; i = bitSet.nextSetBit(i+1)) {
+				srpIndex[count] = i;
+				count++;
 
 				currentLogLikelihood = updateLikelihoodAtIJ_Local1DArray(i, j0,
 						siteIndexs, allStoredStateLogLikelihood, allStateLogLikelihood, currentLogLikelihood);
 				currentLogLikelihood = updateLikelihoodAtIJ_Local1DArray(i, j1,
 						siteIndexs, allStateLogLikelihood, allStoredStateLogLikelihood, currentLogLikelihood);
-				//				for (int s = 0; s < length; s++) {
-//					int k = twoPositions[0]+s;
-//
-//					char srpChar = fullSrp.charAt(k);
-//					int state = dataType.getState(srpChar);
-//					
-//					if(state!=18){
-//						totalLikelihood = updateLikelihoodAtIJK(i, j0, k,
-//								state, allStoredStateLogLikelihood1[s],
-//								allStoredStateLogLikelihood0[s],
-//								totalLikelihood);
-//						totalLikelihood = updateLikelihoodAtIJK(i, j1, k,
-//								state, allStoredStateLogLikelihood0[s],
-//								allStoredStateLogLikelihood1[s],
-//								totalLikelihood);
-//					}
-//
-//				}
+
+
+			}
+			srpIndexCount = count;
+
+			
+		}
+		else if(multiType==MultiType.Array){
+
+			for (int s : siteIndexs) {
+				for (int i : mapToSrpArray[s]){
+					srpSwitch[i] = true;
+				}
 			}
 
+			for (int i = 0; i < srpSwitch.length; i++) {
+				if(srpSwitch[i]){
+
+					currentLogLikelihood = updateLikelihoodAtIJ_Local1DArray(i, j0,
+							siteIndexs, allStoredStateLogLikelihood, allStateLogLikelihood, currentLogLikelihood);
+					currentLogLikelihood = updateLikelihoodAtIJ_Local1DArray(i, j1,
+							siteIndexs, allStateLogLikelihood, allStoredStateLogLikelihood, currentLogLikelihood);
+
+				}
+			}
+	
 		}
+		
+
+		
 	
 //		totalLikelihood = StatUtils.sum(eachSrpLogLikelihood);
 		return currentLogLikelihood;
 
 	}
 
-//	private double[] calculateStoredStatesLogLikelihood(SpectraParameter spectra, 
-//			double[] statesLogLikelihood) {
-//		for (int state = 0; state < STATE_COUNT; state++) {
-//			double frequency = spectra.getStoredFrequency(state);
-//			statesLogLikelihood[state] = stateLikelihood.caluclateStateLogLikelihood(frequency);
-//		}
-//		return statesLogLikelihood;
-//	}
-//
-//	private double[] calculateStatesLogLikelihood(SpectraParameter spectra, 
-//			double[] statesLogLikelihood) {
-//		for (int state = 0; state < STATE_COUNT; state++) {
-//			double frequency = spectra.getFrequency(state);
-//			statesLogLikelihood[state] = stateLikelihood.caluclateStateLogLikelihood(frequency);
-//		}
-//		
-//		return statesLogLikelihood;
-//	}
 
 
 
@@ -1046,6 +1003,7 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 					if (srpSwitch[i]) {
 						storeI(i);
 						storeIJ(i, j);
+						srpSwitch[i] = false;
 					}
 				}
 			}
@@ -1072,14 +1030,33 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 			int[] twoSpectrums = spectrumOperationRecord.getRecombinationSpectrumIndex();
 //			int[] twoPositions = spectrumOperationRecord.getRecombinationPositionIndex();
 
-			for (int i = 0; i < srpSwitch.length; i++) {
-				if (srpSwitch[i]) {
+//			for (int i = 0; i < srpSwitch.length; i++) {
+//				if (srpSwitch[i]) {
+//					storeI(i);
+//					storeIJ(i, twoSpectrums[0]);
+//					storeIJ(i, twoSpectrums[1]);
+//					srpSwitch[i] = false;
+//				}
+//			}
+			
+			if(multiType==MultiType.BitSet){
+				for (int s = 0; s < srpIndexCount; s++) {
+					int i = srpIndex[s];
 					storeI(i);
-					for (int r = 0; r < TWO; r++) {
-						j = twoSpectrums[r];
-						storeIJ(i, j);
+					storeIJ(i, twoSpectrums[0]);
+					storeIJ(i, twoSpectrums[1]);
+
+				}
+			}
+			
+			else if(multiType==MultiType.Array){
+				for (int i = 0; i < srpSwitch.length; i++) {
+					if (srpSwitch[i]) {
+						storeI(i);
+						storeIJ(i, twoSpectrums[0]);
+						storeIJ(i, twoSpectrums[1]);
+						srpSwitch[i] = false;
 					}
-					srpSwitch[i] = false;
 				}
 			}
 			
@@ -1176,10 +1153,9 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 		case SWAP_SUBCOLUMN:
 			k = spectrumOperationRecord.getColumnIndex();
 			mapToSrp = srpMap.getMapToSrp(k);
-			
-			for (j = 0; j < spectrumCount; j++) {
-				for (int i : mapToSrp) {
-					restoreI(i);
+			for (int i : mapToSrp) {
+				restoreI(i);
+				for (j = 0; j < spectrumCount; j++) {
 					restoreIJ(i, j);
 				}
 			}
@@ -1242,15 +1218,24 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 			
 			break;
 		case RECOMBINATION:
-			int[] twoSpectrums = spectrumOperationRecord.getRecombinationSpectrumIndex();
-//			int[] twoPositions = spectrumOperationRecord.getRecombinationPositionIndex();
+			int[] twoSpectrumsIndex = spectrumOperationRecord.getRecombinationSpectrumIndex();
 
-			for (int i = 0; i < srpSwitch.length; i++) {
-				if (srpSwitch[i]) {
+			if(multiType==MultiType.BitSet){
+				for (int s = 0; s < srpIndexCount; s++) {
+					int i = srpIndex[s];
 					restoreI(i);
-					for (int r = 0; r < TWO; r++) {
-						j = twoSpectrums[r];
-						restoreIJ(i, j);
+					restoreIJ(i, twoSpectrumsIndex[0]);
+					restoreIJ(i, twoSpectrumsIndex[1]);
+				}
+			}
+
+			else if(multiType==MultiType.Array){
+
+				for (int i = 0; i < srpSwitch.length; i++) {
+					if (srpSwitch[i]) {
+						restoreI(i);
+						restoreIJ(i, twoSpectrumsIndex[0]);
+						restoreIJ(i, twoSpectrumsIndex[1]);
 					}
 				}
 			}

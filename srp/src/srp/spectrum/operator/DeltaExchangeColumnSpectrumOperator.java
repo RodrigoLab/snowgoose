@@ -16,8 +16,13 @@ public class DeltaExchangeColumnSpectrumOperator extends AbstractSpectrumOperato
 	public static final SpectrumOperation OP = SpectrumOperation.DELTA_COLUMN;
 //    private Parameter parameter = null;
     private final int[] parameterWeights;
-    private double delta = 0.05;
     
+	
+    
+	private double delta;
+
+
+	
 	public DeltaExchangeColumnSpectrumOperator(SpectrumAlignmentModel spectrumModel, 
 			double delta, CoercionMode mode) {
 		super(spectrumModel, mode);
@@ -30,10 +35,8 @@ public class DeltaExchangeColumnSpectrumOperator extends AbstractSpectrumOperato
         for (int i = 0; i < parameterWeights.length; i++) {
             parameterWeights[i] = 1;
         }
-
+        
 	}
-
-	private double[] debugList = new double[8];
 	
 	
 	
@@ -94,7 +97,7 @@ public class DeltaExchangeColumnSpectrumOperator extends AbstractSpectrumOperato
 
 		}
         // symmetrical move so return a zero hasting ratio
-		spectrumModel.setSpectrumOperationRecord(OP, siteIndex, d);
+		spectrumModel.setSpectrumOperationRecord(OP, fixSpectrumIndexArray, siteIndex);
 		
 		spectrumModel.endSpectrumOperation();
 

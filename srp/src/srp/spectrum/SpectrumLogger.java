@@ -4,6 +4,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import srp.spectrum.SpectrumAlignmentUtils.Dist;
 import dr.evolution.alignment.Alignment;
 import dr.inference.loggers.LogFormatter;
 import dr.inference.loggers.MCLogger;
@@ -54,7 +55,7 @@ public class SpectrumLogger extends MCLogger {
 						.append("\n");
 			}
 			logLine(buffer.toString());
-			double[][] dist = SpectrumAlignmentUtils.compareSpectrumToTrueAlignment(spectrum, trueAlignment);
+			double[][] dist = SpectrumAlignmentUtils.compareSpectrumToTrueAlignment(spectrum, trueAlignment, Dist.abs);
 			String s = SpectrumAlignmentUtils.formatter(dist);
 			logLine(s);
     	}

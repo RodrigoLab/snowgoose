@@ -13,32 +13,29 @@ public class SwapColumnSpectrumOperator extends AbstractSwapSpectrumOperator {
 
 	public static final String OPERATOR_NAME = SwapColumnSpectrumOperator.class.getSimpleName();
 	public static final SpectrumOperation OP = SpectrumOperation.SWAP_COLUMN;
-//    private Parameter parameter = null;
+	
     private final int[] parameterWeights;
-    private double delta = 0.05;
+    private double delta;
     
     public SwapColumnSpectrumOperator(SpectrumAlignmentModel spectrumModel, 
 			CoercionMode mode) {
 		this(spectrumModel, mode, true);
     }
 		
-		
 	public SwapColumnSpectrumOperator(SpectrumAlignmentModel spectrumModel, 
 			CoercionMode mode, boolean random) {
 		super(spectrumModel, mode, random);
-		
 
-        setWeight(1.0);
+		setWeight(1.0);
 
         parameterWeights = new int[this.spectrumModel.getDataType().getStateCount()];
         for (int i = 0; i < parameterWeights.length; i++) {
             parameterWeights[i] = 1;
         }
+        
 
 	}
 
-	private double[] debugList = new double[8];
-	
 	
 	@Override
 	public double doOperation() throws OperatorFailedException {
@@ -52,7 +49,7 @@ public class SwapColumnSpectrumOperator extends AbstractSwapSpectrumOperator {
 		}
 
         // symmetrical move so return a zero hasting ratio
-		spectrumModel.setSpectrumOperationRecord(OP, siteIndex);
+		spectrumModel.setSpectrumOperationRecord(OP, fixSpectrumIndexArray, siteIndex);
 		
 		spectrumModel.endSpectrumOperation();
 
