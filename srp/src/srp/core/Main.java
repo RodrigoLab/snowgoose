@@ -5,9 +5,13 @@ import dr.inference.distribution.BetaDistributionModel;
 
 
 /*
+ * 
  -XX:CompileThreshold=50000 -XX:+CITime
   -XX:+DoEscapeAnalysis
 -Djava.library.path=./lib -Xms256m -Xmx1024m
+
+-XX:+PrintCompilation
+-XX:+PrintCompilation -XX:+UnlockDiagnosticVMOptions -XX:+PrintInlining
 */
 
 

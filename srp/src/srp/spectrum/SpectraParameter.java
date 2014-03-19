@@ -23,8 +23,9 @@ public class SpectraParameter extends AbstractSpectra{
 		double[] freq = new double[DIMENSION];
 		switch (type) {
 		case ZERO_ONE:
+			Arrays.fill(freq, 0.01);
 			int dim = MathUtils.nextInt(DIMENSION);
-			freq[dim]=1;
+			freq[dim]=0.97;
 			setFrequenciesQuietly(freq);
 			break;
 		case RANDOM:
@@ -39,8 +40,8 @@ public class SpectraParameter extends AbstractSpectra{
 			setFrequenciesQuietly(freq);
 			break;
 		case CATEGORY:
-			Arrays.fill(freq, 0.05);
-			freq[MathUtils.nextInt(DIMENSION)] = 0.85;
+			Arrays.fill(freq, 0.1);
+			freq[MathUtils.nextInt(DIMENSION)] = 0.7;
 			setFrequenciesQuietly(freq);
 		default:
 			break;

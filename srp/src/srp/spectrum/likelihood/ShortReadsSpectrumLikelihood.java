@@ -437,7 +437,7 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 //System.out.println("StartSingle");
 		SpectrumOperationRecord record = spectrumModel.getSpectrumOperationRecord();
 		int j = record.getSpectrumIndex(); 
-		int k = record.getAllSiteIndexs()[0];
+		int k = record.getSingleIndex();//AllSiteIndexs()[0];
 		double currentLogLikelihood = getStoredLogLikelihood();
 		SpectraParameter spectra = spectrumModel.getSpectrum(j).getSpectra(k);
 //		ArrayList<Integer> mapToSrp = srpMap.getMapToSrp(k);
@@ -577,7 +577,7 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 	private double calculateSrpLikelihoodColumn() {
 
 		SpectrumOperationRecord record = spectrumModel.getSpectrumOperationRecord();
-		int k = record.getColumnIndex();
+		int k = record.getSingleIndex();
 		ArrayList<Integer> mapToSrp = srpMap.getMapToSrp(k);
 		int[] allSpectrumIndexs = record.getAllSpectrumIndexs();
 		double currentLogLikelihood = getStoredLogLikelihood();
@@ -608,7 +608,7 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 	private double calculateSrpLikelihoodSubColumn() {
 
 		SpectrumOperationRecord record = spectrumModel.getSpectrumOperationRecord();
-		int k = record.getColumnIndex();
+		int k = record.getSingleIndex();
 		ArrayList<Integer> mapToSrp = srpMap.getMapToSrp(k);
 		int[] allSpectrumIndexs = record.getAllSpectrumIndexs();
 		
@@ -957,7 +957,7 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 		case DELTA_COLUMN:
 		case SWAP_COLUMN:
 		case SWAP_SUBCOLUMN:
-			k= spectrumOperationRecord.getColumnIndex();
+			k= spectrumOperationRecord.getSingleIndex();
 			mapToSrp = srpMap.getMapToSrp(k);
 			for (int i : mapToSrp) {
 				storeI(i);
@@ -970,7 +970,7 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 		case DELTA_SINGLE:
 		case SWAP_SINGLE:
 			j = spectrumOperationRecord.getSpectrumIndex();
-			k = spectrumOperationRecord.getAllSiteIndexs()[0];
+			k = spectrumOperationRecord.getSingleIndex();//AllSiteIndexs()[0];
 //			mapToSrp = srpMap.getMapToSrp(k);
 //			spectrumModel.getSpectrum(j).getSpectra(k).storeState();
 //			for (int i : mapToSrp) {
@@ -1151,7 +1151,7 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 		case DELTA_COLUMN:
 		case SWAP_COLUMN:
 		case SWAP_SUBCOLUMN:
-			k = spectrumOperationRecord.getColumnIndex();
+			k = spectrumOperationRecord.getSingleIndex();
 			mapToSrp = srpMap.getMapToSrp(k);
 			for (int i : mapToSrp) {
 				restoreI(i);
@@ -1164,7 +1164,7 @@ public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {
 		case DELTA_SINGLE:
 		case SWAP_SINGLE:
 			j = spectrumOperationRecord.getSpectrumIndex();
-			k = spectrumOperationRecord.getAllSiteIndexs()[0];
+			k = spectrumOperationRecord.getSingleIndex();//AllSiteIndexs()[0];
 //			mapToSrp = srpMap.getMapToSrp(k);
 //			spectrumModel.getSpectrum(j).getSpectra(k).restoreState();
 //			for (int i : mapToSrp) {

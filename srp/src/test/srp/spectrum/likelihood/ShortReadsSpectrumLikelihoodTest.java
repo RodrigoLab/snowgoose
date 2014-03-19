@@ -26,6 +26,7 @@ import srp.spectrum.operator.AbstractSpectrumOperator;
 import srp.spectrum.operator.DeltaExchangeColumnSpectrumOperator;
 import srp.spectrum.operator.DeltaExchangeMultiSpectrumOperator;
 import srp.spectrum.operator.DeltaExchangeSingleSpectrumOperator;
+import srp.spectrum.operator.DirichletAlphaSpectrumOperator;
 import srp.spectrum.operator.RecombinationSpectrumOperator;
 import srp.spectrum.operator.RecombineSectionSpectrumOperator;
 import dr.evolution.alignment.Alignment;
@@ -220,6 +221,99 @@ public class ShortReadsSpectrumLikelihoodTest {
 		};
 		assertArrayEquals(expecteds, eachLikelihood, 1e-8);
 		
+		//
+		seqs = new String[]{
+				"AACC",
+				"AACC",
+				"GGTT",
+				"GGTT"
+				};
+		
+		alignment = AlignmentUtils.createAlignment(seqs);
+		srpMap = new ShortReadMapping(alignment);
+		
+		spectrumLength = seqs[0].length();
+		spectrumModel = new SpectrumAlignmentModel(spectrumLength, 2);
+
+		spectrum = spectrumModel.getSpectrum(0);
+		double[] freqs = new double[]{0.5, 0, 0.5, 0};
+		spectrum.resetFrequencies(0, freqs);
+		spectrum.resetFrequencies(1, freqs);
+		freqs = new double[]{0, 0.5, 0, 0.5};
+		spectrum.resetFrequencies(2, freqs);
+		spectrum.resetFrequencies(3, freqs);
+		
+		spectrum = spectrumModel.getSpectrum(1);
+		freqs = new double[]{0.5, 0, 0.5, 0};
+		spectrum.resetFrequencies(0, freqs);
+		spectrum.resetFrequencies(1, freqs);
+		freqs = new double[]{0, 0.5, 0, 0.5};
+		spectrum.resetFrequencies(2, freqs);
+		spectrum.resetFrequencies(3, freqs);
+		
+		String[] trueSeq = new String[]{
+				"AACC",
+				"GGTT"
+		};
+		SpectrumAlignmentModel spectrumModel2 = new SpectrumAlignmentModel(spectrumLength, 2);
+//		SpectrumAlignmentModel spectrumModel2 = new SpectrumAlignmentModel(AlignmentUtils.createAlignment(trueSeq) );
+		spectrum = spectrumModel2.getSpectrum(0);
+		freqs = new double[]{1, 0, 0, 0};
+		spectrum.resetFrequencies(0, freqs);
+		spectrum.resetFrequencies(1, freqs);
+		freqs = new double[]{0, 1, 0, 0};
+		spectrum.resetFrequencies(2, freqs);
+		spectrum.resetFrequencies(3, freqs);
+		
+		spectrum = spectrumModel2.getSpectrum(1);
+		freqs = new double[]{0, 0, 1, 0};
+		spectrum.resetFrequencies(0, freqs);
+		spectrum.resetFrequencies(1, freqs);
+		freqs = new double[]{0, 0, 0, 1};
+		spectrum.resetFrequencies(2, freqs);
+		spectrum.resetFrequencies(3, freqs);
+//			System.out.println("SITE: "+i +"\t"+  Arrays.toString(spectrum.getFrequencies(i)));
+		
+//		spectrumModel.setSpectrum(0, spectrum);
+		
+		likelihood = new ShortReadsSpectrumLikelihood(spectrumModel, srpMap);
+
+		eachLikelihood = likelihood.unittestMethodGetEachLikelihood();
+		double logLikelihood = likelihood.getLogLikelihood();
+		System.out.println(logLikelihood);
+		System.out.println(Arrays.toString(eachLikelihood));
+
+		
+		likelihood = new ShortReadsSpectrumLikelihood(spectrumModel2, srpMap);
+		eachLikelihood = likelihood.unittestMethodGetEachLikelihood();
+		logLikelihood = likelihood.getLogLikelihood();
+		System.out.println(logLikelihood);
+		
+		System.out.println(Arrays.toString(eachLikelihood));
+		//Site1: 1, 0, 0, 0
+		//Site2: 0.7, 0.1, 0.1, 0.1
+		//Site3: 0.4, 0.2, 0.2, 0.2
+		//Site4: 0.1, 0.3, 0.3, 0.3
+//		double[] expecteds = new double[] {
+//				// MMMD
+//				Math.log((1 * NOT_ERROR + 0 * ERROR)
+//						* (0.7 * NOT_ERROR + 0.3 * ERROR)
+//						* (0.4 * NOT_ERROR + 0.6 * ERROR)
+//						* (0.3 * NOT_ERROR + 0.7 * ERROR)),
+//				// MMDD
+//				Math.log((1 * NOT_ERROR + 0 * ERROR)
+//						* (0.7 * NOT_ERROR + 0.3 * ERROR)
+//						* (0.2 * NOT_ERROR + 0.8 * ERROR)
+//						* (0.3 * NOT_ERROR + 0.7 * ERROR)),
+//
+//				// MDDD
+//				Math.log((1 * NOT_ERROR + 0 * ERROR)
+//						* (0.1 * NOT_ERROR + 0.9 * ERROR)
+//						* (0.2 * NOT_ERROR + 0.8 * ERROR)
+//						* (0.3 * NOT_ERROR + 0.7 * ERROR)) 
+//		};
+//		assertArrayEquals(expecteds, eachLikelihood, 1e-8);
+		
 
 	}
 	@Test
@@ -310,8 +404,10 @@ public class ShortReadsSpectrumLikelihoodTest {
 	@Test
 	public void testFullvsSingleStoreRestore() throws Exception {
 
-		DeltaExchangeSingleSpectrumOperator op = new DeltaExchangeSingleSpectrumOperator(
-				spectrumModel, 0.25, null);
+//		DeltaExchangeSingleSpectrumOperator op = new DeltaExchangeSingleSpectrumOperator(
+//				spectrumModel, 0.25, null);
+		DirichletAlphaSpectrumOperator op = new DirichletAlphaSpectrumOperator(
+				spectrumModel, 100, null);
 		assertLikelihoodOperator(spectrumModel, op);
 	}
 

@@ -89,6 +89,7 @@ public class DirichletAlphaSpectrumOperator extends AbstractDirichletSpectrumOpe
 
 		int siteIndex = MathUtils.nextInt(spectrumLength);
 
+
 		SpectraParameter spectra = spectrum.getSpectra(siteIndex);
 		nextDirichlet(spectra, alpha, oldFreq, oldParameter, newFreq, newParameter);
 		

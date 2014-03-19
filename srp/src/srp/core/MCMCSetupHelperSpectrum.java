@@ -13,6 +13,7 @@ import srp.spectrum.operator.DirichletAlphaSpectrumOperator;
 import srp.spectrum.operator.DirichletSpectrumOperator;
 import srp.spectrum.operator.RecombinationSpectrumOperator;
 import srp.spectrum.operator.RecombineSectionSpectrumOperator;
+import srp.spectrum.operator.SpiltFreqMultiSpectrumOperator;
 import srp.spectrum.operator.SwapColumnSpectrumOperator;
 import srp.spectrum.operator.SwapMultiSpectrumOperator;
 import srp.spectrum.operator.SwapSingleSpectrumOperator;
@@ -109,10 +110,10 @@ public class MCMCSetupHelperSpectrum extends MCMCSetupHelper {
 			
 			MCMCOperator operator;
 			
-			operator = new DeltaExchangeSingleSpectrumOperator(spectrumModel, 0.2, CoercionMode.COERCION_OFF);
+			operator = new DeltaExchangeSingleSpectrumOperator(spectrumModel, 0.1, CoercionMode.COERCION_OFF);
 	//		0.05 delta, accept 0.8
 			operator.setWeight(opSpectrum);
-	//		schedule.addOperator(operator);
+//			schedule.addOperator(operator);
 	//		Operator                                          Tuning   Count      Time     Time/Op  Pr(accept) 
 	//		SingleSpectrumDeltaExchangeOperator               0.205   1000000    117482   0.12     0.2375      
 	
@@ -120,7 +121,7 @@ public class MCMCSetupHelperSpectrum extends MCMCSetupHelper {
 	
 			
 			operator = new DeltaExchangeColumnSpectrumOperator(spectrumModel, 0.05, CoercionMode.COERCION_OFF);
-			operator.setWeight(opSpectrum*10);//fast! 
+			operator.setWeight(opSpectrum*1);//fast! 
 	//		schedule.addOperator(operator);
 	//		COERCION_ON
 	//		Operator                                          Tuning   Count      Time     Time/Op  Pr(accept) 
@@ -128,9 +129,14 @@ public class MCMCSetupHelperSpectrum extends MCMCSetupHelper {
 			
 			
 			operator = new DeltaExchangeMultiSpectrumOperator(spectrumModel, 0.1,
-					6, CoercionMode.COERCION_OFF);
-			operator.setWeight(opSpectrum*2);//fix delta at 0.02(~7bp) or 0.05(3bp)
-	//		schedule.addOperator(operator);
+					5, CoercionMode.COERCION_ON);
+			operator.setWeight(opSpectrum);//fix delta at 0.02(~7bp) or 0.05(3bp)
+//			schedule.addOperator(operator);
+			
+			operator = new DeltaExchangeMultiSpectrumOperator(spectrumModel, 0.05,
+					5, CoercionMode.COERCION_ON);
+			operator.setWeight(opSpectrum);
+//			schedule.addOperator(operator);
 			
 			operator = new RecombinationSpectrumOperator(spectrumModel);
 			operator.setWeight(opSpectrum/10); //(3bp)
@@ -175,19 +181,24 @@ public class MCMCSetupHelperSpectrum extends MCMCSetupHelper {
 			// SwapSubColumnSpectrumOperator 40084 14282 0.36 0.0 very low Tuning 4
 			// SwapSubColumnSpectrumOperator 2.0 40054 12469 0.31 0.2342 good Tuning 2
 	
-			operator = new DirichletSpectrumOperator(spectrumModel, 5, 100, CoercionMode.COERCION_ON);
+			operator = new SpiltFreqMultiSpectrumOperator(spectrumModel, 0.1, 6, CoercionMode.COERCION_OFF);
 			operator.setWeight(opSpectrum*1);
 			schedule.addOperator(operator);
-			operator = new DirichletSpectrumOperator(spectrumModel, 5, 50, CoercionMode.COERCION_ON);
+			
+			
+//			operator = new DirichletSpectrumOperator(spectrumModel, 5, 50, CoercionMode.COERCION_ON);
+//			operator.setWeight(opSpectrum*1);
+//			schedule.addOperator(operator);
+			operator = new DirichletSpectrumOperator(spectrumModel, 5, 1000, CoercionMode.COERCION_ON);
 			operator.setWeight(opSpectrum*1);
-			schedule.addOperator(operator);
+//			schedule.addOperator(operator);
 	//		operator = new DirichletSpectrumOperator(spectrumModel, 12, CoercionMode.COERCION_OFF);
 	//		operator.setWeight(opSpectrum*1);
 	//		schedule.addOperator(operator);
 	
 			operator = new DirichletAlphaSpectrumOperator(spectrumModel, 100, CoercionMode.COERCION_ON);
 			operator.setWeight(opSpectrum*1);
-			schedule.addOperator(operator);
+//			schedule.addOperator(operator);
 			operator = new DirichletAlphaSpectrumOperator(spectrumModel, 100, CoercionMode.COERCION_OFF);
 			operator.setWeight(opSpectrum*1);
 //			schedule.addOperator(operator);

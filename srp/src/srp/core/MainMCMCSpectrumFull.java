@@ -73,24 +73,25 @@ public class MainMCMCSpectrumFull {
 		
 		else{	
 			dataDir = "/home/sw167/workspaceSrp/snowgoose/srp/unittest/testData/";
-			runIndex = 54;
+			runIndex = 56	;
 			dataDir += "H7_"+runIndex+"/";
 			
-			totalSamples = 10	;
-			logInterval = 100 ;
+			totalSamples = 100	;
+			logInterval = 100000 ;
 			
 			randomTree = true;
 //			randomTree = false;
 			
 			randomSpectrum = true;
 			randomSpectrumType = SpectraType.ZERO_ONE;
+//			randomSpectrumType = SpectraType.CATEGORY;
 			randomSpectrumType = SpectraType.RANDOM ;
 			
 //			randomSpectrumType = SpectrumAlignmentModel.SpectrumType.EQUAL;
 //			randomSpectrum = false;
 			
-			distTypeCode = DistType.betaMean;
-//			distTypeCode = DistType.flat;
+//			distTypeCode = DistType.betaMean;
+			distTypeCode = DistType.flat;
 //			SwapMultiSpectrumOperator                         5.0     6286197    1785241  0.28     0.1363      good	Tuning 5
 //			DirichletSpectrumOperator                         6.0     6284851    1867438  0.3      0.2052      good	Tuning 6
 //			DirichletAlphaSpectrumOperator                    9.529   6287903    1230997  0.2      0.2325      good	Tuning alpha: 9.529066888713698
@@ -139,6 +140,7 @@ public class MainMCMCSpectrumFull {
 		if (randomSpectrum) {
 //			do {
 				spectrumModel = new SpectrumAlignmentModel(spectrumLength, noOfRecoveredHaplotype, randomSpectrumType);
+
 				srpLikelihood = new ShortReadsSpectrumLikelihood(spectrumModel, srpMap, distTypeCode);
 //				redo = (srpLikelihood.getLogLikelihood() == Double.NEGATIVE_INFINITY);
 //				c++;

@@ -55,8 +55,12 @@ public class SpectrumLogger extends MCLogger {
 						.append("\n");
 			}
 			logLine(buffer.toString());
-			double[][] dist = SpectrumAlignmentUtils.compareSpectrumToTrueAlignment(spectrum, trueAlignment, Dist.abs);
+			double[][] dist = SpectrumAlignmentUtils.compareSpectrumToTrueAlignment(spectrum, trueAlignment, Dist.major);
 			String s = SpectrumAlignmentUtils.formatter(dist);
+			logLine(s);
+			
+			dist = SpectrumAlignmentUtils.compareSpectrumToTrueAlignment(spectrum, trueAlignment, Dist.euclidean);
+			s = SpectrumAlignmentUtils.formatter(dist);
 			logLine(s);
     	}
 

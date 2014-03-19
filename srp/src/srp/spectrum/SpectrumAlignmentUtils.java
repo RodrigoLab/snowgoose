@@ -310,4 +310,34 @@ public class SpectrumAlignmentUtils {
 		euclidean,
 		major,
 	}
+
+	public static String CreateMajorAlignment(
+			SpectrumAlignmentModel spectrumModel) {
+
+		int specLength = spectrumModel.getSpectrumLength();
+		int specCount = spectrumModel.getSpectrumCount();
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < specCount; i++) {
+
+			Spectrum spectrum = spectrumModel.getSpectrum(i);
+			for (int s = 0; s < specLength; s++) {
+				SpectraParameter spectra = spectrum.getSpectra(s);
+				double max = 0;
+				int maxState = -1;
+
+				for (int f = 0; f < DIM; f++) {
+					double delta = spectra.getFrequency(f);
+					if(delta > max){
+						max = delta;
+						maxState = f;
+					}
+				}
+				sb.append( ShortReads.NUCLEOTIDE_CHARS[maxState] );
+			}
+			sb.append("\n");
+		}
+		sb.append("\n");
+		
+		return sb.toString();
+	}
 }

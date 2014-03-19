@@ -61,8 +61,8 @@ public class DeltaExchangeSingleSpectrumOperator extends AbstractSpectrumOperato
         double scalar1 = spectra.getFrequency(dim1);
         double scalar2 = spectra.getFrequency(dim2);
 
-//		double d = delta;
-        double d = MathUtils.nextDouble() * delta;
+		double d = delta;
+//        double d = MathUtils.nextDouble() * delta;
 //        d = delta;
         scalar1 -= d;
         scalar2 += d;

@@ -86,7 +86,9 @@ public class DirichletSpectrumOperator extends AbstractDirichletSpectrumOperator
 			
 			SpectraParameter spectra = spectrum.getSpectra(siteIndexs[i]);
 			nextDirichlet(spectra, alpha, oldFreq, oldParameter, newFreq, newParameter);
-			
+//			System.out.println(Arrays.toString(oldFreq));
+//			System.out.println(Arrays.toString(newFreq));
+//			System.out.println();
 //			 get proposal ratio
 //			DirichletUtils.calculatelogq(oldFreq, newFreq, oldParameter, newParameter);			
 			double x = dirichletLnPdf(newParameter, oldFreq);

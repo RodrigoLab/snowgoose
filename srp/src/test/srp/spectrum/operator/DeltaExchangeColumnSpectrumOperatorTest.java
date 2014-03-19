@@ -78,7 +78,7 @@ public class DeltaExchangeColumnSpectrumOperatorTest {
 				
 				SpectrumOperationRecord opRecord = spectrumModel.getSpectrumOperationRecord();
 
-				int siteIndex = opRecord.getColumnIndex();
+				int siteIndex = opRecord.getSingleIndex();
 				double[] delta = opRecord.getDelta();
 				
 				for (int i = 0; i < spectrumCount; i++) {
@@ -132,7 +132,7 @@ public class DeltaExchangeColumnSpectrumOperatorTest {
 				
 				SpectrumOperationRecord opRecord = spectrumModel.getSpectrumOperationRecord();
 
-				int siteIndex = opRecord.getColumnIndex();
+				int siteIndex = opRecord.getSingleIndex();
 				double[] delta = opRecord.getDelta();
 				
 				for (int i = 0; i < spectrumCount; i++) {

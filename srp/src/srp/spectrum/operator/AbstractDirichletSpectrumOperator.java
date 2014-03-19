@@ -11,8 +11,8 @@ import dr.math.MathUtils;
 public abstract class AbstractDirichletSpectrumOperator extends AbstractSpectrumOperator{
 
 
-	protected static final double MIN_FREQ = SpectraParameter.MIN_FREQ;
-	protected static final double MAX_FREQ = SpectraParameter.MAX_FREQ;
+	protected static final double MIN_FREQ = 0;//SpectraParameter.MIN_FREQ;
+	protected static final double MAX_FREQ = 1;//SpectraParameter.MAX_FREQ;
 
 	
 	public AbstractDirichletSpectrumOperator(
