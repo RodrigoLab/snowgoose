@@ -23,7 +23,8 @@ public class MainCompareSpectrumToHaplotypes {
 		String dataOnlyDir = "/home/sw167/workspaceSrp/Simulations/dataOnly/H7/";
 //		String resultDir = "/home/sw167/workspaceSrp/Simulations/srpResults/Run0314_betaMean/";
 //		String resultDir = "/home/sw167/workspaceSrp/Simulations/srpResults/Run0314_flat/";
-		String resultDir = "/home/sw167/workspaceSrp/snowgoose/srp/unittest/testData/";
+//		String resultDir = "/home/sw167/workspaceSrp/snowgoose/srp/unittest/testData/";
+		String resultDir = "/home/sw167/workspaceSrp/snowgoose/jar/";
 		
 		noOfTrueHaplotype = 7;
 		noOfRecoveredHaplotype = 7;

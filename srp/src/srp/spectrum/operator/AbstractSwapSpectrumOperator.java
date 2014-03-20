@@ -22,6 +22,8 @@ public abstract class AbstractSwapSpectrumOperator extends AbstractSpectrumOpera
 	
 	public void swapFrequency(SpectraParameter spectra) {
 		swapFrequency(spectra, random);
+		
+//		SpectraParameter.checkSpectra(spectra);
 //        int dim1 = MathUtils.nextInt(DIMENSION);
 //        int dim2;// = dim1;
 //        do {

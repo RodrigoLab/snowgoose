@@ -142,6 +142,22 @@ public class SpectraParameter extends AbstractSpectra{
 	}
 
 
+    public static void checkSpectra(SpectraParameter sp){
+		double sum = 0;
+		for (int j = 0; j < DIMENSION; j++) {
+			double f = sp.getFrequency(j);
+			sum += f;
+			if(f<0 || f>1){
+				System.err.println(j +"\t"+ f +"\t"+ Arrays.toString(sp.getFrequencies()));
+			}
+			
+		}
+		if(sum>1.01 || sum<0.99){
+			System.err.println(Arrays.toString(sp.getFrequencies()));
+		}
+	}
+    
+    
 	@Deprecated
 	public double getStoredFrequency(int state) {
 		return storedValues[state];

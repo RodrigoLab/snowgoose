@@ -15,9 +15,9 @@ import dr.inference.operators.CoercionMode;
 import dr.inference.operators.OperatorFailedException;
 import dr.math.MathUtils;
 
-public class testSpiltMergoSpectrumOperator extends AbstractSpectrumOperator {
+public class testSpiltMergeThreeWaySpectrumOperator extends AbstractSpectrumOperator {
 
-	public static final String OPERATOR_NAME = testSpiltMergoSpectrumOperator.class.getSimpleName();
+	public static final String OPERATOR_NAME = testSpiltMergeThreeWaySpectrumOperator.class.getSimpleName();
 	public static final SpectrumOperation OP = SpectrumOperation.DELTA_MULTI;
 	
     private final int[] parameterWeights;
@@ -29,7 +29,7 @@ public class testSpiltMergoSpectrumOperator extends AbstractSpectrumOperator {
 //	private int scaleFactor=1;
 //	public static double totalCount = 0;
 	
-	public testSpiltMergoSpectrumOperator(SpectrumAlignmentModel spectrumModel, 
+	public testSpiltMergeThreeWaySpectrumOperator(SpectrumAlignmentModel spectrumModel, 
 			double delta, int baseCount, CoercionMode mode) {
 		super(spectrumModel, mode);
 		
@@ -46,7 +46,10 @@ public class testSpiltMergoSpectrumOperator extends AbstractSpectrumOperator {
 
 	}
 
-	
+	public static final double MAX = 0.97;
+	public static final double HALF = 0.49;
+	public static final double THIRD = 0.33;
+	public static final double MIN = 0.01;
 	@Override
 	public double doOperation() throws OperatorFailedException {
 
@@ -66,37 +69,67 @@ public class testSpiltMergoSpectrumOperator extends AbstractSpectrumOperator {
 			
 			int maxIndex = -1;
 			int[] equalIndexs = new int[2];
-			int equalCount = 0;
+			int[] equalTriple = new int[3];
+			int count = 0;
 			double[] oldFreq = new double[DIMENSION];
 			for (int j = 0; j < DIMENSION; j++) {
 				oldFreq[j] = spectra[i].getFrequency(j);
-				if(oldFreq[j] == 0.97 ){
+				if(oldFreq[j] == MAX ){
 					maxIndex = j;
 				}
-				if(oldFreq[j] == 0.49 ){
-					equalIndexs[equalCount]= j;
-					equalCount++;
+				if(oldFreq[j] == HALF ){
+					equalIndexs[count++] = j;
+				}
+				if(oldFreq[j] == THIRD ){
+					equalTriple[count++] = j;
 				}
 			}
 			
 			if(maxIndex!= -1){//split
 				int dim2 = getAnotherDimension(maxIndex);
-				spectra[i].setFrequency(maxIndex, 0.49);
-				spectra[i].setFrequency(dim2, 0.49);
+				boolean split = MathUtils.nextBoolean();
+				if(split){
+					spectra[i].setFrequency(maxIndex, HALF);
+					spectra[i].setFrequency(dim2, HALF);
+				}
+				else{
+					int dim3;
+					do {
+						dim3 = MathUtils.nextInt(DIMENSION);
+					} while (dim3 == maxIndex || dim3 == dim2);
+					spectra[i].setFrequency(maxIndex, THIRD);
+					spectra[i].setFrequency(dim2, THIRD);
+					spectra[i].setFrequency(dim3, THIRD);
+				}
+//				System.out.println("S "+Arrays.toString(spectra[i].getFrequencies()));
 			}
 			
 			else{//merge
-
-				boolean mergeOrder = MathUtils.nextBoolean();
-				if(mergeOrder){
-					spectra[i].setFrequency(equalIndexs[0], 0.01);
-					spectra[i].setFrequency(equalIndexs[1], 0.97);
+//				System.out.println(Arrays.toString(spectra[i].getFrequencies()));
+				if(count==2){//2 to 1
+					boolean mergeOrder = MathUtils.nextBoolean();
+					if(mergeOrder){
+						spectra[i].setFrequency(equalIndexs[0], MIN);
+						spectra[i].setFrequency(equalIndexs[1], MAX);
+					}
+					else{
+						spectra[i].setFrequency(equalIndexs[0], MAX);
+						spectra[i].setFrequency(equalIndexs[1], MIN);
+					}
 				}
-				else{
-					spectra[i].setFrequency(equalIndexs[0], 0.97);
-					spectra[i].setFrequency(equalIndexs[1], 0.01);
+				else if(count==3){//3 to 1
+					int max = MathUtils.nextInt(count);
+					for (int j = 0; j < count; j++) {
+						if(j==max){
+							spectra[i].setFrequency(equalTriple[j], MAX);
+						}
+						else{
+							spectra[i].setFrequency(equalTriple[j], MIN);
+						}
+					}
+//					System.out.print(max +"\t" );
 				}
-				
+//				System.out.println(Arrays.toString(spectra[i].getFrequencies())+"\n");
 			}
 		}
 

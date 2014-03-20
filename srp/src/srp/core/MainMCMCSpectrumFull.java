@@ -57,12 +57,14 @@ public class MainMCMCSpectrumFull {
 		int noOfRecoveredHaplotype;
 		boolean randomTree = true;
 		boolean randomSpectrum = true;
-		SpectraType randomSpectrumType = SpectraType.RANDOM;
+//		SpectraType randomSpectrumType = SpectraType.RANDOM;
+		SpectraType randomSpectrumType = SpectraType.ZERO_ONE;
 		DistType distTypeCode = DistType.flat;
 		
-		boolean commandLine = true;
-		commandLine = false;
-		if(commandLine){
+//		boolean commandLine = true;
+//		commandLine = false;
+		
+		if(args.length ==6){
 			dataDir = args[0];
 			runIndex = Integer.parseInt(args[1]);
 			totalSamples = Integer.parseInt(args[2]);

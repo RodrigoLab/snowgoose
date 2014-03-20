@@ -14,7 +14,8 @@ import srp.spectrum.operator.DirichletAlphaSpectrumOperator;
 import srp.spectrum.operator.DirichletSpectrumOperator;
 import srp.spectrum.operator.RecombinationSpectrumOperator;
 import srp.spectrum.operator.RecombineSectionSpectrumOperator;
-import srp.spectrum.operator.testSpiltMergoSpectrumOperator;
+import srp.spectrum.operator.testSpiltMergeThreeWaySpectrumOperator;
+import srp.spectrum.operator.testSpiltMergeSpectrumOperator;
 import srp.spectrum.operator.testSpiltScaleSpectrumOperator;
 import srp.spectrum.operator.SwapColumnSpectrumOperator;
 import srp.spectrum.operator.SwapMultiSpectrumOperator;
@@ -192,10 +193,14 @@ public class MCMCSetupHelperSpectrum extends MCMCSetupHelper {
 			operator = new testSpiltScaleSpectrumOperator(spectrumModel, 0.1, 6, CoercionMode.COERCION_ON);
 			operator.setWeight(opSpectrum*1);
 //			schedule.addOperator(operator);
-			operator = new testSpiltMergoSpectrumOperator(spectrumModel, 0.1, 6, CoercionMode.COERCION_ON);
+			operator = new testSpiltMergeSpectrumOperator(spectrumModel, 0.1, 6, CoercionMode.COERCION_ON);
+			operator.setWeight(opSpectrum*1);
+//			schedule.addOperator(operator);
+			
+			
+			operator = new testSpiltMergeThreeWaySpectrumOperator(spectrumModel, 0.1, 6, CoercionMode.COERCION_ON);
 			operator.setWeight(opSpectrum*1);
 			schedule.addOperator(operator);
-			
 			
 //			operator = new DirichletSpectrumOperator(spectrumModel, 5, 50, CoercionMode.COERCION_ON);
 //			operator.setWeight(opSpectrum*1);

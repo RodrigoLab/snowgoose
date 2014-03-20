@@ -1,5 +1,6 @@
 package srp.spectrum.operator;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
@@ -175,6 +176,9 @@ public abstract class AbstractSpectrumOperator extends AbstractCoercableOperator
 	    }
 	    return res;
 	}
+	
+	
+	
 	protected int getAnotherDimension(int dim1) {
 		// get any two dims and swap
         int dim2;// = dim1;
