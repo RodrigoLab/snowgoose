@@ -73,11 +73,11 @@ public class MainMCMCSpectrumFull {
 		
 		else{	
 			dataDir = "/home/sw167/workspaceSrp/snowgoose/srp/unittest/testData/";
-			runIndex = 56	;
+			runIndex = 54;
 			dataDir += "H7_"+runIndex+"/";
 			
 			totalSamples = 100	;
-			logInterval = 100000 ;
+			logInterval = 10000 ;
 			
 			randomTree = true;
 //			randomTree = false;
@@ -85,7 +85,7 @@ public class MainMCMCSpectrumFull {
 			randomSpectrum = true;
 			randomSpectrumType = SpectraType.ZERO_ONE;
 //			randomSpectrumType = SpectraType.CATEGORY;
-			randomSpectrumType = SpectraType.RANDOM ;
+//			randomSpectrumType = SpectraType.RANDOM ;
 			
 //			randomSpectrumType = SpectrumAlignmentModel.SpectrumType.EQUAL;
 //			randomSpectrum = false;
@@ -140,7 +140,6 @@ public class MainMCMCSpectrumFull {
 		if (randomSpectrum) {
 //			do {
 				spectrumModel = new SpectrumAlignmentModel(spectrumLength, noOfRecoveredHaplotype, randomSpectrumType);
-
 				srpLikelihood = new ShortReadsSpectrumLikelihood(spectrumModel, srpMap, distTypeCode);
 //				redo = (srpLikelihood.getLogLikelihood() == Double.NEGATIVE_INFINITY);
 //				c++;

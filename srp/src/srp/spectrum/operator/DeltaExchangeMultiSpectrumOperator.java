@@ -87,12 +87,27 @@ public class DeltaExchangeMultiSpectrumOperator extends AbstractSpectrumOperator
 	        scalar1[i] = spectra[i].getFrequency(dim1[i]);
 	        scalar2[i] = spectra[i].getFrequency(dim2[i]);
 	
-	        d[i] = MathUtils.nextDouble() * delta;
+//	        d[i] = MathUtils.nextDouble() * delta;
+//	        d[i] = MathUtils.nextDouble() * delta * scalar1[i]; 
+	        d[i] = 0.95 * scalar1[i];
 //	        d[i] = delta;
 	        scalar1[i] -= d[i];
 	        scalar2[i] += d[i];
 	
 	
+//	        final double d = MathUtils.nextDouble() * delta * scalar1;
+//	        scalar1 -= d;
+//	        if (parameterWeights[dim1] != parameterWeights[dim2]) {
+//	            scalar2 += d * (double) parameterWeights[dim1] / (double) parameterWeights[dim2];
+//	        } else {
+//	            scalar2 += d;
+//	        }
+//
+//	        parameter.setParameterValue(dim1, scalar1);
+//	        parameter.setParameterValue(dim2, scalar2);
+//
+//	        return Math.log(scalar2 / (scalar1 + d));
+	        
 	        if (scalar1[i] < BOUNDS_LOWER ||
 	                scalar1[i] > BOUNDS_UPPER ||
 	                scalar2[i] < BOUNDS_LOWER ||

@@ -45,20 +45,19 @@ public abstract class AbstractSwapSpectrumOperator extends AbstractSpectrumOpera
 	        spectra.setFrequency(dim2, scalar1);	
 		}
 
-		else {//0 and 1 only
+		else {//get Max
+//			double tempValue = -1;
+//			double maxDim = -1;
 			int dim1 = 0;
-			double scalar1 = 0;
-			for (int d = 0; d < DIMENSION; d++) {
-				scalar1 = spectra.getParameterValue(d);
-				if (scalar1 == 1) {
+			double scalar1 = spectra.getParameterValue(dim1);;
+			for (int d = 1; d < DIMENSION; d++) {
+				double tempValue = spectra.getParameterValue(d);
+				if (tempValue > scalar1) {
 					dim1 = d;
-					break;
+					scalar1 = tempValue;
 				}
 			}
-			int dim2;// = dim1;
-			do {
-				dim2 = MathUtils.nextInt(DIMENSION);
-			} while (dim1 == dim2);
+			int dim2 = getAnotherDimension(dim1);
 			double scalar2 = spectra.getParameterValue(dim2);        
 			
 	        spectra.setFrequency(dim1, scalar2);

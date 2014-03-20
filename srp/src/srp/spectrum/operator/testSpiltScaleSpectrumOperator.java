@@ -13,9 +13,9 @@ import dr.inference.operators.CoercionMode;
 import dr.inference.operators.OperatorFailedException;
 import dr.math.MathUtils;
 
-public class SpiltFreqMultiSpectrumOperator extends AbstractSpectrumOperator {
+public class testSpiltScaleSpectrumOperator extends AbstractSpectrumOperator {
 
-	public static final String OPERATOR_NAME = SpiltFreqMultiSpectrumOperator.class.getSimpleName();
+	public static final String OPERATOR_NAME = testSpiltScaleSpectrumOperator.class.getSimpleName();
 	public static final SpectrumOperation OP = SpectrumOperation.DELTA_MULTI;
 	
     private final int[] parameterWeights;
@@ -27,7 +27,7 @@ public class SpiltFreqMultiSpectrumOperator extends AbstractSpectrumOperator {
 //	private int scaleFactor=1;
 //	public static double totalCount = 0;
 	
-	public SpiltFreqMultiSpectrumOperator(SpectrumAlignmentModel spectrumModel, 
+	public testSpiltScaleSpectrumOperator(SpectrumAlignmentModel spectrumModel, 
 			double delta, int baseCount, CoercionMode mode) {
 		super(spectrumModel, mode);
 		
@@ -67,7 +67,7 @@ public class SpiltFreqMultiSpectrumOperator extends AbstractSpectrumOperator {
 		
 		int[] siteIndexs = generateUniqueSites(swapBasesCount);
 		
-		double scaleFactor = 0.9; 
+		double scaleFactor = 0.75; 
 		double scale = (scaleFactor + (MathUtils.nextDouble() * ((1.0 / scaleFactor) - scaleFactor)));
 
 		for (int i = 0; i < swapBasesCount; i++) {
@@ -104,9 +104,9 @@ public class SpiltFreqMultiSpectrumOperator extends AbstractSpectrumOperator {
 			double sum = 0;
 			double[] newFreq = new double[DIMENSION];
 			
-			BetaDistribution b = new BetaDistribution(4*oldFreq[maxIndex], 4*(1-oldFreq[maxIndex]));
+//			BetaDistribution b = new BetaDistribution(4*oldFreq[maxIndex], 4*(1-oldFreq[maxIndex]));
 //			System.out.println( b.sample() +"\t"+ oldFreq[maxIndex] );
-			b.sample();
+//			b.sample();
 			
 			
 //			Math.log(1.0 / scale - 1.0);
@@ -128,16 +128,16 @@ public class SpiltFreqMultiSpectrumOperator extends AbstractSpectrumOperator {
 				
 				boolean upDown = MathUtils.nextBoolean();
 //				 d = MathUtils.nextDouble() * delta * scalar1; //TODO test this
-				if(upDown){
-					newFreq[j] = oldFreq[j]* scale;
-					newFreq[j] = (oldFreq[j]-0.25)* scale + 0.25; // move towards 0.25
-////					oldFreq[j] += delta;
-				}
-				else{
-					newFreq[j] = oldFreq[j]/ scale;
-					newFreq[j] = (oldFreq[j]-0.25)/ scale + 0.25;
-////					oldFreq[j] -= delta3;
-				}
+//				if(upDown){
+//					newFreq[j] = oldFreq[j]* scale;
+//					newFreq[j] = (oldFreq[j]-0.25)* scale + 0.25; // move towards 0.25
+//////					oldFreq[j] += delta;
+//				}
+//				else{
+//					newFreq[j] = oldFreq[j]/ scale;
+//					newFreq[j] = (oldFreq[j]-0.25)/ scale + 0.25;
+//////					oldFreq[j] -= delta3;
+//				}
 				
 				
 //				if (oldFreq[j]< 0.001) {
@@ -164,15 +164,15 @@ public class SpiltFreqMultiSpectrumOperator extends AbstractSpectrumOperator {
 			
 			for (int j = 0; j < DIMENSION; j++) {
 				
-				if (newFreq[j]< 0.001) {
+				if (newFreq[j]< 1e-3) {
 //					System.out.println("S: "+Arrays.toString(newFreq));
-					newFreq[j] = 0.001;
+					newFreq[j] = 1e-3;
 					isPrint = true;
 					
 				}
-				if (newFreq[j]> 0.99) {
+				if (newFreq[j]> 0.999) {
 //					System.out.println("L: "+Arrays.toString(newFreq));
-					newFreq[j] = 0.99;
+					newFreq[j] = 0.999;
 					isPrint = true;
 				}
 				

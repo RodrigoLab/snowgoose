@@ -1,40 +1,40 @@
 package srp.spectrum.operator;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Arrays;
+
+import javax.swing.text.TabableView;
+
+import org.apache.commons.math3.distribution.BetaDistribution;
+import org.apache.commons.math3.util.FastMath;
 
 import srp.spectrum.SpectraParameter;
 import srp.spectrum.Spectrum;
 import srp.spectrum.SpectrumAlignmentModel;
 import srp.spectrum.SpectrumOperation;
-
-import com.google.common.primitives.Ints;
-
 import dr.inference.operators.CoercionMode;
 import dr.inference.operators.OperatorFailedException;
 import dr.math.MathUtils;
 
-public class SwapMultiSpectrumOperator extends AbstractSwapSpectrumOperator {
+public class testSpiltMergoSpectrumOperator extends AbstractSpectrumOperator {
 
-	public static final String OPERATOR_NAME = SwapMultiSpectrumOperator.class.getSimpleName();
-	public static final SpectrumOperation OP = SpectrumOperation.SWAP_MULTI;
-
+	public static final String OPERATOR_NAME = testSpiltMergoSpectrumOperator.class.getSimpleName();
+	public static final SpectrumOperation OP = SpectrumOperation.DELTA_MULTI;
+	
     private final int[] parameterWeights;
-//    private double delta = 0.05;
-    
+    private double delta;
     private int swapBasesCount;
     private double autoOptimize;
     
-	public SwapMultiSpectrumOperator(SpectrumAlignmentModel spectrumModel, 
-			int baseCount, CoercionMode mode) {
-		this(spectrumModel, baseCount, true, mode);
-	}
-	public SwapMultiSpectrumOperator(SpectrumAlignmentModel spectrumModel, 
-			int baseCount, boolean random, CoercionMode mode) {
-		super(spectrumModel, mode, random);
+//    private double[] debugList = new double[8];
+//	private int scaleFactor=1;
+//	public static double totalCount = 0;
+	
+	public testSpiltMergoSpectrumOperator(SpectrumAlignmentModel spectrumModel, 
+			double delta, int baseCount, CoercionMode mode) {
+		super(spectrumModel, mode);
 		
 		
-//		this.delta = delta;
+		this.delta = delta;
 		this.swapBasesCount = baseCount;
         setWeight(1.0);
 
@@ -46,10 +46,7 @@ public class SwapMultiSpectrumOperator extends AbstractSwapSpectrumOperator {
 
 	}
 
-//	private double[] debugList = new double[8];
-//	private int scaleFactor=1;
-//	public static int totalCount = 0;
-
+	
 	@Override
 	public double doOperation() throws OperatorFailedException {
 
@@ -57,52 +54,64 @@ public class SwapMultiSpectrumOperator extends AbstractSwapSpectrumOperator {
 
 //		spectrumModel.swapHaplotypeSingleBase(OP, posChar);
 		int spectrumIndex = MathUtils.nextInt(spectrumCount);
-//		int siteIndex = MathUtils.nextInt(spectrumLength);
+        SpectraParameter[] spectra = new SpectraParameter[swapBasesCount];
 
-//        SpectraParameter[] spectra = new SpectraParameter[baseCount];
-//        double[] d = new double[baseCount];
-//        double[] scalar1 = new double[baseCount];
-//        double[] scalar2 = new double[baseCount];
-//        int[] dim1 = new int[baseCount];
-//		int[] dim2 = new int[baseCount];
-        
-//		int[] siteIndexs = new int[swapBasesCount]; 
-				
-		Spectrum spectrum = spectrumModel.getSpectrum(spectrumIndex);
+        Spectrum spectrum = spectrumModel.getSpectrum(spectrumIndex);
+		int[] siteIndexs = generateUniqueSites(swapBasesCount);
 		
-//		List<Integer> list=new ArrayList<Integer>();
-//	    while(count<50){
-//	        int num=random.nextInt(50);
-//	            if(!list.contains(num)){
-//	                list.add(num);
-//	                ++count;  
-//	            }                    
-//	    }
-//	    
-//	    
-		int[] siteIndexs = 
-				generateUniqueSites(swapBasesCount);
-//		int[] siteIndexs = randomSampleSites(swapBasesCount);
-		//		System.out.println(Arrays.toString(siteIndex));
+
 		for (int i = 0; i < swapBasesCount; i++) {
 			
-			SpectraParameter spectra = spectrum.getSpectra(siteIndexs[i]);
-			swapFrequency(spectra);
-	        
+			spectra[i] = spectrum.getSpectra(siteIndexs[i]);
+			
+			int maxIndex = -1;
+			int[] equalIndexs = new int[2];
+			int equalCount = 0;
+			double[] oldFreq = new double[DIMENSION];
+			for (int j = 0; j < DIMENSION; j++) {
+				oldFreq[j] = spectra[i].getFrequency(j);
+				if(oldFreq[j] == 0.97 ){
+					maxIndex = j;
+				}
+				if(oldFreq[j] == 0.49 ){
+					equalIndexs[equalCount]= j;
+					equalCount++;
+				}
+			}
+			
+			if(maxIndex!= -1){//split
+				int dim2 = getAnotherDimension(maxIndex);
+				spectra[i].setFrequency(maxIndex, 0.49);
+				spectra[i].setFrequency(dim2, 0.49);
+			}
+			
+			else{//merge
+
+				boolean mergeOrder = MathUtils.nextBoolean();
+				if(mergeOrder){
+					spectra[i].setFrequency(equalIndexs[0], 0.01);
+					spectra[i].setFrequency(equalIndexs[1], 0.97);
+				}
+				else{
+					spectra[i].setFrequency(equalIndexs[0], 0.97);
+					spectra[i].setFrequency(equalIndexs[1], 0.01);
+				}
+				
+			}
 		}
-        // symmetrical move so return a zero hasting ratio
+
 		spectrumModel.setSpectrumOperationRecord(OP, spectrumIndex, siteIndexs);
 		
 		spectrumModel.endSpectrumOperation();
-
-		return 0.0;
+		
+		return 0;
 	}
 
-	
+
 	@Override
 	public String getOperatorName() {
 	
-		return OPERATOR_NAME+"(random="+random+")";
+		return OPERATOR_NAME;
 	}
 
 
@@ -129,8 +138,7 @@ public class SwapMultiSpectrumOperator extends AbstractSwapSpectrumOperator {
 
 	private void convertFromAutoOptimizeToValue(double autoOpt) {
 	    	autoOptimize = autoOpt;
-//	    	baseCount =  MIN_BASE + (int) Math.exp(autoOptimize*scaleFactor);
-	    	swapBasesCount =  MIN_BASE + (int) Math.pow(2, autoOptimize);
+	    	swapBasesCount =  MIN_BASE + (int) FastMath.exp(autoOptimize);
 //			System.out.println(autoOptimize +"\t"+ Math.exp(autoOptimize*scaleFactor));
 			
 //			System.out.print("A=" + swapLength + "\t" + autoOptimize + "\t" +
@@ -145,8 +153,7 @@ public class SwapMultiSpectrumOperator extends AbstractSwapSpectrumOperator {
 	private double convertToAutoOptimize(int length) {
 		swapBasesCount = length;
 		checkParameterIsValid();
-//		autoOptimize = Math.log(baseCount - MIN_BASE)/scaleFactor;
-		autoOptimize = Math.sqrt(swapBasesCount - MIN_BASE);
+		autoOptimize = Math.log(swapBasesCount - MIN_BASE);
 	    return autoOptimize;
 	}
 
@@ -169,14 +176,14 @@ public class SwapMultiSpectrumOperator extends AbstractSwapSpectrumOperator {
 
     @Override
 	public final String getPerformanceSuggestion() {
-    	String s = "Tuning "+swapBasesCount; 
+    	String s = "Tuning "+delta; 
     	return s;
 
     }
 
     @Override
 	public String toString() {
-        return getOperatorName() + "(windowsize=" + swapBasesCount + ")";
+        return getOperatorName() + "(windowsize=" + delta + ")";
     }
 
 

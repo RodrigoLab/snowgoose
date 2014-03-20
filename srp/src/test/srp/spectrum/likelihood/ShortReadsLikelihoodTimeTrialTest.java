@@ -219,7 +219,7 @@ public class ShortReadsLikelihoodTimeTrialTest {
 		int bases = 10;
 		int ite = (int)	1e5;
 		AbstractSpectrumOperator op = new SwapMultiSpectrumOperator(
-				spectrumModel, bases, CoercionMode.COERCION_OFF, true);
+				spectrumModel, bases, true, CoercionMode.COERCION_OFF);
 		String summary = timeTrialOperator(likelihood, op, ite);
 		System.out.println(summary + "\t" + op.getOperatorName() +"\t"+ bases);
 		
