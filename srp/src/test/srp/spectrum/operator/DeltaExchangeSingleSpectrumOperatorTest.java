@@ -61,21 +61,23 @@ public class DeltaExchangeSingleSpectrumOperatorTest {
 				
 				SpectrumOperationRecord opRecord = spectrumModel.getSpectrumOperationRecord();
 				int spectrumIndex = opRecord.getSpectrumIndex();
-				int siteIndex = opRecord.getAllSiteIndexs()[0];
-				double delta = opRecord.getDelta()[0];
+				int siteIndex = opRecord.getSingleIndex();
+//				double delta = opRecord.getDelta()[0];
 				
 				double[] frequencies = spectrumModel.getSpecturmFrequencies(spectrumIndex, siteIndex);
 				
 				int count = 0;
+				double delta = 0;
 				for (int f = 0; f < frequencies.length; f++) {
 					if(frequencies[f]!= storedFrequencies[siteIndex][f]){
 						count++;
-						double absDelta = Math.abs(frequencies[f]-storedFrequencies[siteIndex][f]);
-						assertEquals(delta, absDelta, 1e-8);
+						delta += (frequencies[f]-storedFrequencies[siteIndex][f]);
+//						assertEquals(delta, absDelta, 1e-8);
 					}
 					storedFrequencies[siteIndex][f] = frequencies[f];
 				}
 				assertEquals(2, count);
+				assertEquals(0, delta, 1e-8);
 			} catch (OperatorFailedException e) {
 //				e.printStackTrace();
 			}	
@@ -112,23 +114,25 @@ public class DeltaExchangeSingleSpectrumOperatorTest {
 				
 				SpectrumOperationRecord opRecord = spectrumModel.getSpectrumOperationRecord();
 				int spectrumIndex = opRecord.getSpectrumIndex();
-				int siteIndex = opRecord.getAllSiteIndexs()[0];
-				double delta = opRecord.getDelta()[0];
+				int siteIndex = opRecord.getSingleIndex();
+//				double delta = opRecord.getDelta()[0];
 				
 				Spectrum spectrum = spectrumModel.getSpectrum(spectrumIndex);
 				double[] frequencies = spectrum.getFrequenciesAt(siteIndex);
 				
 				int count = 0;
+				double delta = 0;
 				double[] spectraFrequencies = storedFrequencies[spectrumIndex][siteIndex];
 				for (int f = 0; f < frequencies.length; f++) {
 					if(frequencies[f]!= spectraFrequencies[f]){
 						count++;
-						double absDelta = Math.abs(frequencies[f]-spectraFrequencies[f]);
-						assertEquals(delta, absDelta, 1e-8);
+						delta += (frequencies[f]-spectraFrequencies[f]);
+//						assertEquals(delta, absDelta, 1e-8);
 					}
 					spectraFrequencies[f] = frequencies[f];
 				}
 				assertEquals(2, count);
+				assertEquals(0, delta, 1e-8);
 			} catch (OperatorFailedException e) {
 //				e.printStackTrace();
 			}	

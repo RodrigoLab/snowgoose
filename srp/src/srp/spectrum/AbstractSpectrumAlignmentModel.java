@@ -15,43 +15,27 @@ import dr.util.Attributable;
 public abstract class AbstractSpectrumAlignmentModel extends AbstractModel implements TaxonList, SiteList{
 //maybe only can implements TaxonList
 	
-	public AbstractSpectrumAlignmentModel(String name) {
-		super(name);
-	}
 
 	private static final long serialVersionUID = -214692337132875593L;
 	private static final DataType DATA_TYPE = ShortReads.INSTANCE;
 //	private static final int STATE_COUNT = DATA_TYPE.getStateCount();
 
-
+	public static final char GAP = '-';
+	public static final String TAXON_PREFIX = "taxa_";
+	
 	protected int spectrumLength;
-	protected ArrayList<Spectrum> spectrumList;
-//	protected ArrayList<Spectrum> storedSpectrumList;
 
-	public String getSpectrumString(int i) {
-		return spectrumList.get(i).toString();
-		
+	public AbstractSpectrumAlignmentModel(String name) {
+		super(name);
 	}
 
 	public int getSpectrumLength() {
-	
+		
 		return spectrumLength;
 	}
-
-	public int getSpectrumCount() {
-		return spectrumList.size();
-	}
-
-	public Spectrum getSpectrum(int i){
-		return spectrumList.get(i);
-	}
-
-
-//	public char getHaplotypeCharAt(int hapIndex, int charIndex) {
-//		return spectrumList.get(hapIndex).getChar(charIndex);
-//	}
-
-
+	
+	public abstract int getSpectrumCount();
+	public abstract AbstractSpectrum getSpectrum(int i);
 
     // **************************************************************
     // TaxonList IMPLEMENTATION
@@ -112,22 +96,7 @@ public abstract class AbstractSpectrumAlignmentModel extends AbstractModel imple
         return taxa;
     }
 
-	
-//    /**
-//     * Sets an named attribute for the taxon of a given sequence. If the sequence
-//     * doesn't have a taxon then the attribute is added to the sequence itself.
-//     *
-//     * @param taxonIndex the index of the taxon whose attribute is being set.
-//     * @param name       the name of the attribute.
-//     * @param value      the new value of the attribute.
-//     */
-//    public void setTaxonAttribute(int taxonIndex, String name, Object value) {
-//        Taxon taxon = getTaxon(taxonIndex);
-//        if (taxon != null)
-//            taxon.setAttribute(name, value);
-//        else
-//            setSequenceAttribute(taxonIndex, name, value);
-//    }
+
 
     /**
      * @param taxonIndex the index of the taxon whose attribute is being fetched.
@@ -189,18 +158,6 @@ public abstract class AbstractSpectrumAlignmentModel extends AbstractModel imple
 	    return siteIndex;
 	}
     
-    //    /**
-//     */
-//    public void setState(int taxonIndex, int siteIndex, int state) {
-//
-//        Sequence seq = getSequence(taxonIndex);
-//
-//        if (siteIndex >= seq.getLength()) {
-//            throw new IllegalArgumentException();
-//        }
-//
-//        seq.setState(siteIndex, state);
-//    }
 
     // **************************************************************
     // PatternList IMPLEMENTATION

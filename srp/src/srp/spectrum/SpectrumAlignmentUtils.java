@@ -288,7 +288,7 @@ public class SpectrumAlignmentUtils {
 				double[] frequencies = spectrum.getFrequenciesAt(j);
 				for (int k = 0; k < frequencies.length; k++) {
 					if(frequencies[k] != newSpectrum.getFrequency(j, k)){
-						System.err.println("DIFFMODEL"+i +"\t"+ j +"\t"+ k +"\t"+ Arrays.toString(frequencies) +"\t"+ Arrays.toString(newSpectrum.getFrequenciesAt(j)));
+						System.err.println("DIFFMODEL\t"+i +"\t"+ j +"\t"+ k +"\t"+ Arrays.toString(frequencies) +"\t"+ Arrays.toString(newSpectrum.getFrequenciesAt(j)));
 					}
 				}
 			}
@@ -296,7 +296,7 @@ public class SpectrumAlignmentUtils {
 		}
 		SpectrumOperationRecord record = spectrumModel.getSpectrumOperationRecord();
 		int spec = record.getSpectrumIndex();
-		int site = record.getAllSiteIndexs()[0];
+		int site = record.getSingleIndex();
 		System.out.println("compare two models");
 		System.out.println(Arrays.toString(spectrumModel.getSpectrum(spec).getFrequenciesAt(
 				site)));

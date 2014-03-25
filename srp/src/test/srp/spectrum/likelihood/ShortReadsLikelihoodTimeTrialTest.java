@@ -187,7 +187,7 @@ public class ShortReadsLikelihoodTimeTrialTest {
 		int bases = 1;
 		int ite = (int) 1e4;
 		DeltaExchangeMultiSpectrumOperator op = new DeltaExchangeMultiSpectrumOperator(
-				spectrumModel, 0.1, bases, CoercionMode.COERCION_OFF);
+				spectrumModel, bases, 0.1, CoercionMode.COERCION_OFF);
 		String summary = timeTrialOperator(likelihood, op, ite);
 		System.out.println(summary + "\t" + op.getOperatorName() +"\t"+ bases);
 

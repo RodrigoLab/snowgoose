@@ -11,8 +11,8 @@ import dr.math.MathUtils;
 public abstract class AbstractDirichletSpectrumOperator extends AbstractSpectrumOperator{
 
 
-	protected static final double MIN_FREQ = 0;//SpectraParameter.MIN_FREQ;
-	protected static final double MAX_FREQ = 1;//SpectraParameter.MAX_FREQ;
+	protected static final double MIN_FREQ = SpectraParameter.MIN_FREQ;
+	protected static final double MAX_FREQ = SpectraParameter.MAX_FREQ;
 
 	
 	public AbstractDirichletSpectrumOperator(
@@ -71,11 +71,11 @@ public abstract class AbstractDirichletSpectrumOperator extends AbstractSpectrum
 		double sum = 0;
 		for (int j = 0; j < newFreq.length; j++) {
 			oldFreq[j] = spectra.getFrequency(j);
-			if(oldFreq[j]==0){
+			if(oldFreq[j]<MIN_FREQ){
 				oldFreq[j] = MIN_FREQ;
 			}
 			oldParameter[j] = oldFreq[j]*alpha;
-
+			
 			newFreq[j] = MathUtils.nextGamma(oldParameter[j], 1);
 			sum += newFreq[j]; 
 		}

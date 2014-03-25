@@ -14,6 +14,8 @@ import srp.spectrum.operator.DirichletAlphaSpectrumOperator;
 import srp.spectrum.operator.DirichletSpectrumOperator;
 import srp.spectrum.operator.RecombinationSpectrumOperator;
 import srp.spectrum.operator.RecombineSectionSpectrumOperator;
+import srp.spectrum.operator.testCategoriesChangeSpectrumOperator;
+import srp.spectrum.operator.testCategoriesSwapSpectrumOperator;
 import srp.spectrum.operator.testSpiltMergeThreeWaySpectrumOperator;
 import srp.spectrum.operator.testSpiltMergeSpectrumOperator;
 import srp.spectrum.operator.testSpiltScaleSpectrumOperator;
@@ -131,8 +133,8 @@ public class MCMCSetupHelperSpectrum extends MCMCSetupHelper {
 	//		ColumnSpectrumDeltaExchangeOperator               0.012   1000000    141392   0.14     0.2344 
 			
 			
-			operator = new DeltaExchangeMultiSpectrumOperator(spectrumModel, 0.5,
-					5, CoercionMode.COERCION_ON);
+			operator = new DeltaExchangeMultiSpectrumOperator(spectrumModel, 5,
+					0.5, CoercionMode.COERCION_ON);
 			operator.setWeight(opSpectrum);//fix delta at 0.02(~7bp) or 0.05(3bp)
 //			schedule.addOperator(operator);
 			
@@ -141,8 +143,8 @@ public class MCMCSetupHelperSpectrum extends MCMCSetupHelper {
 			operator.setWeight(opSpectrum);//fix delta at 0.02(~7bp) or 0.05(3bp)
 //			schedule.addOperator(operator);
 			
-			operator = new DeltaExchangeMultiSpectrumOperator(spectrumModel, 0.05,
-					5, CoercionMode.COERCION_ON);
+			operator = new DeltaExchangeMultiSpectrumOperator(spectrumModel, 5,
+					0.05, CoercionMode.COERCION_ON);
 			operator.setWeight(opSpectrum);
 //			schedule.addOperator(operator);
 			
@@ -257,6 +259,106 @@ public class MCMCSetupHelperSpectrum extends MCMCSetupHelper {
 	
 		}
 
+
+	public static OperatorSchedule defalutSpectrumCatOperators(
+				OperatorSchedule schedule,
+				SpectrumAlignmentModel spectrumModel, Parameter... parameters) {
+			
+			MCMCOperator operator;
+
+			operator = new RecombinationSpectrumOperator(spectrumModel);
+			operator.setWeight(opSpectrum/10); //(3bp)
+	//		schedule.addOperator(operator);
+	
+	
+			operator = new RecombineSectionSpectrumOperator(spectrumModel, 6,
+					CoercionMode.COERCION_ON);
+			operator.setWeight(opMed); //(3bp)
+//			schedule.addOperator(operator);
+
+			operator = new SwapSingleSpectrumOperator(spectrumModel, true);
+			operator.setWeight(opSpectrum*1);
+//			schedule.addOperator(operator);
+			
+			operator = new SwapMultiSpectrumOperator(spectrumModel, 5,
+					false, CoercionMode.COERCION_ON);
+			operator.setWeight(opSpectrum*1);
+//			schedule.addOperator(operator);
+			
+			operator = new SwapColumnSpectrumOperator(spectrumModel, CoercionMode.COERCION_OFF);
+			operator.setWeight(opSpectrum*5);
+	//		schedule.addOperator(operator);
+			
+			operator = new SwapSubColumnSpectrumOperator(spectrumModel, 1, CoercionMode.COERCION_OFF);
+			operator.setWeight(opSpectrum*1);
+	//		schedule.addOperator(operator);
+			
+			operator = new SwapSubColumnSpectrumOperator(spectrumModel, 3, CoercionMode.COERCION_ON);
+			operator.setWeight(opSpectrum*1);
+	//		schedule.addOperator(operator);
+	
+			// SwapSubColumnSpectrumOperator 39971 12299 0.31 0.2589 good Tuning 1
+			// SwapSubColumnSpectrumOperator 40076 13092 0.33 0.0485 low Tuning 2
+			// SwapSubColumnSpectrumOperator 39805 13713 0.34 0.0071 low Tuning 3
+			// SwapSubColumnSpectrumOperator 40084 14282 0.36 0.0 very low Tuning 4
+			// SwapSubColumnSpectrumOperator 2.0 40054 12469 0.31 0.2342 good Tuning 2
+	
+			operator = new testSpiltScaleSpectrumOperator(spectrumModel, 0.1, 6, CoercionMode.COERCION_ON);
+			operator.setWeight(opSpectrum*1);
+//			schedule.addOperator(operator);
+			operator = new testSpiltMergeSpectrumOperator(spectrumModel, 0.1, 6, CoercionMode.COERCION_ON);
+			operator.setWeight(opSpectrum*1);
+//			schedule.addOperator(operator);
+			
+			
+			operator = new testSpiltMergeThreeWaySpectrumOperator(spectrumModel, 0.1, 6, CoercionMode.COERCION_ON);
+			operator.setWeight(opSpectrum*1);
+//			schedule.addOperator(operator);
+			
+			operator = new testCategoriesChangeSpectrumOperator(spectrumModel, 1, 3, CoercionMode.COERCION_ON);
+			operator.setWeight(opSpectrum*1);
+			schedule.addOperator(operator);
+			
+			operator = new testCategoriesSwapSpectrumOperator(spectrumModel, 1, 3, CoercionMode.COERCION_ON);
+			operator.setWeight(opSpectrum*1);
+			schedule.addOperator(operator);
+			
+		
+			for (Parameter parameter : parameters) {
+	
+				String parameterName = parameter.getParameterName();
+				
+				if("kappa".equals(parameterName)){
+					operator = new ScaleOperator(parameter, 0.75);
+					operator.setWeight(opTiny);
+					schedule.addOperator(operator);
+				}
+				else if("frequency".equals(parameterName)){
+					operator = new DeltaExchangeOperator(parameter, new int[] { 1,
+							1, 1, 1 }, 0.01, 0.1, false, CoercionMode.COERCION_ON);
+					operator.setWeight(opTiny);
+					schedule.addOperator(operator);
+					
+				}
+				else if("populationSize".equals(parameterName)){
+					operator = new ScaleOperator(parameter, 0.75);
+					operator.setWeight(opSmall);
+					schedule.addOperator(operator);
+				}
+				
+			}
+			for (int i = 0; i < schedule.getOperatorCount(); i++) {
+				operator = schedule.getOperator(i);
+				System.out.println(operator.getOperatorName());
+			}
+			
+			return schedule;
+	
+		}
+
+
+	
+	
 	public static OperatorSchedule defalutTreeOperators(
 			OperatorSchedule schedule, TreeModel treeModel) {
 

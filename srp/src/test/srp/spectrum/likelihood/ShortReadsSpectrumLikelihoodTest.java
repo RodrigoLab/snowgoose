@@ -27,12 +27,18 @@ import srp.spectrum.operator.DeltaExchangeColumnSpectrumOperator;
 import srp.spectrum.operator.DeltaExchangeMultiSpectrumOperator;
 import srp.spectrum.operator.DeltaExchangeSingleSpectrumOperator;
 import srp.spectrum.operator.DirichletAlphaSpectrumOperator;
+import srp.spectrum.operator.DirichletSpectrumOperator;
 import srp.spectrum.operator.RecombinationSpectrumOperator;
 import srp.spectrum.operator.RecombineSectionSpectrumOperator;
+import srp.spectrum.operator.SwapMultiSpectrumOperator;
+import srp.spectrum.operator.SwapSingleSpectrumOperator;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.SimpleAlignment;
 import dr.inference.markovchain.MarkovChain;
+import dr.inference.operators.MCMCOperator;
 import dr.inference.operators.OperatorFailedException;
+import dr.inference.operators.OperatorSchedule;
+import dr.inference.operators.SimpleOperatorSchedule;
 import dr.math.MathUtils;
 
 /*
@@ -84,8 +90,8 @@ public class ShortReadsSpectrumLikelihoodTest {
 		double expectedError = 0.0107;
 		assertEquals(expectedError, ShortReadsSpectrumLikelihood.ERROR_RATE, 0);
 		assertEquals(1-expectedError, ShortReadsSpectrumLikelihood.NOT_ERROR_RATE, 0);
-		assertEquals(4, likelihood.STATE_COUNT, 0);
-		assertEquals(19, likelihood.AMBIGUOUS_STATE_COUNT, 0);
+		assertEquals(4, ShortReadsSpectrumLikelihood.STATE_COUNT, 0);
+		assertEquals(19, ShortReadsSpectrumLikelihood.AMBIGUOUS_STATE_COUNT, 0);
 	}
 
 
@@ -364,20 +370,37 @@ public class ShortReadsSpectrumLikelihoodTest {
 //	}
 
 	private void assertLikelihoodOperator(SpectrumAlignmentModel spectrumModel,
-			AbstractSpectrumOperator op) {
+			OperatorSchedule schedule) {
 		
+		boolean DEBUG = true;
+
 		int ite = (int) 1e4;
-		SpectrumOperation expectedSpectrumOperation = op.getSpectrumOperation();
+		
 		ShortReadsSpectrumLikelihood likelihood = new ShortReadsSpectrumLikelihood(spectrumModel, srpMap);
 		double logLikelihoodOperator;
 		double logLikelihoodFull;
 
 		for (int i = 0; i < ite; i++) {
-			try {
-				likelihood.storeModelState();
-				
-				op.doOperation();
-
+			
+			likelihood.storeModelState();
+			
+			boolean operatorSucceeded = true;
+            boolean accept = false;
+            
+			final int opIndex = schedule.getNextOperatorIndex();
+            final MCMCOperator mcmcOperator = schedule.getOperator(opIndex);
+            
+            try{
+            	mcmcOperator.operate();
+            	
+            }
+			catch (OperatorFailedException e) {
+                operatorSucceeded = false;
+			}
+            
+            SpectrumOperation expectedSpectrumOperation = ((AbstractSpectrumOperator) mcmcOperator).getSpectrumOperation();
+			
+			if(operatorSucceeded){
 				logLikelihoodOperator = likelihood.getLogLikelihood();
 				assertEquals(expectedSpectrumOperation, likelihood.getOperation());
 				
@@ -387,17 +410,21 @@ public class ShortReadsSpectrumLikelihoodTest {
 				assertEquals(SpectrumOperation.NONE, likelihoodFull.getOperation());
 				assertEquals(logLikelihoodFull, logLikelihoodOperator, THRESHOLD); 
 
-	
 				double rand = MathUtils.nextDouble();
-				if(rand>0.5){
-					likelihood.acceptModelState();
-				}
-				else{
-					likelihood.restoreModelState();
-				}
-
-			} catch (OperatorFailedException e) {
+				accept = rand>0.5;
 			}
+			if(accept){
+				mcmcOperator.accept(0);
+				likelihood.acceptModelState();
+			}
+			else{
+				mcmcOperator.reject();
+				likelihood.restoreModelState();
+			}
+//			if(DEBUG){
+//				System.out.println(i);
+//			}
+
 		}
 	}
 
@@ -406,42 +433,68 @@ public class ShortReadsSpectrumLikelihoodTest {
 
 //		DeltaExchangeSingleSpectrumOperator op = new DeltaExchangeSingleSpectrumOperator(
 //				spectrumModel, 0.25, null);
-		DirichletAlphaSpectrumOperator op = new DirichletAlphaSpectrumOperator(
-				spectrumModel, 100, null);
-		assertLikelihoodOperator(spectrumModel, op);
+		OperatorSchedule schedule = new SimpleOperatorSchedule();
+		MCMCOperator op;
+		
+		op = new DirichletAlphaSpectrumOperator(spectrumModel, 100, null);
+		schedule.addOperator(op);
+		
+		op = new DeltaExchangeSingleSpectrumOperator(spectrumModel, 0.05, null);
+		schedule.addOperator(op);
+		
+		op = new SwapSingleSpectrumOperator(spectrumModel, true);
+		schedule.addOperator(op);
+		
+		assertLikelihoodOperator(spectrumModel, schedule);
 	}
 
 	@Test
 	public void testFullvsMultiStoreRestore() throws Exception {
 
-		DeltaExchangeMultiSpectrumOperator op = new DeltaExchangeMultiSpectrumOperator(
-				spectrumModel, 0.1, 10, null);
-		assertLikelihoodOperator(spectrumModel, op);
+		OperatorSchedule schedule = new SimpleOperatorSchedule();
+		MCMCOperator op;
+		
+		op = new DirichletSpectrumOperator(spectrumModel, 5, 100, null);
+		schedule.addOperator(op);
+		
+		op = new DeltaExchangeMultiSpectrumOperator(spectrumModel, 3, 0.1, null);
+		schedule.addOperator(op);
+		
+		op = new SwapMultiSpectrumOperator(spectrumModel, 3, true, null);
+		schedule.addOperator(op);
+		
+		assertLikelihoodOperator(spectrumModel, schedule);
 	}
 
 	@Test
 	public void testFullvsColumnStoreRestore() throws Exception {
 
-		DeltaExchangeColumnSpectrumOperator op = new DeltaExchangeColumnSpectrumOperator(
+		OperatorSchedule schedule = new SimpleOperatorSchedule();
+		MCMCOperator op; 
+
+		op = new DeltaExchangeColumnSpectrumOperator(
 				spectrumModel, 0.1, null);
-		assertLikelihoodOperator(spectrumModel, op);
+		schedule.addOperator(op);
+		
+		assertLikelihoodOperator(spectrumModel, schedule);
 
 	}
 
 	@Test
 	public void testFullvsRecombinationStoreRestore() throws Exception {
 
-		RecombinationSpectrumOperator op = new RecombinationSpectrumOperator(spectrumModel);
-		assertLikelihoodOperator(spectrumModel, op);
+		OperatorSchedule schedule = new SimpleOperatorSchedule();
+		MCMCOperator op;
+		
+		op = new RecombinationSpectrumOperator(spectrumModel);
+		schedule.addOperator(op);
+		
+		op = new RecombineSectionSpectrumOperator(spectrumModel, 2, null);
+		schedule.addOperator(op);
+		
+		assertLikelihoodOperator(spectrumModel, schedule);
 	}
 
-	@Test
-	public void testFullvsSwapSectionStoreRestore() throws Exception {
-
-		RecombineSectionSpectrumOperator op = new RecombineSectionSpectrumOperator(
-				spectrumModel, 2, null);
-		assertLikelihoodOperator(spectrumModel, op);
-	}
 
 
 	

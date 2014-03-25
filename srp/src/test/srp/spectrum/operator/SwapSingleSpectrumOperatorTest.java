@@ -69,7 +69,7 @@ public class SwapSingleSpectrumOperatorTest {
 				
 				SpectrumOperationRecord opRecord = spectrumModel.getSpectrumOperationRecord();
 				int spectrumIndex = opRecord.getSpectrumIndex();
-				int siteIndex = opRecord.getAllSiteIndexs()[0];
+				int siteIndex = opRecord.getSingleIndex();
 
 				double[] frequencies = spectrumModel.getSpecturmFrequencies(spectrumIndex, siteIndex);
 				double[] spectraFrequencies = storedFrequencies[spectrumIndex][siteIndex];

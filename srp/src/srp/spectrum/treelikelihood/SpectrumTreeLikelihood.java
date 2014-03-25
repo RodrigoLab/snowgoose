@@ -617,7 +617,7 @@ public class SpectrumTreeLikelihood extends AbstractSpectrumTreeLikelihood {
     	sb.append("Diagnostic!\n");
     	SpectrumOperationRecord record = spectrumModel.getSpectrumOperationRecord();
 		int spectrumIndex = record.getSpectrumIndex();
-		int siteIndex = record.getAllSiteIndexs()[0];
+		int siteIndex = record.getSingleIndex();
 //    	updateExternalNodeIndex = -1;
 //    	spectrumIndex -> taxonName -> indexOnTree
 		String taxonId = spectrumModel.getTaxonId(spectrumIndex);

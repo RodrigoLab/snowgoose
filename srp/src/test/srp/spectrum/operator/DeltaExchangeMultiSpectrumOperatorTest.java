@@ -47,7 +47,7 @@ public class DeltaExchangeMultiSpectrumOperatorTest {
 		int spectrumLength = seqs[0].length();
 		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(spectrumLength, 1);
 		DeltaExchangeMultiSpectrumOperator op = new DeltaExchangeMultiSpectrumOperator(
-				spectrumModel, 0.1, 5, CoercionMode.COERCION_OFF);
+				spectrumModel, 5, 0.1, CoercionMode.COERCION_OFF);
 
 		double[][] storedFrequencies = new double[spectrumModel.getSpectrumLength()][4];
 		Spectrum spectrum = spectrumModel.getSpectrum(0);
@@ -98,7 +98,7 @@ public class DeltaExchangeMultiSpectrumOperatorTest {
 		int spectrumLength = seqs[0].length();
 		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(spectrumLength, 5);
 		DeltaExchangeMultiSpectrumOperator op = new DeltaExchangeMultiSpectrumOperator(
-				spectrumModel, 0.1, 5, CoercionMode.COERCION_OFF);
+				spectrumModel, 5, 0.1, CoercionMode.COERCION_OFF);
 
 		double[][][] storedFrequencies = new double[spectrumModel
 				.getSpectrumCount()][spectrumModel.getSpectrumLength()][4];

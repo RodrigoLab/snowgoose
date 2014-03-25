@@ -79,21 +79,24 @@ public class DeltaExchangeColumnSpectrumOperatorTest {
 				SpectrumOperationRecord opRecord = spectrumModel.getSpectrumOperationRecord();
 
 				int siteIndex = opRecord.getSingleIndex();
-				double[] delta = opRecord.getDelta();
+//				double[] delta = opRecord.getDelta();
 				
 				for (int i = 0; i < spectrumCount; i++) {
 					Spectrum spectrum = spectrumModel.getSpectrum(i);
 					double[] frequencies = spectrum.getFrequenciesAt(siteIndex);
 					int count = 0;
+					double delta = 0;
 					for (int f = 0; f < frequencies.length; f++) {
 						if(frequencies[f]!= storedFrequencies[i][siteIndex][f]){
 							count++;
-							double absDelta = Math.abs(frequencies[f]-storedFrequencies[i][siteIndex][f]);
-							assertEquals(delta[i], absDelta, 1e-8);
+							delta += (frequencies[f]-storedFrequencies[i][siteIndex][f]);
+//							delta += Math.abs(frequencies[f]-storedFrequencies[i][siteIndex][f]);
 						}
+
 						storedFrequencies[i][siteIndex][f] = frequencies[f];
 					}
 					assertEquals(2, count);
+					assertEquals(0, delta, 1e-8);
 				}
 			
 			} catch (OperatorFailedException e) {
@@ -133,21 +136,23 @@ public class DeltaExchangeColumnSpectrumOperatorTest {
 				SpectrumOperationRecord opRecord = spectrumModel.getSpectrumOperationRecord();
 
 				int siteIndex = opRecord.getSingleIndex();
-				double[] delta = opRecord.getDelta();
+				
 				
 				for (int i = 0; i < spectrumCount; i++) {
 					Spectrum spectrum = spectrumModel.getSpectrum(i);
 					double[] frequencies = spectrum.getFrequenciesAt(siteIndex);
 					int count = 0;
+					double delta = 0;
 					for (int f = 0; f < frequencies.length; f++) {
 						if(frequencies[f]!= storedFrequencies[i][siteIndex][f]){
 							count++;
-							double absDelta = Math.abs(frequencies[f]-storedFrequencies[i][siteIndex][f]);
-							assertEquals(delta[i], absDelta, 1e-8);
+							delta += (frequencies[f]-storedFrequencies[i][siteIndex][f]);
+							
 						}
 						storedFrequencies[i][siteIndex][f] = frequencies[f];
 					}
 					assertEquals(2, count);
+					assertEquals(0, delta, 1e-8);
 				}
 			
 			} catch (OperatorFailedException e) {

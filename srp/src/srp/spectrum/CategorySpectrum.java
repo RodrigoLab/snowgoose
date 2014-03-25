@@ -2,58 +2,50 @@ package srp.spectrum;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 
-import srp.spectrum.SpectraParameter.SpectraType;
-import dr.evolution.sequence.Sequence;
+import srp.spectrum.CategorySpectraParameter.CategoryType;
 import dr.evolution.util.Taxon;
-import dr.util.Attributable;
 
 //public class Spectrum implements Identifiable, Attributable{// extends AbstractModel{
-public class Spectrum extends AbstractSpectrum  {
+public class CategorySpectrum extends AbstractSpectrum {
 
 	private static final long serialVersionUID = -728370884996776301L;
 
-	private ArrayList<SpectraParameter> spectrum;
-	
-    
-    
+	ArrayList<CategorySpectraParameter> spectrum;
 
-	private SpectraParameter[] spectrumArray;
+	private CategorySpectraParameter[] spectrumArray;
     
 //	public Spectra() {
 //		sequenceString = new StringBuilder();
 //	}
 
-	public Spectrum(int length) {
-		this(length, SpectraType.EQUAL);
+	public CategorySpectrum(int length) {
+		this(length, CategoryType.SINGLE);
 	}
 
 
-	public Spectrum(double[][] freqs) {
-		this(freqs[0].length);
-		for (int s = 0; s < spectrum.size(); s++) {
-			SpectraParameter spectra = spectrum.get(s);
-			for (int f = 0; f < 4; f++) {
-				spectra.setFrequency(f, freqs[f][s]);
-			}
-//			double[] freq = new double[]{freqs[0][s], freqs[1][s], freqs[2][s], freqs[3][s]}; 
-//			spectrum.resetFrequencies(s, freq);
-		}
-	}
+//	public CategorySpectrum(double[][] freqs) {
+//		this(freqs[0].length);
+//		for (int s = 0; s < spectrum.size(); s++) {
+//			CategorySpectraParameter spectra = spectrum.get(s);
+//			for (int f = 0; f < 4; f++) {
+//				spectra.setFrequency(f, freqs[f][s]);
+//			}
+////			double[] freq = new double[]{freqs[0][s], freqs[1][s], freqs[2][s], freqs[3][s]}; 
+////			spectrum.resetFrequencies(s, freq);
+//		}
+//	}
 
 	/**
-	 * type EQUAL   = Equal. 
-	 * 		ZERO_ONE= [1 0 0 0].
-	 * 		RANDOM  = [Random]. 
 	 * @param length
 	 * @param type
 	 */
-	public Spectrum(int length, SpectraType type){
+	public CategorySpectrum(int length, CategoryType type){
 		
-		super("Spectrum");
-		spectrumArray = new SpectraParameter[length];
-		spectrum = new ArrayList<SpectraParameter>();
+		super("CategorySpectrum");
+		spectrumArray = new CategorySpectraParameter[length];
+		spectrum = new ArrayList<CategorySpectraParameter>();
 		for (int i = 0; i < length; i++) {
-			SpectraParameter spectra = new SpectraParameter(type);
+			CategorySpectraParameter spectra = new CategorySpectraParameter(type);
 			addVariable(spectra);
 			spectrum.add(spectra);
 			spectrumArray[i] = spectra;
@@ -62,50 +54,55 @@ public class Spectrum extends AbstractSpectrum  {
 	}
 
 	
-	public Spectrum(Sequence sequence) {
-		this(sequence.getLength());
-		
-		for (int i = 0; i < sequence.getLength(); i++) {
-			SpectraParameter spectra = getSpectra(i);
-			char c = sequence.getChar(i);
-			int state = DATA_TYPE.getState(c);
-			for (int j = 0; j < STATE_COUNT; j++) {
-				if(j==state){
-					spectra.setFrequency(j, 1);
-				}
-				else{
-					spectra.setFrequency(j, 0);
-				}
-			}
-		}
-		
-		}
+//	public CategorySpectrum(Sequence sequence) {
+//		this(sequence.getLength());
+//		
+//		for (int i = 0; i < sequence.getLength(); i++) {
+//			SpectraParameter spectra = getSpectra(i);
+//			char c = sequence.getChar(i);
+//			int state = DATA_TYPE.getState(c);
+//			for (int j = 0; j < STATE_COUNT; j++) {
+//				if(j==state){
+//					spectra.setFrequency(j, 1);
+//				}
+//				else{
+//					spectra.setFrequency(j, 0);
+//				}
+//			}
+//		}
+//		
+//		}
 
-	public static Spectrum duplicateSpectrum(Spectrum oldSpectrum) {
+	public static CategorySpectrum duplicateSpectrum(CategorySpectrum oldSpectrum) {
 
-		Spectrum newSpectrum = new Spectrum(oldSpectrum.getLength());
-
+//		super("Spectrum");
+		CategorySpectrum newSpectrum = new CategorySpectrum(oldSpectrum.getLength());
+//		spectrum = new ArrayList<SpectraParameter>();
 		Taxon newTaxon = oldSpectrum.getTaxon();
 		newSpectrum.setTaxon(newTaxon);
 		for (int i = 0; i < oldSpectrum.getLength(); i++) {
-			double[] frequencies = oldSpectrum.getFrequenciesAt(i);
-			newSpectrum.resetFrequencies(i, frequencies);
-			
+			int cat = oldSpectrum.getSpectra(i).getCategory();
+//			SpectraParameter spectra = new SpectraParameter(frequencies);
+			newSpectrum.getSpectra(i).setCategory(cat);
+//			
+//			addVariable(spectra);
+//			spectrum.add(spectra);
 		}
 		return newSpectrum;
 //		dataType = Nucleotides.INSTANCE;
 //		stateCount = dataType.getStateCount();
 	}
-	
+
+
 	
 	public int getLength() {
 		return spectrum.size();
 	}
 
 
-	public void resetFrequencies(int site, double[] values){
-		getSpectra(site).setFrequenciesQuietly(values);
-	}
+//	public void resetFrequencies(int site, double[] values){
+//		getSpectra(site).setFrequenciesQuietly(values);
+//	}
 	
 	public double getFrequency(int site, int state) {
 	    return getSpectra(site).getFrequency(state);
@@ -120,11 +117,11 @@ public class Spectrum extends AbstractSpectrum  {
 		return getSpectra(site).getFrequencies();
 	}
 
-	public SpectraParameter getSpectra(int site) {
+	public CategorySpectraParameter getSpectra(int site) {
 	    return spectrum.get(site);
 	}
 
-	public SpectraParameter getSpectraArray(int site) {
+	public CategorySpectraParameter getSpectraArray(int site) {
 	    return spectrumArray[site];
 	}
 
@@ -279,8 +276,6 @@ public class Spectrum extends AbstractSpectrum  {
     
 
 /////////////////////////
-
-    
 
 
     	

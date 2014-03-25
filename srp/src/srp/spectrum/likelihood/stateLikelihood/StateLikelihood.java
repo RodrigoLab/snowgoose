@@ -56,7 +56,6 @@ public abstract class StateLikelihood {
 			int kOffset, double[] statesLogLikelihood) {
 		System.arraycopy(spectra.getStoredStateLikelihood(), 0, statesLogLikelihood, kOffset, STATE_COUNT);
 		
-		
 	}
 
 

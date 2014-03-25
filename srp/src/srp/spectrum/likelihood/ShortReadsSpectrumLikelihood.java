@@ -2,25 +2,15 @@ package srp.spectrum.likelihood;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-//import java.util.BitSet;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.math3.stat.StatUtils;
-import org.apache.commons.math3.util.ArithmeticUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.carrotsearch.hppc.BitSet;
-import com.carrotsearch.hppc.BitSetIterator;
-import com.google.common.primitives.Doubles;
-
 import srp.dr.evolution.datatype.ShortReads;
 import srp.haplotypes.likelihood.LikelihoodScaler;
-import srp.shortreads.AlignmentMapping;
-import srp.shortreads.ShortRead;
 import srp.shortreads.ShortReadMapping;
 import srp.spectrum.SpectraParameter;
 import srp.spectrum.Spectrum;
@@ -33,18 +23,15 @@ import srp.spectrum.likelihood.stateLikelihood.ChisqStateLikelihood;
 import srp.spectrum.likelihood.stateLikelihood.GTestStateLikelihood;
 import srp.spectrum.likelihood.stateLikelihood.ProbabilityStateLikelihood;
 import srp.spectrum.likelihood.stateLikelihood.StateLikelihood;
-import dr.app.beauti.util.NumberUtil;
+
+import com.carrotsearch.hppc.BitSet;
+
 import dr.evolution.datatype.DataType;
-import dr.evolution.datatype.Nucleotides;
 import dr.inference.model.AbstractModelLikelihood;
 import dr.inference.model.Model;
 import dr.inference.model.Variable;
 import dr.inference.model.Variable.ChangeType;
-import dr.math.MathUtils;
-import dr.math.distributions.BetaDistribution;
-import dr.math.distributions.ChiSquareDistribution;
-import dr.math.distributions.GammaDistribution;
-import dr.util.Assert;
+//import java.util.BitSet;
 
 
 public class ShortReadsSpectrumLikelihood  extends AbstractModelLikelihood {

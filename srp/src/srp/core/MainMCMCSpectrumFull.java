@@ -79,7 +79,7 @@ public class MainMCMCSpectrumFull {
 			dataDir += "H7_"+runIndex+"/";
 			
 			totalSamples = 100	;
-			logInterval = 10000 ;
+			logInterval = 100000 ;
 			
 			randomTree = true;
 //			randomTree = false;
@@ -197,7 +197,7 @@ public class MainMCMCSpectrumFull {
 		// Operators
 		OperatorSchedule schedule = new SimpleOperatorSchedule();
 //		ArrayList<MCMCOperator> defalutOperatorsList = 
-		MCMCSetupHelperSpectrum.defalutSpectrumOperators(schedule, spectrumModel, freqs, popSize, kappa);
+		MCMCSetupHelperSpectrum.defalutSpectrumCatOperators(schedule, spectrumModel, freqs, popSize, kappa);
 		MCMCSetupHelperSpectrum.defalutTreeOperators(schedule, treeModel);
 		
 		
