@@ -88,7 +88,7 @@ public class TreeLikelihoodExtTest {
 	public void testUpdatePatternList() throws Exception {
 		
 //		-Djava.library.path=/home/sw167/PostdocLarge/Software/BEAST/BEASTv1.7.1/lib -Xms128m -Xmx256m
-		String dataDir = "/home/sw167/workspaceSrp/ABI/unittest/";
+		String dataDir = "/home/sw167/workspaceSrp/snowgoose/srp/unittest/";
 
 		String trueAlignmentFile = "H4_haplotypes.phyml";
 		String phylogenyFile = "H4_haplotypes.tree";
@@ -195,7 +195,7 @@ public class TreeLikelihoodExtTest {
 	public void testUpdatePatternList2() throws Exception {
 		
 		
-		String dataDir = "/home/sw167/workspaceSrp/ABI/unittest/";
+		String dataDir = "/home/sw167/workspaceSrp/snowgoose/srp/unittest/";
 
 		String trueAlignmentFile = "H6_haplotypes.phyml";
 		String phylogenyFile = "H6_haplotypes.tree";

@@ -1,7 +1,6 @@
 package test.srp.spectrum;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.util.Arrays;
@@ -14,6 +13,8 @@ import org.junit.Test;
 
 import srp.core.DataImporter;
 import srp.shortreads.AlignmentMapping;
+//import srp.spectrum.AbstractSpectra;
+//import srp.spectrum.AbstractSpectrum;
 import srp.spectrum.SpectraParameter;
 import srp.spectrum.SpectraParameter.SpectraType;
 import srp.spectrum.Spectrum;
@@ -90,7 +91,7 @@ public class SpectrumAlignmentModelTest {
 	@Test
 	public void testConstructorZeroOne() throws Exception {
 		
-		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(spectrumLength, 5, SpectraType.ZERO_ONE);
+		SpectrumAlignmentModel spectrumModel = new SpectrumAlignmentModel(spectrumLength, 5, SpectraType.DOMINANT);
 		assertEquals(100, spectrumModel.getSpectrumLength());
 		assertEquals(5, spectrumModel.getSpectrumCount());
 		for (int i = 0; i < spectrumModel.getSpectrumCount(); i++) {
@@ -101,10 +102,10 @@ public class SpectrumAlignmentModelTest {
 				int count1 = 0;
 				for (int k = 0; k < spectra.getDimension(); k++) {
 					double freq = spectra.getFrequency(k);
-					if(freq==0){
+					if(freq==SpectraParameter.INIT_SMALL){
 						count0++;
 					}
-					else if(freq==1){
+					else if(freq==SpectraParameter.INIT_LARGE){
 						count1++;
 					}
 				}
@@ -141,10 +142,17 @@ public class SpectrumAlignmentModelTest {
 		}
 		
 	}
+	
+	
+//	@Test
+//	public void testGetSpectrum() throws Exception {
+//	
+//		
+//	}
+	
 	@Test
 	public void testStoreRestore() throws Exception {
-		
-	
+		//TODO implement testStoreRestore()
 	}
 
 }

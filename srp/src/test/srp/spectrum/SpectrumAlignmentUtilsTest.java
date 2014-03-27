@@ -10,8 +10,8 @@ import org.junit.Test;
 
 import srp.core.DataImporter;
 import srp.shortreads.AlignmentMapping;
+import srp.spectrum.AbstractSpectrumAlignmentModel;
 import srp.spectrum.SpectraParameter;
-import srp.spectrum.SpectrumAlignmentModel;
 import srp.spectrum.SpectrumAlignmentUtils;
 import srp.spectrum.SpectrumAlignmentUtils.Dist;
 import srp.spectrum.likelihood.ShortReadsSpectrumLikelihood.DistType;
@@ -39,28 +39,28 @@ public class SpectrumAlignmentUtilsTest {
 	public void tearDown() throws Exception {
 	}
 
+//	
+//	@Test
+//	public void testDist() throws Exception {
+//		String dataDir;
+//
+//		dataDir = "/home/sw167/workspaceSrp/snowgoose/srp/unittest/";
+//
+//		String trueHaplotypeFile = "spectrumDist_true.fasta";
+//		String logSpectrumPath = "spectrumDist_01.fasta";
+//
+//		DataImporter dataImporter = new DataImporter(dataDir);
+//		Alignment trueAlignment = dataImporter.importAlignment(trueHaplotypeFile);
+//
+//		SpectrumAlignmentModel spectrumModel = dataImporter.importPartialSpectrumFile(logSpectrumPath );
+////			
+//		SpectrumAlignmentUtils.compareSpectrumToTrueAlignment(spectrumModel, trueAlignment, Dist.euclidean);
+//
+//	}
+	
 	
 	@Test
 	public void testDist() throws Exception {
-		String dataDir;
-
-		dataDir = "/home/sw167/workspaceSrp/snowgoose/srp/unittest/";
-
-		String trueHaplotypeFile = "spectrumDist_true.fasta";
-		String logSpectrumPath = "spectrumDist_01.fasta";
-
-		DataImporter dataImporter = new DataImporter(dataDir);
-		Alignment trueAlignment = dataImporter.importAlignment(trueHaplotypeFile);
-
-		SpectrumAlignmentModel spectrumModel = dataImporter.importPartialSpectrumFile(logSpectrumPath );
-//			
-		SpectrumAlignmentUtils.compareSpectrumToTrueAlignment(spectrumModel, trueAlignment, Dist.euclidean);
-
-	}
-	
-	
-	@Test
-	public void testDist01() throws Exception {
 
 		String dataDir;
 
@@ -76,7 +76,7 @@ public class SpectrumAlignmentUtilsTest {
 		DataImporter dataImporter = new DataImporter(dataDir);
 		Alignment trueAlignment = dataImporter.importAlignment(trueHaplotypeFile);
 		
-		SpectrumAlignmentModel spectrumModel = dataImporter.importPartialSpectrumFile(partialSpectrumFile );
+		AbstractSpectrumAlignmentModel spectrumModel = dataImporter.importPartialSpectrumFile(partialSpectrumFile );
 
 		double[][] allDelta = SpectrumAlignmentUtils.compareSpectrumToTrueAlignment(spectrumModel, trueAlignment, Dist.euclidean);
 //		Spectrum1
@@ -88,7 +88,7 @@ public class SpectrumAlignmentUtilsTest {
 		double match = Math.sqrt(0.3*0.3 + 3*0.1*0.1);
 		double mismatch = Math.sqrt(0.9*0.9 + 0.7*0.7 + 2*0.1*0.1);
 		double[][] expectedDist = new double[][]{
-				{match*5, match*3+mismatch*2, match*2+mismatch*3, mismatch*5 },
+				{match*5/5, (match*3+mismatch*2)/5, (match*2+mismatch*3)/5, mismatch*5/5 },
 				{mismatch, match, mismatch, match, },  
 				{match, match, match, match, },  
 				{mismatch, mismatch, mismatch,  mismatch*5 }  

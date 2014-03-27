@@ -23,12 +23,8 @@ public class CategorySpectrumAlignmentModel extends AbstractSpectrumAlignmentMod
 	private static final long serialVersionUID = 3458306765918357829L;
 	private static final String MODEL_NAME = "CategorySpectrumModel";
 
-
-	private boolean isEdit;//TODO utilise this!!
+	protected ArrayList<CategorySpectrum> categorySpectrumList;
 	
-	private SpectrumOperationRecord spectrumOperationRecord;
-	
-
 	public CategorySpectrumAlignmentModel(int spectrumLength, int spectrumCount){
 		this(spectrumLength, spectrumCount, CategoryType.SINGLE);
 	}
@@ -62,132 +58,44 @@ public class CategorySpectrumAlignmentModel extends AbstractSpectrumAlignmentMod
 		
 		CategorySpectrumAlignmentModel newSpectrumModel = new CategorySpectrumAlignmentModel(oldModel.getSpectrumLength());
 		for (int i = 0; i < oldModel.getSpectrumCount(); i++) {
-			CategorySpectrum spectrum = CategorySpectrum.duplicateSpectrum(oldModel.getCategorySpectrum(i));
+			CategorySpectrum spectrum = CategorySpectrum.duplicateSpectrum(oldModel.getSpectrum(i));
 			newSpectrumModel.addSpectrum(spectrum);
 		}
 		return newSpectrumModel;
 	}
+
+	public void addSpectrum(CategorySpectrum spectrum) {
 	
-	// override abstract method
-	protected ArrayList<CategorySpectrum> categorySpectrumList;
-//	protected ArrayList<Spectrum> storedSpectrumList;
-
-	public String getSpectrumString(int i) {
-		return categorySpectrumList.get(i).toString();
-	}
-
-	public int getSpectrumLength() {
-		return spectrumLength;
+		for (int i = 0; i < spectrumLength; i++) {
+			spectrum.setStoreSiteIndex(i);
+			spectrum.storeState();
+		}
+		categorySpectrumList.add(spectrum);
+	
 	}
 
 	public int getSpectrumCount() {
 		return categorySpectrumList.size();
 	}
 
-	public AbstractSpectrum getSpectrum(int i){
-//		return categorySpectrumList.get(i);///
-		throw new IllegalArgumentException("Use getCategorySpectrum");
-	}
+	@Override
+	public CategorySpectrum getSpectrum(int i){
+		return categorySpectrumList.get(i);
 	
-	public CategorySpectrum getCategorySpectrum(int i){
-		return categorySpectrumList.get(i);///
-//		throw IllegalArgumentException("Use getCategorySpectrum");
 	}
 
-	
-	public void addSpectrum(CategorySpectrum spectrum) {
-
-		for (int i = 0; i < spectrumLength; i++) {
-			spectrum.setStoreSiteIndex(i);
-			spectrum.storeState();
-		}
-		categorySpectrumList.add(spectrum);
-
+	@Override
+	public String getSpectrumString(int i) {
+		return categorySpectrumList.get(i).toString();
 	}
 
-	public double[] getSpecturmFrequencies(int spectrumIndex, int i) {		
-		return getCategorySpectrum(spectrumIndex).getFrequenciesAt(i);
-	}
-
+	@Override
 	public void removeSpectrum(int i) {
 		categorySpectrumList.remove(i);
-		
 	}
 	//////////////////////////////////////////////////////////////////////////
 	
 
-	public void resetSpectrumOperation(){
-		spectrumOperationRecord.setOperation(SpectrumOperation.FULL);
-	}
-
-	public SpectrumOperationRecord getSpectrumOperationRecord() {
-		return spectrumOperationRecord;
-	}
-
-	public SpectrumOperation getSpectrumOperation() {
-		return spectrumOperationRecord.getOperation();
-	}
-
-	
-	
-
-	public void setSpectrumOperationRecord(SpectrumOperation op,
-			int[] twoSpectrumIndex, int[] swapPositionIndex){
-		
-		spectrumOperationRecord.setRecord(op, twoSpectrumIndex, swapPositionIndex);
-	}
-
-
-	
-	public void setSpectrumOperationRecord(SpectrumOperation op, int siteIndex,
-			double... delta) {
-		spectrumOperationRecord.setRecord(op, siteIndex, delta);
-	}
-	public void setSpectrumOperationRecord(SpectrumOperation op, int spectrumIndex,
-			int siteIndex) {
-		spectrumOperationRecord.setRecord(op, spectrumIndex, siteIndex);
-	}
-	public void setSpectrumOperationRecord(SpectrumOperation op, int spectrumIndex,
-			int siteIndex, double delta) {
-		spectrumOperationRecord.setRecord(op, spectrumIndex, siteIndex);
-	}
-	public void setSpectrumOperationRecord(SpectrumOperation op,
-			int spectrumIndex, int[] siteIndexs, double... delta) {
-		spectrumOperationRecord.setRecord(op, spectrumIndex, siteIndexs, delta);
-	
-	}
-
-	//	public void setSpectrumOperationRecord(SpectrumOperation op,
-	//			int spectrumIndex, int[] siteIndexs) {
-	//		//recombination
-	//		spectrumOperationRecord.setRecord(op, spectrumIndex, siteIndexs);
-	//
-	//	}
-
-	public void setSpectrumOperationRecord(SpectrumOperation op,
-			int[] spectrumIndexs, int siteIndex) {
-		//subcolumn
-		spectrumOperationRecord.setRecord(op, spectrumIndexs, siteIndex);
-		
-	}
-
-	@Override
-	public void fireModelChanged(){
-	//		for (TreeChangedEvent treeChangedEvent : treeChangedEvents) {
-			listenerHelper.fireModelChanged(this);//, treeChangedEvent);
-	//		}
-	//		treeChangedEvents.clear();
-		}
-	@Override
-	protected void handleModelChangedEvent(Model model, Object object, int index) {
-		System.err.println("Call handleModelChangedEvent in CategorySpectrumAlignmentModel");
-		
-	}
-	@SuppressWarnings("rawtypes")
-	@Override
-	protected void handleVariableChangedEvent(Variable variable, int index, ChangeType type) {
-		System.err.println("Call handleVariableChangedEvent in CategorySpectrumAlignmentModel");
-	}
 	@Override
 	protected void acceptState() {
 		//Do nothing
@@ -212,7 +120,7 @@ public class CategorySpectrumAlignmentModel extends AbstractSpectrumAlignmentMod
 				System.out.println("StoreState in CategorySpectrumAlignment:\t"+operation);
 			}
 			for (int i = 0; i < getSpectrumCount(); i++) {
-				spectrum = getCategorySpectrum(i);
+				spectrum = getSpectrum(i);
 				for (int s = 0; s < getSpectrumLength(); s++) {
 					spectrum.setStoreSiteIndex(s);
 					spectrum.storeState();
@@ -233,7 +141,7 @@ public class CategorySpectrumAlignmentModel extends AbstractSpectrumAlignmentMod
 //			spectrumIndex = spectrumOperationRecord.getSpectrumIndex();
 			siteIndex = spectrumOperationRecord.getSingleIndex();
 			for (int i = 0; i < getSpectrumCount(); i++) {
-				spectrum = getCategorySpectrum(i);
+				spectrum = getSpectrum(i);
 				spectrum.setStoreSiteIndex(siteIndex);
 				spectrum.storeState();
 			}
@@ -242,7 +150,7 @@ public class CategorySpectrumAlignmentModel extends AbstractSpectrumAlignmentMod
 		case SWAP_SINGLE:
 			spectrumIndex = spectrumOperationRecord.getSpectrumIndex();
 			siteIndex = spectrumOperationRecord.getSingleIndex();
-			spectrum = getCategorySpectrum(spectrumIndex);
+			spectrum = getSpectrum(spectrumIndex);
 				spectrum.setStoreSiteIndex(siteIndex);
 				spectrum.storeState();
 			break;
@@ -251,7 +159,7 @@ public class CategorySpectrumAlignmentModel extends AbstractSpectrumAlignmentMod
 		case SWAP_MULTI:
 			spectrumIndex = spectrumOperationRecord.getSpectrumIndex();
 			siteIndexs = spectrumOperationRecord.getAllSiteIndexs();
-			spectrum = getCategorySpectrum(spectrumIndex);
+			spectrum = getSpectrum(spectrumIndex);
 			for (int i = 0; i < siteIndexs.length; i++) {
 				spectrum.setStoreSiteIndex(siteIndexs[i]);
 				spectrum.storeState();
@@ -263,7 +171,7 @@ public class CategorySpectrumAlignmentModel extends AbstractSpectrumAlignmentMod
 			int[] twoSpectrums = spectrumOperationRecord.getRecombinationSpectrumIndex();
 			int[] twoPositions = spectrumOperationRecord.getRecombinationPositionIndex();
 			for (int i : twoSpectrums) {
-				spectrum = getCategorySpectrum(i);
+				spectrum = getSpectrum(i);
 				for (int s = twoPositions[0]; s < twoPositions[1]; s++) {
 					spectrum.setStoreSiteIndex(s);
 					spectrum.storeState();
@@ -303,7 +211,7 @@ public class CategorySpectrumAlignmentModel extends AbstractSpectrumAlignmentMod
 				System.out.println("RestoreState in CategorySpectrumAlignment:\t"+operation);
 			}
 			for (int i = 0; i < getSpectrumCount(); i++) {
-				spectrum = getCategorySpectrum(i);
+				spectrum = getSpectrum(i);
 				for (int s = 0; s < getSpectrumLength(); s++) {
 					spectrum.setStoreSiteIndex(s);
 					spectrum.restoreState();
@@ -329,7 +237,7 @@ public class CategorySpectrumAlignmentModel extends AbstractSpectrumAlignmentMod
 //				System.err.println(spectrumIndex +"\t"+ siteIndex +"\t"+ Arrays.toString(getSpecturmFrequencies(spectrumIndex,
 //						siteIndex)));
 			for (int i = 0; i < getSpectrumCount(); i++) {
-				spectrum = getCategorySpectrum(i);
+				spectrum = getSpectrum(i);
 				spectrum.setStoreSiteIndex(siteIndex);
 				spectrum.restoreState();
 			}
@@ -338,7 +246,7 @@ public class CategorySpectrumAlignmentModel extends AbstractSpectrumAlignmentMod
 		case SWAP_MULTI:
 			spectrumIndex = spectrumOperationRecord.getSpectrumIndex();
 			siteIndexs = spectrumOperationRecord.getAllSiteIndexs();
-			spectrum = getCategorySpectrum(spectrumIndex);
+			spectrum = getSpectrum(spectrumIndex);
 			for (int i = 0; i < siteIndexs.length; i++) {
 				spectrum.setStoreSiteIndex(siteIndexs[i]);
 				spectrum.restoreState();
@@ -348,7 +256,7 @@ public class CategorySpectrumAlignmentModel extends AbstractSpectrumAlignmentMod
 		case SWAP_SINGLE:
 			spectrumIndex = spectrumOperationRecord.getSpectrumIndex();
 			siteIndex = spectrumOperationRecord.getSingleIndex();
-			spectrum = getCategorySpectrum(spectrumIndex);
+			spectrum = getSpectrum(spectrumIndex);
 
 				spectrum.setStoreSiteIndex(siteIndex);
 				spectrum.restoreState();
@@ -360,7 +268,7 @@ public class CategorySpectrumAlignmentModel extends AbstractSpectrumAlignmentMod
 			int[] twoSpectrums = spectrumOperationRecord.getRecombinationSpectrumIndex();
 			int[] twoPositions = spectrumOperationRecord.getRecombinationPositionIndex();
 			for (int i : twoSpectrums) {
-				spectrum = getCategorySpectrum(i);
+				spectrum = getSpectrum(i);
 				for (int s = twoPositions[0]; s < twoPositions[1]; s++) {
 					spectrum.setStoreSiteIndex(s);
 					spectrum.restoreState();
@@ -374,16 +282,7 @@ public class CategorySpectrumAlignmentModel extends AbstractSpectrumAlignmentMod
 //		long time2 = System.currentTimeMillis();
 //		time += (time2-time1);
 	}
-	public void startSpectrumOperation(){
-//		System.err.println("\n!!!startSpectrumOperation");
-		isEdit = true;
-	}
 
-	public void endSpectrumOperation(){
-		isEdit = false;
-//		System.err.println("!!!!!!!endSpectrumOperation, fireModelCHanged");
-		fireModelChanged();
-	}
 //////////////////////////////////////////////////////////////////////////
 
 	

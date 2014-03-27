@@ -3,15 +3,9 @@ package srp.spectrum;
 
 import java.util.ArrayList;
 
-import srp.dr.evolution.datatype.ShortReads;
 import srp.spectrum.SpectraParameter.SpectraType;
 import dr.evolution.alignment.Alignment;
-import dr.evolution.datatype.Nucleotides;
 import dr.evolution.util.Taxon;
-import dr.inference.model.Model;
-import dr.inference.model.Parameter;
-import dr.inference.model.Variable;
-import dr.inference.model.Variable.ChangeType;
 import dr.util.NumberFormatter;
 
 
@@ -29,9 +23,6 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 
 	private boolean isEdit;//TODO utilise this!!
 	
-	private SpectrumOperationRecord spectrumOperationRecord;
-	
-
 	public SpectrumAlignmentModel(int spectrumLength, int spectrumCount){
 		this(spectrumLength, spectrumCount, SpectraType.RANDOM);
 	}
@@ -93,123 +84,42 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 		return newSpectrumModel;
 	}
 	
-	public String getSpectrumString(int i) {
-		return spectrumList.get(i).toString();
-		
-	}
-
-	public int getSpectrumCount() {
-		return spectrumList.size();
-	}
-
-	public Spectrum getSpectrum(int i){
-		return spectrumList.get(i);
-	}
-
-
-	
 	public void addSpectrum(Spectrum spectrum) {
-
+	
 		for (int i = 0; i < spectrumLength; i++) {
 			spectrum.setStoreSiteIndex(i);
 			spectrum.storeState();
 		}
 		spectrumList.add(spectrum);
-
-	}
-
-	public void resetSpectrumOperation(){
-		spectrumOperationRecord.setOperation(SpectrumOperation.FULL);
-	}
-
-
-
-	public SpectrumOperationRecord getSpectrumOperationRecord() {
-		return spectrumOperationRecord;
-	}
-
-	public SpectrumOperation getSpectrumOperation() {
-		return spectrumOperationRecord.getOperation();
-	}
-
-	public double[] getSpecturmFrequencies(int spectrumIndex, int i) {
-	//		Spectrum spectrum = getSpectrum(sequenceIndex);
-			
-			return getSpectrum(spectrumIndex).getFrequenciesAt(i);
-	}
-
-
-	//////////////////////////////////////////////////////////////////////////
 	
+	}
+
+	@Override
+	public int getSpectrumCount() {
+		return spectrumList.size();
+	}
+
+	@Override
+	public Spectrum getSpectrum(int i){
+		return spectrumList.get(i);
+	}
+
+	@Override
+	public String getSpectrumString(int i) {
+		return spectrumList.get(i).toString();
+		
+	}
+
 	
-	
+	@Override
 	public void removeSpectrum(int i) {
 		spectrumList.remove(i);
 		
 	}
 
-	public void setSpectrumOperationRecord(SpectrumOperation op,
-			int[] twoSpectrumIndex, int[] swapPositionIndex){
-		
-		spectrumOperationRecord.setRecord(op, twoSpectrumIndex, swapPositionIndex);
-	}
-
-	//	public void setSpectrumOperationRecord(SpectrumOperation op, int spectrumIndex,
-	//			int siteIndex, double... delta){
-	//
-	//		spectrumOperationRecord.setRecord(op, spectrumIndex, siteIndex, delta);
-	//	}
 	
-	public void setSpectrumOperationRecord(SpectrumOperation op, int siteIndex,
-			double... delta) {
-		spectrumOperationRecord.setRecord(op, siteIndex, delta);
-	}
-	public void setSpectrumOperationRecord(SpectrumOperation op, int spectrumIndex,
-			int siteIndex) {
-		spectrumOperationRecord.setRecord(op, spectrumIndex, siteIndex);
-	}
-	public void setSpectrumOperationRecord(SpectrumOperation op, int spectrumIndex,
-			int siteIndex, double delta) {
-		spectrumOperationRecord.setRecord(op, spectrumIndex, siteIndex);
-	}
-	public void setSpectrumOperationRecord(SpectrumOperation op,
-			int spectrumIndex, int[] siteIndexs, double... delta) {
-		spectrumOperationRecord.setRecord(op, spectrumIndex, siteIndexs, delta);
-	
-	}
 
-	//	public void setSpectrumOperationRecord(SpectrumOperation op,
-	//			int spectrumIndex, int[] siteIndexs) {
-	//		//recombination
-	//		spectrumOperationRecord.setRecord(op, spectrumIndex, siteIndexs);
-	//
-	//	}
 	
-		public void setSpectrumOperationRecord(SpectrumOperation op,
-				int[] spectrumIndexs, int siteIndex) {
-			//subcolumn
-			spectrumOperationRecord.setRecord(op, spectrumIndexs, siteIndex);
-			
-		}
-
-	@Override
-	public void fireModelChanged(){
-	//		for (TreeChangedEvent treeChangedEvent : treeChangedEvents) {
-			listenerHelper.fireModelChanged(this);//, treeChangedEvent);
-	//		}
-	//		treeChangedEvents.clear();
-		}
-	@Override
-	protected void handleModelChangedEvent(Model model, Object object, int index) {
-		System.err.println("Call handleModelChangedEvent in SpectrumAlignmentModel");
-		
-	}
-	@SuppressWarnings("rawtypes")
-	@Override
-	protected void handleVariableChangedEvent(Variable variable, int index,
-			ChangeType type) {
-		System.err.println("Call handleVariableChangedEvent in SpectrumAlignmentModel");
-	}
 	@Override
 	protected void acceptState() {
 		//Do nothing
@@ -396,16 +306,7 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 //		long time2 = System.currentTimeMillis();
 //		time += (time2-time1);
 	}
-	public void startSpectrumOperation(){
-//		System.err.println("\n!!!startSpectrumOperation");
-		isEdit = true;
-	}
 
-	public void endSpectrumOperation(){
-		isEdit = false;
-//		System.err.println("!!!!!!!endSpectrumOperation, fireModelCHanged");
-		fireModelChanged();
-	}
 //////////////////////////////////////////////////////////////////////////
 
 	
@@ -437,16 +338,7 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 		
 	}
 
-    
 
-	//REMOVE after
-	private static final int NUCLEOTIDE_STATES[] = Nucleotides.NUCLEOTIDE_STATES;
-	private static final char[] VALID_CHARS = initValidChars4();
-	private static final int INDEX_OF_LAST_VALID_CHARS = VALID_CHARS.length-1;
-	private static char[] initValidChars4() {
-		char[] validChar = new char[4];
-		System.arraycopy(Nucleotides.NUCLEOTIDE_CHARS, 0, validChar, 0, validChar.length);
-		return validChar;
-	}
+
 		
 }

@@ -15,6 +15,7 @@ import srp.core.MCMCSetupHelper;
 import srp.core.MCMCSetupHelperSpectrum;
 import srp.shortreads.AlignmentMapping;
 import srp.shortreads.ShortReadMapping;
+import srp.spectrum.AbstractSpectrumAlignmentModel;
 import srp.spectrum.SpectrumAlignmentModel;
 import srp.spectrum.SpectrumAlignmentUtils;
 import srp.spectrum.likelihood.ShortReadsSpectrumLikelihood;
@@ -187,6 +188,7 @@ public class MainMCMCTest {
 		for (int i = 0; i < treeLikelihood.getModelCount(); i++) {
 			Model model = treeLikelihood.getModel(i);
 			System.out.println(model.getModelName());
+			
 			if(model.getModelName().equals("siteModel")){
 				newSiteModel = (GammaSiteModel) model;
 				System.out.println(Arrays.toString(newSiteModel.getFrequencyModel()
@@ -203,12 +205,17 @@ public class MainMCMCTest {
 				newBranchRateModel = (StrictClockBranchRates) model;
 				System.out.println(newBranchRateModel.getVariable(0));
 			}
-			else if(model.getModelName().equals("SpectrumModel")){
-				newSpectrumModel = SpectrumAlignmentModel.duplicateSpectrumAlignmentModel((SpectrumAlignmentModel) model);
-			}
+//			else if(model.getModelName().equals("SpectrumModel")){
+//				newSpectrumModel = SpectrumAlignmentModel.duplicateSpectrumAlignmentModel((SpectrumAlignmentModel) model);
+//			}
+			
 			else if(model.getModelName().equals("frequencyModel")){
 				f = (FrequencyModel) model;
 				System.out.println(Arrays.toString(f.getFrequencies()));
+			}
+			
+			else if(model instanceof SpectrumAlignmentModel){
+				newSpectrumModel = SpectrumAlignmentModel.duplicateSpectrumAlignmentModel((SpectrumAlignmentModel) model);
 			}
 			
 		}

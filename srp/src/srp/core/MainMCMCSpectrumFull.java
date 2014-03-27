@@ -58,7 +58,7 @@ public class MainMCMCSpectrumFull {
 		boolean randomTree = true;
 		boolean randomSpectrum = true;
 //		SpectraType randomSpectrumType = SpectraType.RANDOM;
-		SpectraType randomSpectrumType = SpectraType.ZERO_ONE;
+		SpectraType randomSpectrumType = SpectraType.DOMINANT;
 		DistType distTypeCode = DistType.flat;
 		
 //		boolean commandLine = true;
@@ -85,7 +85,7 @@ public class MainMCMCSpectrumFull {
 //			randomTree = false;
 			
 			randomSpectrum = true;
-			randomSpectrumType = SpectraType.ZERO_ONE;
+			randomSpectrumType = SpectraType.DOMINANT;
 //			randomSpectrumType = SpectraType.CATEGORY;
 //			randomSpectrumType = SpectraType.RANDOM ;
 			

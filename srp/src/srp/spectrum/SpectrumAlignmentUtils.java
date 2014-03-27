@@ -4,12 +4,7 @@ import java.text.FieldPosition;
 import java.text.NumberFormat;
 import java.util.Arrays;
 
-import javax.swing.text.TabableView;
-
-import srp.core.DataImporter;
 import srp.dr.evolution.datatype.ShortReads;
-import srp.shortreads.AlignmentMapping;
-import srp.spectrum.SpectraParameter.SpectraType;
 import dr.evolution.alignment.Alignment;
 
 public class SpectrumAlignmentUtils {
@@ -19,7 +14,7 @@ public class SpectrumAlignmentUtils {
 
 	private static final NumberFormat formatter = NumberFormat.getNumberInstance();
 	
-	public static double[][] compareSpectrumToTrueAlignment(SpectrumAlignmentModel spectrumModel,
+	public static double[][] compareSpectrumToTrueAlignment(AbstractSpectrumAlignmentModel spectrumModel,
 			Alignment alignment, Dist dist){
 		
 //		Dist dist = Dist.abs;
@@ -41,7 +36,7 @@ public class SpectrumAlignmentUtils {
 		
 		double[][] totalDelta = new double[specCount][hapCount];
 		for (int i = 0; i < specCount; i++) {
-			Spectrum spectrum = spectrumModel.getSpectrum(i);
+			AbstractSpectrum spectrum = spectrumModel.getSpectrum(i);
 			for (int j = 0; j < hapCount; j++) {
 				String haplotype = alignment.getAlignedSequenceString(j);
 				totalDelta[i][j] = computeDist(spectrum, haplotype, dist);
@@ -53,14 +48,14 @@ public class SpectrumAlignmentUtils {
 	
 
 	public static double[][] compareSpectrum(
-			SpectrumAlignmentModel spectrumModel, Dist dist) {
+			AbstractSpectrumAlignmentModel spectrumModel, Dist dist) {
 
 		int specCount = spectrumModel.getSpectrumCount();
 		double[][] totalDelta = new double[specCount][specCount];
 		for (int i = 0; i < specCount; i++) {
-			Spectrum spectrum1 = spectrumModel.getSpectrum(i);
+			AbstractSpectrum spectrum1 = spectrumModel.getSpectrum(i);
 			for (int j = 0; j < specCount; j++) {
-				Spectrum spectrum2 = spectrumModel.getSpectrum(j);
+				AbstractSpectrum spectrum2 = spectrumModel.getSpectrum(j);
 				totalDelta[i][j] = computeDist(spectrum1, spectrum2, dist);
 			}
 			
@@ -68,7 +63,7 @@ public class SpectrumAlignmentUtils {
 		return totalDelta;
 	}
 
-	private static double computeDist(Spectrum spectrum1, Spectrum spectrum2, Dist dist) {
+	private static double computeDist(AbstractSpectrum spectrum1, AbstractSpectrum spectrum2, Dist dist) {
 		double delta = -1;
 		switch (dist) {
 		case euclidean:
@@ -88,12 +83,12 @@ public class SpectrumAlignmentUtils {
 
 
 
-	private static double computeAbsDist(Spectrum spectrum1, Spectrum spectrum2) {
+	private static double computeAbsDist(AbstractSpectrum spectrum1, AbstractSpectrum spectrum2) {
 			int specLength = spectrum1.getLength();
 			double allDist = 0;
 			for (int s = 0; s < specLength; s++) {
-				SpectraParameter spectra1 = spectrum1.getSpectra(s);
-				SpectraParameter spectra2 = spectrum2.getSpectra(s);
+				AbstractSpectra spectra1 = spectrum1.getSpectra(s);
+				AbstractSpectra spectra2 = spectrum2.getSpectra(s);
 	//			int state = getStateAtK(haplotype, s);
 	//			double dist = 0;
 				for (int f = 0; f < DIM; f++) {
@@ -108,12 +103,12 @@ public class SpectrumAlignmentUtils {
 		}
 
 
-	private static double computeEuclideanDist(Spectrum spectrum1, Spectrum spectrum2) {
+	private static double computeEuclideanDist(AbstractSpectrum spectrum1, AbstractSpectrum spectrum2) {
 			int specLength = spectrum1.getLength();
 			double allDist = 0;
 			for (int s = 0; s < specLength; s++) {
-				SpectraParameter spectra1 = spectrum1.getSpectra(s);
-				SpectraParameter spectra2 = spectrum2.getSpectra(s);
+				AbstractSpectra spectra1 = spectrum1.getSpectra(s);
+				AbstractSpectra spectra2 = spectrum2.getSpectra(s);
 	//			int state = getStateAtK(haplotype, s);
 				double dist = 0;
 				for (int f = 0; f < DIM; f++) {
@@ -127,12 +122,12 @@ public class SpectrumAlignmentUtils {
 		}
 
 
-	private static double computeMajorDist(Spectrum spectrum1, Spectrum spectrum2) {
+	private static double computeMajorDist(AbstractSpectrum spectrum1, AbstractSpectrum spectrum2) {
 		int specLength = spectrum1.getLength();
 		double allDist = 0;
 		for (int s = 0; s < specLength; s++) {
-			SpectraParameter spectra1 = spectrum1.getSpectra(s);
-			SpectraParameter spectra2 = spectrum2.getSpectra(s);
+			AbstractSpectra spectra1 = spectrum1.getSpectra(s);
+			AbstractSpectra spectra2 = spectrum2.getSpectra(s);
 //			int state = getStateAtK(haplotype, s);
 //			double dist = 0;
 			double max1 = 0;
@@ -162,7 +157,7 @@ public class SpectrumAlignmentUtils {
 	
 	}
 
-	private static double computeDist(Spectrum spectrum, String haplotype, Dist dist) {
+	private static double computeDist(AbstractSpectrum spectrum, String haplotype, Dist dist) {
 		double delta = -1;
 		switch (dist) {
 		case euclidean:
@@ -180,11 +175,11 @@ public class SpectrumAlignmentUtils {
 		return delta;
 	}
 	
-	private static double computeAbsDist(Spectrum spectrum, String haplotype) {
+	private static double computeAbsDist(AbstractSpectrum spectrum, String haplotype) {
 		int specLength = spectrum.getLength();
 		double dist = 0;
 		for (int s = 0; s < specLength; s++) {
-			SpectraParameter spectra = spectrum.getSpectra(s);
+			AbstractSpectra spectra = spectrum.getSpectra(s);
 			int state = getStateAtK(haplotype, s);
 			for (int f = 0; f < DIM; f++) {
 				double delta = spectra.getFrequency(f);
@@ -199,33 +194,37 @@ public class SpectrumAlignmentUtils {
 		return dist;
 	}
 	
-	private static double computeEuclideanDist(Spectrum spectrum, String haplotype) {
+	private static double computeEuclideanDist(AbstractSpectrum spectrum, String haplotype) {
 		int specLength = spectrum.getLength();
 		double allDist = 0;
 		for (int s = 0; s < specLength; s++) {
-			SpectraParameter spectra = spectrum.getSpectra(s);
+			AbstractSpectra spectra = spectrum.getSpectra(s);
 			int state = getStateAtK(haplotype, s);
 			double dist = 0;
 			for (int f = 0; f < DIM; f++) {
 				double delta = spectra.getFrequency(f);
 				if(f==state){
 					delta -= 1;
+					
 				}
 				dist += delta*delta;
 	
 			}
+			
 			allDist += Math.sqrt(dist);
+//			System.out.println("D: "+dist +"\t"+allDist +"\n");
 		}
+//		System.exit(-1);
 		allDist /= specLength;
 		return allDist;
 	}
 
 
-	private static double computeMajorDist(Spectrum spectrum, String haplotype) {
+	private static double computeMajorDist(AbstractSpectrum spectrum, String haplotype) {
 			int specLength = spectrum.getLength();
 			double dist = 0;
 			for (int s = 0; s < specLength; s++) {
-				SpectraParameter spectra = spectrum.getSpectra(s);
+				AbstractSpectra spectra = spectrum.getSpectra(s);
 				int state = getStateAtK(haplotype, s);
 				double max = 0;
 				int maxState = -1;
@@ -277,17 +276,18 @@ public class SpectrumAlignmentUtils {
 
 
 	public static void compareTwoSpectrumModel(
-			SpectrumAlignmentModel spectrumModel,
-			SpectrumAlignmentModel spectrumModel2) {
+			AbstractSpectrumAlignmentModel spectrumModel,
+			AbstractSpectrumAlignmentModel spectrumModel2) {
 	
 	
 		for (int i = 0; i < spectrumModel.getSpectrumCount(); i++) {
-			Spectrum spectrum = spectrumModel.getSpectrum(i);
-			Spectrum newSpectrum = spectrumModel2.getSpectrum(i);
+			AbstractSpectrum spectrum = spectrumModel.getSpectrum(i);
+			AbstractSpectrum newSpectrum = spectrumModel2.getSpectrum(i);
 			for (int j = 0; j < spectrum.getLength(); j++) {
 				double[] frequencies = spectrum.getFrequenciesAt(j);
+				double[] newFrequencies = newSpectrum.getFrequenciesAt(j);
 				for (int k = 0; k < frequencies.length; k++) {
-					if(frequencies[k] != newSpectrum.getFrequency(j, k)){
+					if(frequencies[k] != newFrequencies[k]){
 						System.err.println("DIFFMODEL\t"+i +"\t"+ j +"\t"+ k +"\t"+ Arrays.toString(frequencies) +"\t"+ Arrays.toString(newSpectrum.getFrequenciesAt(j)));
 					}
 				}
@@ -312,16 +312,16 @@ public class SpectrumAlignmentUtils {
 	}
 
 	public static String CreateMajorAlignment(
-			SpectrumAlignmentModel spectrumModel) {
+			AbstractSpectrumAlignmentModel spectrumModel) {
 
 		int specLength = spectrumModel.getSpectrumLength();
 		int specCount = spectrumModel.getSpectrumCount();
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < specCount; i++) {
 
-			Spectrum spectrum = spectrumModel.getSpectrum(i);
+			AbstractSpectrum spectrum = spectrumModel.getSpectrum(i);
 			for (int s = 0; s < specLength; s++) {
-				SpectraParameter spectra = spectrum.getSpectra(s);
+				AbstractSpectra spectra = spectrum.getSpectra(s);
 				double max = 0;
 				int maxState = -1;
 

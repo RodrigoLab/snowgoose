@@ -194,7 +194,7 @@ public class ShortReadsSpectrumLikelihoodTest {
 		Spectrum spectrum = spectrumModel.getSpectrum(0);
 		for (int i = 0; i < spectrum.getLength(); i++) {
 			double[] freqs = new double[]{1-(0.1*i*3), 0.1*i, 0.1*i, 0.1*i};
-			spectrum.resetFrequencies(i, freqs);
+			spectrum.resetSpectra(i, freqs);
 //			System.out.println("SITE: "+i +"\t"+  Arrays.toString(spectrum.getFrequencies(i)));
 		}
 //		spectrumModel.setSpectrum(0, spectrum);
@@ -243,19 +243,19 @@ public class ShortReadsSpectrumLikelihoodTest {
 
 		spectrum = spectrumModel.getSpectrum(0);
 		double[] freqs = new double[]{0.5, 0, 0.5, 0};
-		spectrum.resetFrequencies(0, freqs);
-		spectrum.resetFrequencies(1, freqs);
+		spectrum.resetSpectra(0, freqs);
+		spectrum.resetSpectra(1, freqs);
 		freqs = new double[]{0, 0.5, 0, 0.5};
-		spectrum.resetFrequencies(2, freqs);
-		spectrum.resetFrequencies(3, freqs);
+		spectrum.resetSpectra(2, freqs);
+		spectrum.resetSpectra(3, freqs);
 		
 		spectrum = spectrumModel.getSpectrum(1);
 		freqs = new double[]{0.5, 0, 0.5, 0};
-		spectrum.resetFrequencies(0, freqs);
-		spectrum.resetFrequencies(1, freqs);
+		spectrum.resetSpectra(0, freqs);
+		spectrum.resetSpectra(1, freqs);
 		freqs = new double[]{0, 0.5, 0, 0.5};
-		spectrum.resetFrequencies(2, freqs);
-		spectrum.resetFrequencies(3, freqs);
+		spectrum.resetSpectra(2, freqs);
+		spectrum.resetSpectra(3, freqs);
 		
 		String[] trueSeq = new String[]{
 				"AACC",
@@ -265,19 +265,19 @@ public class ShortReadsSpectrumLikelihoodTest {
 //		SpectrumAlignmentModel spectrumModel2 = new SpectrumAlignmentModel(AlignmentUtils.createAlignment(trueSeq) );
 		spectrum = spectrumModel2.getSpectrum(0);
 		freqs = new double[]{1, 0, 0, 0};
-		spectrum.resetFrequencies(0, freqs);
-		spectrum.resetFrequencies(1, freqs);
+		spectrum.resetSpectra(0, freqs);
+		spectrum.resetSpectra(1, freqs);
 		freqs = new double[]{0, 1, 0, 0};
-		spectrum.resetFrequencies(2, freqs);
-		spectrum.resetFrequencies(3, freqs);
+		spectrum.resetSpectra(2, freqs);
+		spectrum.resetSpectra(3, freqs);
 		
 		spectrum = spectrumModel2.getSpectrum(1);
 		freqs = new double[]{0, 0, 1, 0};
-		spectrum.resetFrequencies(0, freqs);
-		spectrum.resetFrequencies(1, freqs);
+		spectrum.resetSpectra(0, freqs);
+		spectrum.resetSpectra(1, freqs);
 		freqs = new double[]{0, 0, 0, 1};
-		spectrum.resetFrequencies(2, freqs);
-		spectrum.resetFrequencies(3, freqs);
+		spectrum.resetSpectra(2, freqs);
+		spectrum.resetSpectra(3, freqs);
 //			System.out.println("SITE: "+i +"\t"+  Arrays.toString(spectrum.getFrequencies(i)));
 		
 //		spectrumModel.setSpectrum(0, spectrum);

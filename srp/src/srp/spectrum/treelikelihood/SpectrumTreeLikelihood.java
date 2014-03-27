@@ -118,7 +118,8 @@ public class SpectrumTreeLikelihood extends AbstractSpectrumTreeLikelihood {
               logger.info("TreeLikelihood(" + ((id != null) ? id : treeModel.getId()) + ") using " + coreName + " likelihood core");
 
               logger.info("  " + (useAmbiguities ? "Using" : "Ignoring") + " ambiguities in tree likelihood.");
-              logger.info("  With " + spectrumModel.getPatternCount() + " unique site patterns.");
+//              logger.info("  With " + spectrumModel.getPatternCount() + " unique site patterns.");
+              logger.info("  With " + spectrumModel.getSpectrumLength() + " sites.");
             }
 
             if (branchRateModel != null) {

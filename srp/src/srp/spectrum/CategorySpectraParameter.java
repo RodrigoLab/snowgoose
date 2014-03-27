@@ -13,31 +13,26 @@ public class CategorySpectraParameter extends AbstractSpectra{
 	private static final long serialVersionUID = 3708765314559863330L;
 
 	public static final int TOTAL_STATE_COUNT = ShortReads.INSTANCE.getAmbiguousStateCount();
-//	public static final double MAX_FREQ = 0.99;
-//	public static final double MIN_FREQ = 0.001;//MrBayes 0.0001
-	
-//	private double[] storedstateLikelihood;
-//	private double[] stateLikelihood;
-	
 
 	public static final int ONE_CAT = 4;
 	public static final int TWO_CATS = 10;
 	public static final int ALL_CATS = 10;
 
-
 	public static int DIMENSION = 1;
 	public static final Bounds<Double> CATEGORY_BOUNDS = new DefaultBounds(9.0, 0.0, DIMENSION);
-
-	
 	
     protected int[] values;
     protected int[] storedValues;
-
-
-
-
-
 			
+	public CategorySpectraParameter() {
+		setId("spectra_category");
+		
+		addBounds(CATEGORY_BOUNDS);
+		this.dimension = DIMENSION;
+		this.values = new int[DIMENSION];
+	    this.storedValues = new int[DIMENSION];
+	}
+
 	public CategorySpectraParameter(CategoryType type) {
 		this();
 		int cat;
@@ -45,28 +40,19 @@ public class CategorySpectraParameter extends AbstractSpectra{
 		case SINGLE:
 			cat = MathUtils.nextInt(ONE_CAT);
 			break;
-		case TWOWAY:
+		case TWOWAYS:
 			cat = MathUtils.nextInt(TWO_CATS);
 			break;
-		default:
+		case THREEWAYS:		
+		case RANDOM:
 			cat = MathUtils.nextInt(ALL_CATS);
 			break;
+		default:
+			throw new IllegalArgumentException("Invalid type: "+type);
 		}
 		setCategory(cat);
-		if(!isWithinBounds()){
-			throw new IllegalArgumentException("Category out of bounds 0 < f < "+ CATEGORY_BOUNDS.getUpperLimit(0)+"\t"+ cat); 
-		}
 	}
 	
-    public CategorySpectraParameter() {
-		setId("spectra_category");
-		
-		addBounds(CATEGORY_BOUNDS);
-		this.dimension = DIMENSION;
-		this.values = new int[DIMENSION];
-	    this.storedValues = new int[DIMENSION];
-    }
-    
     public CategorySpectraParameter(int cat) {
     	this();
     	setCategory(cat);
@@ -75,7 +61,6 @@ public class CategorySpectraParameter extends AbstractSpectra{
 		}
 
     }
-
     public void setCategory(int cat) {
 //    	setParameterValue(i, 0);
     	values[0] = cat;
@@ -94,54 +79,24 @@ public class CategorySpectraParameter extends AbstractSpectra{
     	return CATEGORIES[values[0]][f];
     }
 
-//    public void setStateLikelihood(double[] likelihood){
-//    	System.arraycopy(likelihood, 0, stateLikelihood, 0, DIMENSION);
-//    }
-//    
-//    public void setStateLikelihood(double[] allStateLikelihood, int offset){
-//    	System.arraycopy(allStateLikelihood, offset, stateLikelihood, 0, DIMENSION);
-//    }
-//	public void setStateLikelihood(int state, double ln) {
-//		stateLikelihood[state] = ln;
-//	}
-//	@Deprecated
-//	public double[] getStateLikelihood() {
-//		return stateLikelihood;
-//	}
-//    public double[] getStoredStateLikelihood() {
-//		return storedstateLikelihood;
-//	}
-
 	
-
-
-    public static void checkSpectra(CategorySpectraParameter sp){
-		double sum = 0;
-		for (int j = 0; j < DIMENSION; j++) {
-			double f = sp.getFrequency(j);
-			sum += f;
-			if(f<0 || f>1){
-				System.err.println(j +"\t"+ f +"\t"+ Arrays.toString(sp.getFrequencies()));
-			}
-			
-		}
-		if(sum>1.01 || sum<0.99){
-			System.err.println(Arrays.toString(sp.getFrequencies()));
-		}
+	@Override
+	public boolean isWithinBounds() {
+	    Bounds<Double> bounds = getBounds();
+	    final double value = getCategory();
+	    if (value < bounds.getLowerLimit(0) || value > bounds.getUpperLimit(0)) {
+	    	return false;
+	    }
+	    return true;
 	}
-    
-    
-	
+
+
 	public enum CategoryType{
 		SINGLE,
-		TWOWAY,
-		THREEWAY,		
+		TWOWAYS,
+		THREEWAYS,		
 		RANDOM, 
-		
-
 	}
-
-//////////
 	
 	public static final double[][] CATEGORIES= new double[][]{
 		{0.97, 0.01, 0.01, 0.01},

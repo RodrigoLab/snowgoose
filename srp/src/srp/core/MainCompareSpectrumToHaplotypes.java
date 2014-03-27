@@ -6,7 +6,7 @@ import java.io.PrintWriter;
 import java.util.Arrays;
 
 import srp.haplotypes.HaplotypeModelUtils;
-import srp.spectrum.SpectrumAlignmentModel;
+import srp.spectrum.AbstractSpectrumAlignmentModel;
 import srp.spectrum.SpectrumAlignmentUtils;
 import srp.spectrum.SpectrumAlignmentUtils.Dist;
 import srp.spectrum.SpectrumLogger;
@@ -52,7 +52,7 @@ public class MainCompareSpectrumToHaplotypes {
 			Alignment trueAlignment = dataImporter
 					.importAlignment(trueHaplotypeFile);
 
-			SpectrumAlignmentModel spectrumModel = dataImporter
+			AbstractSpectrumAlignmentModel spectrumModel = dataImporter
 					.importPartialSpectrumFile(partialSpectrumName);
 			
 //			 loggers[3] = new SpectrumLogger(spectrumModel, trueAlignment,

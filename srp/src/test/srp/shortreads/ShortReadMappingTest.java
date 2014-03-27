@@ -28,7 +28,7 @@ public class ShortReadMappingTest {
 	public static void setUpBeforeClass() throws Exception {
 		
 		String dir = System.getProperty("user.dir")+File.separatorChar+"unittest"+File.separator;
-		String srpFileName = "ShortReadMappingTest_4_srp.fasta";
+		String srpFileName = "AlignmentMappingTest_4_srp.fasta";
 		shortReads = DataImporter.importShortReads(dir, srpFileName);
 	}
 

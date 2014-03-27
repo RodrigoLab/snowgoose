@@ -1,8 +1,7 @@
 package test.srp.spectrum;
 
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.util.Arrays;
 
@@ -129,14 +128,14 @@ public class SpectraParameterTest {
 	public void testConstructorZeroOne() throws Exception {
 		for (int i = 0; i < 100; i++) {
 			SpectraParameter spectra = new SpectraParameter(
-					SpectraType.ZERO_ONE);
+					SpectraType.DOMINANT);
 			int count0 = 0;
 			int count1 = 0;
 			for (int k = 0; k < spectra.getDimension(); k++) {
 				double freq = spectra.getFrequency(k);
-				if (freq == 0) {
+				if (freq == SpectraParameter.INIT_SMALL) {
 					count0++;
-				} else if (freq == 1) {
+				} else if (freq == SpectraParameter.INIT_LARGE) {
 					count1++;
 				}
 			}
@@ -189,5 +188,15 @@ public class SpectraParameterTest {
 		}		
 	}
 	
+	
+	@Test
+	public void testSetGetStateLikelihood() throws Exception {
+		fail("Not yet implemented");
+	}
+	
+	@Test
+	public void testStoreRestore() throws Exception {
+		fail("Not yet implemented");
+	}
 	
 }

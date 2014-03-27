@@ -19,6 +19,10 @@ public class SpectraParameter extends AbstractSpectra{
 	public static final double MAX_FREQ = 0.99;
 	public static final double MIN_FREQ = 0.001;//MrBayes 0.0001
 
+	public static final double INIT_LARGE = 0.97;
+	public static final double INIT_SMALL = 0.01;
+
+	
     protected double[] values;
     protected double[] storedValues;
     
@@ -30,31 +34,34 @@ public class SpectraParameter extends AbstractSpectra{
 	public SpectraParameter(SpectraType type){
 		this(EQUAL_FREQ);
 		double[] freq = new double[DIMENSION];
+		
 		switch (type) {
-		case ZERO_ONE:
-			Arrays.fill(freq, 0.01);
+		case DOMINANT:
+			Arrays.fill(freq, INIT_SMALL);
 			int dim = MathUtils.nextInt(DIMENSION);
-			freq[dim]=0.97;
-			setFrequenciesQuietly(freq);
+			freq[dim] = INIT_LARGE;
 			break;
 		case RANDOM:
 			double sum = 0;
 			for (int i = 0; i < freq.length; i++) {
-				freq[i] = 0.01+MathUtils.nextDouble();//+MathUtils.nextInt(1000);
+				freq[i] = 0.01 + MathUtils.nextDouble();// +MathUtils.nextInt(1000);
 				sum += freq[i];
 			}
 			for (int i = 0; i < freq.length; i++) {
 				freq[i] /= sum;
 			}
-			setFrequenciesQuietly(freq);
 			break;
 		case CATEGORY:
 			Arrays.fill(freq, 0.1);
 			freq[MathUtils.nextInt(DIMENSION)] = 0.7;
-			setFrequenciesQuietly(freq);
-		default:
+		case EQUAL:
+			Arrays.fill(freq, 0.25);
 			break;
+		default:
+			throw new IllegalArgumentException("Invalid type: "+type);
 		}
+		setFrequenciesQuietly(freq);
+
 	}
 	
 
@@ -75,24 +82,19 @@ public class SpectraParameter extends AbstractSpectra{
         this.storedstateLikelihood = new double[TOTAL_STATE_COUNT];
         
         System.arraycopy(frequencies, 0, values, 0, DIMENSION);
-
-    	
-    	
-
-        double sum = getSumOfFrequencies(frequencies);
-    	
-        if (Math.abs(sum - 1.0) > 1e-8) {
-            throw new IllegalArgumentException("Frequencies do not sum to 1, they sum to " + sum);
-        }
-    	
-
-		if(!isWithinBounds()){
-			throw new IllegalArgumentException("Frequencies out of bounds 0 < f < 1\t"+ Arrays.toString(frequencies)); 
-		}
+        checkSpectra();
 
     }
 
-    private static double getSumOfFrequencies(double[] frequencies) {
+    private void setFrequenciesQuietly(double[] values){
+		for (int i = 0; i < DIMENSION; i++) {
+			setFrequency(i, values[i]);
+		}
+	}
+
+
+
+	private static double getSumOfFrequencies(double[] frequencies) {
         double total = 0.0;
         for (int i = 0; i < frequencies.length; i++) {
             total += frequencies[i];
@@ -106,12 +108,6 @@ public class SpectraParameter extends AbstractSpectra{
 
     }
     
-    protected void setFrequenciesQuietly(double[] values){
-    	for (int i = 0; i < DIMENSION; i++) {
-    		setFrequency(i, values[i]);
-		}
-    }
-    
     public double getFrequency(int i) {
     	return values[i];
     }
@@ -123,6 +119,17 @@ public class SpectraParameter extends AbstractSpectra{
         return copyOfValues;
     }
 
+	@Override
+    public boolean isWithinBounds() {
+        Bounds<Double> bounds = getBounds();
+        for (int i = 0; i < getDimension(); i++) {
+            final double value = getFrequency(i);
+            if (value < bounds.getLowerLimit(i) || value > bounds.getUpperLimit(i)) {
+                return false;
+            }
+        }
+        return true;
+    }
     public void setStateLikelihood(double[] likelihood){
     	System.arraycopy(likelihood, 0, stateLikelihood, 0, DIMENSION);
     }
@@ -140,38 +147,40 @@ public class SpectraParameter extends AbstractSpectra{
     public double[] getStoredStateLikelihood() {
 		return storedstateLikelihood;
 	}
-
+    
 	public void storeState() {
 //    	System.err.println("storeState in Spectra");
     	storeValues();
-    	
-//        System.arraycopy(stateLikelihood, 0, storedstateLikelihood, 0, stateLikelihood.length);
-//        System.arraycopy(stateLikelihood, 0, storedstateLikelihood, 0, DIMENSION);
-//        System.out.println("STORE:\t"+Arrays.toString(stateLikelihood) +"\t"+ Arrays.toString(storedstateLikelihood));
 	}
     public void restoreState() {
 //    	System.err.println("restoreState in Spectra");
     	restoreValues();
-//    	double[] temp = storedstateLikelihood;
-//    	storedstateLikelihood = stateLikelihood;
-//    	stateLikelihood = temp;
-//    	System.arraycopy(storedstateLikelihood, 0, stateLikelihood, 0, DIMENSION);
 	}
 
 
-    public static void checkSpectra(SpectraParameter sp){
-		double sum = 0;
-		for (int j = 0; j < DIMENSION; j++) {
-			double f = sp.getFrequency(j);
-			sum += f;
-			if(f<0 || f>1){
-				System.err.println(j +"\t"+ f +"\t"+ Arrays.toString(sp.getFrequencies()));
+    public void checkSpectra(){
+//		double sum = 0;
+//		for (int j = 0; j < DIMENSION; j++) {
+//			double f = getFrequency(j);
+//			sum += f;
+//			if(f<0 || f>1){
+//				System.err.println(j +"\t"+ f +"\t"+ Arrays.toString(sp.getFrequencies()));
+//			}
+//			
+//		}
+//		if(sum>1.01 || sum<0.99){
+//			System.err.println(Arrays.toString(sp.getFrequencies()));
+//		}
+		
+		 double sum = getSumOfFrequencies(values);
+	    	
+	        if (Math.abs(sum - 1.0) > 1e-8) {
+	            throw new IllegalArgumentException("Frequencies do not sum to 1, they sum to " + sum);
+	        }
+
+			if(!isWithinBounds()){
+				throw new IllegalArgumentException("Frequencies out of bounds 0 < f < 1\t"+ Arrays.toString(values)); 
 			}
-			
-		}
-		if(sum>1.01 || sum<0.99){
-			System.err.println(Arrays.toString(sp.getFrequencies()));
-		}
 	}
     
     
@@ -183,10 +192,10 @@ public class SpectraParameter extends AbstractSpectra{
 
 	
 	public enum SpectraType{
+		DOMINANT,
+		RANDOM,
 		@Deprecated EQUAL,
-		@Deprecated ZERO_ONE,
-		RANDOM, 
-		@Deprecated CATEGORY;
+		@Deprecated CATEGORY,
 
 	}
 
@@ -218,16 +227,7 @@ public class SpectraParameter extends AbstractSpectra{
 	protected final void acceptValues() {
     }
 
-    public boolean isWithinBounds() {
-        Bounds<Double> bounds = getBounds();
-        for (int i = 0; i < getDimension(); i++) {
-            final double value = getFrequency(i);
-            if (value < bounds.getLowerLimit(i) || value > bounds.getUpperLimit(i)) {
-                return false;
-            }
-        }
-        return true;
-    }
+
 
 
 }

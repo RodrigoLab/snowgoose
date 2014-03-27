@@ -11,8 +11,10 @@ import test.srp.spectrum.treelikelihood.SpectrumTreeLikelihoodTest;
 @SuiteClasses({ 
 	ShortReadsSpectrumLikelihoodTest.class,
 //	ShortReadsSpectrumLikelihoodTimeTrialTest.class,
-	SpectrumTreeLikelihoodTest.class,
-	StateLikelihoodTest.class
+
+	StateLikelihoodTest.class,
+
+	SpectrumTreeLikelihoodTest.class
 	})
 public class AllTestsSpectrumLikelihood {
 

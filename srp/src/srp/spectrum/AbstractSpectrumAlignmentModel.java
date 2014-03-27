@@ -10,9 +10,13 @@ import dr.evolution.datatype.DataType;
 import dr.evolution.util.Taxon;
 import dr.evolution.util.TaxonList;
 import dr.inference.model.AbstractModel;
+import dr.inference.model.Model;
+import dr.inference.model.Variable;
+import dr.inference.model.Variable.ChangeType;
 import dr.util.Attributable;
 
-public abstract class AbstractSpectrumAlignmentModel extends AbstractModel implements TaxonList, SiteList{
+//public abstract class AbstractSpectrumAlignmentModel extends AbstractModel implements TaxonList, SiteList{
+public abstract class AbstractSpectrumAlignmentModel extends AbstractModel implements TaxonList{
 //maybe only can implements TaxonList
 	
 
@@ -25,6 +29,8 @@ public abstract class AbstractSpectrumAlignmentModel extends AbstractModel imple
 	
 	protected int spectrumLength;
 
+	protected boolean isEdit;//TODO utilise this!!
+
 	public AbstractSpectrumAlignmentModel(String name) {
 		super(name);
 	}
@@ -36,7 +42,93 @@ public abstract class AbstractSpectrumAlignmentModel extends AbstractModel imple
 	
 	public abstract int getSpectrumCount();
 	public abstract AbstractSpectrum getSpectrum(int i);
+	public abstract void removeSpectrum(int i);
+	public abstract String getSpectrumString(int i);
 
+	
+	public double[] getSpecturmFrequencies(int spectrumIndex, int i) {
+			return getSpectrum(spectrumIndex).getFrequenciesAt(i);
+	}
+
+	public void resetSpectrumOperation() {
+		spectrumOperationRecord.setOperation(SpectrumOperation.FULL);
+	}
+
+	public SpectrumOperationRecord getSpectrumOperationRecord() {
+		return spectrumOperationRecord;
+	}
+
+	public SpectrumOperation getSpectrumOperation() {
+		return spectrumOperationRecord.getOperation();
+	}
+
+	public void setSpectrumOperationRecord(SpectrumOperation op,
+			int[] twoSpectrumIndex, int[] swapPositionIndex) {
+
+		spectrumOperationRecord.setRecord(op, twoSpectrumIndex,
+				swapPositionIndex);
+	}
+
+	public void setSpectrumOperationRecord(SpectrumOperation op, int siteIndex,
+			double... delta) {
+		spectrumOperationRecord.setRecord(op, siteIndex, delta);
+	}
+
+	public void setSpectrumOperationRecord(SpectrumOperation op,
+			int spectrumIndex, int siteIndex) {
+		spectrumOperationRecord.setRecord(op, spectrumIndex, siteIndex);
+	}
+
+	public void setSpectrumOperationRecord(SpectrumOperation op,
+			int spectrumIndex, int siteIndex, double delta) {
+		spectrumOperationRecord.setRecord(op, spectrumIndex, siteIndex);
+	}
+
+	public void setSpectrumOperationRecord(SpectrumOperation op,
+			int spectrumIndex, int[] siteIndexs, double... delta) {
+		spectrumOperationRecord.setRecord(op, spectrumIndex, siteIndexs, delta);
+
+	}
+
+	public void setSpectrumOperationRecord(SpectrumOperation op,
+			int[] spectrumIndexs, int siteIndex) {
+		// subcolumn
+		spectrumOperationRecord.setRecord(op, spectrumIndexs, siteIndex);
+
+	}
+
+	public void startSpectrumOperation() {
+		// System.err.println("\n!!!startSpectrumOperation");
+		isEdit = true;
+	}
+
+	public void endSpectrumOperation() {
+		isEdit = false;
+		// System.err.println("!!!!!!!endSpectrumOperation, fireModelCHanged");
+		fireModelChanged();
+	}
+	
+	
+
+	@Override
+	public void fireModelChanged(){
+	//		for (TreeChangedEvent treeChangedEvent : treeChangedEvents) {
+			listenerHelper.fireModelChanged(this);//, treeChangedEvent);
+	//		}
+	//		treeChangedEvents.clear();
+		}
+	@Override
+	protected void handleModelChangedEvent(Model model, Object object, int index) {
+		System.err.println("Call handleModelChangedEvent in CategorySpectrumAlignmentModel");
+		
+	}
+	@SuppressWarnings("rawtypes")
+	@Override
+	protected void handleVariableChangedEvent(Variable variable, int index, ChangeType type) {
+		System.err.println("Call handleVariableChangedEvent in CategorySpectrumAlignmentModel");
+	}
+	 
+///////////////////////// implementation for  implements TaxonList, SiteList
     // **************************************************************
     // TaxonList IMPLEMENTATION
     // **************************************************************
@@ -46,11 +138,12 @@ public abstract class AbstractSpectrumAlignmentModel extends AbstractModel imple
 		return getSpectrumCount();
 	}
 	
+
 	@Override
 	public Taxon getTaxon(int taxonIndex) {
 		return getSpectrum(taxonIndex).getTaxon();
 	}
-
+	
 	/**
      * @return the ID of the taxon of the ith sequence. If it doesn't have
      *         a taxon, returns the ID of the sequence itself.
@@ -135,95 +228,6 @@ public abstract class AbstractSpectrumAlignmentModel extends AbstractModel imple
     }
 
 
-    // **************************************************************
-    // SiteList IMPLEMENTATION
-    // **************************************************************
-
-
-    /**
-     * @return number of sites - getHaplotypeLength()
-     */
-    @Override
-	public int getSiteCount() {
-        return getSpectrumLength();
-    }
-
-    /**
-	 * Gets the pattern index at a particular site
-	 * @param siteIndex
-	 * @return siteIndex, identical to @param
-	 */
-    @Override
-	public int getPatternIndex(int siteIndex) {
-	    return siteIndex;
-	}
-    
-
-    // **************************************************************
-    // PatternList IMPLEMENTATION
-    // **************************************************************
-
-    /**
-     * @return number of patterns
-     */
-    @Override
-	public int getPatternCount() {
-        return getSiteCount();
-    }
- 
-
-    /**
-     * @return number of states for this siteList
-     */
-    @Override
-	public int getStateCount() {
-        return getDataType().getStateCount();
-    }
-
-    /**
-     * Gets the length of the pattern strings which will usually be the
-     * same as the number of taxa
-     *
-     * @return the length of patterns
-     */
-    @Override
-	public int getPatternLength() {
-        return getSpectrumCount();
-    }
-
-    /**
-     * Gets the weight of a site pattern (always 1.0)
-     */
-    @Override
-	public double getPatternWeight(int patternIndex) {
-        return 1.0;
-    }
-
-    /**
-     * @return the array of pattern weights
-     */
-    @Override
-	public double[] getPatternWeights() {
-        double[] weights = new double[getSiteCount()];
-        for (int i = 0; i < weights.length; i++)
-            weights[i] = 1.0;
-        return weights;
-    }
-
-	
-    @Override
-	public DataType getDataType() {
-		return DATA_TYPE;
-	}
-	
-    // **************************************************************
-    // Alignment IMPLEMENTATION
-    // **************************************************************
-
-//	@Override
-//	public void setDataType(DataType dataType) {
-//		this.dataType = dataType;
-//	}
 
     // **************************************************************
     // Identifiable IMPLEMENTATION
@@ -252,6 +256,7 @@ public abstract class AbstractSpectrumAlignmentModel extends AbstractModel imple
     // Attributable IMPLEMENTATION
     // **************************************************************
 	private Attributable.AttributeHelper attributes = null;
+	protected SpectrumOperationRecord spectrumOperationRecord;
     /**
      * Sets an named attribute for this object.
      *
@@ -285,55 +290,150 @@ public abstract class AbstractSpectrumAlignmentModel extends AbstractModel imple
             return attributes.getAttributeNames();
     }
 
-    //Methods can't be implemented for spectrum
-	/**
-	 * Gets the pattern as an array of state numbers (one per sequence)
-	 * 
-	 * @return the pattern at patternIndex
-	 */
-	@Override
-	public int[] getPattern(int patternIndex) {
-		throw new IllegalArgumentException(
-				"Not implemented for AbstractSpectrumModel");
+//    @Override
+	public DataType getDataType() {
+		return DATA_TYPE;
 	}
+//
+//    // **************************************************************
+//    // SiteList IMPLEMENTATION
+//    // **************************************************************
+//
+//
+//    /**
+//     * @return number of sites - getHaplotypeLength()
+//     */
+//    @Override
+//	public int getSiteCount() {
+//        return getSpectrumLength();
+//    }
+//
+//    /**
+//	 * Gets the pattern index at a particular site
+//	 * @param siteIndex
+//	 * @return siteIndex, identical to @param
+//	 */
+//    @Override
+//	public int getPatternIndex(int siteIndex) {
+//	    return siteIndex;
+//	}
+//    
+//
+//    // **************************************************************
+//    // PatternList IMPLEMENTATION
+//    // **************************************************************
+//
+//    /**
+//     * @return number of patterns
+//     */
+//    @Override
+//	public int getPatternCount() {
+//        return getSiteCount();
+//    }
+// 
+//
+//    /**
+//     * @return number of states for this siteList
+//     */
+//    @Override
+//	public int getStateCount() {
+//        return getDataType().getStateCount();
+//    }
+//
+//    /**
+//     * Gets the length of the pattern strings which will usually be the
+//     * same as the number of taxa
+//     *
+//     * @return the length of patterns
+//     */
+//    @Override
+//	public int getPatternLength() {
+//        return getSpectrumCount();
+//    }
+//
+//    /**
+//     * Gets the weight of a site pattern (always 1.0)
+//     */
+//    @Override
+//	public double getPatternWeight(int patternIndex) {
+//        return 1.0;
+//    }
+//
+//    /**
+//     * @return the array of pattern weights
+//     */
+//    @Override
+//	public double[] getPatternWeights() {
+//        double[] weights = new double[getSiteCount()];
+//        for (int i = 0; i < weights.length; i++)
+//            weights[i] = 1.0;
+//        return weights;
+//    }
+//
+//	
+//  
+//	
+    // **************************************************************
+    // Alignment IMPLEMENTATION
+    // **************************************************************
+///	@Override
+//	public void setDataType(DataType dataType) {
+//		this.dataType = dataType;
+//	}
+//    
+///////////////////////////////////////////    
+//    //Methods can't be implemented for spectrum
+//	/**
+//	 * Gets the pattern as an array of state numbers (one per sequence)
+//	 * 
+//	 * @return the pattern at patternIndex
+//	 */
+//	@Override
+//	public int[] getPattern(int patternIndex) {
+//		throw new IllegalArgumentException(
+//				"Not implemented for AbstractSpectrumModel");
+//	}
+//
+//	/**
+//	 * @return state at (taxonIndex, patternIndex)
+//	 */
+//	@Override
+//	public int getPatternState(int taxonIndex, int patternIndex) {
+//		throw new IllegalArgumentException(
+//				"Not implemented for AbstractSpectrumModel");
+//	}
+//
+//	/**
+//	 * Gets the pattern of site as an array of state numbers (one per sequence)
+//	 * 
+//	 * @return the site pattern at siteIndex
+//	 */
+//	@Override
+//	public int[] getSitePattern(int siteIndex) {
+//		throw new IllegalArgumentException(
+//				"getSitePattern() is not implemented for AbstractSpectrumModel");
+//	}
+//
+//	/**
+//	 * @return the frequency of each state
+//	 */
+//	@Override
+//	public double[] getStateFrequencies() {
+//		throw new IllegalArgumentException(
+//				"Not implemented for AbstractSpectrumModel");
+//		//
+//		// return PatternList.Utils.empiricalStateFrequencies(this);
+//	}
+//
+//	/**
+//	 * @return the sequence state at (taxon, site)
+//	 */
+//	@Override
+//	public int getState(int taxonIndex, int siteIndex) {
+//		throw new IllegalArgumentException(
+//				"getState() is not implemented for AbstractSpectrumModel");
+//	}
+///////////////////////// End implementation for  implements TaxonList, SiteList
 
-	/**
-	 * @return state at (taxonIndex, patternIndex)
-	 */
-	@Override
-	public int getPatternState(int taxonIndex, int patternIndex) {
-		throw new IllegalArgumentException(
-				"Not implemented for AbstractSpectrumModel");
-	}
 
-	/**
-	 * Gets the pattern of site as an array of state numbers (one per sequence)
-	 * 
-	 * @return the site pattern at siteIndex
-	 */
-	@Override
-	public int[] getSitePattern(int siteIndex) {
-		throw new IllegalArgumentException(
-				"getSitePattern() is not implemented for AbstractSpectrumModel");
-	}
-
-	/**
-	 * @return the frequency of each state
-	 */
-	@Override
-	public double[] getStateFrequencies() {
-		throw new IllegalArgumentException(
-				"Not implemented for AbstractSpectrumModel");
-		//
-		// return PatternList.Utils.empiricalStateFrequencies(this);
-	}
-
-	/**
-	 * @return the sequence state at (taxon, site)
-	 */
-	@Override
-	public int getState(int taxonIndex, int siteIndex) {
-		throw new IllegalArgumentException(
-				"getState() is not implemented for AbstractSpectrumModel");
-	}
 }

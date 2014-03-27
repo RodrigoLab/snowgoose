@@ -11,15 +11,15 @@ public abstract class AbstractSpectra extends Parameter.Abstract {
 	 */
 	private static final long serialVersionUID = -1845301617682337277L;
 	
-	protected double[] values;
-    protected double[] storedValues;
+//	protected double[] values;
+//    protected double[] storedValues;
     
     protected int dimension;
 	Bounds<Double> bounds = null;
     
 	
 //	public AbstractSpectra() {
-//		super();
+////		super();
 //	}
 //
 //	public AbstractSpectra(String name) {
@@ -34,17 +34,6 @@ public abstract class AbstractSpectra extends Parameter.Abstract {
 	protected abstract void restoreValues();
 	protected abstract void acceptValues();
 	
-	
-	@Override
-	public void addBounds(Bounds<Double> boundary) {
-	    if (bounds == null) {
-	        bounds = boundary;
-	    } else {
-	        throw new IllegalArgumentException("Should not call addBounds twice");
-	        // can't change dimension after bounds are added!
-	    }
-	
-	}
 
 	@Override
 	public int getDimension() {
@@ -57,20 +46,16 @@ public abstract class AbstractSpectra extends Parameter.Abstract {
 	}
 	
 	@Override
-	public String getParameterName() {
-	    return getId();
+	public void addBounds(Bounds<Double> boundary) {
+	    if (bounds == null) {
+	        bounds = boundary;
+	    } else {
+	        throw new IllegalArgumentException("Should not call addBounds twice");
+	        // can't change dimension after bounds are added!
+	    }
+	
 	}
-
-	@Override
-	public double getParameterValue(int i) {
-		throw new IllegalArgumentException("Use getCategory/Frequency");
-	}
-
-	@Override
-	public double[] getParameterValues() {
-		throw new IllegalArgumentException("Use getCategory/Frequency");
-	}
-
+	
 	@Override
 	public Bounds<Double> getBounds() {
 	    if (bounds == null) {
@@ -79,10 +64,25 @@ public abstract class AbstractSpectra extends Parameter.Abstract {
 	    return bounds;
 	}
 
+	
+	@Override
+	public String getParameterName() {
+	    return getId();
+	}
 
+	//IllegalArgumentException below!!
+	@Override
+	public final double getParameterValue(int i) {
+		throw new IllegalArgumentException("Use getCategory/Frequency");
+	}
 
 	@Override
-	public void setParameterValue(int cat, double val) {
+	public final double[] getParameterValues() {
+		throw new IllegalArgumentException("Use getCategory/Frequency");
+	}
+
+	@Override
+	public final void setParameterValue(int cat, double val) {
 	    	throw new IllegalArgumentException("Use setCategory/Frequency");
 	//        fireParameterChangedEvent(cat, Parameter.ChangeType.VALUE_CHANGED);
 	    }
@@ -94,7 +94,7 @@ public abstract class AbstractSpectra extends Parameter.Abstract {
 	 * @param value the value to set
 	 */
 	@Override
-	public void setParameterValueQuietly(int cat, double value) {
+	public final void setParameterValueQuietly(int cat, double value) {
 		throw new IllegalArgumentException("Use setCategory/Frequency");
 	}
 
@@ -105,29 +105,29 @@ public abstract class AbstractSpectra extends Parameter.Abstract {
 	 * @param val to value to set
 	 */
 	@Override
-	public void setParameterValueNotifyChangedAll(int i, double val) {
+	public final void setParameterValueNotifyChangedAll(int i, double val) {
 	    	throw new IllegalArgumentException("Use getCategory/Frequency");
 	//    	fireParameterChangedEvent(i, Parameter.ChangeType.ALL_VALUES_CHANGED);
 	    }
 
 	@Override
-	protected void adoptValues(Parameter source) {
-		throw new IllegalArgumentException("Can not adoptValues");
-	}
-
-	@Override
-	public void setDimension(int dim) {
+	public final void setDimension(int dim) {
 		throw new IllegalArgumentException("Can not setDimension");
 	}
 
 	@Override
-	public void addDimension(int index, double value) {
+	public final void addDimension(int index, double value) {
 		throw new IllegalArgumentException("Can not addDimension");
 	}
 
 	@Override
-	public double removeDimension(int index) {
+	public final double removeDimension(int index) {
 		throw new IllegalArgumentException("Can not removeDimension");
+	}
+
+	@Override
+	public final void adoptValues(Parameter source) {
+		throw new IllegalArgumentException("Can not adoptValues");
 	}
 
 }

@@ -26,6 +26,8 @@
 package srp.spectrum.treelikelihood;
 
 //import dr.evolution.alignment.PatternList;
+import java.util.Arrays;
+
 import srp.spectrum.SpectrumAlignmentModel;
 import dr.evolution.datatype.DataType;
 import dr.evolution.tree.NodeRef;
@@ -65,11 +67,13 @@ public abstract class AbstractSpectrumTreeLikelihood extends AbstractModelLikeli
         this.spectrumModel = spectrumModel;
         addModel(spectrumModel);
         this.dataType = spectrumModel.getDataType();
-        patternCount = spectrumModel.getPatternCount();
+        patternCount = spectrumModel.getSpectrumLength();
         stateCount = dataType.getStateCount();
 
-        patternWeights = spectrumModel.getPatternWeights();
-
+        patternWeights = new double[patternCount];//spectrumModel.getPatternWeights();
+        Arrays.fill(patternWeights, 1.0);
+        
+        
         this.treeModel = treeModel;
         addModel(treeModel);
 
