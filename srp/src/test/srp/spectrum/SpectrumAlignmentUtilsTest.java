@@ -1,6 +1,6 @@
 package test.srp.spectrum;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -9,12 +9,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import srp.core.DataImporter;
-import srp.shortreads.AlignmentMapping;
 import srp.spectrum.AbstractSpectrumAlignmentModel;
 import srp.spectrum.SpectraParameter;
 import srp.spectrum.SpectrumAlignmentUtils;
 import srp.spectrum.SpectrumAlignmentUtils.Dist;
-import srp.spectrum.likelihood.ShortReadsSpectrumLikelihood.DistType;
 import dr.evolution.alignment.Alignment;
 
 public class SpectrumAlignmentUtilsTest {

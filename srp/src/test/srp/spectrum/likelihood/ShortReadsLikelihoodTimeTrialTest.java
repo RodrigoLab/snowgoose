@@ -1,25 +1,17 @@
 package test.srp.spectrum.likelihood;
 
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
-import javax.swing.text.TabableView;
-
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.sun.org.apache.bcel.internal.generic.BASTORE;
-
 import srp.core.DataImporter;
-import srp.shortreads.AlignmentMapping;
 import srp.shortreads.ShortReadMapping;
 import srp.spectrum.SpectrumAlignmentModel;
+import srp.spectrum.likelihood.AbstractShortReadsSpectrumLikelihood.DistType;
 import srp.spectrum.likelihood.ShortReadsSpectrumLikelihood;
-import srp.spectrum.likelihood.ShortReadsSpectrumLikelihood.DistType;
 import srp.spectrum.operator.AbstractSpectrumOperator;
 import srp.spectrum.operator.DeltaExchangeColumnSpectrumOperator;
 import srp.spectrum.operator.DeltaExchangeMultiSpectrumOperator;
