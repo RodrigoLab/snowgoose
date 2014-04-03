@@ -6,13 +6,13 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import srp.likelihood.spectrum.ShortReadsSpectrumLikelihood;
+import srp.likelihood.spectrum.AbstractShortReadsSpectrumLikelihood.DistType;
 import srp.shortreads.AlignmentMapping;
 import srp.shortreads.ShortReadMapping;
 import srp.spectrum.SpectraParameter.SpectraType;
 import srp.spectrum.SpectrumAlignmentModel;
 import srp.spectrum.SpectrumLogger;
-import srp.spectrum.likelihood.ShortReadsSpectrumLikelihood;
-import srp.spectrum.likelihood.AbstractShortReadsSpectrumLikelihood.DistType;
 import srp.spectrum.treelikelihood.SpectrumTreeLikelihood;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.tree.Tree;

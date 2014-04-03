@@ -15,8 +15,8 @@ import org.junit.Test;
 
 import srp.haplotypes.AlignmentUtils;
 import srp.haplotypes.HaplotypeModel;
-import srp.haplotypes.likelihood.ShortReadLikelihood;
-import srp.haplotypes.operator.BasesMultiOperator;
+import srp.likelihood.haplotypes.ShortReadLikelihood;
+import srp.operator.haplotypes.BasesMultiOperator;
 import srp.shortreads.AlignmentMapping;
 import dr.evolution.alignment.SimpleAlignment;
 import dr.inference.loggers.ArrayLogFormatter;

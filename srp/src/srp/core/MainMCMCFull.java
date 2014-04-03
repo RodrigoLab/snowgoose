@@ -9,7 +9,7 @@ import java.util.HashMap;
 import srp.haplotypes.HaplotypeLoggerWithTrueHaplotype;
 import srp.haplotypes.HaplotypeModel;
 import srp.haplotypes.HaplotypeModelUtils;
-import srp.haplotypes.likelihood.ShortReadLikelihood;
+import srp.likelihood.haplotypes.ShortReadLikelihood;
 import srp.rj.operator.RJTreeOperator;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.util.TaxonList;

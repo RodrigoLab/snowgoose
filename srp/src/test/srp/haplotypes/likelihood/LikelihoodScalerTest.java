@@ -8,7 +8,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import srp.haplotypes.likelihood.LikelihoodScaler;
+import srp.likelihood.haplotypes.LikelihoodScaler;
 
 public class LikelihoodScalerTest {
 

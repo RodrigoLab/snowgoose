@@ -5,12 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 
 import srp.haplotypes.HaplotypeModel;
-import srp.haplotypes.operator.BaseSingleEmpiricalOperator;
-import srp.haplotypes.operator.BaseSingleFrequencyOperator;
-import srp.haplotypes.operator.BasesMultiEmpiricalOperator;
-import srp.haplotypes.operator.HaplotypeRecombinationOperator;
-import srp.haplotypes.operator.HaplotypeSwapSectionOperator;
-import srp.haplotypes.operator.SwitchBaseFrequencyOperator;
+import srp.operator.haplotypes.BaseSingleEmpiricalOperator;
+import srp.operator.haplotypes.BaseSingleFrequencyOperator;
+import srp.operator.haplotypes.BasesMultiEmpiricalOperator;
+import srp.operator.haplotypes.HaplotypeRecombinationOperator;
+import srp.operator.haplotypes.HaplotypeSwapSectionOperator;
+import srp.operator.haplotypes.SwitchBaseFrequencyOperator;
 import dr.evolution.datatype.Nucleotides;
 import dr.evomodel.branchratemodel.StrictClockBranchRates;
 import dr.evomodel.operators.ExchangeOperator;

@@ -10,11 +10,11 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import srp.haplotypes.AlignmentUtils;
+import srp.operator.spectrum.DeltaExchangeColumnSpectrumOperator;
 import srp.shortreads.AlignmentMapping;
 import srp.spectrum.Spectrum;
 import srp.spectrum.SpectrumAlignmentModel;
 import srp.spectrum.SpectrumOperationRecord;
-import srp.spectrum.operator.DeltaExchangeColumnSpectrumOperator;
 import dr.inference.operators.CoercionMode;
 import dr.inference.operators.OperatorFailedException;
 

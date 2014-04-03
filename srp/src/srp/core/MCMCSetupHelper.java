@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import srp.spectrum.likelihood.ShortReadsSpectrumLikelihood;
+import srp.likelihood.spectrum.ShortReadsSpectrumLikelihood;
 import dr.evolution.coalescent.CoalescentSimulator;
 import dr.evolution.coalescent.ConstantPopulation;
 import dr.evolution.datatype.Nucleotides;

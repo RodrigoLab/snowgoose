@@ -13,17 +13,17 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import srp.core.DataImporter;
+import srp.likelihood.spectrum.ShortReadsSpectrumLikelihood;
+import srp.likelihood.stateLikelihood.BetaMeanStateLikelihood;
+import srp.likelihood.stateLikelihood.BetaModeStateLikelihood;
+import srp.likelihood.stateLikelihood.ChisqStateLikelihood;
+import srp.likelihood.stateLikelihood.GTestStateLikelihood;
+import srp.likelihood.stateLikelihood.ProbabilityStateLikelihood;
+import srp.likelihood.stateLikelihood.StateLikelihood;
 import srp.shortreads.AlignmentMapping;
 import srp.spectrum.SpectraParameter;
 import srp.spectrum.SpectrumAlignmentModel;
 import srp.spectrum.SpectraParameter.SpectraType;
-import srp.spectrum.likelihood.ShortReadsSpectrumLikelihood;
-import srp.spectrum.likelihood.stateLikelihood.BetaMeanStateLikelihood;
-import srp.spectrum.likelihood.stateLikelihood.BetaModeStateLikelihood;
-import srp.spectrum.likelihood.stateLikelihood.ChisqStateLikelihood;
-import srp.spectrum.likelihood.stateLikelihood.GTestStateLikelihood;
-import srp.spectrum.likelihood.stateLikelihood.ProbabilityStateLikelihood;
-import srp.spectrum.likelihood.stateLikelihood.StateLikelihood;
 import dr.evolution.alignment.Alignment;
 import dr.inference.markovchain.MarkovChain;
 

@@ -8,7 +8,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import srp.haplotypes.likelihood.LikelihoodUtils;
+import srp.likelihood.haplotypes.LikelihoodUtils;
 
 public class LikelihoodUtilsTest {
 

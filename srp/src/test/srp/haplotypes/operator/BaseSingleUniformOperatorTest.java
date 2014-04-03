@@ -14,8 +14,8 @@ import org.junit.Test;
 
 import srp.haplotypes.AlignmentUtils;
 import srp.haplotypes.HaplotypeModel;
-import srp.haplotypes.likelihood.ShortReadLikelihood;
-import srp.haplotypes.operator.BaseSingleUniformOperator;
+import srp.likelihood.haplotypes.ShortReadLikelihood;
+import srp.operator.haplotypes.BaseSingleUniformOperator;
 import srp.shortreads.AlignmentMapping;
 import test.TestUtils;
 import dr.evolution.alignment.SimpleAlignment;

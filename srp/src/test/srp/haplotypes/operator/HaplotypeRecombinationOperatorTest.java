@@ -13,7 +13,7 @@ import org.junit.Test;
 
 import srp.haplotypes.AlignmentUtils;
 import srp.haplotypes.HaplotypeModel;
-import srp.haplotypes.operator.HaplotypeRecombinationOperator;
+import srp.operator.haplotypes.HaplotypeRecombinationOperator;
 import srp.shortreads.AlignmentMapping;
 import dr.inference.operators.SimpleMCMCOperator;
 

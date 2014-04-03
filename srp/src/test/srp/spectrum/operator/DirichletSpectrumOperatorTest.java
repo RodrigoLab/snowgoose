@@ -14,12 +14,12 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import srp.haplotypes.AlignmentUtils;
+import srp.operator.spectrum.DirichletSpectrumOperator;
 import srp.shortreads.AlignmentMapping;
 import srp.spectrum.SpectraParameter;
 import srp.spectrum.Spectrum;
 import srp.spectrum.SpectrumAlignmentModel;
 import srp.spectrum.SpectrumOperationRecord;
-import srp.spectrum.operator.DirichletSpectrumOperator;
 import test.TestUtils;
 import dr.inference.operators.CoercionMode;
 import dr.inference.operators.OperatorFailedException;
