@@ -16,8 +16,8 @@ import org.junit.Test;
 
 import srp.core.DataImporter;
 import srp.haplotypes.AbstractHaplotypeModel;
-import srp.haplotypes.Haplotype;
-import srp.haplotypes.Operation;
+import srp.haplotypes.old.OldHaplotype;
+import srp.haplotypes.old.OldHapOperation;
 import srp.shortreads.AlignmentMapping;
 import test.TestUtils;
 import dr.evolution.alignment.Alignment;
@@ -36,7 +36,7 @@ public class SSHaplotypeModelTest {
 	
 	private static Taxon[] expectedTaxons;
 	private static String[] expectedSequences;
-	private static ArrayList<Haplotype> expectedList;
+	private static ArrayList<OldHaplotype> expectedList;
 //	private static HashMap<Character, Integer> charToState;
 
 	
@@ -68,10 +68,10 @@ public class SSHaplotypeModelTest {
 		};
 		expectedTaxons = new Taxon[10];
 //		char[][] expectedMatrix = new char[matrixS.length][matrixS[0].length()];
-		expectedList = new ArrayList<Haplotype>();
+		expectedList = new ArrayList<OldHaplotype>();
 		for (int i = 0; i < expectedSequences.length; i++) {
 			expectedTaxons[i] = new Taxon("r"+(i+1)+".1");
-			Haplotype h = new Haplotype(expectedTaxons[i], expectedSequences[i]);
+			OldHaplotype h = new OldHaplotype(expectedTaxons[i], expectedSequences[i]);
 			expectedList.add(h);
 		}
 		
@@ -162,7 +162,7 @@ public class SSHaplotypeModelTest {
 
 			int[] posChar = aMap.getNextBase();
 			
-			haplotypeModel.swapHaplotypeSingleBase(Operation.SWAPSINGLE, posChar);
+			haplotypeModel.swapHaplotypeSingleBase(OldHapOperation.SWAPSINGLE, posChar);
 			haplotypeModel.reject();
 		}
 		for (int i = 0; i < haplotypeModel.getHaplotypeCount(); i++) {
@@ -185,7 +185,7 @@ public class SSHaplotypeModelTest {
 				int[] posChar = aMap.getNextBase();
 				allPosChars[0][posChar[0]] = posChar[1];
 			}
-			haplotypeModel.swapHaplotypeMultiBases(Operation.SWAPMULTI, allPosChars);
+			haplotypeModel.swapHaplotypeMultiBases(OldHapOperation.SWAPMULTI, allPosChars);
 
 			
 			haplotypeModel.reject();

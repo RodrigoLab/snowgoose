@@ -7,8 +7,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import srp.haplotypes.HaplotypeLoggerWithTrueHaplotype;
-import srp.haplotypes.HaplotypeModel;
-import srp.haplotypes.HaplotypeModelUtils;
+import srp.haplotypes.SPSDist;
+import srp.haplotypes.old.OldHaplotypeModel;
+import srp.haplotypes.old.OldHaplotypeModelUtils;
 import srp.likelihood.haplotypes.ShortReadLikelihood;
 import srp.rj.operator.RJTreeOperator;
 import dr.evolution.alignment.Alignment;
@@ -63,7 +64,7 @@ public class MainMCMCFull {
 		DataImporter dataImporter = new DataImporter(dataDir);
 
 		Alignment shortReads = dataImporter.importShortReads(shortReadFile);
-		HaplotypeModel haplotypeModel = new HaplotypeModel(shortReads, noOfRecoveredHaplotype);
+		OldHaplotypeModel haplotypeModel = new OldHaplotypeModel(shortReads, noOfRecoveredHaplotype);
 
 		Alignment trueAlignment = dataImporter.importAlignment(trueHaplotypeFile);
 //		haplotypeModel = new HaplotypeModel(alignmentMapping, trueAlignment);
@@ -148,7 +149,7 @@ public class MainMCMCFull {
 		// log Haplotype
 //		Alignment trueAlignment = dataImporter.importAlignment(trueHaplotypeFile);
 //		AlignmentMapping alignmentMapping = new AlignmentMapping(shortReads);
-		ShortReadLikelihood trueSrp = new ShortReadLikelihood(HaplotypeModelUtils.factory(shortReads, trueAlignment));
+		ShortReadLikelihood trueSrp = new ShortReadLikelihood(OldHaplotypeModelUtils.factory(shortReads, trueAlignment));
 		System.err.println("\'trueShortReadLikelihood\': "+trueSrp.getLogLikelihood());
 		loggers[3] = new HaplotypeLoggerWithTrueHaplotype(haplotypeModel, trueAlignment, logHaplotypeName, logInterval*10);
 		

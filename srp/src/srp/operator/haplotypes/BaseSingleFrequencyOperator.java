@@ -1,7 +1,7 @@
 package srp.operator.haplotypes;
 
-import srp.haplotypes.HaplotypeModel;
-import srp.haplotypes.SwapInfo;
+import srp.haplotypes.old.OldHaplotypeModel;
+import srp.haplotypes.old.OldHapSwapInfo;
 import dr.evolution.datatype.Nucleotides;
 import dr.inference.model.Parameter;
 import dr.inference.operators.OperatorFailedException;
@@ -12,12 +12,12 @@ public class BaseSingleFrequencyOperator extends AbstractBaseSingleOperator {
 	public final static String OPERATOR_NAME = BaseSingleFrequencyOperator.class.getSimpleName();
 	
 	private static final int NUCLEOTIDE_STATES[] = Nucleotides.NUCLEOTIDE_STATES;
-	private static final int NEW_CHAR_INDEX = SwapInfo.SWAPBASE_NEW_CHAR_INDEX;
-	private static final int OLD_CHAR_INDEX = SwapInfo.SWAPBASE_OLD_CHAR_INDEX;
+	private static final int NEW_CHAR_INDEX = OldHapSwapInfo.SWAPBASE_NEW_CHAR_INDEX;
+	private static final int OLD_CHAR_INDEX = OldHapSwapInfo.SWAPBASE_OLD_CHAR_INDEX;
 	
 	private Parameter frequency;
 
-	public BaseSingleFrequencyOperator(HaplotypeModel haplotypeModel,
+	public BaseSingleFrequencyOperator(OldHaplotypeModel haplotypeModel,
 			Parameter freqs) {
 
 		super(haplotypeModel);

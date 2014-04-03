@@ -1,8 +1,8 @@
 package srp.operator.haplotypes;
 
-import srp.haplotypes.Haplotype;
-import srp.haplotypes.HaplotypeModel;
-import srp.haplotypes.Operation;
+import srp.haplotypes.old.OldHaplotype;
+import srp.haplotypes.old.OldHaplotypeModel;
+import srp.haplotypes.old.OldHapOperation;
 import dr.inference.operators.CoercionMode;
 import dr.inference.operators.OperatorFailedException;
 import dr.math.MathUtils;
@@ -12,7 +12,7 @@ public class HaplotypeSwapSectionOperator extends AbstractBasesMultiOperator {
 
 	
 	public final static String OPERATOR_NAME = HaplotypeSwapSectionOperator.class.getSimpleName();
-	public final static Operation OP = Operation.SWAPSECTION;
+	public final static OldHapOperation OP = OldHapOperation.SWAPSECTION;
 
 	
 	
@@ -21,7 +21,7 @@ public class HaplotypeSwapSectionOperator extends AbstractBasesMultiOperator {
 //	}
 
 	
-	public HaplotypeSwapSectionOperator(HaplotypeModel haplotypeModel, int length, CoercionMode mode) {
+	public HaplotypeSwapSectionOperator(OldHaplotypeModel haplotypeModel, int length, CoercionMode mode) {
 		super(haplotypeModel, length, mode);
 
 	}
@@ -52,8 +52,8 @@ public class HaplotypeSwapSectionOperator extends AbstractBasesMultiOperator {
 			hapIndex2 = MathUtils.nextInt( haplotypeModel.getHaplotypeCount());
 		} while(hapIndex1==hapIndex2);
 
-		Haplotype h1 = haplotypeModel.getHaplotype(hapIndex1);
-		Haplotype h2 = haplotypeModel.getHaplotype(hapIndex2);
+		OldHaplotype h1 = haplotypeModel.getHaplotype(hapIndex1);
+		OldHaplotype h2 = haplotypeModel.getHaplotype(hapIndex2);
 		
 		String oldS1 = h1.getSequenceString();
 		String oldS2 = h2.getSequenceString();

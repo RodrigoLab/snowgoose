@@ -1,19 +1,19 @@
 package srp.operator.haplotypes;
 
-import srp.haplotypes.HaplotypeModel;
-import srp.haplotypes.Operation;
+import srp.haplotypes.old.OldHaplotypeModel;
+import srp.haplotypes.old.OldHapOperation;
 import srp.shortreads.AlignmentMapping;
 import dr.inference.operators.SimpleMCMCOperator;
 
 public abstract class AbstractBaseSingleOperator extends SimpleMCMCOperator {
 
-	public final static Operation OP = Operation.SWAPSINGLE;
+	public final static OldHapOperation OP = OldHapOperation.SWAPSINGLE;
 
-	public HaplotypeModel haplotypeModel;
+	public OldHaplotypeModel haplotypeModel;
 	public int haplotypeCount;
 	public AlignmentMapping alignmentMapping;
 
-	public AbstractBaseSingleOperator(HaplotypeModel haplotypeModel) {
+	public AbstractBaseSingleOperator(OldHaplotypeModel haplotypeModel) {
 		this.haplotypeModel = haplotypeModel;
 		haplotypeCount = this.haplotypeModel.getHaplotypeCount();
 		alignmentMapping = this.haplotypeModel.getAlignmentMapping();

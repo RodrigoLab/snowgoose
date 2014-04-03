@@ -11,7 +11,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import srp.core.DataImporter;
-import srp.haplotypes.HaplotypeModel;
+import srp.haplotypes.old.OldHaplotypeModel;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.coalescent.CoalescentSimulator;
 import dr.evolution.coalescent.ConstantPopulation;
@@ -47,7 +47,7 @@ public class SSTreeModelTest {
 		TreeModel treeModel = new TreeModel(TreeModel.TREE_MODEL, truePhylogeny, false);
 		
 		shortReads = dataImporter.importAlignment(shortReadFile);
-		HaplotypeModel haplotypeModel = new HaplotypeModel(shortReads, noOfRecoveredHaplotype);
+		OldHaplotypeModel haplotypeModel = new OldHaplotypeModel(shortReads, noOfRecoveredHaplotype);
 		
 		// coalescent
 		Parameter popSize = new Parameter.Default(ConstantPopulationModelParser.POPULATION_SIZE, 3000.0, 100, 100000.0);
@@ -194,7 +194,7 @@ public class SSTreeModelTest {
 	}
 
 	private static SimpleTree createTree(int noOfRecoveredHaplotype) {
-		HaplotypeModel haplotypeModel = new HaplotypeModel(shortReads, noOfRecoveredHaplotype);
+		OldHaplotypeModel haplotypeModel = new OldHaplotypeModel(shortReads, noOfRecoveredHaplotype);
 		Parameter popSize = new Parameter.Default(ConstantPopulationModelParser.POPULATION_SIZE, 3000.0, 100, 100000.0);
 		ConstantPopulationModel popModel = new ConstantPopulationModel(popSize, Units.Type.YEARS);
 		ConstantPopulation constant = (ConstantPopulation) popModel.getDemographicFunction();

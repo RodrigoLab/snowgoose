@@ -43,6 +43,10 @@ public abstract class AbstractHaplotypeModel extends AbstractModel implements Al
 		return haplotypes.get(i);
 	}
 	
+	public void removeHaplotype(int i) {
+		haplotypes.remove(i);
+		
+	}
 	
     // **************************************************************
     // SequenceList IMPLEMENTATION

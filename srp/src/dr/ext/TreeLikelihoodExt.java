@@ -1,6 +1,6 @@
 package dr.ext;
 
-import srp.haplotypes.HaplotypeModel;
+import srp.haplotypes.old.OldHaplotypeModel;
 import dr.evolution.alignment.PatternList;
 import dr.evolution.tree.NodeRef;
 import dr.evolution.tree.Tree;
@@ -14,10 +14,10 @@ import dr.inference.model.Model;
 
 public class TreeLikelihoodExt extends TreeLikelihood {
 
-	private HaplotypeModel haplotypeModel;
+	private OldHaplotypeModel haplotypeModel;
 	private SitePatternsExt sitePatternExt;
 
-	public TreeLikelihoodExt(HaplotypeModel haplotypeModel, TreeModel treeModel,
+	public TreeLikelihoodExt(OldHaplotypeModel haplotypeModel, TreeModel treeModel,
 			SiteModel siteModel, BranchRateModel branchRateModel,
 			TipStatesModel tipStatesModel, boolean useAmbiguities,
 			boolean allowMissingTaxa, boolean storePartials,
@@ -201,7 +201,7 @@ public class TreeLikelihoodExt extends TreeLikelihood {
 //		        System.out.println(getStatistic(0).getDimension()+"\t"+ getStatistic(0).getStatisticValue(10));
 	}
 
-	public void updatePatternList(SitePatternsExt patterns, HaplotypeModel haplotypeModel) {
+	public void updatePatternList(SitePatternsExt patterns, OldHaplotypeModel haplotypeModel) {
 //		TODO: more test required
 //		Alignment alignment = haplotypeModel.getAlignment();
         
@@ -209,7 +209,7 @@ public class TreeLikelihoodExt extends TreeLikelihood {
 		updatePatternListExt(patterns);
 	}
 
-	public void updatePatternList(HaplotypeModel haplotypeModel) {
+	public void updatePatternList(OldHaplotypeModel haplotypeModel) {
 //		TODO: more test required
 //		sitePatternExt.updateAlignment(haplotypeModel);
 		updatePatternListExt(haplotypeModel);

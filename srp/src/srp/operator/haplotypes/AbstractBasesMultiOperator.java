@@ -2,19 +2,19 @@ package srp.operator.haplotypes;
 
 import java.util.Arrays;
 
-import srp.haplotypes.HaplotypeModel;
-import srp.haplotypes.Operation;
+import srp.haplotypes.old.OldHaplotypeModel;
+import srp.haplotypes.old.OldHapOperation;
 import srp.shortreads.AlignmentMapping;
 import dr.inference.operators.AbstractCoercableOperator;
 import dr.inference.operators.CoercionMode;
 
 public abstract class AbstractBasesMultiOperator extends AbstractCoercableOperator {
 
-	public final static Operation OP = Operation.SWAPMULTI;
+	public final static OldHapOperation OP = OldHapOperation.SWAPMULTI;
 	
 	protected final int haplotypeLength;
 
-	protected HaplotypeModel haplotypeModel;
+	protected OldHaplotypeModel haplotypeModel;
 
 	protected int swapLength;
 
@@ -24,7 +24,7 @@ public abstract class AbstractBasesMultiOperator extends AbstractCoercableOperat
 	private double autoOptimize;
 	private double scaleFactor;
 	
-	public AbstractBasesMultiOperator(HaplotypeModel haplotypeModel, int swapLength, CoercionMode mode) {
+	public AbstractBasesMultiOperator(OldHaplotypeModel haplotypeModel, int swapLength, CoercionMode mode) {
 		super(mode);
 		
 		this.haplotypeModel = haplotypeModel;

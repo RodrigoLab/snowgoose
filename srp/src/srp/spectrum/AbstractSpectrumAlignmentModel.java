@@ -28,6 +28,7 @@ public abstract class AbstractSpectrumAlignmentModel extends AbstractModel imple
 	public static final String TAXON_PREFIX = "taxa_";
 	
 	protected int spectrumLength;
+	protected SpectrumOperationRecord spectrumOperationRecord;
 
 	protected boolean isEdit;//TODO utilise this!!
 
@@ -256,7 +257,7 @@ public abstract class AbstractSpectrumAlignmentModel extends AbstractModel imple
     // Attributable IMPLEMENTATION
     // **************************************************************
 	private Attributable.AttributeHelper attributes = null;
-	protected SpectrumOperationRecord spectrumOperationRecord;
+
     /**
      * Sets an named attribute for this object.
      *

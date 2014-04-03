@@ -1,6 +1,6 @@
 package srp.operator.haplotypes;
 
-import srp.haplotypes.HaplotypeModel;
+import srp.haplotypes.old.OldHaplotypeModel;
 import dr.inference.operators.CoercionMode;
 import dr.inference.operators.OperatorFailedException;
 
@@ -9,7 +9,7 @@ public class BasesMultiEmpiricalOperator extends AbstractBasesMultiOperator {
 
 	public final static String OPERATOR_NAME = BasesMultiEmpiricalOperator.class.getSimpleName();
 	
-	public BasesMultiEmpiricalOperator(HaplotypeModel haplotypeModel, int length, CoercionMode mode) {
+	public BasesMultiEmpiricalOperator(OldHaplotypeModel haplotypeModel, int length, CoercionMode mode) {
 		super(haplotypeModel, length, mode);
 		
 		

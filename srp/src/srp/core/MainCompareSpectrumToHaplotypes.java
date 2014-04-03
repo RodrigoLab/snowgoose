@@ -5,7 +5,7 @@ import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
-import srp.haplotypes.HaplotypeModelUtils;
+import srp.haplotypes.SPSDist;
 import srp.spectrum.AbstractSpectrumAlignmentModel;
 import srp.spectrum.SpectrumAlignmentUtils;
 import srp.spectrum.SpectrumAlignmentUtils.Dist;
@@ -95,7 +95,7 @@ public class MainCompareSpectrumToHaplotypes {
 			String alignmentString = SpectrumAlignmentUtils.CreateMajorAlignment(spectrumModel);
 			out.println(alignmentString);
 			
-			s = HaplotypeModelUtils.calculeteSPSArrayString(trueAlignment,
+			s = SPSDist.calculeteSPSArrayString(trueAlignment,
 					trueAlignment);
 			out.println("Within haplotype");
 			out.println(s);

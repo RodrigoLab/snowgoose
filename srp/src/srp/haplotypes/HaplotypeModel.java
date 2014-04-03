@@ -5,7 +5,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import srp.haplotypes.AbstractHaplotypeModel;
+import srp.haplotypes.old.OldHapOperation;
+import srp.haplotypes.old.OldHapSwapInfo;
 import srp.shortreads.AlignmentMapping;
+import srp.spectrum.AbstractSpectrum;
+import srp.spectrum.HaplotypeOperation;
+import srp.spectrum.HaplotypeOperationRecord;
+import srp.spectrum.SpectrumAlignmentModel;
+import srp.spectrum.SpectrumOperation;
+import srp.spectrum.SpectrumOperationRecord;
 import jebl.evolution.sequences.Sequence;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.datatype.DataType;
@@ -24,64 +33,16 @@ import dr.inference.model.Variable.ChangeType;
 import dr.math.MathUtils;
 import dr.util.NumberFormatter;
 
-
-/*
-
-
-// resusable buffer for case 2
-
-    
-    char[] cbuff = new char[1024 * 1024];
-
-    // a reusable field we will use for reflection in case 4
-    Field field = String.class.getDeclaredField("value");
-    field.setAccessible(true);
-
-
-        // CASE 2 - Copy chars to a buffer
-        time = System.currentTimeMillis();
-
-        // check chars of string 10M times using cbuff[i] method
-        for (int n = 0; n < 1_000_000; n++) {
-            int count = data.length();
-            data.getChars(0, count, cbuff, 0);
-            for (int i = 0; i < count; i++) {
-                if (cbuff[i] <= ' ') {
-                    throw new IllegalDataException("Found whitespace");
-                }
-            }
-        }
-
-
-
-        // CASE 4 - Use reflection to access String char[]
-        time = System.currentTimeMillis();
-
-        // check chars of string 10M times using reflection method
-        for (int n = 0; n < 1_000_000; n++) {
-            final char[] chars = (char[]) field.get(data);
-            final int len = chars.length;
-            for (int i = 0; i < len; i++) {
-                if (chars[i] <= ' ') {
-                    throw new Exception("Found whitespace");
-                }
-            }
-        }
-
-
-*/
-
-
 public class HaplotypeModel extends AbstractHaplotypeModel  {
 	
 	private static final String MODEL_NAME = "HaplotypeModel";
 	private static final long serialVersionUID = -5057514703825711955L;
 
 	
-	private static final int HAP_INDEX = SwapInfo.SWAPBASE_HAP_INDEX;
-	private static final int POS_INDEX = SwapInfo.SWAPBASE_POS_INDEX;
-	private static final int NEW_CHAR_INDEX = SwapInfo.SWAPBASE_NEW_CHAR_INDEX;
-	private static final int OLD_CHAR_INDEX = SwapInfo.SWAPBASE_OLD_CHAR_INDEX;
+//	private static final int HAP_INDEX = OldHapSwapInfo.SWAPBASE_HAP_INDEX;
+//	private static final int POS_INDEX = OldHapSwapInfo.SWAPBASE_POS_INDEX;
+//	private static final int NEW_CHAR_INDEX = OldHapSwapInfo.SWAPBASE_NEW_CHAR_INDEX;
+//	private static final int OLD_CHAR_INDEX = OldHapSwapInfo.SWAPBASE_OLD_CHAR_INDEX;
 
 	private static final int NUCLEOTIDE_STATES[] = Nucleotides.NUCLEOTIDE_STATES;
 	private static final char[] VALID_CHARS = initValidChars4();
@@ -93,10 +54,11 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 
 //	int haplotypesCount;
 	AlignmentMapping aMap;
-	private SwapInfo swapInfo = new SwapInfo();
+
+	
+	protected HaplotypeOperationRecord hapOperationRecord;
 	
 	private boolean isEdit;
-	int[] swapBaseRecord = new int[4];
 	
 	private HaplotypeModel(AlignmentMapping aMap){
 		super(MODEL_NAME);
@@ -190,188 +152,86 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 
 	}	
 	
+/////////////////////////////////////
 
 	
-	public void swapHaplotypeColumn(int[] posChar){
+//	public abstract int getHaplotypeCount();
+//	public abstract AbstractSpectrum getSpectrum(int i);
+//	public abstract void removeSpectrum(int i);
+//	public abstract String getSpectrumString(int i);
 
-		int[] allOldChars = new int[getHaplotypeCount()];
-			
-		for (int i = 0; i < getHaplotypeCount(); i++) {
-			Haplotype haplotype = haplotypes.get(i);
-			allOldChars[i] = haplotype.replaceCharAt(posChar[0], posChar[1]);
-		}
-			
-		storeOperationRecord(Operation.SWAPCOLUMN, posChar, allOldChars);
-
-
-	}
-	public int[] swapHaplotypeSingleBase(Operation op, int[] posChar){
-
-		swapBaseRecord[POS_INDEX] = posChar[0];
-		swapBaseRecord[NEW_CHAR_INDEX] = posChar[1];
-
-		swapBaseRecord[HAP_INDEX] = MathUtils.nextInt(getHaplotypeCount());
-
-		Haplotype haplotype = haplotypes.get(swapBaseRecord[HAP_INDEX]);
-		swapBaseRecord[OLD_CHAR_INDEX] = haplotype.replaceCharAt(
-				swapBaseRecord[POS_INDEX], swapBaseRecord[NEW_CHAR_INDEX]);
-
-		storeOperationRecord(op, swapBaseRecord);
-		return swapBaseRecord;
-
-	}
-
-	@Deprecated
-	public void swapHaplotypeMultiBases(Operation op, int[] allNewChars){
-		int hapIndex = MathUtils.nextInt(getHaplotypeCount());
-		
-		Haplotype haplotype = haplotypes.get(hapIndex);
-		
-		int[] allOldChars = new int[allNewChars.length];
-		for (int i = 0; i < haplotypesLength; i++) {
-			int newChar = allNewChars[i];
-			if(newChar>0){
-				allOldChars[i] = haplotype.replaceCharAt(i, newChar);
-			}
-		}
-		storeOperationRecord(op, new int[]{hapIndex}, allNewChars, allOldChars);
-//		swapInfo.storeOperation(op, new int[]{hapIndex}, allPosChars);
-		
-	}
-	public void swapHaplotypeMultiBases(Operation op, int[][] allPosChars){
-		int hapIndex = MathUtils.nextInt(getHaplotypeCount());
-		
-		Haplotype haplotype = haplotypes.get(hapIndex);
-
-		for (int i = 0; i < haplotypesLength; i++) {
-			int newChar = allPosChars[0][i];
-			if(newChar>0){
-				allPosChars[1][i] = haplotype.replaceCharAt(i, newChar);
-			}
-		}
-		storeOperationRecord(op, hapIndex, allPosChars);
-//		storeOperationRecord(op, new int[] {hapIndex}, allPosChars[0], allPosChars[1]);
-//		swapInfo.storeOperation(op, new int[]{hapIndex}, allPosChars);
-		
-	}
-
-	private char setNewCharFromFrequency(){
-		
-		double d = MathUtils.nextDouble();
-		
-		for (int i = 0; i < INDEX_OF_LAST_VALID_CHARS; i++) {
-			if (d <= storedCumSumFrequency[i]) {
-				return VALID_CHARS[i];
-			}
-		}
-		return VALID_CHARS[INDEX_OF_LAST_VALID_CHARS];
-	}
 	
-	public double swapNextDiffBaseFrequency(Operation op, Parameter frequency) {
-	
-		checkFrequencyParameter(frequency);
-		
-//		int[] swapBaseRecord = new int[4];
-		swapBaseRecord[HAP_INDEX] = MathUtils.nextInt(getHaplotypeCount());
-		swapBaseRecord[POS_INDEX] = MathUtils.nextInt(getHaplotypeLength());
-
-		Haplotype haplotype = haplotypes.get(swapBaseRecord[HAP_INDEX]);
-		swapBaseRecord[OLD_CHAR_INDEX] = haplotype.getChar(swapBaseRecord[POS_INDEX]);
-		
-		do{
-			swapBaseRecord[NEW_CHAR_INDEX] = setNewCharFromFrequency();
-		}while(swapBaseRecord[OLD_CHAR_INDEX]==swapBaseRecord[NEW_CHAR_INDEX]);
-
-		haplotype.setCharAt(swapBaseRecord[POS_INDEX], (char) swapBaseRecord[NEW_CHAR_INDEX]);
-		
-		storeOperationRecord(op, swapBaseRecord);
-//			return swapBaseRecord;
-//			swapInfo.storeOperation(op, swapInfoArray);
-//			int newChar = NUCLEOTIDE_STATES[swapRecord[NEW_CHAR_INDEX]];
-//			int oldChar = NUCLEOTIDE_STATES[swapRecord[OLD_CHAR_INDEX]];
-		double logq = getLogqFrequency(swapBaseRecord[OLD_CHAR_INDEX], swapBaseRecord[NEW_CHAR_INDEX]);
-		
-		return logq;
-	}
-
-	public int[] getNextBaseFrequency(Parameter frequency) {
-	
-		checkFrequencyParameter(frequency);
-	
-		int[] tempPosChar = new int[2];
-		tempPosChar[0] = MathUtils.nextInt(getHaplotypeLength());
-	
-		double d = MathUtils.nextDouble();
-	
-//		for (int i = 0; i < INDEX_OF_LAST_VALID_CHARS; i++) {
-//			if (d <= storedCumSumFrequency[i]) {
-//				tempPosChar[1] = VALID_CHARS[i];
-//				return tempPosChar;
-//			}
-//		}
-		tempPosChar[1] = setNewCharFromFrequency();
-		return tempPosChar;
-	}
-
-	//	private int replaceHaplotypeCharAt(int hapIndex, int pos, int newChar){
-//		
-//		int oldChar = haplotypes.get(hapIndex).replaceCharAt(pos, (char) newChar);
-//		return oldChar;
-//		
+//	public double[] getSpecturmFrequencies(int spectrumIndex, int i) {
+//			return getSpectrum(spectrumIndex).getFrequenciesAt(i);
 //	}
-//	private static int replaceHaplotypeCharAt(Haplotype haplotype, int pos, int newChar){
-//		int oldChar = haplotype.replaceCharAt(pos, (char) newChar);
-//		return oldChar;
-//		
-//	}
-	private void resetHaplotypeToOldChar(int[] swapRecord){
-		Haplotype haplotype = haplotypes.get(swapRecord[0]);
-		haplotype.replaceCharAt(swapRecord[1], swapRecord[3]);
 
-//		swapHaplotypeCharAt(swapArray[0], swapArray[1], swapArray[3]);
+	public void resetHaplotypeOperation() {
+		hapOperationRecord.setOperation(HaplotypeOperation.FULL);
 	}
+
+	public HaplotypeOperationRecord getHaplotypeOperationRecord() {
+		return hapOperationRecord;
+	}
+
+	public HaplotypeOperation getHaplotypeOperation() {
+		return hapOperationRecord.getOperation();
+	}
+
+	public void setHaplotypeOperationRecord(HaplotypeOperation op,
+			int[] twoSpectrumIndex, int[] swapPositionIndex) {
+
+		hapOperationRecord.setRecord(op, twoSpectrumIndex,
+				swapPositionIndex);
+	}
+
+	public void setHaplotypeOperationRecord(HaplotypeOperation op, int siteIndex,
+			double... delta) {
+		hapOperationRecord.setRecord(op, siteIndex, delta);
+	}
+
+	public void setHaplotypeOperationRecord(HaplotypeOperation op,
+			int spectrumIndex, int siteIndex) {
+		hapOperationRecord.setRecord(op, spectrumIndex, siteIndex);
+	}
+
+	public void setHaplotypeOperationRecord(HaplotypeOperation op,
+			int spectrumIndex, int siteIndex, double delta) {
+		hapOperationRecord.setRecord(op, spectrumIndex, siteIndex);
+	}
+
+	public void setHaplotypeOperationRecord(HaplotypeOperation op,
+			int spectrumIndex, int[] siteIndexs, double... delta) {
+		hapOperationRecord.setRecord(op, spectrumIndex, siteIndexs, delta);
+
+	}
+
+	public void setHaplotypeOperationRecord(HaplotypeOperation op,
+			int[] spectrumIndexs, int siteIndex) {
+		// subcolumn
+		hapOperationRecord.setRecord(op, spectrumIndexs, siteIndex);
+
+	}
+
+
+	public void startHaplotypeOperation(){
+		isEdit = true;
+	}
+
+	public void endHaplotypeOperation(){
+		isEdit = false;
+		fireModelChanged();
+	}
+
 	
-//	private int swapHaplotypeCharAt(int hapIndex, int[] posChar){
-//		int oldChar = getHaplotype(hapIndex).getChar(posChar[0]); 
-//		getHaplotype(hapIndex).setCharAt(posChar[0], (char) posChar[1]);
-//		return oldChar;
-//		
-//	}
-//	
-//	
-
-	public SwapInfo getSwapInfo() {
-		return swapInfo;
-	}
-//	public Operation getOperation() {
-//		return swapInfo.getOperation();
-//	}
-	public void storeOperationRecord(Operation op, int[]... opRecord){
-		swapInfo.storeOperation(op, opRecord);
-	}
 	
-	private void storeOperationRecord(Operation op, int hapIndex,
-			int[][] opRecord) {
-		swapInfo.storeOperation(op, opRecord[0], opRecord[1]);
-		swapInfo.storeHapIndex(hapIndex);
-	}
-
+	
+	
+////////////////////////////////////
+	
 
 	
-	public int calculateSPS(){
-		int sps = 0;
-		
-		for (int i = 0; i < getHaplotypeCount(); i++) {
-			Haplotype h1 = haplotypes.get(i);
-			for (int j = 0; j < i; j++) {
-				Haplotype h2 = haplotypes.get(j);
-				for (int pos = 0; pos < haplotypesLength; pos++) {
-					int c = h1.getChar(pos) - h2.getChar(pos);
-					sps += (c==0)? 0: 1;
-				}
-			}
-		}
-		return sps;
+	public int calculateSPS(){//TODO test this
+		return SPSDist.calculeteSPS(this, this);
 	}
 
 	@Override
@@ -431,16 +291,194 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 	}
 	@Override
 	protected void storeState() {
+		swapInfo.storeOperation(OldHapOperation.NONE);
+		
+		SpectrumOperation operation = spectrumOperationRecord.getOperation();
+		int spectrumIndex;
+		int siteIndex;
+		int[] siteIndexs;
+		AbstractSpectrum spectrum;
+		switch (operation) {
+		case NONE:
+			if(DEBUG){
+				System.out.println("StoreState in SpectrumAlignment:\t"+operation);
+			}
+			break;
+		case FULL:
+			if(DEBUG){
+				System.out.println("StoreState in SpectrumAlignment:\t"+operation);
+			}
+			for (int i = 0; i < getHaplotypeCount(); i++) {
+				spectrum = getSpectrum(i);
+				for (int s = 0; s < getHaplotypeLength(); s++) {
+					spectrum.setStoreSiteIndex(s);
+					spectrum.storeState();
+				}
+			}
+			break;
+//		case SINGLE_DELTA:
+//			spectrumIndex = spectrumOperationRecord.getSpectrumIndex();
+//			siteIndex = spectrumOperationRecord.getAllSiteIndexs()[0];
+//
+//			spectrum = getSpectrum(spectrumIndex);
+//			spectrum.setStoreSiteIndex(siteIndex);
+//			spectrum.storeState();
+//			break;
+		case DELTA_COLUMN:
+		case SWAP_COLUMN:
+		case SWAP_SUBCOLUMN:
+//			spectrumIndex = spectrumOperationRecord.getSpectrumIndex();
+			siteIndex = spectrumOperationRecord.getSingleIndex();
+			for (int i = 0; i < getHaplotypeCount(); i++) {
+				spectrum = getSpectrum(i);
+				spectrum.setStoreSiteIndex(siteIndex);
+				spectrum.storeState();
+			}
+			break;
+		case DELTA_SINGLE:
+		case SWAP_SINGLE:
+			spectrumIndex = spectrumOperationRecord.getSpectrumIndex();
+			siteIndex = spectrumOperationRecord.getSingleIndex();
+			spectrum = getSpectrum(spectrumIndex);
+				spectrum.setStoreSiteIndex(siteIndex);
+				spectrum.storeState();
+			break;
+		
+		case DELTA_MULTI:
+		case SWAP_MULTI:
+			spectrumIndex = spectrumOperationRecord.getSpectrumIndex();
+			siteIndexs = spectrumOperationRecord.getAllSiteIndexs();
+			spectrum = getSpectrum(spectrumIndex);
+			for (int i = 0; i < siteIndexs.length; i++) {
+				spectrum.setStoreSiteIndex(siteIndexs[i]);
+				spectrum.storeState();
+			}
+			break;
+		case RECOMBINATION:
 
-		// System.err.println("Call storeState");
-		swapInfo.storeOperation(Operation.NONE);
+//			System.err.println("store alignment recombination");
+			int[] twoSpectrums = spectrumOperationRecord.getRecombinationSpectrumIndex();
+			int[] twoPositions = spectrumOperationRecord.getRecombinationPositionIndex();
+			for (int i : twoSpectrums) {
+				spectrum = getSpectrum(i);
+				for (int s = twoPositions[0]; s < twoPositions[1]; s++) {
+					spectrum.setStoreSiteIndex(s);
+					spectrum.storeState();
+				}
+			}
+			break;
+		default:
+			throw new IllegalArgumentException("Unknown operation type: "+operation +"\tin"+SpectrumAlignmentModel.class.getSimpleName() );
+			
+		}
+
+//		 
+//		long time2 = System.currentTimeMillis();
+//		time += (time2-time1);
+		 
 	}
+	@Override
+	protected void restoreState() {
+//		long time1 = System.currentTimeMillis();
+		
+		SpectrumOperation operation = spectrumOperationRecord.getOperation();
+		int spectrumIndex;
+		int siteIndex;
+		AbstractSpectrum spectrum;
+		int[] siteIndexs;
+//			System.out.println(op);
+//		System.err.println("zzzzRestore SpectrumAlignment: "+operation);
+		switch (operation) {
+		
+		case NONE:
+			if(DEBUG){
+				System.out.println("RestoreState in SpectrumAlignment:\t"+operation);
+			}
+			break;
+		case FULL:
+			if(DEBUG){
+				System.out.println("RestoreState in SpectrumAlignment:\t"+operation);
+			}
+			for (int i = 0; i < getHaplotypeCount(); i++) {
+				spectrum = getSpectrum(i);
+				for (int s = 0; s < getHaplotypeLength(); s++) {
+					spectrum.setStoreSiteIndex(s);
+					spectrum.restoreState();
+				}
+			}
+			break;
+//			
+//				spectrumIndex = spectrumOperationRecord.getSpectrumIndex();
+//				siteIndex = spectrumOperationRecord.getAllSiteIndexs()[0];
+////				System.err.println(spectrumIndex +"\t"+ siteIndex +"\t"+ Arrays.toString(getSpecturmFrequencies(spectrumIndex,
+////						siteIndex)));
+//				spectrum = getSpectrum(spectrumIndex);
+//				spectrum.setStoreSiteIndex(siteIndex);
+//				spectrum.restoreState();
+////				System.err.println("after restore\t"+spectrumIndex +"\t"+ siteIndex +"\t"+ Arrays.toString(getSpecturmFrequencies(spectrumIndex,
+////						siteIndex)));
+//				break;
+		case DELTA_COLUMN:
+		case SWAP_COLUMN:
+		case SWAP_SUBCOLUMN:
+//				spectrumIndex = spectrumOperationRecord.getSpectrumIndex();
+			siteIndex = spectrumOperationRecord.getSingleIndex();
+//				System.err.println(spectrumIndex +"\t"+ siteIndex +"\t"+ Arrays.toString(getSpecturmFrequencies(spectrumIndex,
+//						siteIndex)));
+			for (int i = 0; i < getHaplotypeCount(); i++) {
+				spectrum = getSpectrum(i);
+				spectrum.setStoreSiteIndex(siteIndex);
+				spectrum.restoreState();
+			}
+			break;
+		case DELTA_MULTI:
+		case SWAP_MULTI:
+			spectrumIndex = spectrumOperationRecord.getSpectrumIndex();
+			siteIndexs = spectrumOperationRecord.getAllSiteIndexs();
+			spectrum = getSpectrum(spectrumIndex);
+			for (int i = 0; i < siteIndexs.length; i++) {
+				spectrum.setStoreSiteIndex(siteIndexs[i]);
+				spectrum.restoreState();
+			}
+			break;
+		case DELTA_SINGLE:
+		case SWAP_SINGLE:
+			spectrumIndex = spectrumOperationRecord.getSpectrumIndex();
+			siteIndex = spectrumOperationRecord.getSingleIndex();
+			spectrum = getSpectrum(spectrumIndex);
+
+				spectrum.setStoreSiteIndex(siteIndex);
+				spectrum.restoreState();
+
+			break;
+			
+		case RECOMBINATION:
+//			System.err.println("Restore alignment recombination");
+			int[] twoSpectrums = spectrumOperationRecord.getRecombinationSpectrumIndex();
+			int[] twoPositions = spectrumOperationRecord.getRecombinationPositionIndex();
+			for (int i : twoSpectrums) {
+				spectrum = getSpectrum(i);
+				for (int s = twoPositions[0]; s < twoPositions[1]; s++) {
+					spectrum.setStoreSiteIndex(s);
+					spectrum.restoreState();
+				}
+			}
+			break;
+		default:
+			throw new IllegalArgumentException("Unknown operation type: " + operation);
+
+		}
+//		long time2 = System.currentTimeMillis();
+//		time += (time2-time1);
+	}
+	
+
 
 	@Override
 	protected void restoreState() {
 		// System.err.println("Call restoreState - haplotypeModel");
 		reject();
-		swapInfo.storeOperation(Operation.NONE);
+		swapInfo.storeOperation(OldHapOperation.NONE);
 	}
 
 	//	private int swapHaplotypeCharAt(int hapIndex, int[] posChar){
@@ -454,7 +492,7 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 
 	public void reject() {
 		
-		Operation op = swapInfo.getOperation();
+		OldHapOperation op = swapInfo.getOperation();
 //		int[] temp;
 		switch (op) {
 		
@@ -526,15 +564,6 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 		}
 
 
-	}
-
-	public void startHaplotypeOperation(){
-		isEdit = true;
-	}
-
-	public void endHaplotypeOperation(){
-		isEdit = false;
-		fireModelChanged();
 	}
 
 
@@ -707,6 +736,178 @@ System.out.println((time2 - time1) + "\t");
 		}
 		
 	}
+////////////////////////////////////////////
+/// remove later, will be replaced in operator 
+	@Deprecated private OldHapSwapInfo swapInfo = new OldHapSwapInfo();
+	@Deprecated int[] swapBaseRecord = new int[4];
+	@Deprecated int HAP_INDEX = 0;
+	@Deprecated int POS_INDEX = 1;
+	@Deprecated int NEW_CHAR_INDEX = 2;
+	@Deprecated int OLD_CHAR_INDEX = 3;
 	
+	
+	public void swapHaplotypeColumn(int[] posChar){
+
+		int[] allOldChars = new int[getHaplotypeCount()];
+			
+		for (int i = 0; i < getHaplotypeCount(); i++) {
+			Haplotype haplotype = haplotypes.get(i);
+			allOldChars[i] = haplotype.replaceCharAt(posChar[0], posChar[1]);
+		}
+			
+		storeOperationRecord(OldHapOperation.SWAPCOLUMN, posChar, allOldChars);
+
+
+	}
+	public int[] swapHaplotypeSingleBase(OldHapOperation op, int[] posChar){
+
+		swapBaseRecord[POS_INDEX] = posChar[0];
+		swapBaseRecord[NEW_CHAR_INDEX] = posChar[1];
+
+		swapBaseRecord[HAP_INDEX] = MathUtils.nextInt(getHaplotypeCount());
+
+		Haplotype haplotype = haplotypes.get(swapBaseRecord[HAP_INDEX]);
+		swapBaseRecord[OLD_CHAR_INDEX] = haplotype.replaceCharAt(
+				swapBaseRecord[POS_INDEX], swapBaseRecord[NEW_CHAR_INDEX]);
+
+		storeOperationRecord(op, swapBaseRecord);
+		return swapBaseRecord;
+
+	}
+
+	@Deprecated
+	public void swapHaplotypeMultiBases(OldHapOperation op, int[] allNewChars){
+		int hapIndex = MathUtils.nextInt(getHaplotypeCount());
+		
+		Haplotype haplotype = haplotypes.get(hapIndex);
+		
+		int[] allOldChars = new int[allNewChars.length];
+		for (int i = 0; i < haplotypesLength; i++) {
+			int newChar = allNewChars[i];
+			if(newChar>0){
+				allOldChars[i] = haplotype.replaceCharAt(i, newChar);
+			}
+		}
+		storeOperationRecord(op, new int[]{hapIndex}, allNewChars, allOldChars);
+//		swapInfo.storeOperation(op, new int[]{hapIndex}, allPosChars);
+		
+	}
+	public void swapHaplotypeMultiBases(OldHapOperation op, int[][] allPosChars){
+		int hapIndex = MathUtils.nextInt(getHaplotypeCount());
+		
+		Haplotype haplotype = haplotypes.get(hapIndex);
+
+		for (int i = 0; i < haplotypesLength; i++) {
+			int newChar = allPosChars[0][i];
+			if(newChar>0){
+				allPosChars[1][i] = haplotype.replaceCharAt(i, newChar);
+			}
+		}
+		storeOperationRecord(op, hapIndex, allPosChars);
+//		storeOperationRecord(op, new int[] {hapIndex}, allPosChars[0], allPosChars[1]);
+//		swapInfo.storeOperation(op, new int[]{hapIndex}, allPosChars);
+		
+	}
+
+	private char setNewCharFromFrequency(){
+		
+		double d = MathUtils.nextDouble();
+		
+		for (int i = 0; i < INDEX_OF_LAST_VALID_CHARS; i++) {
+			if (d <= storedCumSumFrequency[i]) {
+				return VALID_CHARS[i];
+			}
+		}
+		return VALID_CHARS[INDEX_OF_LAST_VALID_CHARS];
+	}
+	
+	public double swapNextDiffBaseFrequency(OldHapOperation op, Parameter frequency) {
+	
+		checkFrequencyParameter(frequency);
+		
+//		int[] swapBaseRecord = new int[4];
+		swapBaseRecord[HAP_INDEX] = MathUtils.nextInt(getHaplotypeCount());
+		swapBaseRecord[POS_INDEX] = MathUtils.nextInt(getHaplotypeLength());
+
+		Haplotype haplotype = haplotypes.get(swapBaseRecord[HAP_INDEX]);
+		swapBaseRecord[OLD_CHAR_INDEX] = haplotype.getChar(swapBaseRecord[POS_INDEX]);
+		
+		do{
+			swapBaseRecord[NEW_CHAR_INDEX] = setNewCharFromFrequency();
+		}while(swapBaseRecord[OLD_CHAR_INDEX]==swapBaseRecord[NEW_CHAR_INDEX]);
+
+		haplotype.setCharAt(swapBaseRecord[POS_INDEX], (char) swapBaseRecord[NEW_CHAR_INDEX]);
+		
+		storeOperationRecord(op, swapBaseRecord);
+//			return swapBaseRecord;
+//			swapInfo.storeOperation(op, swapInfoArray);
+//			int newChar = NUCLEOTIDE_STATES[swapRecord[NEW_CHAR_INDEX]];
+//			int oldChar = NUCLEOTIDE_STATES[swapRecord[OLD_CHAR_INDEX]];
+		double logq = getLogqFrequency(swapBaseRecord[OLD_CHAR_INDEX], swapBaseRecord[NEW_CHAR_INDEX]);
+		
+		return logq;
+	}
+
+	public int[] getNextBaseFrequency(Parameter frequency) {
+	
+		checkFrequencyParameter(frequency);
+	
+		int[] tempPosChar = new int[2];
+		tempPosChar[0] = MathUtils.nextInt(getHaplotypeLength());
+	
+		double d = MathUtils.nextDouble();
+	
+//		for (int i = 0; i < INDEX_OF_LAST_VALID_CHARS; i++) {
+//			if (d <= storedCumSumFrequency[i]) {
+//				tempPosChar[1] = VALID_CHARS[i];
+//				return tempPosChar;
+//			}
+//		}
+		tempPosChar[1] = setNewCharFromFrequency();
+		return tempPosChar;
+	}
+
+	//	private int replaceHaplotypeCharAt(int hapIndex, int pos, int newChar){
+//		
+//		int oldChar = haplotypes.get(hapIndex).replaceCharAt(pos, (char) newChar);
+//		return oldChar;
+//		
+//	}
+//	private static int replaceHaplotypeCharAt(Haplotype haplotype, int pos, int newChar){
+//		int oldChar = haplotype.replaceCharAt(pos, (char) newChar);
+//		return oldChar;
+//		
+//	}
+	private void resetHaplotypeToOldChar(int[] swapRecord){
+		Haplotype haplotype = haplotypes.get(swapRecord[0]);
+		haplotype.replaceCharAt(swapRecord[1], swapRecord[3]);
+
+//		swapHaplotypeCharAt(swapArray[0], swapArray[1], swapArray[3]);
+	}
+	
+//	private int swapHaplotypeCharAt(int hapIndex, int[] posChar){
+//		int oldChar = getHaplotype(hapIndex).getChar(posChar[0]); 
+//		getHaplotype(hapIndex).setCharAt(posChar[0], (char) posChar[1]);
+//		return oldChar;
+//		
+//	}
+//	
+//	
+
+	public OldHapSwapInfo getSwapInfo() {
+		return swapInfo;
+	}
+	
+	public void storeOperationRecord(OldHapOperation op, int[]... opRecord){
+		swapInfo.storeOperation(op, opRecord);
+	}
+	
+	private void storeOperationRecord(OldHapOperation op, int hapIndex,
+			int[][] opRecord) {
+		swapInfo.storeOperation(op, opRecord[0], opRecord[1]);
+		swapInfo.storeHapIndex(hapIndex);
+	}
+
+
 	
 }

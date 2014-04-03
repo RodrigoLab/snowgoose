@@ -1,7 +1,7 @@
 package srp.rj.operator;
 
-import srp.haplotypes.HaplotypeModel;
-import srp.haplotypes.Operation;
+import srp.haplotypes.old.OldHaplotypeModel;
+import srp.haplotypes.old.OldHapOperation;
 import srp.shortreads.AlignmentMapping;
 import dr.evolution.tree.FlexibleNode;
 import dr.evolution.tree.FlexibleTree;
@@ -14,9 +14,9 @@ import dr.math.MathUtils;
 
 public class RJTreeOperator  extends AbstractTreeOperator {
 
-	public final static Operation OP = Operation.TREE;
+	public final static OldHapOperation OP = OldHapOperation.TREE;
 	
-	protected HaplotypeModel haplotypeModel;
+	protected OldHaplotypeModel haplotypeModel;
 
 	protected AlignmentMapping alignmentMapping;
 
@@ -25,7 +25,7 @@ public class RJTreeOperator  extends AbstractTreeOperator {
 
 	public final static String OPERATOR_NAME = RJTreeOperator.class.getSimpleName();
 
-	public RJTreeOperator(HaplotypeModel haplotypeModel, TreeModel treeModel )  {
+	public RJTreeOperator(OldHaplotypeModel haplotypeModel, TreeModel treeModel )  {
 
 		this.haplotypeModel = haplotypeModel;
 		this.tree = treeModel;

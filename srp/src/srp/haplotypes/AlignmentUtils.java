@@ -2,7 +2,6 @@ package srp.haplotypes;
 
 import srp.dr.evolution.datatype.ShortReads;
 import srp.shortreads.AlignmentMapping;
-import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.SimpleAlignment;
 import dr.evolution.datatype.Nucleotides;
 import dr.evolution.sequence.Sequence;
@@ -58,35 +57,5 @@ public class AlignmentUtils {
 		SimpleAlignment alignment = createAlignment(taxa_sequence);
 		AlignmentMapping aMap = new AlignmentMapping(alignment);
 		return aMap;
-	}
-	
-	public static HaplotypeModel createHaplotypeModel(String[] taxa_sequence){
-		
-		Alignment alignment = AlignmentUtils.createAlignment(taxa_sequence);
-		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(taxa_sequence);
-		HaplotypeModel haplotypeModel = new HaplotypeModel(aMap, alignment);
-		return haplotypeModel;
-		
-	}
-	
-	public static HaplotypeModel createHaplotypeModel(String[] shortRead, String[] taxa_sequence){
-		
-		Alignment alignment = AlignmentUtils.createAlignment(taxa_sequence);
-		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(shortRead);
-		HaplotypeModel haplotypeModel = new HaplotypeModel(aMap, alignment);
-		return haplotypeModel;
-		
-	}
-
-
-	public static HaplotypeModel createHaplotypeModel(AlignmentMapping aMap, Alignment trueAlignment) {
-		int noSeq = trueAlignment.getSequenceCount();
-		HaplotypeModel haplotypeModel = new HaplotypeModel(aMap, noSeq);
-		for (int i = 0; i < noSeq; i++) {
-			String sequence = trueAlignment.getSequence(i).getSequenceString();
-			haplotypeModel.getHaplotype(i).setSequenceString(sequence);
-		}
-		 
-		return haplotypeModel;
 	}
 }

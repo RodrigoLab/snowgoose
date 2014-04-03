@@ -1,9 +1,12 @@
 package test.srp.spectrum;
 
+import static org.junit.Assert.*;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Test;
 
 public class CategorySpectrumTest {
 
@@ -23,4 +26,9 @@ public class CategorySpectrumTest {
 	public void tearDown() throws Exception {
 	}
 
+	
+	@Test
+	public void testPass() throws Exception {
+		//Nothing
+	}
 }

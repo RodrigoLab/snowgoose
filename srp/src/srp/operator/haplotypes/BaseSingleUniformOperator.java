@@ -1,13 +1,13 @@
 package srp.operator.haplotypes;
 
-import srp.haplotypes.HaplotypeModel;
+import srp.haplotypes.old.OldHaplotypeModel;
 import dr.inference.operators.OperatorFailedException;
 
 public class BaseSingleUniformOperator extends AbstractBaseSingleOperator {
 
 	public final static String OPERATOR_NAME = BaseSingleUniformOperator.class.getSimpleName();
 
-	public BaseSingleUniformOperator(HaplotypeModel haplotypeModel, int nothing) {
+	public BaseSingleUniformOperator(OldHaplotypeModel haplotypeModel, int nothing) {
 		super(haplotypeModel);
 
 	}

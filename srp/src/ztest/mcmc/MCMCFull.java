@@ -16,7 +16,7 @@ import org.junit.Test;
 import srp.core.DataImporter;
 import srp.core.MCMCSetupHelperHaplotype;
 import srp.haplotypes.HaplotypeLoggerWithTrueHaplotype;
-import srp.haplotypes.HaplotypeModel;
+import srp.haplotypes.old.OldHaplotypeModel;
 import srp.likelihood.haplotypes.ShortReadLikelihood;
 import srp.shortreads.AlignmentMapping;
 import dr.evolution.alignment.Alignment;
@@ -80,7 +80,7 @@ public class MCMCFull {
 
 		Alignment shortReads = dataImporter.importShortReads(shortReadFile);
 		AlignmentMapping alignmentMapping = new AlignmentMapping(shortReads);
-		HaplotypeModel haplotypeModel = new HaplotypeModel(alignmentMapping, numberOfHaplotype);
+		OldHaplotypeModel haplotypeModel = new OldHaplotypeModel(alignmentMapping, numberOfHaplotype);
 
 		// coalescent
 		Parameter popSize = new Parameter.Default(ConstantPopulationModelParser.POPULATION_SIZE, 3000.0, 100, 100000.0);

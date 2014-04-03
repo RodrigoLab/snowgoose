@@ -10,9 +10,16 @@ public class Haplotype extends Sequence {
 	 * 
 	 */
 	private static final long serialVersionUID = -1481408524381652240L;
+	
+	@Deprecated 
 	StringBuilder sequenceString;
 	String storeHaplotype;
+	
+	char[] haplotpye;
+	char[] storedHaplotye;
+	int haplotypeLength;
 
+	@Deprecated
 	public Haplotype() {
 		sequenceString = new StringBuilder();
 	}
@@ -65,7 +72,9 @@ public class Haplotype extends Sequence {
      */
     @Override
 	public int getLength() {
-        return sequenceString.length();
+//        return sequenceString.length();
+        return haplotypeLength;
+//        throw new IllegalArgumentException("Not going to implemente this at later version");
     }
 
     /**
@@ -73,7 +82,8 @@ public class Haplotype extends Sequence {
      */
     @Override
 	public String getSequenceString() {
-        return sequenceString.toString();
+//        return sequenceString.toString();
+    	throw new IllegalArgumentException("Not going to implemente this at later version");
     }
 
     /**
@@ -81,7 +91,8 @@ public class Haplotype extends Sequence {
      */
     @Override
 	public char getChar(int index) {
-        return sequenceString.charAt(index);
+//        return sequenceString.charAt(index);
+        throw new IllegalArgumentException("Not going to implemente this at later version");
     }
 
     /**
@@ -89,7 +100,8 @@ public class Haplotype extends Sequence {
      */
     @Override
 	public int getState(int index) {
-        return dataType.getState(sequenceString.charAt(index));
+//        return dataType.getState(sequenceString.charAt(index));
+        throw new IllegalArgumentException("Not going to implemente this at later version");
     }
 
     /**
@@ -105,6 +117,7 @@ public class Haplotype extends Sequence {
     @Override
 	public void getChars(int srcBegin, int srcEnd, char[] dst, int dstBegin) {
         sequenceString.getChars(srcBegin, srcEnd, dst, dstBegin);
+        throw new IllegalArgumentException("Not going to implemente this at later version");
     }
 
     /**
@@ -112,7 +125,8 @@ public class Haplotype extends Sequence {
      */
     @Override
 	public DataType guessDataType() {
-        return DataType.guessDataType(sequenceString.toString());
+//        return DataType.guessDataType(sequenceString.toString());
+        throw new IllegalArgumentException("Not going to implemente this at later version");
     }
 
     /**
@@ -122,6 +136,7 @@ public class Haplotype extends Sequence {
 	public void setSequenceString(String sequence) {
         sequenceString.setLength(0);
         sequenceString.append(sequence);
+        throw new IllegalArgumentException("Not going to implemente this at later version");
     }
 
     /**
@@ -130,6 +145,7 @@ public class Haplotype extends Sequence {
     @Override
 	public void appendSequenceString(String sequence) {
         sequenceString.append(sequence);
+        throw new IllegalArgumentException("Not going to implemente this at later version");
     }
 
     /**
@@ -138,6 +154,7 @@ public class Haplotype extends Sequence {
     @Override
 	public void insertSequenceString(int offset, String sequence) {
         sequenceString.insert(offset, sequence);
+        throw new IllegalArgumentException("Not going to implemente this at later version");
     }
 
 	public void storeState() {

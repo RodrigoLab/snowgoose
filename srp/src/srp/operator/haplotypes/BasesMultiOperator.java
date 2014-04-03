@@ -1,6 +1,6 @@
 package srp.operator.haplotypes;
 
-import srp.haplotypes.HaplotypeModel;
+import srp.haplotypes.old.OldHaplotypeModel;
 import dr.inference.operators.CoercionMode;
 import dr.inference.operators.OperatorFailedException;
 
@@ -13,7 +13,7 @@ public class BasesMultiOperator extends AbstractBasesMultiOperator {
 	
 
 	
-	public BasesMultiOperator(HaplotypeModel haplotypeModel, int length, CoercionMode mode) {
+	public BasesMultiOperator(OldHaplotypeModel haplotypeModel, int length, CoercionMode mode) {
 		super(haplotypeModel, length, mode);
 		
 	}

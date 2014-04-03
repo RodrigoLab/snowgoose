@@ -7,10 +7,6 @@ public class SpectrumOperationRecord {
 	/*
 	 * Record how/which move/operation is performed
 	*/
-	public static final int SWAPBASE_HAP_INDEX = 0;
-	public static final int SWAPBASE_POS_INDEX = 1;
-	public static final int SWAPBASE_NEW_CHAR_INDEX = 2;
-	public static final int SWAPBASE_OLD_CHAR_INDEX = 3;
 	
 //	private Operations data = new Operations();
 //	private int hapIndex;

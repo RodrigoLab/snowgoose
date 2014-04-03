@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import srp.haplotypes.HaplotypeModel;
+import srp.haplotypes.old.OldHaplotypeModel;
 import srp.operator.haplotypes.BaseSingleEmpiricalOperator;
 import srp.operator.haplotypes.BaseSingleFrequencyOperator;
 import srp.operator.haplotypes.BasesMultiEmpiricalOperator;
@@ -36,7 +36,7 @@ import dr.inference.operators.UpDownOperator;
 public class MCMCSetupHelperHaplotype extends MCMCSetupHelper {
 
 	public static HashMap<String, Object> setupTreeLikelihoodHaplotypeModel(TreeModel treeModel,
-			HaplotypeModel haplotypeModel) {
+			OldHaplotypeModel haplotypeModel) {
 		
 		double errorRate = 0;
 		
@@ -88,7 +88,7 @@ public class MCMCSetupHelperHaplotype extends MCMCSetupHelper {
 	private static final double opHuge = 100;
 	
 	public static TreeLikelihoodExt setupTreeLikelihood(Parameter kappa,
-			Parameter freqs, HaplotypeModel haplotypeModel,
+			Parameter freqs, OldHaplotypeModel haplotypeModel,
 			TreeModel treeModel, StrictClockBranchRates branchRateModel) {
 	
 		// Sub model
@@ -119,7 +119,7 @@ public class MCMCSetupHelperHaplotype extends MCMCSetupHelper {
 		return treeLikelihood;
 	}
 
-	public static ArrayList<MCMCOperator> defalutOperators(HaplotypeModel haplotypeModel,
+	public static ArrayList<MCMCOperator> defalutOperators(OldHaplotypeModel haplotypeModel,
 				Parameter... parameters) {
 	
 			MCMCOperator operator;
@@ -257,7 +257,7 @@ public class MCMCSetupHelperHaplotype extends MCMCSetupHelper {
 			return OperatorList;
 		}
 
-	public static ArrayList<MCMCOperator> testOperators(HaplotypeModel haplotypeModel,
+	public static ArrayList<MCMCOperator> testOperators(OldHaplotypeModel haplotypeModel,
 				Parameter... parameters) {
 	
 			MCMCOperator operator;

@@ -1,7 +1,7 @@
 package srp.operator.haplotypes;
 
-import srp.haplotypes.HaplotypeModel;
-import srp.haplotypes.Operation;
+import srp.haplotypes.old.OldHaplotypeModel;
+import srp.haplotypes.old.OldHapOperation;
 import srp.shortreads.AlignmentMapping;
 import dr.inference.model.Parameter;
 import dr.inference.operators.AbstractCoercableOperator;
@@ -13,8 +13,8 @@ public class ColumnOperator extends AbstractCoercableOperator {
 
 	
 	public final static String OPERATOR_NAME = ColumnOperator.class.getSimpleName();
-	public final static Operation OP = Operation.SWAPCOLUMN;
-	private HaplotypeModel haplotypeModel;
+	public final static OldHapOperation OP = OldHapOperation.SWAPCOLUMN;
+	private OldHaplotypeModel haplotypeModel;
 	private int noOfHap;
 	private int haplotypeLength;
 	private AlignmentMapping alignmentMapping;
@@ -28,7 +28,7 @@ public class ColumnOperator extends AbstractCoercableOperator {
 //	}
 
 	
-	public ColumnOperator(HaplotypeModel haplotypeModel, int noOfHap, Parameter freqs, CoercionMode mode) {
+	public ColumnOperator(OldHaplotypeModel haplotypeModel, int noOfHap, Parameter freqs, CoercionMode mode) {
 		super(mode);
 
 		this.frequency = freqs;

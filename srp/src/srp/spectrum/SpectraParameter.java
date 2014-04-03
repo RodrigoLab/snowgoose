@@ -140,7 +140,7 @@ public class SpectraParameter extends AbstractSpectra{
 	public void setStateLikelihood(int state, double ln) {
 		stateLikelihood[state] = ln;
 	}
-	@Deprecated
+	
 	public double[] getStateLikelihood() {
 		return stateLikelihood;
 	}

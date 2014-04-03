@@ -30,8 +30,8 @@ import org.junit.rules.ExpectedException;
 
 import srp.core.DataImporter;
 import srp.dr.evolution.datatype.ShortReads;
-import srp.haplotypes.Haplotype;
-import srp.haplotypes.HaplotypeModel;
+import srp.haplotypes.old.OldHaplotype;
+import srp.haplotypes.old.OldHaplotypeModel;
 import srp.shortreads.AlignmentMapping;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.SimpleAlignment;
@@ -46,11 +46,11 @@ public class AbstractHaplotypeModelTest {
 	
 	private static Taxon[] expectedTaxons;
 	private static String[] expectedSequences;
-	private static ArrayList<Haplotype> expectedList;
+	private static ArrayList<OldHaplotype> expectedList;
 	private static HashMap<Character, Integer> charToState;
 	
-	private HaplotypeModel haplotypeModel;
-	private HaplotypeModel haplotypeModelRandom;
+	private OldHaplotypeModel haplotypeModel;
+	private OldHaplotypeModel haplotypeModelRandom;
 
 	
 	
@@ -77,10 +77,10 @@ public class AbstractHaplotypeModelTest {
 		};
 		expectedTaxons = new Taxon[10];
 //		char[][] expectedMatrix = new char[matrixS.length][matrixS[0].length()];
-		expectedList = new ArrayList<Haplotype>();
+		expectedList = new ArrayList<OldHaplotype>();
 		for (int i = 0; i < expectedSequences.length; i++) {
 			expectedTaxons[i] = new Taxon("r"+(i+1)+".1");
-			Haplotype h = new Haplotype(expectedTaxons[i], expectedSequences[i]);
+			OldHaplotype h = new OldHaplotype(expectedTaxons[i], expectedSequences[i]);
 			expectedList.add(h);
 		}
 		
@@ -100,8 +100,8 @@ public class AbstractHaplotypeModelTest {
 
 	@Before
 	public void setUp() throws Exception {
-		haplotypeModel = new HaplotypeModel(aMap, srpAlignment);
-		haplotypeModelRandom = new HaplotypeModel(aMap, 5);
+		haplotypeModel = new OldHaplotypeModel(aMap, srpAlignment);
+		haplotypeModelRandom = new OldHaplotypeModel(aMap, 5);
 	}
 
 	@After
@@ -177,7 +177,7 @@ public class AbstractHaplotypeModelTest {
 		
 		List<Taxon> expectedList = new ArrayList<Taxon>();
 		for (int i = 0; i < haplotypeModelRandom.getTaxonCount(); i++) {
-			String expectedID = HaplotypeModel.TAXON_PREFIX+i;
+			String expectedID = OldHaplotypeModel.TAXON_PREFIX+i;
 			Taxon expectedTaxon = new Taxon(expectedID);
 			expectedList.add(expectedTaxon);
 			assertEquals(expectedTaxon, haplotypeModelRandom.getTaxon(i));
@@ -209,18 +209,18 @@ public class AbstractHaplotypeModelTest {
 		
 		SimpleAlignment alignmentNoTaxon = new SimpleAlignment();
 		alignmentNoTaxon.setDataType(ShortReads.INSTANCE);
-		Haplotype h;
+		OldHaplotype h;
 		for (int i = 0; i < 5; i++) {
 			if (i == 0) {
 				h = AbstractHaplotypeModelTest.expectedList.get(0);
 			} else {
-				h = new Haplotype(expectedSequences[i]);
+				h = new OldHaplotype(expectedSequences[i]);
 			}
 
 			alignmentNoTaxon.addSequence(h);
 
 		}
-		haplotypeModelRandom = new HaplotypeModel(aMap, alignmentNoTaxon);
+		haplotypeModelRandom = new OldHaplotypeModel(aMap, alignmentNoTaxon);
 		assertEquals(5, haplotypeModelRandom.getTaxonCount());
 		for (int i = 1; i < haplotypeModelRandom.getTaxonCount(); i++) {
 			

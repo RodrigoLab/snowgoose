@@ -1,13 +1,8 @@
 package srp.likelihood.spectrum;
 
-import java.util.ArrayList;
 import java.util.Set;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
-import com.carrotsearch.hppc.BitSet;
-
+import srp.likelihood.AbstractShortReadsLikelihood;
 import srp.likelihood.stateLikelihood.BetaMeanStateLikelihood;
 import srp.likelihood.stateLikelihood.BetaModeStateLikelihood;
 import srp.likelihood.stateLikelihood.ChisqStateLikelihood;
@@ -17,72 +12,36 @@ import srp.likelihood.stateLikelihood.StateLikelihood;
 import srp.shortreads.ShortReadMapping;
 import srp.spectrum.SpectrumAlignmentModel;
 import srp.spectrum.SpectrumOperation;
-import dr.inference.model.AbstractModelLikelihood;
-import dr.inference.model.Model;
 
-public abstract class AbstractShortReadsSpectrumLikelihood extends
-		AbstractModelLikelihood {
+import com.carrotsearch.hppc.BitSet;
+
+public abstract class AbstractShortReadsSpectrumLikelihood extends AbstractShortReadsLikelihood {
 
 	private static final long serialVersionUID = 2079474866153379297L;
 
-
-	protected double logLikelihood;
-	protected double storedLogLikelihood;
-	
-	
-	protected boolean likelihoodKnown;
-	
-	protected int spectrumLength;
-	protected int spectrumCount;
 	protected StateLikelihood stateLikelihood;
-	protected MultiType multiType;
-
 	protected SpectrumAlignmentModel spectrumModel;
-	protected ShortReadMapping srpMap;
 	
-	protected int[][] mapToSrpArray;
 
+
+	protected double[] eachSrpLogLikelihood;
+	protected double[] storedEachSrpLogLikelihood;
+
+	protected double[] sumScaledSrpLogLikelihood;
+	protected double[] storedSumSrpLogLikelihood;
 	
-	protected boolean[] srpSwitch;
-	protected Set<Integer> allSrpPos;
-	protected BitSet bitSet;
+	
+	protected double[] spectrumLogLikelihood;
+	protected double[] storedSpectrumLogLikelihood;
+	
+	protected double[] scaledSpectrumLogLikelihood;
+	protected double[] storedScaledSpectrumLogLikelihood;
+	
 	
 	public AbstractShortReadsSpectrumLikelihood(String name) {
 		super(name);
 	}
 
-	
-	protected double getStoredLogLikelihood() {
-		return storedLogLikelihood;
-	}
-	
-	protected abstract double calculateLogLikelihood();
-
-
-	protected void recalculateArray(int[] siteIndexs) {
-		for (int s : siteIndexs) {
-			for (int i : mapToSrpArray[s]){
-				srpSwitch[i] = true;
-			}
-		}
-	}
-
-	protected void recalculateHashSet(int[] siteIndexs) {
-		allSrpPos.clear();
-		for (int s : siteIndexs) {
-			ArrayList<Integer> mapToSrp = srpMap.getMapToSrp(s);
-			allSrpPos.addAll(mapToSrp);
-		}
-	}
-
-	protected void recalculateBitSet(int[] siteIndexs) {
-		bitSet.clear();
-//		BitSet bitSet = new BitSet(srpCount);
-		for (int s : siteIndexs) {
-			BitSet tempSet = srpMap.getBitSet(s);
-			bitSet.or(tempSet);
-		}
-	}
 
 	protected void setDistType(DistType distType) {
 		// this.distType = distType;
@@ -117,35 +76,51 @@ public abstract class AbstractShortReadsSpectrumLikelihood extends
 		}
 	}
 
-	public SpectrumOperation getOperation() {
-		return spectrumModel.getSpectrumOperation();
+	protected void storeIJ(int i, int j) {
+		
+		int offset = i*spectrumCount+j;
+		storedSpectrumLogLikelihood[offset] = spectrumLogLikelihood[offset];
+		storedScaledSpectrumLogLikelihood[offset] = scaledSpectrumLogLikelihood[offset];
+	}
+
+	protected void storeI(int i) {
+		storedEachSrpLogLikelihood[i] = eachSrpLogLikelihood[i];
+		storedSumSrpLogLikelihood[i] = sumScaledSrpLogLikelihood[i];
+	}
+	
+	protected void restoreIJ(int i, int j) {
+		int offset = i*spectrumCount+j;
+		spectrumLogLikelihood[offset] = storedSpectrumLogLikelihood[offset];
+		scaledSpectrumLogLikelihood[offset] = storedScaledSpectrumLogLikelihood[offset];
+
+//		spectrumLogLikelihood2D[i][j] = storedSpectrumLogLikelihood2D[i][j];
+//		scaledSpectrumLogLikelihood2D[i][j] = storedScaledSpectrumLogLikelihood2D[i][j];
+	}
+
+	protected void restoreI(int i) {
+		eachSrpLogLikelihood[i] = storedEachSrpLogLikelihood[i];
+		sumScaledSrpLogLikelihood[i] = storedSumSrpLogLikelihood[i]; 
+		
 	}
 
 
-	public void setMultiType(MultiType type) {
-		this.multiType = type;
+
+	protected void storeEverything() {
+	
+		System.arraycopy(eachSrpLogLikelihood, 0, storedEachSrpLogLikelihood, 0, eachSrpLogLikelihood.length);
+		System.arraycopy(sumScaledSrpLogLikelihood, 0, storedSumSrpLogLikelihood, 0, sumScaledSrpLogLikelihood.length);
+		System.arraycopy(spectrumLogLikelihood,0, storedSpectrumLogLikelihood, 0, spectrumLogLikelihood.length);
+		System.arraycopy(scaledSpectrumLogLikelihood,0, storedScaledSpectrumLogLikelihood, 0, scaledSpectrumLogLikelihood.length);
 	}
 
-
-	@Override
-	public double getLogLikelihood() {
-	
-		if (!likelihoodKnown) {
-			logLikelihood = calculateLogLikelihood();
-			likelihoodKnown = true;
-		}
-	
-		return logLikelihood;
-	
+	protected void restoreEverything(){
+		
+		System.arraycopy(storedEachSrpLogLikelihood, 0, eachSrpLogLikelihood, 0, eachSrpLogLikelihood.length);
+		System.arraycopy(storedSumSrpLogLikelihood, 0, sumScaledSrpLogLikelihood, 0, sumScaledSrpLogLikelihood.length);
+		System.arraycopy(storedSpectrumLogLikelihood, 0, spectrumLogLikelihood, 0, storedSpectrumLogLikelihood.length);
+		System.arraycopy(storedScaledSpectrumLogLikelihood, 0, scaledSpectrumLogLikelihood, 0, storedScaledSpectrumLogLikelihood.length);
 	}
-
-
-	@Override
-	public Model getModel() {
-		return this;
 	
-	}
-
 
 	@Override
 	public void makeDirty() {
@@ -154,17 +129,12 @@ public abstract class AbstractShortReadsSpectrumLikelihood extends
 		likelihoodKnown = false;
 	
 	}
-
-	@Override
-	public Element createElement(Document d) {
-		throw new RuntimeException("Not implemented yet!");
+	
+	public SpectrumOperation getOperation() {
+		return spectrumModel.getSpectrumOperation();
 	}
 
-	protected enum MultiType {
-		Array, Hash, All, BitSet, ;
-
-	}
-
+	
 	public enum DistType {
 		betaMean(0), betaMode(1), gTest(2), chisq(3), flat(9), ;
 		int code;

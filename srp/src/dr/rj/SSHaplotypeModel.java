@@ -7,9 +7,10 @@ import java.util.List;
 
 import jebl.evolution.sequences.Sequence;
 import srp.haplotypes.AbstractHaplotypeModel;
-import srp.haplotypes.Haplotype;
-import srp.haplotypes.Operation;
-import srp.haplotypes.SwapInfo;
+import srp.haplotypes.old.OldAbstractHaplotypeModel;
+import srp.haplotypes.old.OldHaplotype;
+import srp.haplotypes.old.OldHapOperation;
+import srp.haplotypes.old.OldHapSwapInfo;
 import srp.shortreads.AlignmentMapping;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.datatype.DataType;
@@ -76,16 +77,16 @@ import dr.util.NumberFormatter;
 */
 
 
-public class SSHaplotypeModel extends AbstractHaplotypeModel  {
+public class SSHaplotypeModel extends OldAbstractHaplotypeModel  {
 	
 	private static final long serialVersionUID = 7277181804036354716L;
 	private static final String MODEL_NAME = "HaplotypeModel";
 
 	
-	private static final int HAP_INDEX = SwapInfo.SWAPBASE_HAP_INDEX;
-	private static final int POS_INDEX = SwapInfo.SWAPBASE_POS_INDEX;
-	private static final int NEW_CHAR_INDEX = SwapInfo.SWAPBASE_NEW_CHAR_INDEX;
-	private static final int OLD_CHAR_INDEX = SwapInfo.SWAPBASE_OLD_CHAR_INDEX;
+	private static final int HAP_INDEX = OldHapSwapInfo.SWAPBASE_HAP_INDEX;
+	private static final int POS_INDEX = OldHapSwapInfo.SWAPBASE_POS_INDEX;
+	private static final int NEW_CHAR_INDEX = OldHapSwapInfo.SWAPBASE_NEW_CHAR_INDEX;
+	private static final int OLD_CHAR_INDEX = OldHapSwapInfo.SWAPBASE_OLD_CHAR_INDEX;
 
 	private static final int NUCLEOTIDE_STATES[] = Nucleotides.NUCLEOTIDE_STATES;
 	private static final char[] VALID_CHARS = initValidChars4();
@@ -101,7 +102,7 @@ public class SSHaplotypeModel extends AbstractHaplotypeModel  {
 	public static final String TAXON_PREFIX = "hap_";
 	
 	AlignmentMapping aMap;
-	private SwapInfo swapInfo = new SwapInfo();
+	private OldHapSwapInfo swapInfo = new OldHapSwapInfo();
 	
 	private boolean isEdit;
 	int[] swapBaseRecord = new int[4];
@@ -121,7 +122,7 @@ public class SSHaplotypeModel extends AbstractHaplotypeModel  {
 		this.aMap = aMap;
 		haplotypesLength = this.aMap.getLength();
 		
-		haplotypes = new ArrayList<Haplotype>();
+		haplotypes = new ArrayList<OldHaplotype>();
 		setDataType(Nucleotides.INSTANCE);
 		
 //		storedCumSumFrequency[INDEX_OF_LAST_VALID_CHARS]=1;
@@ -142,7 +143,7 @@ public class SSHaplotypeModel extends AbstractHaplotypeModel  {
 	public SSHaplotypeModel(AlignmentMapping aMap, Alignment trueAlignment) {
 		this(aMap);
 		for (int i = 0; i < trueAlignment.getSequenceCount(); i++) {
-			Haplotype haplotype = new Haplotype(trueAlignment.getSequence(i));
+			OldHaplotype haplotype = new OldHaplotype(trueAlignment.getSequence(i));
 			addHaplotype(haplotype);
 		}
 		appendEmptySequences();
@@ -156,7 +157,7 @@ public class SSHaplotypeModel extends AbstractHaplotypeModel  {
 		
 		for (int i = 0; i < hapCount; i++) {
 			Taxon t = new Taxon(TAXON_PREFIX+i); 
-			Haplotype haplotype = new Haplotype(t, tempSeq);
+			OldHaplotype haplotype = new OldHaplotype(t, tempSeq);
 			addHaplotype(haplotype);
 			randomHaplotype(i);
 
@@ -180,7 +181,7 @@ public class SSHaplotypeModel extends AbstractHaplotypeModel  {
 	}
 
 	private void randomHaplotype(int hapIndex) {
-		Haplotype haplotype = haplotypes.get(hapIndex);
+		OldHaplotype haplotype = haplotypes.get(hapIndex);
 		for (int i = 0; i < haplotypesLength; i++) {
 			//TODO: Which is the "good" starting point
 //			char newChar = (char) aMap.nextBaseAt(i);
@@ -189,7 +190,7 @@ public class SSHaplotypeModel extends AbstractHaplotypeModel  {
 			
 		}
 	}
-	private void addHaplotype(Haplotype haplotype) {
+	private void addHaplotype(OldHaplotype haplotype) {
 		haplotype.setDataType(getDataType());
 	    haplotypes.add(haplotype);
 	
@@ -210,7 +211,7 @@ public class SSHaplotypeModel extends AbstractHaplotypeModel  {
 		
 		for (int i = trueHaplotypeCount; i < haplotypeCount; i++) {
 			Taxon t = new Taxon(TAXON_PREFIX+i); 
-			Haplotype haplotype = new Haplotype(t, tempSeq);
+			OldHaplotype haplotype = new OldHaplotype(t, tempSeq);
 			addHaplotype(haplotype);
 //			randomHaplotype(i);
 		}
@@ -246,7 +247,7 @@ public class SSHaplotypeModel extends AbstractHaplotypeModel  {
 	//	
 	//	
 
-	public SwapInfo getSwapInfo() {
+	public OldHapSwapInfo getSwapInfo() {
 		return swapInfo;
 	}
 
@@ -286,9 +287,9 @@ public class SSHaplotypeModel extends AbstractHaplotypeModel  {
 		int sps = 0;
 		
 		for (int i = 0; i < getHaplotypeCount(); i++) {
-			Haplotype h1 = haplotypes.get(i);
+			OldHaplotype h1 = haplotypes.get(i);
 			for (int j = 0; j < i; j++) {
-				Haplotype h2 = haplotypes.get(j);
+				OldHaplotype h2 = haplotypes.get(j);
 				for (int pos = 0; pos < haplotypesLength; pos++) {
 					int c = h1.getChar(pos) - h2.getChar(pos);
 					sps += (c==0)? 0: 1;
@@ -353,14 +354,14 @@ public class SSHaplotypeModel extends AbstractHaplotypeModel  {
 	protected void storeState() {
 
 		// System.err.println("Call storeState");
-		swapInfo.storeOperation(Operation.NONE);
+		swapInfo.storeOperation(OldHapOperation.NONE);
 	}
 
 	@Override
 	protected void restoreState() {
 		// System.err.println("Call restoreState - haplotypeModel");
 		reject();
-		swapInfo.storeOperation(Operation.NONE);
+		swapInfo.storeOperation(OldHapOperation.NONE);
 	}
 
 	//	private int swapHaplotypeCharAt(int hapIndex, int[] posChar){
@@ -374,7 +375,7 @@ public class SSHaplotypeModel extends AbstractHaplotypeModel  {
 
 	public void reject() {
 		
-		Operation op = swapInfo.getOperation();
+		OldHapOperation op = swapInfo.getOperation();
 //		int[] temp;
 		switch (op) {
 		
@@ -404,7 +405,7 @@ public class SSHaplotypeModel extends AbstractHaplotypeModel  {
 			int[] allOldChars = swapMulti[1];
 			
 			
-			Haplotype haplotype = haplotypes.get(hapIndex);
+			OldHaplotype haplotype = haplotypes.get(hapIndex);
 			for (int i = 0; i < allOldChars.length; i++) {
 				int oldChar = allOldChars[i];
 				if(oldChar>0){
@@ -596,7 +597,7 @@ System.out.println((time2 - time1) + "\t");
 
 //        	System.err.println(getHaplotypeString(j));
 			System.out.println(sequenceList.get(j).getString());
-			Haplotype haplotype = getHaplotype(j);
+			OldHaplotype haplotype = getHaplotype(j);
 			haplotype.setSequenceString(sequenceList.get(j).getString());
 			System.out.println(getHaplotypeString(j));
 			System.out.println();
@@ -627,7 +628,7 @@ System.out.println((time2 - time1) + "\t");
         jebl.evolution.alignments.Alignment jeblAlignment = seqGen.simulate(treeModel);
         List<Sequence> sequenceList = jeblAlignment.getSequenceList();
         for (int j = 0; j < sequenceList.size(); j++) {
-			Haplotype haplotype = getHaplotype(j);
+			OldHaplotype haplotype = getHaplotype(j);
 			haplotype.setSequenceString(sequenceList.get(j).getString());
 		}
 		
@@ -638,25 +639,25 @@ System.out.println((time2 - time1) + "\t");
 		int[] allOldChars = new int[getHaplotypeCount()];
 			
 		for (int i = 0; i < getHaplotypeCount(); i++) {
-			Haplotype haplotype = haplotypes.get(i);
+			OldHaplotype haplotype = haplotypes.get(i);
 			allOldChars[i] = haplotype.replaceCharAt(posChar[0], posChar[1]);
 		}
 			
-		storeOperationRecord(Operation.SWAPCOLUMN, posChar, allOldChars);
+		storeOperationRecord(OldHapOperation.SWAPCOLUMN, posChar, allOldChars);
 	
 	
 	}
 
 
 
-	public int[] swapHaplotypeSingleBase(Operation op, int[] posChar){
+	public int[] swapHaplotypeSingleBase(OldHapOperation op, int[] posChar){
 	
 		swapBaseRecord[POS_INDEX] = posChar[0];
 		swapBaseRecord[NEW_CHAR_INDEX] = posChar[1];
 	
 		swapBaseRecord[HAP_INDEX] = MathUtils.nextInt(getHaplotypeCount());
 	
-		Haplotype haplotype = haplotypes.get(swapBaseRecord[HAP_INDEX]);
+		OldHaplotype haplotype = haplotypes.get(swapBaseRecord[HAP_INDEX]);
 		swapBaseRecord[OLD_CHAR_INDEX] = haplotype.replaceCharAt(
 				swapBaseRecord[POS_INDEX], swapBaseRecord[NEW_CHAR_INDEX]);
 	
@@ -670,10 +671,10 @@ System.out.println((time2 - time1) + "\t");
 
 
 
-	public void swapHaplotypeMultiBases(Operation op, int[][] allPosChars){
+	public void swapHaplotypeMultiBases(OldHapOperation op, int[][] allPosChars){
 			int hapIndex = MathUtils.nextInt(getHaplotypeCount());
 			
-			Haplotype haplotype = haplotypes.get(hapIndex);
+			OldHaplotype haplotype = haplotypes.get(hapIndex);
 	
 			for (int i = 0; i < haplotypesLength; i++) {
 				int newChar = allPosChars[0][i];
@@ -702,7 +703,7 @@ System.out.println((time2 - time1) + "\t");
 	//	
 	//	
 	
-		public double swapNextDiffBaseFrequency(Operation op, Parameter frequency) {
+		public double swapNextDiffBaseFrequency(OldHapOperation op, Parameter frequency) {
 			
 				checkFrequencyParameter(frequency);
 				
@@ -710,7 +711,7 @@ System.out.println((time2 - time1) + "\t");
 				swapBaseRecord[HAP_INDEX] = MathUtils.nextInt(getHaplotypeCount());
 				swapBaseRecord[POS_INDEX] = MathUtils.nextInt(getHaplotypeLength());
 		
-				Haplotype haplotype = haplotypes.get(swapBaseRecord[HAP_INDEX]);
+				OldHaplotype haplotype = haplotypes.get(swapBaseRecord[HAP_INDEX]);
 				swapBaseRecord[OLD_CHAR_INDEX] = haplotype.getChar(swapBaseRecord[POS_INDEX]);
 				
 				do{
@@ -743,7 +744,7 @@ System.out.println((time2 - time1) + "\t");
 		//		
 		//	}
 			private void resetHaplotypeToOldChar(int[] swapRecord){
-				Haplotype haplotype = haplotypes.get(swapRecord[0]);
+				OldHaplotype haplotype = haplotypes.get(swapRecord[0]);
 				haplotype.replaceCharAt(swapRecord[1], swapRecord[3]);
 		
 		//		swapHaplotypeCharAt(swapArray[0], swapArray[1], swapArray[3]);
@@ -754,13 +755,13 @@ System.out.println((time2 - time1) + "\t");
 		//	public Operation getOperation() {
 	//		return swapInfo.getOperation();
 	//	}
-		public void storeOperationRecord(Operation op, int[]... opRecord){
+		public void storeOperationRecord(OldHapOperation op, int[]... opRecord){
 			swapInfo.storeOperation(op, opRecord);
 		}
 
 
 
-	private void storeOperationRecord(Operation op, int hapIndex,
+	private void storeOperationRecord(OldHapOperation op, int hapIndex,
 			int[][] opRecord) {
 		swapInfo.storeOperation(op, opRecord[0], opRecord[1]);
 		swapInfo.storeHapIndex(hapIndex);

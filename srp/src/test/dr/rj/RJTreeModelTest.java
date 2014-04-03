@@ -8,7 +8,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import srp.core.DataImporter;
-import srp.haplotypes.HaplotypeModel;
+import srp.haplotypes.old.OldHaplotypeModel;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.coalescent.CoalescentSimulator;
 import dr.evolution.coalescent.ConstantPopulation;
@@ -34,7 +34,7 @@ public class RJTreeModelTest {
 		DataImporter dataImporter = new DataImporter(dataDir);
 		Alignment shortReads = dataImporter.importAlignment(shortReadFile);
 		
-		HaplotypeModel haplotypeModel = new HaplotypeModel(shortReads, noOfRecoveredHaplotype);
+		OldHaplotypeModel haplotypeModel = new OldHaplotypeModel(shortReads, noOfRecoveredHaplotype);
 		
 		// coalescent
 		Parameter popSize = new Parameter.Default(ConstantPopulationModelParser.POPULATION_SIZE, 3000.0, 100, 100000.0);

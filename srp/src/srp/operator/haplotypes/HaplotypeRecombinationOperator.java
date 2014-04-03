@@ -1,8 +1,8 @@
 package srp.operator.haplotypes;
 
-import srp.haplotypes.Haplotype;
-import srp.haplotypes.HaplotypeModel;
-import srp.haplotypes.Operation;
+import srp.haplotypes.old.OldHaplotype;
+import srp.haplotypes.old.OldHaplotypeModel;
+import srp.haplotypes.old.OldHapOperation;
 import dr.inference.operators.OperatorFailedException;
 import dr.inference.operators.SimpleMCMCOperator;
 import dr.math.MathUtils;
@@ -10,19 +10,19 @@ import dr.math.MathUtils;
 public class HaplotypeRecombinationOperator extends SimpleMCMCOperator {
 
 	public final static String OPERATOR_NAME = HaplotypeRecombinationOperator.class.getSimpleName();
-	public final static Operation OP = Operation.SWAPSECTION;
+	public final static OldHapOperation OP = OldHapOperation.SWAPSECTION;
 
 	@Deprecated
 	private int index;
 	private int haplotypeLength;
-	private HaplotypeModel haplotypeModel;
+	private OldHaplotypeModel haplotypeModel;
 	
 //	public AlignmentSwapBaseOperator(Parameter parameter, HaplotypeModel haplotypeModel, int index, CoercionMode mode) {
 ////		super(mode);
 //	}
 
 	
-	public HaplotypeRecombinationOperator(HaplotypeModel haplotypeModel, int nothing) {
+	public HaplotypeRecombinationOperator(OldHaplotypeModel haplotypeModel, int nothing) {
 //		super(mode);
 		this.index = nothing;
 		this.haplotypeModel= haplotypeModel; 
@@ -54,8 +54,8 @@ public class HaplotypeRecombinationOperator extends SimpleMCMCOperator {
 			hapIndex2 = MathUtils.nextInt( haplotypeModel.getHaplotypeCount());
 		} while(hapIndex1==hapIndex2);
 
-		Haplotype h1 = haplotypeModel.getHaplotype(hapIndex1);
-		Haplotype h2 = haplotypeModel.getHaplotype(hapIndex2);
+		OldHaplotype h1 = haplotypeModel.getHaplotype(hapIndex1);
+		OldHaplotype h2 = haplotypeModel.getHaplotype(hapIndex2);
 		
 		String oldS1 = h1.getSequenceString();
 		String oldS2 = h2.getSequenceString();

@@ -29,7 +29,7 @@ public class HaplotypeLoggerWithTrueHaplotype extends HaplotypeLogger{
 						.append(alignment.getAlignedSequenceString(i))
 						.append("\n");
 			}
-			buffer.append(HaplotypeModelUtils.calculeteSPSArrayString(alignment, trueAlignment));
+			buffer.append(SPSDist.calculeteSPSArrayString(alignment, trueAlignment));
 			logLine(buffer.toString());
     	}
 

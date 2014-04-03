@@ -14,7 +14,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import srp.dr.evolution.datatype.ShortReads;
-import srp.likelihood.haplotypes.LikelihoodScaler;
+import srp.likelihood.LikelihoodScaler;
 import srp.shortreads.ShortReadMapping;
 import srp.spectrum.SpectraParameter;
 import srp.spectrum.Spectrum;
@@ -39,71 +39,23 @@ public class ShortReadsSpectrumLikelihood  extends AbstractShortReadsSpectrumLik
 	
     public static final String SHORT_READ_LIKELIHOOD = "ShortReadSpectrumLikelihood";
 	public static final String NAME = SHORT_READ_LIKELIHOOD;
-	public static final double ERROR_RATE = 0.0107;
-	public static final double NOT_ERROR_RATE = 1-ERROR_RATE;
-	public static final double LOG_ERROR_RATE = Math.log(ERROR_RATE);
-	public static final double LOG_NOT_ERROR_RATE = Math.log(NOT_ERROR_RATE);
-//	public static final double LOG_ONE_MINUS_ERROR_RATE = Math.log(1-ERROR_RATE);
-	public static final double C = 1e-250;
-	public static final double LOG_C = Math.log(C);
 
-	public static final DataType DATA_TYPE = ShortReads.INSTANCE;
-	public static final int STATE_COUNT = DATA_TYPE.getStateCount();//4
-	public static final int AMBIGUOUS_STATE_COUNT = DATA_TYPE.getAmbiguousStateCount();//18
-	
-	private static final double EVALUATION_TEST_THRESHOLD = 1e-8;
-	private static final int GAP_STATE = 17;  
-	
-
-	
 	private final double MIN_LOG_LIKELIHOOD;
 
 	private int srpCount;
 
-	
-	
-
-	private double[] eachSrpLogLikelihood;
-	private double[] storedEachSrpLogLikelihood;
-
-	private double[] sumScaledSrpLogLikelihood;
-	private double[] storedSumSrpLogLikelihood;
-	
-	
-	private double[] spectrumLogLikelihood;
-	private double[] storedSpectrumLogLikelihood;
-	
-	private double[] scaledSpectrumLogLikelihood;
-	private double[] storedScaledSpectrumLogLikelihood;
-	
-	
-	private double[] allStateLogLikelihood;
-	private double[] allStoredStateLogLikelihood;
-	
-	
 	private LikelihoodScaler liS;
 
 	private int[][] allSrpState2D;
-	
-	private int[] srpIndex ;
-	
+
+	private int[] srpIndex;
+
 	private String[] srpArray;
 
 	private int srpIndexCount;
-	
-//	public long timeStart = 0;//REMOVE
-//	public long m1Time = 0;//REMOVE
-//	public long m2Time = 0;//REMOVE
-//	public long liTime  = 0;//REMOVE
-//
-//	double[][] m1State;// = new double[STATE_COUNT][spectrumLength];//REMOVE
-//	double[][] m1StoreState;// = new double[STATE_COUNT][spectrumLength];//REMOVE
-//	
-//	double[][] m2State;// = new double[spectrumLength][STATE_COUNT];//REMOVE
-//	double[][] m2StoreState;// = new double[spectrumLength][STATE_COUNT];//REMOVE
-//	
-//	double[] m3State;// = new double[STATE_COUNT][spectrumLength];//REMOVE
-//	double[] m3StoreState;// = new double[STATE_COUNT][spectrumLength];//REMOVE
+
+	protected double[] allStateLogLikelihood;
+	protected double[] allStoredStateLogLikelihood;
 
 	public ShortReadsSpectrumLikelihood(SpectrumAlignmentModel spectrumModel, ShortReadMapping srpMap){
 		this(spectrumModel, srpMap, DistType.flat);
@@ -610,13 +562,6 @@ public class ShortReadsSpectrumLikelihood  extends AbstractShortReadsSpectrumLik
 
 
 	
-	
-	private int getStateAtK(String fullSrp, int k) {
-		char srpChar = fullSrp.charAt(k);//TODO: change to char[] at hight lv or at ShortReadMapping
-		int state = DATA_TYPE.getState(srpChar);
-		
-		return state;
-	}
 
 
 
@@ -705,29 +650,6 @@ public class ShortReadsSpectrumLikelihood  extends AbstractShortReadsSpectrumLik
 		return currentLogLikelihood;
 	}
 	
-
-	@Override
-	protected void handleModelChangedEvent(Model model, Object object, int index) {
-        if (model == spectrumModel) {
-            // treeModel has changed so recalculate the intervals
-//            eventsKnown = false;
-        }
-        else{
-        	System.err.println("Call handleModelChangedEvent in ShortReadSpectrumLikelihood" +"\t"+ model.getModelName());
-        }
-        likelihoodKnown = false;
-//        System.err.println("Call handleModelChangedEvent in ShortReadSpectrumLikelihood" +"\t"+ model.getModelName());
-//        makeDirty();
-        
-		
-	}
-
-	@SuppressWarnings("rawtypes")
-	@Override
-	protected void handleVariableChangedEvent(Variable variable, int index,
-			ChangeType type) {
-		System.err.println("Call handleVariableChangedEvent in SpectrumAlignmentModel");
-	}
 
 	@Override
 	protected void storeState() {
@@ -906,19 +828,6 @@ public class ShortReadsSpectrumLikelihood  extends AbstractShortReadsSpectrumLik
 //		
 //	}
 
-	private void storeIJ(int i, int j) {
-//		storedSpectrumLogLikelihood2D[i][j] = spectrumLogLikelihood2D[i][j];
-//		storedScaledSpectrumLogLikelihood2D[i][j] = scaledSpectrumLogLikelihood2D[i][j];
-		
-		int offset = i*spectrumCount+j;
-		storedSpectrumLogLikelihood[offset] = spectrumLogLikelihood[offset];
-		storedScaledSpectrumLogLikelihood[offset] = scaledSpectrumLogLikelihood[offset];
-	}
-
-	private void storeI(int i) {
-		storedEachSrpLogLikelihood[i] = eachSrpLogLikelihood[i];
-		storedSumSrpLogLikelihood[i] = sumScaledSrpLogLikelihood[i];
-	}
 
 	@Override
 	protected void restoreState() {
@@ -1078,86 +987,6 @@ public class ShortReadsSpectrumLikelihood  extends AbstractShortReadsSpectrumLik
 		
 	}
 
-	private void restoreIJ(int i, int j) {
-		int offset = i*spectrumCount+j;
-		spectrumLogLikelihood[offset] = storedSpectrumLogLikelihood[offset];
-		scaledSpectrumLogLikelihood[offset] = storedScaledSpectrumLogLikelihood[offset];
-
-//		spectrumLogLikelihood2D[i][j] = storedSpectrumLogLikelihood2D[i][j];
-//		scaledSpectrumLogLikelihood2D[i][j] = storedScaledSpectrumLogLikelihood2D[i][j];
-	}
-
-	private void restoreI(int i) {
-		eachSrpLogLikelihood[i] = storedEachSrpLogLikelihood[i];
-		sumScaledSrpLogLikelihood[i] = storedSumSrpLogLikelihood[i]; 
-		
-	}
-
-	@Override
-	protected void acceptState() {
-		//Do nothing
-	}
-	private void storeEverything() {
-	
-			System.arraycopy(eachSrpLogLikelihood, 0, storedEachSrpLogLikelihood, 0, eachSrpLogLikelihood.length);
-			System.arraycopy(sumScaledSrpLogLikelihood, 0, storedSumSrpLogLikelihood, 0, sumScaledSrpLogLikelihood.length);
-			System.arraycopy(spectrumLogLikelihood,0, storedSpectrumLogLikelihood, 0, spectrumLogLikelihood.length);
-			System.arraycopy(scaledSpectrumLogLikelihood,0, storedScaledSpectrumLogLikelihood, 0, scaledSpectrumLogLikelihood.length);
-			
-			
-			
-			//		storedLogLikelihood = logLikelihood;
-	//		SpectrumOperationRecord record = spectrumModel.getSpectrumOperationRecord();
-	//		int spectrumIndex = record.getSpectrumIndex();
-	//		int siteIndex = record.getSiteIndex();
-	//		System.out.println(spectrumIndex +"\t"+ siteIndex);
-			for (int i = 0; i < srpCount; i++) {
-	//			System.err.println(i +"\t"+ allLogLikelihood[i][spectrumIndex][siteIndex] +"\t"+ storedAllLogLikelihood[i][spectrumIndex][siteIndex]);
-	//			storedAllLogLikelihood[i][spectrumIndex][siteIndex] = allLogLikelihood[i][spectrumIndex][siteIndex];
-				for (int j = 0; j < spectrumCount; j++) {
-	//				Spectrum spectrum = spectrumModel.getSpectrum(j);
-	//				for (int s = 0; s < spectrumLength; s++) {
-	//					spectrum.getSpectra(s).storeState();
-	//				}
-	//				for (int k = 0; k < spectrumLength; k++) {
-	//					if(allLogLikelihood[i][j][k] != storedAllLogLikelihood[i][j][k]){
-	//						System.out.println("DIFFLI:"+i +" "+j+" "+" "+k+
-	//								" "+ allLogLikelihood[i][j][k] +" "+
-	//								storedAllLogLikelihood[i][j][k]);
-	//					}
-	//				}
-	//				System.arraycopy(allLogLikelihood[i][j], 0, storedAllLogLikelihood[i][j], 0, spectrumLength);
-				}
-				
-			}
-		}
-
-	private void restoreEverything(){
-		
-		System.arraycopy(storedEachSrpLogLikelihood, 0, eachSrpLogLikelihood, 0, eachSrpLogLikelihood.length);
-		System.arraycopy(storedSumSrpLogLikelihood, 0, sumScaledSrpLogLikelihood, 0, sumScaledSrpLogLikelihood.length);
-		System.arraycopy(storedSpectrumLogLikelihood, 0, spectrumLogLikelihood, 0, storedSpectrumLogLikelihood.length);
-		System.arraycopy(storedScaledSpectrumLogLikelihood, 0, scaledSpectrumLogLikelihood, 0, storedScaledSpectrumLogLikelihood.length);
-
-		
-		for (int i = 0; i < srpCount; i++) {
-			
-//			System.err.println(i +"\t"+ allLogLikelihood[i][spectrumIndex][siteIndex] +"\t"+ storedAllLogLikelihood[i][spectrumIndex][siteIndex]);
-//			storedAllLogLikelihood[i][spectrumIndex][siteIndex] = allLogLikelihood[i][spectrumIndex][siteIndex];
-			for (int j = 0; j < spectrumCount; j++) {
-//				for (int k = 0; k < spectrumLength; k++) {
-//					if(allLogLikelihood[i][j][k] != storedAllLogLikelihood[i][j][k]){
-//						System.out.println("DIFFLI:"+i +" "+j+" "+" "+k+
-//								" "+ allLogLikelihood[i][j][k] +" "+
-//								storedAllLogLikelihood[i][j][k]);
-//					}
-//				}
-//				System.arraycopy(storedAllLogLikelihood[i][j], 0, allLogLikelihood[i][j], 0, spectrumLength);
-			}
-			
-		}
-	}
-	
 
 	public double[] unittestMethodGetEachLikelihood() {
 		double[] copyOfValues = new double[eachSrpLogLikelihood.length];

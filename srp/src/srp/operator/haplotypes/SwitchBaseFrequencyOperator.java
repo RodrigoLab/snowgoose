@@ -2,9 +2,9 @@ package srp.operator.haplotypes;
 
 import java.util.Arrays;
 
-import srp.haplotypes.HaplotypeModel;
-import srp.haplotypes.Operation;
-import srp.haplotypes.SwapInfo;
+import srp.haplotypes.old.OldHaplotypeModel;
+import srp.haplotypes.old.OldHapOperation;
+import srp.haplotypes.old.OldHapSwapInfo;
 import srp.shortreads.AlignmentMapping;
 import dr.evolution.datatype.Nucleotides;
 import dr.inference.model.Parameter;
@@ -15,11 +15,11 @@ import dr.math.MathUtils;
 
 public class SwitchBaseFrequencyOperator extends AbstractCoercableOperator {
 
-	public final static Operation OP = Operation.SWAPSINGLE;
+	public final static OldHapOperation OP = OldHapOperation.SWAPSINGLE;
 	
 //	protected final int haplotypeLength;
 
-	protected HaplotypeModel haplotypeModel;
+	protected OldHaplotypeModel haplotypeModel;
 
 //	protected int swapLength;
 
@@ -32,14 +32,14 @@ public class SwitchBaseFrequencyOperator extends AbstractCoercableOperator {
 	public final static String OPERATOR_NAME = SwitchBaseFrequencyOperator.class.getSimpleName();
 	
 	private static final int NUCLEOTIDE_STATES[] = Nucleotides.NUCLEOTIDE_STATES;
-	private static final int NEW_CHAR_INDEX = SwapInfo.SWAPBASE_NEW_CHAR_INDEX;
-	private static final int OLD_CHAR_INDEX = SwapInfo.SWAPBASE_OLD_CHAR_INDEX;
+	private static final int NEW_CHAR_INDEX = OldHapSwapInfo.SWAPBASE_NEW_CHAR_INDEX;
+	private static final int OLD_CHAR_INDEX = OldHapSwapInfo.SWAPBASE_OLD_CHAR_INDEX;
 	
 	private Parameter frequency;
 
 	private double switchProb;
 
-	public SwitchBaseFrequencyOperator(HaplotypeModel haplotypeModel, double switchProb, Parameter freqs, CoercionMode mode )  {
+	public SwitchBaseFrequencyOperator(OldHaplotypeModel haplotypeModel, double switchProb, Parameter freqs, CoercionMode mode )  {
 		super(mode);
 		this.frequency = freqs;
 			
