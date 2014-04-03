@@ -37,12 +37,13 @@ public class MainMCMCFull {
 
 	public static void main(String[] args) throws Exception {
 
-		String dataDir = "/home/sw167/workspaceSrp/ABI/unittest/testData/";
-		int runIndex = 1;
+		String dataDir = "/home/sw167/workspaceSrp/snowgoose/srp/unittest/testData/";
+		int runIndex = 51;
 		int totalSamples = 1000;
 		int logInterval = 1000;
 		int noOfTrueHaplotype = 7;
 		int noOfRecoveredHaplotype=4;
+		dataDir += "H7_"+runIndex;
 		
 //		String dataDir = args[0];
 //		int runIndex = Integer.parseInt(args[1]);
@@ -102,14 +103,16 @@ public class MainMCMCFull {
 		// Operators
 		OperatorSchedule schedule = new SimpleOperatorSchedule();
 //		ArrayList<MCMCOperator> defalutOperatorsList = 
-		schedule.addOperators(MCMCSetupHelperHaplotype.defalutOperators(haplotypeModel, freqs, popSize, kappa));
-		schedule.addOperators(MCMCSetupHelperHaplotype.defalutTreeOperators(treeModel));
+//		schedule.addOperators(MCMCSetupHelperHaplotype.defalutOperators(haplotypeModel, freqs, popSize, kappa));
+//		schedule.addOperators(MCMCSetupHelperHaplotype.defalutTreeOperators(treeModel));
+		MCMCSetupHelperHaplotype.defalutOperators(schedule, haplotypeModel, freqs, popSize, kappa);
+		MCMCSetupHelperHaplotype.defalutTreeOperators(schedule, treeModel);
+				
 		
-		
-		MCMCOperator operator;
-		operator = new RJTreeOperator(haplotypeModel, treeModel);
-		operator.setWeight(100);
-		schedule.addOperator(operator);
+//		MCMCOperator operator;
+//		operator = new RJTreeOperator(haplotypeModel, treeModel);
+//		operator.setWeight(100);
+//		schedule.addOperator(operator);
 		
 		Parameter rootHeight = treeModel.getRootHeightParameter();
 		rootHeight.setId("rootHeight");
@@ -126,17 +129,18 @@ public class MainMCMCFull {
 		MCLogger[] loggers = new MCLogger[4];
 		// log tracer
 		loggers[0] = new MCLogger(logTracerName, logInterval, false, 0);
-		MCMCSetupHelperHaplotype.addToLogger(loggers[0], posterior, prior, likelihood, shortReadLikelihood,
-				rootHeight, 
+		MCMCSetupHelperHaplotype.addToLogger(loggers[0], 
+//				posterior, prior, likelihood, shortReadLikelihood,
+				rootHeight 
 				//rateParameter,
-				popSize, kappa, coalescent,
-				freqs
+//				popSize, kappa, coalescent,
+//				freqs
 				);
 		// System.out
 		loggers[1] = new MCLogger(new TabDelimitedFormatter(System.out), logInterval, true, logInterval*2);
 		MCMCSetupHelperHaplotype.addToLogger(loggers[1],
 //				freqs
-				posterior, prior, likelihood, shortReadLikelihood,
+//				posterior, prior, likelihood, shortReadLikelihood,
 				popSize, kappa, coalescent, rootHeight
 				);
 		// log Tree
