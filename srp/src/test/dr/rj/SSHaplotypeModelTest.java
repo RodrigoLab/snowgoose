@@ -41,7 +41,7 @@ public class SSHaplotypeModelTest {
 
 	
 	private SSHaplotypeModel haplotypeModel;
-	private AbstractHaplotypeModel haplotypeModelRandom;
+	private SSHaplotypeModel haplotypeModelRandom;
 
 	
 	
