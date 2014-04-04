@@ -3,11 +3,11 @@ package srp.likelihood.spectrum;
 import java.util.Set;
 
 import srp.dr.evolution.datatype.ShortReads;
+import srp.evolution.shortreads.ShortReadMapping;
+import srp.evolution.spectrum.CategorySpectrumAlignmentModel;
+import srp.evolution.spectrum.SpectraParameter;
 import srp.likelihood.LikelihoodScaler;
 import srp.likelihood.stateLikelihood.StateLikelihood;
-import srp.shortreads.ShortReadMapping;
-import srp.spectrum.CategorySpectrumAlignmentModel;
-import srp.spectrum.SpectraParameter;
 
 import com.carrotsearch.hppc.BitSet;
 
@@ -168,6 +168,48 @@ public class ShortReadsCategoriesSpectrumLikelihood  extends AbstractShortReadsS
 	protected void acceptState() {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	protected double calculateSrpLikelihoodRecombination() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	protected double calculateSrpLikelihoodSubColumn() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	protected double calculateSrpLikelihoodMulti() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	protected double calculateSrpLikelihoodColumn() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	protected double calculateSrpLikelihoodSingle() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	protected double calculateSrpLikelihoodFullMaster() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	protected double calculateSrpLikelihoodFull() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 	
 }

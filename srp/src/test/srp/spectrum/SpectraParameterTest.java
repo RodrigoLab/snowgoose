@@ -14,8 +14,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import srp.spectrum.SpectraParameter;
-import srp.spectrum.SpectraParameter.SpectraType;
+import srp.evolution.spectrum.SpectraParameter;
+import srp.evolution.spectrum.SpectraParameter.SpectraType;
 
 public class SpectraParameterTest {
 	

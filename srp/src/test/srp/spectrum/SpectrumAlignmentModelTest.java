@@ -12,13 +12,13 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import srp.core.DataImporter;
-import srp.shortreads.AlignmentMapping;
+import srp.evolution.shortreads.AlignmentMapping;
+import srp.evolution.spectrum.SpectraParameter;
+import srp.evolution.spectrum.Spectrum;
+import srp.evolution.spectrum.SpectrumAlignmentModel;
+import srp.evolution.spectrum.SpectraParameter.SpectraType;
 //import srp.spectrum.AbstractSpectra;
 //import srp.spectrum.AbstractSpectrum;
-import srp.spectrum.SpectraParameter;
-import srp.spectrum.SpectraParameter.SpectraType;
-import srp.spectrum.Spectrum;
-import srp.spectrum.SpectrumAlignmentModel;
 import dr.evolution.alignment.Alignment;
 
 public class SpectrumAlignmentModelTest {

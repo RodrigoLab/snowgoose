@@ -5,9 +5,9 @@ import java.util.Set;
 
 import org.apache.commons.math3.util.FastMath;
 
-import srp.spectrum.SpectraParameter;
-import srp.spectrum.SpectrumAlignmentModel;
-import srp.spectrum.SpectrumOperation;
+import srp.evolution.OperationType;
+import srp.evolution.spectrum.SpectraParameter;
+import srp.evolution.spectrum.SpectrumAlignmentModel;
 
 import com.google.common.primitives.Ints;
 
@@ -18,7 +18,7 @@ import dr.math.MathUtils;
 public class SwapSubColumnSpectrumOperator extends AbstractSwapSpectrumOperator {
 
 	public static final String OPERATOR_NAME = SwapSubColumnSpectrumOperator.class.getSimpleName();
-	public static final SpectrumOperation OP = SpectrumOperation.SWAP_SUBCOLUMN;
+	public static final OperationType OP = OperationType.SWAP_SUBCOLUMN;
 //    private Parameter parameter = null;
     private final int[] parameterWeights;
 //    private double swapHapCount = 0.05;
@@ -67,7 +67,7 @@ public class SwapSubColumnSpectrumOperator extends AbstractSwapSpectrumOperator 
 			swapFrequency(spectra);
 		}
 
-		spectrumModel.setSpectrumOperationRecord(OP, spectrumIndexs, siteIndex);
+		spectrumModel.setOperationRecord(OP, spectrumIndexs, siteIndex);
 		spectrumModel.endSpectrumOperation();
 
 		return 0.0;
@@ -131,7 +131,7 @@ public class SwapSubColumnSpectrumOperator extends AbstractSwapSpectrumOperator 
 
 
 	@Override
-	public SpectrumOperation getSpectrumOperation() {
+	public OperationType getSpectrumOperation() {
 		return OP;
 	}
 

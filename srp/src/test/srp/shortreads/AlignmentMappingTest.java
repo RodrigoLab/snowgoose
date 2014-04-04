@@ -14,9 +14,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import srp.core.DataImporter;
+import srp.evolution.shortreads.AlignmentMapping;
+import srp.evolution.shortreads.ShortRead;
 import srp.haplotypes.AlignmentUtils;
-import srp.shortreads.AlignmentMapping;
-import srp.shortreads.ShortRead;
 import test.TestUtils;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.sequence.Sequence;

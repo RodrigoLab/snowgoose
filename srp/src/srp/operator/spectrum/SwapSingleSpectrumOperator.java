@@ -1,9 +1,9 @@
 package srp.operator.spectrum;
 
-import srp.spectrum.SpectraParameter;
-import srp.spectrum.Spectrum;
-import srp.spectrum.SpectrumAlignmentModel;
-import srp.spectrum.SpectrumOperation;
+import srp.evolution.OperationType;
+import srp.evolution.spectrum.SpectraParameter;
+import srp.evolution.spectrum.Spectrum;
+import srp.evolution.spectrum.SpectrumAlignmentModel;
 import dr.inference.operators.CoercionMode;
 import dr.inference.operators.OperatorFailedException;
 import dr.math.MathUtils;
@@ -11,7 +11,7 @@ import dr.math.MathUtils;
 public class SwapSingleSpectrumOperator extends AbstractSwapSpectrumOperator{
 
 	public static final String OPERATOR_NAME = SwapSingleSpectrumOperator.class.getSimpleName();
-	public static final SpectrumOperation OP = SpectrumOperation.DELTA_SINGLE;
+	public static final OperationType OP = OperationType.SINGLE;
 //    private Parameter parameter = null;
     private final int[] parameterWeights;
 //    private int[] siteIndexs;
@@ -50,7 +50,7 @@ public class SwapSingleSpectrumOperator extends AbstractSwapSpectrumOperator{
 		swapFrequency(spectra);
         // symmetrical move so return a zero hasting ratio
 
-		spectrumModel.setSpectrumOperationRecord(OP, spectrumIndex, siteIndex);
+		spectrumModel.setOperationRecord(OP, spectrumIndex, siteIndex);
 		
 		spectrumModel.endSpectrumOperation();
 
@@ -94,7 +94,7 @@ public class SwapSingleSpectrumOperator extends AbstractSwapSpectrumOperator{
     }
 
 	@Override
-	public SpectrumOperation getSpectrumOperation() {
+	public OperationType getSpectrumOperation() {
 		return OP;
 	}
 

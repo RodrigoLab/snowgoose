@@ -5,10 +5,10 @@ import java.util.Set;
 
 import org.apache.commons.math3.util.FastMath;
 
-import srp.spectrum.SpectraParameter;
-import srp.spectrum.Spectrum;
-import srp.spectrum.SpectrumAlignmentModel;
-import srp.spectrum.SpectrumOperation;
+import srp.evolution.OperationType;
+import srp.evolution.spectrum.SpectraParameter;
+import srp.evolution.spectrum.Spectrum;
+import srp.evolution.spectrum.SpectrumAlignmentModel;
 
 import com.google.common.primitives.Ints;
 
@@ -19,7 +19,7 @@ import dr.math.MathUtils;
 public class DeltaExchangeMultiSpectrumOperator extends AbstractSpectrumOperator {
 
 	public static final String OPERATOR_NAME = DeltaExchangeMultiSpectrumOperator.class.getSimpleName();
-	public static final SpectrumOperation OP = SpectrumOperation.DELTA_MULTI;
+	public static final OperationType OP = OperationType.MULTI;
 	
     private final int[] parameterWeights;
     private double delta;
@@ -124,7 +124,7 @@ public class DeltaExchangeMultiSpectrumOperator extends AbstractSpectrumOperator
 
 		}
         // symmetrical move so return a zero hasting ratio
-		spectrumModel.setSpectrumOperationRecord(OP, spectrumIndex, siteIndexs, d);
+		spectrumModel.setOperationRecord(OP, spectrumIndex, siteIndexs, d);
 		
 		spectrumModel.endSpectrumOperation();
 
@@ -212,7 +212,7 @@ public class DeltaExchangeMultiSpectrumOperator extends AbstractSpectrumOperator
 
 
 	@Override
-	public SpectrumOperation getSpectrumOperation() {
+	public OperationType getSpectrumOperation() {
 		return OP;
 	}
 

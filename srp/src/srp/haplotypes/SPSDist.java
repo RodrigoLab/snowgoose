@@ -2,8 +2,8 @@ package srp.haplotypes;
 
 import java.util.Arrays;
 
-import srp.haplotypes.old.OldHaplotypeModel;
-import srp.shortreads.AlignmentMapping;
+import srp.evolution.haplotypes.old.OldHaplotypeModel;
+import srp.evolution.shortreads.AlignmentMapping;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.SimpleAlignment;
 

@@ -15,10 +15,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import srp.core.DataImporter;
+import srp.evolution.haplotypes.old.OldHapOperation;
+import srp.evolution.haplotypes.old.OldHaplotype;
+import srp.evolution.shortreads.AlignmentMapping;
 import srp.haplotypes.AbstractHaplotypeModel;
-import srp.haplotypes.old.OldHaplotype;
-import srp.haplotypes.old.OldHapOperation;
-import srp.shortreads.AlignmentMapping;
 import test.TestUtils;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.datatype.DataType;

@@ -10,8 +10,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import srp.spectrum.CategorySpectraParameter;
-import srp.spectrum.CategorySpectraParameter.CategoryType;
+import srp.evolution.spectrum.CategorySpectraParameter;
+import srp.evolution.spectrum.CategorySpectraParameter.CategoryType;
 
 public class CategorySpectraParameterTest {
 

@@ -2,8 +2,8 @@ package srp.operator.spectrum;
 
 import java.util.Arrays;
 
-import srp.spectrum.SpectraParameter;
-import srp.spectrum.SpectrumAlignmentModel;
+import srp.evolution.spectrum.SpectraParameter;
+import srp.evolution.spectrum.SpectrumAlignmentModel;
 import dr.inference.operators.CoercionMode;
 import dr.math.GammaFunction;
 import dr.math.MathUtils;

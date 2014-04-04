@@ -1,8 +1,8 @@
 package srp.operator.haplotypes;
 
-import srp.haplotypes.old.OldHaplotypeModel;
-import srp.haplotypes.old.OldHapOperation;
-import srp.shortreads.AlignmentMapping;
+import srp.evolution.haplotypes.old.OldHapOperation;
+import srp.evolution.haplotypes.old.OldHaplotypeModel;
+import srp.evolution.shortreads.AlignmentMapping;
 import dr.inference.operators.SimpleMCMCOperator;
 
 public abstract class AbstractBaseSingleOperator extends SimpleMCMCOperator {

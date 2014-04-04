@@ -8,6 +8,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import srp.core.DataImporter;
+import srp.evolution.shortreads.ShortReadMapping;
+import srp.evolution.spectrum.SpectrumAlignmentModel;
 import srp.likelihood.spectrum.ShortReadsSpectrumLikelihood;
 import srp.likelihood.spectrum.AbstractShortReadsSpectrumLikelihood.DistType;
 import srp.operator.spectrum.AbstractSpectrumOperator;
@@ -20,8 +22,6 @@ import srp.operator.spectrum.RecombinationSpectrumOperator;
 import srp.operator.spectrum.RecombineSectionSpectrumOperator;
 import srp.operator.spectrum.SwapMultiSpectrumOperator;
 import srp.operator.spectrum.SwapSingleSpectrumOperator;
-import srp.shortreads.ShortReadMapping;
-import srp.spectrum.SpectrumAlignmentModel;
 import dr.evolution.alignment.Alignment;
 import dr.inference.operators.CoercionMode;
 import dr.inference.operators.OperatorFailedException;

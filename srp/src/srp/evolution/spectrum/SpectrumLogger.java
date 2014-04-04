@@ -1,10 +1,10 @@
-package srp.spectrum;
+package srp.evolution.spectrum;
 
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import srp.spectrum.SpectrumAlignmentUtils.Dist;
+import srp.evolution.spectrum.SpectrumAlignmentUtils.Dist;
 import dr.evolution.alignment.Alignment;
 import dr.inference.loggers.LogFormatter;
 import dr.inference.loggers.MCLogger;

@@ -5,11 +5,11 @@ import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
+import srp.evolution.spectrum.AbstractSpectrumAlignmentModel;
+import srp.evolution.spectrum.SpectrumAlignmentUtils;
+import srp.evolution.spectrum.SpectrumLogger;
+import srp.evolution.spectrum.SpectrumAlignmentUtils.Dist;
 import srp.haplotypes.SPSDist;
-import srp.spectrum.AbstractSpectrumAlignmentModel;
-import srp.spectrum.SpectrumAlignmentUtils;
-import srp.spectrum.SpectrumAlignmentUtils.Dist;
-import srp.spectrum.SpectrumLogger;
 import dr.evolution.alignment.Alignment;
 
 public class MainCompareSpectrumToHaplotypes {

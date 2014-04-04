@@ -1,7 +1,7 @@
 package srp.haplotypes;
 
 import srp.dr.evolution.datatype.ShortReads;
-import srp.shortreads.AlignmentMapping;
+import srp.evolution.shortreads.AlignmentMapping;
 import dr.evolution.alignment.SimpleAlignment;
 import dr.evolution.datatype.Nucleotides;
 import dr.evolution.sequence.Sequence;

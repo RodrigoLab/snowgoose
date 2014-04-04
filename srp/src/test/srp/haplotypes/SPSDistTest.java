@@ -10,9 +10,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import srp.evolution.haplotypes.old.OldHaplotypeModel;
+import srp.evolution.haplotypes.old.OldHaplotypeModelUtils;
 import srp.haplotypes.SPSDist;
-import srp.haplotypes.old.OldHaplotypeModel;
-import srp.haplotypes.old.OldHaplotypeModelUtils;
 
 
 public class SPSDistTest {

@@ -1,6 +1,6 @@
 package srp.operator.haplotypes;
 
-import srp.haplotypes.old.OldHaplotypeModel;
+import srp.evolution.haplotypes.old.OldHaplotypeModel;
 import dr.inference.operators.OperatorFailedException;
 
 public class BaseSingleEmpiricalOperator extends AbstractBaseSingleOperator {

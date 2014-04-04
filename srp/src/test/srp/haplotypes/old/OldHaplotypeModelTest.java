@@ -15,14 +15,14 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import srp.core.DataImporter;
+import srp.evolution.haplotypes.old.OldHaplotype;
+import srp.evolution.haplotypes.old.OldHaplotypeModel;
+import srp.evolution.haplotypes.old.OldHaplotypeModelUtils;
+import srp.evolution.shortreads.AlignmentMapping;
 import srp.haplotypes.AlignmentUtils;
 import srp.haplotypes.SPSDist;
-import srp.haplotypes.old.OldHaplotype;
-import srp.haplotypes.old.OldHaplotypeModel;
-import srp.haplotypes.old.OldHaplotypeModelUtils;
 import srp.operator.haplotypes.BaseSingleOperator;
 import srp.operator.haplotypes.BasesMultiOperator;
-import srp.shortreads.AlignmentMapping;
 import test.TestUtils;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.util.Taxon;

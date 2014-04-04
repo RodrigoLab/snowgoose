@@ -16,7 +16,7 @@ public class ShortReads extends Nucleotides {
 	public static final char SHORTREAD_EMPTY_CHARACTER = '.';
 	public static final char SHORTREAD_GAP_CHARACTER = '*';
 	/** 
-	 * A table to translate state numbers (0-17) into character codes
+	 * A table to translate state numbers (0-19) into character codes
 	 */
 
 			
@@ -27,7 +27,7 @@ public class ShortReads extends Nucleotides {
 
 	
 	/** 
-	 * This table maps nucleotide characters into state codes (0-17)
+	 * This table maps nucleotide characters into state codes (0-19)
 	 * Nucleotides go ACGTURYMWSKBDHVN?-", Other letters are mapped to ?.
 	 * ? and - are mapped to themselves. All other chars are mapped to -.
 	 *

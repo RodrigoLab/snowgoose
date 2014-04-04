@@ -31,11 +31,11 @@ import org.junit.rules.ExpectedException;
 
 import srp.core.DataImporter;
 import srp.dr.evolution.datatype.ShortReads;
-import srp.shortreads.AlignmentMapping;
-import srp.spectrum.AbstractSpectrumAlignmentModel;
-import srp.spectrum.SpectraParameter.SpectraType;
-import srp.spectrum.Spectrum;
-import srp.spectrum.SpectrumAlignmentModel;
+import srp.evolution.shortreads.AlignmentMapping;
+import srp.evolution.spectrum.AbstractSpectrumAlignmentModel;
+import srp.evolution.spectrum.Spectrum;
+import srp.evolution.spectrum.SpectrumAlignmentModel;
+import srp.evolution.spectrum.SpectraParameter.SpectraType;
 //import srp.haplotypes.Haplotype;
 //import srp.haplotypes.HaplotypeModel;
 import dr.evolution.alignment.Alignment;

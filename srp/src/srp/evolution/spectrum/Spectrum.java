@@ -1,9 +1,9 @@
-package srp.spectrum;
+package srp.evolution.spectrum;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
 
-import srp.spectrum.SpectraParameter.SpectraType;
+import srp.evolution.spectrum.SpectraParameter.SpectraType;
 import dr.evolution.sequence.Sequence;
 import dr.evolution.util.Taxon;
 import dr.util.Attributable;

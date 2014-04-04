@@ -1,8 +1,8 @@
 package srp.operator.haplotypes;
 
-import srp.haplotypes.old.OldHaplotype;
-import srp.haplotypes.old.OldHaplotypeModel;
-import srp.haplotypes.old.OldHapOperation;
+import srp.evolution.haplotypes.old.OldHapOperation;
+import srp.evolution.haplotypes.old.OldHaplotype;
+import srp.evolution.haplotypes.old.OldHaplotypeModel;
 import dr.inference.operators.OperatorFailedException;
 import dr.inference.operators.SimpleMCMCOperator;
 import dr.math.MathUtils;

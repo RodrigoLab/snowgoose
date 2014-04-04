@@ -1,6 +1,12 @@
 package srp.haplotypes;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+
+import com.google.common.primitives.Chars;
+
 import dr.evolution.datatype.DataType;
+import dr.evolution.datatype.Nucleotides;
 import dr.evolution.sequence.Sequence;
 import dr.evolution.util.Taxon;
 
@@ -11,21 +17,23 @@ public class Haplotype extends Sequence {
 	 */
 	private static final long serialVersionUID = -1481408524381652240L;
 	
-	@Deprecated 
-	StringBuilder sequenceString;
+//	@Deprecated 
+//	StringBuilder sequenceString;
+	@Deprecated
 	String storeHaplotype;
 	
-	char[] haplotpye;
-	char[] storedHaplotye;
+	char[] haplotype;
+	char[] storedHaplotype;
 	int haplotypeLength;
 
-	@Deprecated
-	public Haplotype() {
-		sequenceString = new StringBuilder();
-	}
-
+	public static final DataType DATATYPE = Nucleotides.INSTANCE;
+			
 	public Haplotype(String sequence) {
-		this();
+		setDataType(DATATYPE);
+		sequenceString = null;
+		haplotypeLength = sequence.length();
+		haplotype = new char[haplotypeLength];
+		storedHaplotype = new char[haplotypeLength];
 		setSequenceString(sequence.toUpperCase());
 	}
 
@@ -34,17 +42,16 @@ public class Haplotype extends Sequence {
 	}
 
 	public Haplotype(Taxon taxon, String sequence) {
-		this();
+		this(sequence);
 		setTaxon(taxon);
-		setSequenceString(sequence);
 	}
 
 	public void setCharAt(int index, int newChar) {
-		sequenceString.setCharAt(index, (char) newChar);
+		setCharAt(index, (char) newChar); 
 	}
 	
 	public void setCharAt(int index, char newChar) {
-		sequenceString.setCharAt(index, newChar);
+		haplotype[index]=newChar;
 	}
 
 	public char replaceCharAt(int index, int newChar){
@@ -53,18 +60,15 @@ public class Haplotype extends Sequence {
 		return oldChar;
 	}
 	
+
 	// **************************************
 	// OVERRIDE ALL (almost all) methods
 	// Do NOT call setState()!!
 	// ************************************
 	
-
-    /**
-     * @return the DataType of the sequences.
-     */
-    @Override
-	public DataType getDataType() {
-        return dataType;
+	@Override
+    public void setDataType(DataType dataType) {
+        this.dataType = DATATYPE;
     }
 
     /**
@@ -72,9 +76,7 @@ public class Haplotype extends Sequence {
      */
     @Override
 	public int getLength() {
-//        return sequenceString.length();
         return haplotypeLength;
-//        throw new IllegalArgumentException("Not going to implemente this at later version");
     }
 
     /**
@@ -82,8 +84,8 @@ public class Haplotype extends Sequence {
      */
     @Override
 	public String getSequenceString() {
-//        return sequenceString.toString();
-    	throw new IllegalArgumentException("Not going to implemente this at later version");
+    	return String.valueOf(haplotype);
+    	
     }
 
     /**
@@ -91,8 +93,7 @@ public class Haplotype extends Sequence {
      */
     @Override
 	public char getChar(int index) {
-//        return sequenceString.charAt(index);
-        throw new IllegalArgumentException("Not going to implemente this at later version");
+        return haplotype[index];
     }
 
     /**
@@ -100,8 +101,7 @@ public class Haplotype extends Sequence {
      */
     @Override
 	public int getState(int index) {
-//        return dataType.getState(sequenceString.charAt(index));
-        throw new IllegalArgumentException("Not going to implemente this at later version");
+        return dataType.getState(haplotype[index]);
     }
 
     /**
@@ -116,8 +116,7 @@ public class Haplotype extends Sequence {
      */
     @Override
 	public void getChars(int srcBegin, int srcEnd, char[] dst, int dstBegin) {
-        sequenceString.getChars(srcBegin, srcEnd, dst, dstBegin);
-        throw new IllegalArgumentException("Not going to implemente this at later version");
+        System.arraycopy(haplotype, srcBegin, dst, dstBegin, srcEnd - srcBegin);
     }
 
     /**
@@ -125,8 +124,14 @@ public class Haplotype extends Sequence {
      */
     @Override
 	public DataType guessDataType() {
-//        return DataType.guessDataType(sequenceString.toString());
-        throw new IllegalArgumentException("Not going to implemente this at later version");
+        DataType guessDataType = DataType.guessDataType(String.valueOf(haplotype));
+        if(guessDataType.getName().equals(DATATYPE.getName())){
+        	return DATATYPE;
+        }
+        else{
+        	throw new IllegalArgumentException("Only support "+DATATYPE.getName()+". Please check your haplotypes");
+        }
+        
     }
 
     /**
@@ -134,9 +139,14 @@ public class Haplotype extends Sequence {
      */
     @Override
 	public void setSequenceString(String sequence) {
-        sequenceString.setLength(0);
-        sequenceString.append(sequence);
-        throw new IllegalArgumentException("Not going to implemente this at later version");
+    	if(sequence.length() != haplotypeLength){
+			throw new IllegalArgumentException("Invalid sequence length: "
+					+ sequence.length()
+					+ ". Haplotype length must be equal to " + haplotypeLength);
+		}
+    	else{
+    		System.arraycopy(sequence.toCharArray(), 0, haplotype, 0, haplotypeLength);
+    	}
     }
 
     /**
@@ -144,8 +154,7 @@ public class Haplotype extends Sequence {
      */
     @Override
 	public void appendSequenceString(String sequence) {
-        sequenceString.append(sequence);
-        throw new IllegalArgumentException("Not going to implemente this at later version");
+        throw new IllegalArgumentException("Can not alter haplotype length");
     }
 
     /**
@@ -153,18 +162,25 @@ public class Haplotype extends Sequence {
      */
     @Override
 	public void insertSequenceString(int offset, String sequence) {
-        sequenceString.insert(offset, sequence);
-        throw new IllegalArgumentException("Not going to implemente this at later version");
+    	throw new IllegalArgumentException("Can not alter haplotype length");
     }
 
-	public void storeState() {
-		storeHaplotype = sequenceString.toString();
-		
+	public void storeState(int index) {
+		storedHaplotype[index] = haplotype[index];
 	}
-	public void restoreState(){
-		setSequenceString(storeHaplotype);
+	public void restoreState(int index) {
+		haplotype[index] = storedHaplotype[index];
+	}
+	
+	public void storeState() {
+		System.arraycopy(haplotype, 0, storedHaplotype, 0, haplotypeLength);
 	}
 
+	public void restoreState() {
+		char[] temp = storedHaplotype;
+		storedHaplotype = haplotype;
+		haplotype = temp;
+	}
 
 
 

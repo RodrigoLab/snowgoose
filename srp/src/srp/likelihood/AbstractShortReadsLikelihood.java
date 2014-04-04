@@ -9,15 +9,16 @@ import org.w3c.dom.Element;
 import com.carrotsearch.hppc.BitSet;
 
 import srp.dr.evolution.datatype.ShortReads;
+import srp.evolution.AbstractAlignmentModel;
+import srp.evolution.OperationType;
+import srp.evolution.shortreads.ShortReadMapping;
+import srp.evolution.spectrum.SpectrumAlignmentModel;
 import srp.likelihood.stateLikelihood.BetaMeanStateLikelihood;
 import srp.likelihood.stateLikelihood.BetaModeStateLikelihood;
 import srp.likelihood.stateLikelihood.ChisqStateLikelihood;
 import srp.likelihood.stateLikelihood.GTestStateLikelihood;
 import srp.likelihood.stateLikelihood.ProbabilityStateLikelihood;
 import srp.likelihood.stateLikelihood.StateLikelihood;
-import srp.shortreads.ShortReadMapping;
-import srp.spectrum.SpectrumAlignmentModel;
-import srp.spectrum.SpectrumOperation;
 import dr.evolution.datatype.DataType;
 import dr.inference.model.AbstractModelLikelihood;
 import dr.inference.model.Model;
@@ -39,11 +40,13 @@ public abstract class AbstractShortReadsLikelihood extends
 	public static final DataType DATA_TYPE = ShortReads.INSTANCE;
 	public static final int STATE_COUNT = DATA_TYPE.getStateCount();//4
 	public static final int AMBIGUOUS_STATE_COUNT = DATA_TYPE.getAmbiguousStateCount();//18
+	public static final int GAP_STATE = DATA_TYPE.getGapState();;
 	
 	private static final double EVALUATION_TEST_THRESHOLD = 1e-8;
-	private static final int GAP_STATE = 17;  
+  
 
-
+	protected boolean debug;
+	
 	protected double logLikelihood;
 	protected double storedLogLikelihood;
 	
@@ -61,14 +64,71 @@ public abstract class AbstractShortReadsLikelihood extends
 	protected boolean[] srpSwitch;
 	protected Set<Integer> allSrpPos;
 	protected BitSet bitSet;
+	protected AbstractAlignmentModel alignmentModel;
+	
 	
 	public AbstractShortReadsLikelihood(String name) {
 		super(name);
 	}
 
-	protected abstract double calculateLogLikelihood();
 
+	protected double calculateLogLikelihood() {
+		
+		OperationType operation = alignmentModel.getOperation();
+		double logLikelihood = Double.NEGATIVE_INFINITY;
+
+		if(debug){
+			System.out.println("Calculate ShortReadLikelihood:\t"+operation);
+		}
+		switch (operation) {
+		case NONE:
+			logLikelihood = calculateSrpLikelihoodFull();
+			break;
+		case FULL:
+			logLikelihood = calculateSrpLikelihoodFullMaster();
+			break;
+		case SINGLE:
+			logLikelihood = calculateSrpLikelihoodSingle();
+			break;
+		case COLUMN:
+			logLikelihood = calculateSrpLikelihoodColumn();
+			break;
+		case MULTI:
+			logLikelihood = calculateSrpLikelihoodMulti();
+			break;
+		case SWAP_SUBCOLUMN:
+			logLikelihood = calculateSrpLikelihoodSubColumn();
+			break;
+		case RECOMBINATION:
+			logLikelihood = calculateSrpLikelihoodRecombination();
+			break;
+		// case MASTER:
+		// logLikelihood = calculateSrpLikelihoodFullMaster()
+		// break;
+		default:
+			throw new IllegalArgumentException("Unknown operation type: "
+					+ operation);
+
+		}
+
+		return logLikelihood;
+	}
 	
+	protected abstract double calculateSrpLikelihoodRecombination();
+
+	protected abstract double calculateSrpLikelihoodSubColumn();
+
+	protected abstract double calculateSrpLikelihoodMulti();
+
+	protected abstract double calculateSrpLikelihoodColumn();
+
+	protected abstract double calculateSrpLikelihoodSingle();
+
+	protected abstract double calculateSrpLikelihoodFullMaster();
+
+	protected abstract double calculateSrpLikelihoodFull();
+
+
 	protected double getStoredLogLikelihood() {
 		return storedLogLikelihood;
 	}

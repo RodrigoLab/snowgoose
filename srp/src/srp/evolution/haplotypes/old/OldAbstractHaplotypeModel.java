@@ -1,10 +1,10 @@
-package srp.haplotypes.old;
+package srp.evolution.haplotypes.old;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import srp.haplotypes.old.OldHaplotype;
+import srp.evolution.haplotypes.old.OldHaplotype;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.PatternList;
 import dr.evolution.datatype.DataType;

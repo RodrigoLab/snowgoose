@@ -14,6 +14,12 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import srp.core.DataImporter;
+import srp.evolution.OperationType;
+import srp.evolution.shortreads.AlignmentMapping;
+import srp.evolution.shortreads.ShortReadMapping;
+import srp.evolution.spectrum.Spectrum;
+import srp.evolution.spectrum.SpectrumAlignmentModel;
+import srp.evolution.spectrum.SpectraParameter.SpectraType;
 import srp.haplotypes.AlignmentUtils;
 import srp.likelihood.spectrum.ShortReadsSpectrumLikelihood;
 import srp.operator.spectrum.AbstractSpectrumOperator;
@@ -26,12 +32,6 @@ import srp.operator.spectrum.RecombinationSpectrumOperator;
 import srp.operator.spectrum.RecombineSectionSpectrumOperator;
 import srp.operator.spectrum.SwapMultiSpectrumOperator;
 import srp.operator.spectrum.SwapSingleSpectrumOperator;
-import srp.shortreads.AlignmentMapping;
-import srp.shortreads.ShortReadMapping;
-import srp.spectrum.SpectraParameter.SpectraType;
-import srp.spectrum.Spectrum;
-import srp.spectrum.SpectrumAlignmentModel;
-import srp.spectrum.SpectrumOperation;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.SimpleAlignment;
 import dr.inference.markovchain.MarkovChain;
@@ -398,7 +398,7 @@ public class ShortReadsSpectrumLikelihoodTest {
                 operatorSucceeded = false;
 			}
             
-            SpectrumOperation expectedSpectrumOperation = ((AbstractSpectrumOperator) mcmcOperator).getSpectrumOperation();
+            OperationType expectedSpectrumOperation = ((AbstractSpectrumOperator) mcmcOperator).getSpectrumOperation();
 			
 			if(operatorSucceeded){
 				logLikelihoodOperator = likelihood.getLogLikelihood();
@@ -407,7 +407,7 @@ public class ShortReadsSpectrumLikelihoodTest {
 				SpectrumAlignmentModel spectrumModelFull = SpectrumAlignmentModel.duplicateSpectrumAlignmentModel(spectrumModel);
 				ShortReadsSpectrumLikelihood likelihoodFull = new ShortReadsSpectrumLikelihood(spectrumModelFull, srpMap);
 				logLikelihoodFull = likelihoodFull.getLogLikelihood();
-				assertEquals(SpectrumOperation.NONE, likelihoodFull.getOperation());
+				assertEquals(OperationType.NONE, likelihoodFull.getOperation());
 				assertEquals(logLikelihoodFull, logLikelihoodOperator, THRESHOLD); 
 
 				double rand = MathUtils.nextDouble();

@@ -8,8 +8,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import srp.spectrum.CategorySpectrum;
-import srp.spectrum.CategorySpectrumAlignmentModel;
+import srp.evolution.spectrum.CategorySpectrum;
+import srp.evolution.spectrum.CategorySpectrumAlignmentModel;
 
 public class CategorySpectrumAlignmentModelTest {
 

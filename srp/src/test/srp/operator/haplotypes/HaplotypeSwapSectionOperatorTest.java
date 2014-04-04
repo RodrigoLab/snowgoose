@@ -10,11 +10,11 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import srp.evolution.haplotypes.old.OldHaplotypeModel;
+import srp.evolution.haplotypes.old.OldHaplotypeModelUtils;
+import srp.evolution.shortreads.AlignmentMapping;
 import srp.haplotypes.AlignmentUtils;
-import srp.haplotypes.old.OldHaplotypeModel;
-import srp.haplotypes.old.OldHaplotypeModelUtils;
 import srp.operator.haplotypes.HaplotypeSwapSectionOperator;
-import srp.shortreads.AlignmentMapping;
 import dr.inference.operators.CoercableMCMCOperator;
 import dr.inference.operators.CoercionMode;
 import dr.inference.operators.SimpleMCMCOperator;

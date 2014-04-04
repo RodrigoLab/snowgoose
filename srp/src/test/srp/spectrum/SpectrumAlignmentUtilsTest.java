@@ -9,10 +9,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import srp.core.DataImporter;
-import srp.spectrum.AbstractSpectrumAlignmentModel;
-import srp.spectrum.SpectraParameter;
-import srp.spectrum.SpectrumAlignmentUtils;
-import srp.spectrum.SpectrumAlignmentUtils.Dist;
+import srp.evolution.spectrum.AbstractSpectrumAlignmentModel;
+import srp.evolution.spectrum.SpectraParameter;
+import srp.evolution.spectrum.SpectrumAlignmentUtils;
+import srp.evolution.spectrum.SpectrumAlignmentUtils.Dist;
 import dr.evolution.alignment.Alignment;
 
 public class SpectrumAlignmentUtilsTest {

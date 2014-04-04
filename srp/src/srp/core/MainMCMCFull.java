@@ -6,10 +6,10 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import srp.evolution.haplotypes.old.OldHaplotypeModel;
+import srp.evolution.haplotypes.old.OldHaplotypeModelUtils;
 import srp.haplotypes.HaplotypeLoggerWithTrueHaplotype;
 import srp.haplotypes.SPSDist;
-import srp.haplotypes.old.OldHaplotypeModel;
-import srp.haplotypes.old.OldHaplotypeModelUtils;
 import srp.likelihood.haplotypes.ShortReadLikelihood;
 import srp.rj.operator.RJTreeOperator;
 import dr.evolution.alignment.Alignment;

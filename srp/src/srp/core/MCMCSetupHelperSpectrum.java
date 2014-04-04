@@ -4,7 +4,8 @@ import java.util.HashMap;
 
 import org.apache.commons.math3.random.RandomDataGenerator;
 
-import srp.haplotypes.old.OldHaplotypeModel;
+import srp.evolution.haplotypes.old.OldHaplotypeModel;
+import srp.evolution.spectrum.SpectrumAlignmentModel;
 import srp.likelihood.spectrum.treelikelihood.SpectrumTreeLikelihood;
 import srp.operator.spectrum.DeltaExchangeColumnSpectrumOperator;
 import srp.operator.spectrum.DeltaExchangeMultiSpectrumOperator;
@@ -23,7 +24,6 @@ import srp.operator.spectrum.testCategoriesSwapSpectrumOperator;
 import srp.operator.spectrum.testSpiltMergeSpectrumOperator;
 import srp.operator.spectrum.testSpiltMergeThreeWaySpectrumOperator;
 import srp.operator.spectrum.testSpiltScaleSpectrumOperator;
-import srp.spectrum.SpectrumAlignmentModel;
 import dr.evolution.datatype.Nucleotides;
 import dr.evomodel.branchratemodel.StrictClockBranchRates;
 import dr.evomodel.operators.ExchangeOperator;

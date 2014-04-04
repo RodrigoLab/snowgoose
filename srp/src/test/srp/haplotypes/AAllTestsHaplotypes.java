@@ -4,6 +4,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
+import srp.evolution.haplotypes.old.OldHaplotype;
 import test.srp.haplotypes.old.OldHaplotypeModelTest;
 import test.srp.shortreads.AlignmentMappingTest;
 import test.srp.shortreads.ShortReadTest;
@@ -13,9 +14,12 @@ import test.srp.shortreads.ShortReadTest;
 	AbstractHaplotypeModelTest.class,
  
 	AlignmentUtilsTest.class,
-//	OldHaplotypeModelTest.class,
+
 	SPSDistTest.class, 
-//	ShortReadTest.class 
+//	ShortReadTest.class
+	
+	OldHaplotypeModelTest.class,
+	OldHaplotype.class,
 	})
 public class AAllTestsHaplotypes {
 

@@ -1,8 +1,8 @@
 package srp.rj.operator;
 
-import srp.haplotypes.old.OldHaplotypeModel;
-import srp.haplotypes.old.OldHapOperation;
-import srp.shortreads.AlignmentMapping;
+import srp.evolution.haplotypes.old.OldHapOperation;
+import srp.evolution.haplotypes.old.OldHaplotypeModel;
+import srp.evolution.shortreads.AlignmentMapping;
 import dr.evolution.tree.FlexibleNode;
 import dr.evolution.tree.FlexibleTree;
 import dr.evolution.tree.NodeRef;

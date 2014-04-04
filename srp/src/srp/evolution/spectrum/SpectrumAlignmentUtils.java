@@ -1,10 +1,11 @@
-package srp.spectrum;
+package srp.evolution.spectrum;
 
 import java.text.FieldPosition;
 import java.text.NumberFormat;
 import java.util.Arrays;
 
 import srp.dr.evolution.datatype.ShortReads;
+import srp.evolution.OperationRecord;
 import dr.evolution.alignment.Alignment;
 
 public class SpectrumAlignmentUtils {
@@ -294,7 +295,7 @@ public class SpectrumAlignmentUtils {
 			}
 			
 		}
-		SpectrumOperationRecord record = spectrumModel.getSpectrumOperationRecord();
+		OperationRecord record = spectrumModel.getOperationRecord();
 		int spec = record.getSpectrumIndex();
 		int site = record.getSingleIndex();
 		System.out.println("compare two models");

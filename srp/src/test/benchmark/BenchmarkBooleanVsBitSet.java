@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import srp.core.DataImporter;
-import srp.shortreads.ShortReadMapping;
+import srp.evolution.shortreads.ShortReadMapping;
 import cern.colt.bitvector.BitVector;
 
 import com.carrotsearch.hppc.BitSet;

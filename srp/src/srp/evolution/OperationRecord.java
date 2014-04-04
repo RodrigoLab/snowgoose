@@ -1,8 +1,8 @@
-package srp.spectrum;
+package srp.evolution;
 
 
 
-public class SpectrumOperationRecord {
+public class OperationRecord {
 
 	/*
 	 * Record how/which move/operation is performed
@@ -11,7 +11,7 @@ public class SpectrumOperationRecord {
 //	private Operations data = new Operations();
 //	private int hapIndex;
 	
-	private SpectrumOperation operation;
+	private OperationType operation;
 	private int spectrumIndex;
 	private int singleIndex;
 	private double[] delta;
@@ -24,13 +24,13 @@ public class SpectrumOperationRecord {
 
 		
 	
-	public SpectrumOperationRecord() {
-		operation = SpectrumOperation.NONE;
+	public OperationRecord() {
+		operation = OperationType.NONE;
 
 	}
 
 
-	public SpectrumOperation getOperation(){
+	public OperationType getOperation(){
 //		operation = SpectrumOperation.NONE;
 		return operation;
 	}
@@ -71,13 +71,13 @@ public class SpectrumOperationRecord {
 	}
 
 
-	public void setOperation(SpectrumOperation operation) {
+	public void setOperation(OperationType operation) {
 		this.operation = operation;
 		
 	}
 
 	@Deprecated
-	public void setRecord(SpectrumOperation op, int spectrumIndex, int siteIndex, double[] delta) {
+	public void setRecord(OperationType op, int spectrumIndex, int siteIndex, double[] delta) {
 		//Single
 		setOperation(op);
 		this.spectrumIndex = spectrumIndex;
@@ -87,7 +87,7 @@ public class SpectrumOperationRecord {
 	}
 
 
-	public void setRecord(SpectrumOperation op, int columnIndex, double[] delta) {
+	public void setRecord(OperationType op, int columnIndex, double[] delta) {
 		//Column
 		setOperation(op);
 		this.singleIndex = columnIndex;
@@ -102,14 +102,14 @@ public class SpectrumOperationRecord {
 //	}
 
 
-	public void setRecord(SpectrumOperation op, int spectrumIndex, int[] siteIndexs, double[] delta) {
+	public void setRecord(OperationType op, int spectrumIndex, int[] siteIndexs, double[] delta) {
 		//Multi //Swap
 		setOperation(op);
 		this.spectrumIndex = spectrumIndex;
 		this.allSiteIndexs = siteIndexs;
 		this.delta = delta;
 	}
-	public void setRecord(SpectrumOperation op, int spectrumIndex, int siteIndex) {
+	public void setRecord(OperationType op, int spectrumIndex, int siteIndex) {
 		//Single
 		setOperation(op);
 		this.spectrumIndex = spectrumIndex;
@@ -118,7 +118,7 @@ public class SpectrumOperationRecord {
 	}
 
 
-	public void setRecord(SpectrumOperation op, int[] recombinationSpectrumIndex,
+	public void setRecord(OperationType op, int[] recombinationSpectrumIndex,
 			int[] recombinationPositionIndex) {
 		setOperation(op);
 		this.recombinationSpectrumIndex = recombinationSpectrumIndex;
@@ -127,7 +127,7 @@ public class SpectrumOperationRecord {
 	}
 
 
-	public void setRecord(SpectrumOperation op, int[] hapIndexs, int siteIndex) {
+	public void setRecord(OperationType op, int[] hapIndexs, int siteIndex) {
 		setOperation(op);
 		this.singleIndex = siteIndex;
 		this.allSpectrumIndexs = hapIndexs;

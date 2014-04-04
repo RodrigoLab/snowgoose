@@ -3,10 +3,10 @@ package srp.operator.spectrum;
 import java.util.HashSet;
 import java.util.Set;
 
-import srp.spectrum.SpectraParameter;
-import srp.spectrum.Spectrum;
-import srp.spectrum.SpectrumAlignmentModel;
-import srp.spectrum.SpectrumOperation;
+import srp.evolution.OperationType;
+import srp.evolution.spectrum.SpectraParameter;
+import srp.evolution.spectrum.Spectrum;
+import srp.evolution.spectrum.SpectrumAlignmentModel;
 
 import com.google.common.primitives.Ints;
 
@@ -17,7 +17,7 @@ import dr.math.MathUtils;
 public class SwapMultiSpectrumOperator extends AbstractSwapSpectrumOperator {
 
 	public static final String OPERATOR_NAME = SwapMultiSpectrumOperator.class.getSimpleName();
-	public static final SpectrumOperation OP = SpectrumOperation.SWAP_MULTI;
+	public static final OperationType OP = OperationType.MULTI;
 
     private final int[] parameterWeights;
 //    private double delta = 0.05;
@@ -91,7 +91,7 @@ public class SwapMultiSpectrumOperator extends AbstractSwapSpectrumOperator {
 	        
 		}
         // symmetrical move so return a zero hasting ratio
-		spectrumModel.setSpectrumOperationRecord(OP, spectrumIndex, siteIndexs);
+		spectrumModel.setOperationRecord(OP, spectrumIndex, siteIndexs);
 		
 		spectrumModel.endSpectrumOperation();
 
@@ -181,7 +181,7 @@ public class SwapMultiSpectrumOperator extends AbstractSwapSpectrumOperator {
 
 
 	@Override
-	public SpectrumOperation getSpectrumOperation() {
+	public OperationType getSpectrumOperation() {
 		return OP;
 	}
 

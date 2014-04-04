@@ -2,9 +2,9 @@ package srp.operator.spectrum;
 
 import org.apache.commons.math3.util.FastMath;
 
-import srp.spectrum.SpectraParameter;
-import srp.spectrum.SpectrumAlignmentModel;
-import srp.spectrum.SpectrumOperation;
+import srp.evolution.OperationType;
+import srp.evolution.spectrum.SpectraParameter;
+import srp.evolution.spectrum.SpectrumAlignmentModel;
 import dr.inference.operators.CoercionMode;
 import dr.inference.operators.OperatorFailedException;
 import dr.math.MathUtils;
@@ -12,7 +12,7 @@ import dr.math.MathUtils;
 public class SwapColumnSpectrumOperator extends AbstractSwapSpectrumOperator {
 
 	public static final String OPERATOR_NAME = SwapColumnSpectrumOperator.class.getSimpleName();
-	public static final SpectrumOperation OP = SpectrumOperation.SWAP_COLUMN;
+	public static final OperationType OP = OperationType.COLUMN;
 	
     private final int[] parameterWeights;
     private double delta;
@@ -49,7 +49,7 @@ public class SwapColumnSpectrumOperator extends AbstractSwapSpectrumOperator {
 		}
 
         // symmetrical move so return a zero hasting ratio
-		spectrumModel.setSpectrumOperationRecord(OP, fixSpectrumIndexArray, siteIndex);
+		spectrumModel.setOperationRecord(OP, fixSpectrumIndexArray, siteIndex);
 		
 		spectrumModel.endSpectrumOperation();
 
@@ -120,7 +120,7 @@ public class SwapColumnSpectrumOperator extends AbstractSwapSpectrumOperator {
 
 
 	@Override
-	public SpectrumOperation getSpectrumOperation() {
+	public OperationType getSpectrumOperation() {
 		return OP;
 	}
 

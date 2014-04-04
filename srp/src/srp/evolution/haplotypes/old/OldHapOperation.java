@@ -1,4 +1,4 @@
-package srp.haplotypes.old;
+package srp.evolution.haplotypes.old;
 
 
 public enum OldHapOperation{

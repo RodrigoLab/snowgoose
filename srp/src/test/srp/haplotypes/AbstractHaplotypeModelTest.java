@@ -30,9 +30,9 @@ import org.junit.rules.ExpectedException;
 
 import srp.core.DataImporter;
 import srp.dr.evolution.datatype.ShortReads;
-import srp.haplotypes.old.OldHaplotype;
-import srp.haplotypes.old.OldHaplotypeModel;
-import srp.shortreads.AlignmentMapping;
+import srp.evolution.haplotypes.old.OldHaplotype;
+import srp.evolution.haplotypes.old.OldHaplotypeModel;
+import srp.evolution.shortreads.AlignmentMapping;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.SimpleAlignment;
 import dr.evolution.datatype.Nucleotides;

@@ -7,10 +7,10 @@ import java.util.Set;
 import org.apache.commons.math3.stat.StatUtils;
 import org.apache.commons.math3.util.FastMath;
 
-import srp.spectrum.SpectraParameter;
-import srp.spectrum.Spectrum;
-import srp.spectrum.SpectrumAlignmentModel;
-import srp.spectrum.SpectrumOperation;
+import srp.evolution.OperationType;
+import srp.evolution.spectrum.SpectraParameter;
+import srp.evolution.spectrum.Spectrum;
+import srp.evolution.spectrum.SpectrumAlignmentModel;
 
 import com.google.common.primitives.Ints;
 import com.sun.org.glassfish.external.statistics.Stats;
@@ -24,7 +24,7 @@ public class DirichletSpectrumOperator extends AbstractDirichletSpectrumOperator
 
 	public static final String OPERATOR_NAME = DirichletSpectrumOperator.class.getSimpleName();
 //	public static final SpectrumOperation OP = SpectrumOperation.DIRICHLET;
-	public static final SpectrumOperation OP = SpectrumOperation.DELTA_MULTI;
+	public static final OperationType OP = OperationType.MULTI;
 	
 	private static final int MIN_BASE = 1;
 	private final int[] parameterWeights;
@@ -98,7 +98,7 @@ public class DirichletSpectrumOperator extends AbstractDirichletSpectrumOperator
 
 		}
 
-		spectrumModel.setSpectrumOperationRecord(OP, spectrumIndex, siteIndexs);
+		spectrumModel.setOperationRecord(OP, spectrumIndex, siteIndexs);
 		
 		spectrumModel.endSpectrumOperation();
 //		System.out.print("diriMulti: "+ratio +"\t");
@@ -192,7 +192,7 @@ public class DirichletSpectrumOperator extends AbstractDirichletSpectrumOperator
 
 
 	@Override
-	public SpectrumOperation getSpectrumOperation() {
+	public OperationType getSpectrumOperation() {
 		return OP;
 	}
 	

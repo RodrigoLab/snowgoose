@@ -12,9 +12,9 @@ import org.junit.rules.ExpectedException;
 
 import dr.inference.model.Bounds;
 import dr.inference.model.Parameter.DefaultBounds;
-import srp.spectrum.AbstractSpectra;
-import srp.spectrum.SpectraParameter;
-import srp.spectrum.SpectraParameter.SpectraType;
+import srp.evolution.spectrum.AbstractSpectra;
+import srp.evolution.spectrum.SpectraParameter;
+import srp.evolution.spectrum.SpectraParameter.SpectraType;
 
 public class AbstractSpectraTest {
 

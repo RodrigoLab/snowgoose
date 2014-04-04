@@ -7,10 +7,10 @@ import javax.swing.text.TabableView;
 import org.apache.commons.math3.distribution.BetaDistribution;
 import org.apache.commons.math3.util.FastMath;
 
-import srp.spectrum.SpectraParameter;
-import srp.spectrum.Spectrum;
-import srp.spectrum.SpectrumAlignmentModel;
-import srp.spectrum.SpectrumOperation;
+import srp.evolution.OperationType;
+import srp.evolution.spectrum.SpectraParameter;
+import srp.evolution.spectrum.Spectrum;
+import srp.evolution.spectrum.SpectrumAlignmentModel;
 import dr.inference.operators.CoercionMode;
 import dr.inference.operators.OperatorFailedException;
 import dr.math.MathUtils;
@@ -18,7 +18,7 @@ import dr.math.MathUtils;
 public class testCategoriesChangeSpectrumOperator extends AbstractSpectrumOperator {
 
 	public static final String OPERATOR_NAME = testCategoriesChangeSpectrumOperator.class.getSimpleName();
-	public static final SpectrumOperation OP = SpectrumOperation.DELTA_MULTI;
+	public static final OperationType OP = OperationType.MULTI;
 	
     private final int[] parameterWeights;
     private double delta;
@@ -125,7 +125,7 @@ public class testCategoriesChangeSpectrumOperator extends AbstractSpectrumOperat
 //			SpectraParameter.checkSpectra(spectra[i]);//REMOVE
 		}
 
-		spectrumModel.setSpectrumOperationRecord(OP, spectrumIndex, siteIndexs);
+		spectrumModel.setOperationRecord(OP, spectrumIndex, siteIndexs);
 		
 		spectrumModel.endSpectrumOperation();
 		
@@ -213,7 +213,7 @@ public class testCategoriesChangeSpectrumOperator extends AbstractSpectrumOperat
 
 
 	@Override
-	public SpectrumOperation getSpectrumOperation() {
+	public OperationType getSpectrumOperation() {
 		return OP;
 	}
 

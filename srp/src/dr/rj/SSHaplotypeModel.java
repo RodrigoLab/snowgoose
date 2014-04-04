@@ -6,12 +6,12 @@ import java.util.Arrays;
 import java.util.List;
 
 import jebl.evolution.sequences.Sequence;
+import srp.evolution.haplotypes.old.OldAbstractHaplotypeModel;
+import srp.evolution.haplotypes.old.OldHapOperation;
+import srp.evolution.haplotypes.old.OldHapSwapInfo;
+import srp.evolution.haplotypes.old.OldHaplotype;
+import srp.evolution.shortreads.AlignmentMapping;
 import srp.haplotypes.AbstractHaplotypeModel;
-import srp.haplotypes.old.OldAbstractHaplotypeModel;
-import srp.haplotypes.old.OldHaplotype;
-import srp.haplotypes.old.OldHapOperation;
-import srp.haplotypes.old.OldHapSwapInfo;
-import srp.shortreads.AlignmentMapping;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.datatype.DataType;
 import dr.evolution.datatype.Nucleotides;

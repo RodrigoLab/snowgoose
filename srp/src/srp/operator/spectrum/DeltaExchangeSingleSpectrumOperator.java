@@ -2,10 +2,10 @@ package srp.operator.spectrum;
 
 import org.apache.commons.math3.util.FastMath;
 
-import srp.spectrum.SpectraParameter;
-import srp.spectrum.Spectrum;
-import srp.spectrum.SpectrumAlignmentModel;
-import srp.spectrum.SpectrumOperation;
+import srp.evolution.OperationType;
+import srp.evolution.spectrum.SpectraParameter;
+import srp.evolution.spectrum.Spectrum;
+import srp.evolution.spectrum.SpectrumAlignmentModel;
 import dr.inference.model.Bounds;
 import dr.inference.model.Parameter;
 import dr.inference.operators.CoercionMode;
@@ -15,7 +15,7 @@ import dr.math.MathUtils;
 public class DeltaExchangeSingleSpectrumOperator extends AbstractSpectrumOperator {
 
 	public static final String OPERATOR_NAME = DeltaExchangeSingleSpectrumOperator.class.getSimpleName();
-	public static final SpectrumOperation OP = SpectrumOperation.DELTA_SINGLE;
+	public static final OperationType OP = OperationType.SINGLE;
 //    private Parameter parameter = null;
     private final int[] parameterWeights;
     
@@ -82,7 +82,7 @@ public class DeltaExchangeSingleSpectrumOperator extends AbstractSpectrumOperato
         spectra.setFrequency(dim2, scalar2);
 
         // symmetrical move so return a zero hasting ratio
-		spectrumModel.setSpectrumOperationRecord(OP, spectrumIndex, siteIndex, d);
+		spectrumModel.setOperationRecord(OP, spectrumIndex, siteIndex, d);
 		
 		spectrumModel.endSpectrumOperation();
 
@@ -151,7 +151,7 @@ public class DeltaExchangeSingleSpectrumOperator extends AbstractSpectrumOperato
     }
 
 	@Override
-	public SpectrumOperation getSpectrumOperation() {
+	public OperationType getSpectrumOperation() {
 		return OP;
 	}
 

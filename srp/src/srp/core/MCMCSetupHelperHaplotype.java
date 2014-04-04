@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import srp.haplotypes.old.OldHaplotypeModel;
+import srp.evolution.haplotypes.old.OldHaplotypeModel;
 import srp.operator.haplotypes.BaseSingleEmpiricalOperator;
 import srp.operator.haplotypes.BaseSingleFrequencyOperator;
 import srp.operator.haplotypes.BasesMultiEmpiricalOperator;

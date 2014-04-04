@@ -9,12 +9,12 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import srp.evolution.OperationRecord;
+import srp.evolution.shortreads.AlignmentMapping;
+import srp.evolution.spectrum.Spectrum;
+import srp.evolution.spectrum.SpectrumAlignmentModel;
 import srp.haplotypes.AlignmentUtils;
 import srp.operator.spectrum.DeltaExchangeMultiSpectrumOperator;
-import srp.shortreads.AlignmentMapping;
-import srp.spectrum.Spectrum;
-import srp.spectrum.SpectrumAlignmentModel;
-import srp.spectrum.SpectrumOperationRecord;
 import dr.inference.operators.CoercionMode;
 import dr.inference.operators.OperatorFailedException;
 
@@ -59,7 +59,7 @@ public class DeltaExchangeMultiSpectrumOperatorTest {
 			try {
 				op.doOperation();
 				
-				SpectrumOperationRecord opRecord = spectrumModel.getSpectrumOperationRecord();
+				OperationRecord opRecord = spectrumModel.getOperationRecord();
 				int spectrumIndex = opRecord.getSpectrumIndex();
 				int[] siteIndexs = opRecord.getAllSiteIndexs();
 				double[] delta = opRecord.getDelta();
@@ -113,7 +113,7 @@ public class DeltaExchangeMultiSpectrumOperatorTest {
 			try {
 				op.doOperation();
 				
-				SpectrumOperationRecord opRecord = spectrumModel.getSpectrumOperationRecord();
+				OperationRecord opRecord = spectrumModel.getOperationRecord();
 				int spectrumIndex = opRecord.getSpectrumIndex();
 				int[] siteIndexs = opRecord.getAllSiteIndexs();
 				double[] delta = opRecord.getDelta();

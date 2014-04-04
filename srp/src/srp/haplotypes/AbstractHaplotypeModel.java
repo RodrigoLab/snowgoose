@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import srp.evolution.AbstractAlignmentModel;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.PatternList;
 import dr.evolution.datatype.DataType;
@@ -12,7 +13,7 @@ import dr.evolution.util.Taxon;
 import dr.inference.model.AbstractModel;
 import dr.util.Attributable;
 
-public abstract class AbstractHaplotypeModel extends AbstractModel implements Alignment {
+public abstract class AbstractHaplotypeModel extends AbstractAlignmentModel implements Alignment {
 
 	
 	public AbstractHaplotypeModel(String name) {
@@ -20,7 +21,7 @@ public abstract class AbstractHaplotypeModel extends AbstractModel implements Al
 	}
 
 	private static final long serialVersionUID = -214692337132875593L;
-	private DataType dataType = null;
+
 
 	protected int haplotypesLength;
 	protected ArrayList<Haplotype> haplotypes;
@@ -46,6 +47,11 @@ public abstract class AbstractHaplotypeModel extends AbstractModel implements Al
 	public void removeHaplotype(int i) {
 		haplotypes.remove(i);
 		
+	}
+
+
+	public char getHaplotypeCharAt(int hapIndex, int charIndex) {
+		return haplotypes.get(hapIndex).getChar(charIndex);
 	}
 	
     // **************************************************************
@@ -93,103 +99,6 @@ public abstract class AbstractHaplotypeModel extends AbstractModel implements Al
 		return getHaplotype(taxonIndex).getTaxon();
 	}
 
-	/**
-     * @return the ID of the taxon of the ith sequence. If it doesn't have
-     *         a taxon, returns the ID of the sequence itself.
-     */
-    @Override
-	public String getTaxonId(int taxonIndex) {
-        Taxon taxon = getTaxon(taxonIndex);
-        
-        if (taxon != null)
-            return taxon.getId();
-        else
-            throw new IllegalArgumentException("Illegal taxon index:" + taxonIndex);
-    }
-
-    /**
-     * returns the index of the taxon with the given id.
-     */
-    @Override
-	public int getTaxonIndex(String id) {
-        for (int i = 0, n = getTaxonCount(); i < n; i++) {
-            if (getTaxonId(i).equals(id)) return i;
-        }
-        return -1;
-    }
-
-    /**
-     * returns the index of the given taxon.
-     * must be the same object
-     */
-    @Override
-	public int getTaxonIndex(Taxon taxon) {
-        for (int i = 0, n = getTaxonCount(); i < n; i++) {
-            if (getTaxon(i) == taxon) return i;
-        }
-        return -1;
-    }
-
-    @Override
-	public List<Taxon> asList() {
-        List<Taxon> taxa = new ArrayList<Taxon>();
-        for (int i = 0, n = getTaxonCount(); i < n; i++) {
-            taxa.add(getTaxon(i));
-        }
-        return taxa;
-    }
-
-	
-//    /**
-//     * Sets an named attribute for the taxon of a given sequence. If the sequence
-//     * doesn't have a taxon then the attribute is added to the sequence itself.
-//     *
-//     * @param taxonIndex the index of the taxon whose attribute is being set.
-//     * @param name       the name of the attribute.
-//     * @param value      the new value of the attribute.
-//     */
-//    public void setTaxonAttribute(int taxonIndex, String name, Object value) {
-//        Taxon taxon = getTaxon(taxonIndex);
-//        if (taxon != null)
-//            taxon.setAttribute(name, value);
-//        else
-//            setSequenceAttribute(taxonIndex, name, value);
-//    }
-
-    /**
-     * @param taxonIndex the index of the taxon whose attribute is being fetched.
-     * @param name       the name of the attribute of interest.
-     * @return an object representing the named attributed for the given taxon.
-     */
-    @Override
-	public Object getTaxonAttribute(int taxonIndex, String name) {
-    	Taxon taxon = getTaxon(taxonIndex);
-        if (taxon != null)
-            return taxon.getAttribute(name);
-        else
-            return getSequenceAttribute(taxonIndex, name);
-    }
-
-    @Override
-	public Iterator<Taxon> iterator() {
-        return new Iterator<Taxon>() {
-            private int index = -1;
-
-            @Override
-			public boolean hasNext() {
-                return index < getTaxonCount() - 1;
-            }
-
-            @Override
-			public Taxon next() {
-                index++;
-                return getTaxon(index);
-            }
-
-            @Override
-			public void remove() { /* do nothing */ }
-        };
-    }
 
 
     // **************************************************************
@@ -343,19 +252,13 @@ public abstract class AbstractHaplotypeModel extends AbstractModel implements Al
         return PatternList.Utils.empiricalStateFrequencies(this);
     }
 
-	@Override
-	public DataType getDataType() {
-		return dataType;
-	}
+
 	
     // **************************************************************
     // Alignment IMPLEMENTATION
     // **************************************************************
 
-	@Override
-	public void setDataType(DataType dataType) {
-		this.dataType = dataType;
-	}
+
 
 	
 	/**
@@ -375,69 +278,6 @@ public abstract class AbstractHaplotypeModel extends AbstractModel implements Al
 		
 		return getHaplotypeString(sequenceIndex);
 	}
-	
-    // **************************************************************
-    // Identifiable IMPLEMENTATION
-    // **************************************************************
 
-	protected String id = null;
-
-	/**
-	 * @return the id.
-	 */
-	@Override
-	public String getId() {
-		return id;
-	}
-
-	/**
-	 * Sets the id.
-	 */
-	@Override
-	public void setId(String id) {
-		this.id = id;
-	}
-
-
-    // **************************************************************
-    // Attributable IMPLEMENTATION
-    // **************************************************************
-	private Attributable.AttributeHelper attributes = null;
-    /**
-     * Sets an named attribute for this object.
-     *
-     * @param name  the name of the attribute.
-     * @param value the new value of the attribute.
-     */
-    public void setAttribute(String name, Object value) {
-        if (attributes == null)
-            attributes = new Attributable.AttributeHelper();
-        attributes.setAttribute(name, value);
-    }
-
-    /**
-     * @param name the name of the attribute of interest.
-     * @return an object representing the named attributed for this object.
-     */
-    public Object getAttribute(String name) {
-        if (attributes == null)
-            return null;
-        else
-            return attributes.getAttribute(name);
-    }
-
-    /**
-     * @return an iterator of the attributes that this object has.
-     */
-    public Iterator<String> getAttributeNames() {
-        if (attributes == null)
-            return null;
-        else
-            return attributes.getAttributeNames();
-    }
-
-	public char getHaplotypeCharAt(int hapIndex, int charIndex) {
-		return haplotypes.get(hapIndex).getChar(charIndex);
-	}
 
 }

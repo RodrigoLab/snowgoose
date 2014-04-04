@@ -1,4 +1,4 @@
-package srp.spectrum;
+package srp.evolution.spectrum;
 
 import dr.inference.model.Bounds;
 import dr.inference.model.Parameter;

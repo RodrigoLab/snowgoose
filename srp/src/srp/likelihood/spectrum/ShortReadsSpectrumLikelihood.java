@@ -14,13 +14,13 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import srp.dr.evolution.datatype.ShortReads;
+import srp.evolution.OperationType;
+import srp.evolution.OperationRecord;
+import srp.evolution.shortreads.ShortReadMapping;
+import srp.evolution.spectrum.SpectraParameter;
+import srp.evolution.spectrum.Spectrum;
+import srp.evolution.spectrum.SpectrumAlignmentModel;
 import srp.likelihood.LikelihoodScaler;
-import srp.shortreads.ShortReadMapping;
-import srp.spectrum.SpectraParameter;
-import srp.spectrum.Spectrum;
-import srp.spectrum.SpectrumAlignmentModel;
-import srp.spectrum.SpectrumOperation;
-import srp.spectrum.SpectrumOperationRecord;
 
 import com.carrotsearch.hppc.BitSet;
 
@@ -148,83 +148,7 @@ public class ShortReadsSpectrumLikelihood  extends AbstractShortReadsSpectrumLik
 
 
     
-	protected double calculateLogLikelihood() {
-		
-//		SpectrumOperationRecord operationReocrd = spectrumModel.getSpectrumOperationRecord();
-		SpectrumOperation operation = spectrumModel.getSpectrumOperation();
-		double logLikelihood = Double.NEGATIVE_INFINITY;
-//System.err.println("calculateLikelihood\t"+operation);
-//System.err.println("calculateLikelihood\t"+distType);
-//		operation = SpectrumOperation.FULL;
-//		System.out.println("Calculate ShortReadLikelihood:\t"+operation);
-		if(DEBUG){
-			System.out.println("Calculate ShortReadLikelihood:\t"+operation);
-		}
-		switch (operation) {
-			case NONE:
-			
-//				if(DEBUG){
-//					System.out.println("Calculate ShortReadLikelihood:\t"+operation);
-//				}
-				logLikelihood = calculateSrpLikelihoodFull();
-//				logLikelihood = calculateSrpLikelihoodFullMaster();
-				break;
-			case FULL:
-//				if(DEBUG){
-//					System.out.println("Calculate ShortReadLikelihood:\t"+operation);
-//				}
-				logLikelihood = calculateSrpLikelihoodFullMaster();
-				break;
-//			case SWAPMULTI:
-//				logLikelihood = calculateSrpLikelihoodMultiBasesSwap();
-//				break;
-
-			case DELTA_SINGLE:
-			case SWAP_SINGLE:
-//				
-//				logLikelihood = calculateSrpLikelihoodFull();				
-				logLikelihood = calculateSrpLikelihoodSingle();
-				break;
-			case DELTA_COLUMN:
-			case SWAP_COLUMN:
-				logLikelihood = calculateSrpLikelihoodColumn();
-//				logLikelihood = calculateSrpLikelihoodFull();
-				break;
-			case DELTA_MULTI:
-			case SWAP_MULTI:
-//				logLikelihood = calculateSrpLikelihoodFull();
-				logLikelihood = calculateSrpLikelihoodMulti();
-				
-				break;
-			case SWAP_SUBCOLUMN:
-				logLikelihood = calculateSrpLikelihoodSubColumn();
-				break;
-			case RECOMBINATION:
-				logLikelihood = calculateSrpLikelihoodRecombination();
-				break;
-
-//			case MASTER:
-//				logLikelihood = calculateSrpLikelihoodFullMaster()
-//				break;
-			default:
-				throw new IllegalArgumentException("Unknown operation type: "+operation);
-	
-			}
-
-//	    timeTrial();
-//		storeState();
-//		System.out.println("likelihood\t"+ logLikelihood);
-//		if( (logLikelihood-this.logLikelihood)==0 ){
-//		System.err.println("Delta: "+ (logLikelihood-this.logLikelihood) +"\t"+ logLikelihood +"\t"+ this.logLikelihood +"\t"+ operation);
-////		System.out.println("Delta: "+ (logLikelihood-this.logLikelihood) +"\t"+ logLikelihood +"\t"+ this.logLikelihood +"\t"+ operation);
-//		}
-//		else{
-//			System.out.println("Delta: "+ (logLikelihood-this.logLikelihood) +"\t"+ logLikelihood +"\t"+ this.logLikelihood +"\t"+ operation);
-//		}
-		return logLikelihood;
-	}
-	
-	private double calculateSrpLikelihoodFull() {
+	protected double calculateSrpLikelihoodFull() {
 
 //		System.out.println("calculateSrpLikelihoodFull");
 
@@ -292,10 +216,10 @@ public class ShortReadsSpectrumLikelihood  extends AbstractShortReadsSpectrumLik
 
 
 	
-	private double calculateSrpLikelihoodSingle() {
+	protected double calculateSrpLikelihoodSingle() {
 
 //System.out.println("StartSingle");
-		SpectrumOperationRecord record = spectrumModel.getSpectrumOperationRecord();
+		OperationRecord record = spectrumModel.getOperationRecord();
 		int j = record.getSpectrumIndex(); 
 		int k = record.getSingleIndex();//AllSiteIndexs()[0];
 		double currentLogLikelihood = getStoredLogLikelihood();
@@ -328,9 +252,9 @@ public class ShortReadsSpectrumLikelihood  extends AbstractShortReadsSpectrumLik
 	}
 	
 	
-	private double calculateSrpLikelihoodMulti() {
+	protected double calculateSrpLikelihoodMulti() {
 		
-		SpectrumOperationRecord record = spectrumModel.getSpectrumOperationRecord();
+		OperationRecord record = spectrumModel.getOperationRecord();
 
 		int[] siteIndexs = record.getAllSiteIndexs();
 		int j= record.getSpectrumIndex(); 
@@ -394,9 +318,9 @@ public class ShortReadsSpectrumLikelihood  extends AbstractShortReadsSpectrumLik
 	}
 
 
-	private double calculateSrpLikelihoodColumn() {
+	protected double calculateSrpLikelihoodColumn() {
 
-		SpectrumOperationRecord record = spectrumModel.getSpectrumOperationRecord();
+		OperationRecord record = spectrumModel.getOperationRecord();
 		int k = record.getSingleIndex();
 		ArrayList<Integer> mapToSrp = srpMap.getMapToSrp(k);
 		int[] allSpectrumIndexs = record.getAllSpectrumIndexs();
@@ -423,9 +347,9 @@ public class ShortReadsSpectrumLikelihood  extends AbstractShortReadsSpectrumLik
 		return currentLogLikelihood;
 	}
 	
-	private double calculateSrpLikelihoodSubColumn() {
+	protected double calculateSrpLikelihoodSubColumn() {
 
-		SpectrumOperationRecord record = spectrumModel.getSpectrumOperationRecord();
+		OperationRecord record = spectrumModel.getOperationRecord();
 		int k = record.getSingleIndex();
 		ArrayList<Integer> mapToSrp = srpMap.getMapToSrp(k);
 		int[] allSpectrumIndexs = record.getAllSpectrumIndexs();
@@ -461,9 +385,9 @@ public class ShortReadsSpectrumLikelihood  extends AbstractShortReadsSpectrumLik
 
 	
 
-	private double calculateSrpLikelihoodRecombination() {
+	protected double calculateSrpLikelihoodRecombination() {
 		
-		SpectrumOperationRecord record = spectrumModel.getSpectrumOperationRecord();
+		OperationRecord record = spectrumModel.getOperationRecord();
 		int[] twoSpectrums = record.getRecombinationSpectrumIndex();
 		int[] twoPositions = record.getRecombinationPositionIndex();
 
@@ -658,8 +582,8 @@ public class ShortReadsSpectrumLikelihood  extends AbstractShortReadsSpectrumLik
 //		System.arraycopy(eachSrpLogLikelihood, 0, storedEachSrpLogLikelihood, 0, eachSrpLogLikelihood.length);
 		storedLogLikelihood = logLikelihood;
 //		storeEverything();
-		SpectrumOperationRecord spectrumOperationRecord = spectrumModel.getSpectrumOperationRecord();
-		SpectrumOperation operation = spectrumOperationRecord.getOperation();
+		OperationRecord spectrumOperationRecord = spectrumModel.getOperationRecord();
+		OperationType operation = spectrumOperationRecord.getOperation();
 //		int spectrumIndex;
 //		int siteIndex; = spectrumOperationRecord.getAllSiteIndexs()[0];
 		ArrayList<Integer> mapToSrp;
@@ -676,8 +600,8 @@ public class ShortReadsSpectrumLikelihood  extends AbstractShortReadsSpectrumLik
 			storeEverything();
 			break;
 
-		case DELTA_COLUMN:
-		case SWAP_COLUMN:
+		case COLUMN:
+		
 		case SWAP_SUBCOLUMN:
 			k= spectrumOperationRecord.getSingleIndex();
 			mapToSrp = srpMap.getMapToSrp(k);
@@ -689,8 +613,8 @@ public class ShortReadsSpectrumLikelihood  extends AbstractShortReadsSpectrumLik
 			}
 
 			break;
-		case DELTA_SINGLE:
-		case SWAP_SINGLE:
+		case SINGLE:
+		
 			j = spectrumOperationRecord.getSpectrumIndex();
 			k = spectrumOperationRecord.getSingleIndex();//AllSiteIndexs()[0];
 //			mapToSrp = srpMap.getMapToSrp(k);
@@ -707,8 +631,8 @@ public class ShortReadsSpectrumLikelihood  extends AbstractShortReadsSpectrumLik
 			}
 			break;
 			
-		case DELTA_MULTI:
-		case SWAP_MULTI:
+		case MULTI:
+		
 			j = spectrumOperationRecord.getSpectrumIndex();
 			int[] siteIndexs = spectrumOperationRecord.getAllSiteIndexs();
 			int storeMulti;
@@ -838,8 +762,8 @@ public class ShortReadsSpectrumLikelihood  extends AbstractShortReadsSpectrumLik
 //		restoreEverything();
 //		System.arraycopy(storedEachSrpLogLikelihood, 0, eachSrpLogLikelihood, 0, eachSrpLogLikelihood.length);
 		
-		SpectrumOperationRecord spectrumOperationRecord = spectrumModel.getSpectrumOperationRecord();
-		SpectrumOperation operation = spectrumOperationRecord.getOperation();
+		OperationRecord spectrumOperationRecord = spectrumModel.getOperationRecord();
+		OperationType operation = spectrumOperationRecord.getOperation();
 //		int spectrumIndex;
 //		int siteIndex = spectrumOperationRecord.getAllSiteIndexs()[0];
 		ArrayList<Integer> mapToSrp;
@@ -857,8 +781,8 @@ public class ShortReadsSpectrumLikelihood  extends AbstractShortReadsSpectrumLik
 			
 			restoreEverything();
 			break;
-		case DELTA_COLUMN:
-		case SWAP_COLUMN:
+		case COLUMN:
+		
 		case SWAP_SUBCOLUMN:
 			k = spectrumOperationRecord.getSingleIndex();
 			mapToSrp = srpMap.getMapToSrp(k);
@@ -870,8 +794,8 @@ public class ShortReadsSpectrumLikelihood  extends AbstractShortReadsSpectrumLik
 			}
 
 			break;
-		case DELTA_SINGLE:
-		case SWAP_SINGLE:
+		
+		case SINGLE:
 			j = spectrumOperationRecord.getSpectrumIndex();
 			k = spectrumOperationRecord.getSingleIndex();//AllSiteIndexs()[0];
 //			mapToSrp = srpMap.getMapToSrp(k);
@@ -883,8 +807,8 @@ public class ShortReadsSpectrumLikelihood  extends AbstractShortReadsSpectrumLik
 			}
 			
 			
-		case DELTA_MULTI:
-		case SWAP_MULTI:
+		
+		case MULTI:
 			j = spectrumOperationRecord.getSpectrumIndex();
 			int[] siteIndexs = spectrumOperationRecord.getAllSiteIndexs();
 			int restoreMulti;
@@ -1044,7 +968,7 @@ public class ShortReadsSpectrumLikelihood  extends AbstractShortReadsSpectrumLik
 			
 			
 			
-				SpectrumOperationRecord record = spectrumModel.getSpectrumOperationRecord();
+				OperationRecord record = spectrumModel.getOperationRecord();
 //				int[] siteIndexs = record.getAllSiteIndexs();
 				int j= record.getSpectrumIndex(); 
 				Spectrum spectrum = spectrumModel.getSpectrum(j);

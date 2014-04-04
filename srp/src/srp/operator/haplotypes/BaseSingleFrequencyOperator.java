@@ -1,7 +1,7 @@
 package srp.operator.haplotypes;
 
-import srp.haplotypes.old.OldHaplotypeModel;
-import srp.haplotypes.old.OldHapSwapInfo;
+import srp.evolution.haplotypes.old.OldHapSwapInfo;
+import srp.evolution.haplotypes.old.OldHaplotypeModel;
 import dr.evolution.datatype.Nucleotides;
 import dr.inference.model.Parameter;
 import dr.inference.operators.OperatorFailedException;

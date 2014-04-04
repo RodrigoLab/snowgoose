@@ -10,7 +10,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import srp.shortreads.ShortRead;
+import srp.evolution.shortreads.ShortRead;
 import dr.evolution.sequence.Sequence;
 import dr.evolution.util.Taxon;
 

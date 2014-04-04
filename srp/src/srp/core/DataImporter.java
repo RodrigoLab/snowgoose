@@ -7,10 +7,10 @@ import java.io.IOException;
 
 import srp.dr.evolution.datatype.ShortReads;
 import srp.dr.evolution.io.ShortReadImporter;
-import srp.shortreads.AlignmentMapping;
-import srp.spectrum.SpectraParameter;
-import srp.spectrum.Spectrum;
-import srp.spectrum.SpectrumAlignmentModel;
+import srp.evolution.shortreads.AlignmentMapping;
+import srp.evolution.spectrum.SpectraParameter;
+import srp.evolution.spectrum.Spectrum;
+import srp.evolution.spectrum.SpectrumAlignmentModel;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.datatype.Nucleotides;
 import dr.evolution.io.FastaImporter;

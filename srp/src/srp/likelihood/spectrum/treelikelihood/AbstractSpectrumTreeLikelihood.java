@@ -28,7 +28,7 @@ package srp.likelihood.spectrum.treelikelihood;
 //import dr.evolution.alignment.PatternList;
 import java.util.Arrays;
 
-import srp.spectrum.SpectrumAlignmentModel;
+import srp.evolution.spectrum.SpectrumAlignmentModel;
 import dr.evolution.datatype.DataType;
 import dr.evolution.tree.NodeRef;
 import dr.evomodel.tree.TreeModel;

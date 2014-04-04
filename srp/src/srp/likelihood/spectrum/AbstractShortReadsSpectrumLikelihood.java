@@ -2,6 +2,9 @@ package srp.likelihood.spectrum;
 
 import java.util.Set;
 
+import srp.evolution.OperationType;
+import srp.evolution.shortreads.ShortReadMapping;
+import srp.evolution.spectrum.SpectrumAlignmentModel;
 import srp.likelihood.AbstractShortReadsLikelihood;
 import srp.likelihood.stateLikelihood.BetaMeanStateLikelihood;
 import srp.likelihood.stateLikelihood.BetaModeStateLikelihood;
@@ -9,9 +12,6 @@ import srp.likelihood.stateLikelihood.ChisqStateLikelihood;
 import srp.likelihood.stateLikelihood.GTestStateLikelihood;
 import srp.likelihood.stateLikelihood.ProbabilityStateLikelihood;
 import srp.likelihood.stateLikelihood.StateLikelihood;
-import srp.shortreads.ShortReadMapping;
-import srp.spectrum.SpectrumAlignmentModel;
-import srp.spectrum.SpectrumOperation;
 
 import com.carrotsearch.hppc.BitSet;
 
@@ -125,13 +125,13 @@ public abstract class AbstractShortReadsSpectrumLikelihood extends AbstractShort
 	@Override
 	public void makeDirty() {
 		// System.err.println("make dirty");
-		spectrumModel.resetSpectrumOperation();
+		spectrumModel.resetOperation();
 		likelihoodKnown = false;
 	
 	}
 	
-	public SpectrumOperation getOperation() {
-		return spectrumModel.getSpectrumOperation();
+	public OperationType getOperation() {
+		return spectrumModel.getOperation();
 	}
 
 	

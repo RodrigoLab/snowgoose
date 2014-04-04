@@ -8,11 +8,11 @@ import java.util.Set;
 
 import com.google.common.primitives.Ints;
 
-import srp.shortreads.AlignmentMapping;
-import srp.spectrum.SpectraParameter;
-import srp.spectrum.SpectrumAlignmentModel;
-import srp.spectrum.SpectrumLogger;
-import srp.spectrum.SpectrumOperation;
+import srp.evolution.OperationType;
+import srp.evolution.shortreads.AlignmentMapping;
+import srp.evolution.spectrum.SpectraParameter;
+import srp.evolution.spectrum.SpectrumAlignmentModel;
+import srp.evolution.spectrum.SpectrumLogger;
 import dr.inference.model.Bounds;
 import dr.inference.operators.AbstractCoercableOperator;
 import dr.inference.operators.CoercionMode;
@@ -27,7 +27,7 @@ public abstract class AbstractSpectrumOperator extends AbstractCoercableOperator
     public static final double BOUNDS_UPPER = BOUNDS.getUpperLimit(0);
     
 
-    public SpectrumOperation OP;
+    public OperationType OP;
     
     protected static final int MIN_BASE = 1;
     protected SpectrumAlignmentModel spectrumModel;
@@ -65,7 +65,7 @@ public abstract class AbstractSpectrumOperator extends AbstractCoercableOperator
 	}
 
 
-	public abstract SpectrumOperation getSpectrumOperation();
+	public abstract OperationType getSpectrumOperation();
 
 	HashSet<Integer> generated = new HashSet<Integer>();
 	public long time = 0;

@@ -12,8 +12,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import srp.core.DataImporter;
-import srp.shortreads.ShortRead;
-import srp.shortreads.ShortReadMapping;
+import srp.evolution.shortreads.ShortRead;
+import srp.evolution.shortreads.ShortReadMapping;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.sequence.Sequence;
 import dr.evolution.util.Taxon;

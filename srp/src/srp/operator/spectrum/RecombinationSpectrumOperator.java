@@ -2,10 +2,10 @@ package srp.operator.spectrum;
 
 import org.apache.commons.math3.util.FastMath;
 
-import srp.spectrum.SpectraParameter;
-import srp.spectrum.Spectrum;
-import srp.spectrum.SpectrumAlignmentModel;
-import srp.spectrum.SpectrumOperation;
+import srp.evolution.OperationType;
+import srp.evolution.spectrum.SpectraParameter;
+import srp.evolution.spectrum.Spectrum;
+import srp.evolution.spectrum.SpectrumAlignmentModel;
 import dr.inference.operators.CoercionMode;
 import dr.inference.operators.OperatorFailedException;
 import dr.math.MathUtils;
@@ -13,7 +13,7 @@ import dr.math.MathUtils;
 public class RecombinationSpectrumOperator extends AbstractSpectrumOperator {
 
 	public static final String OPERATOR_NAME = RecombinationSpectrumOperator.class.getSimpleName();
-	public static final SpectrumOperation OP = SpectrumOperation.RECOMBINATION;
+	public static final OperationType OP = OperationType.RECOMBINATION;
 //    private Parameter parameter = null;
     private final int[] parameterWeights;
 //    private double delta = 0.05;
@@ -91,7 +91,7 @@ public class RecombinationSpectrumOperator extends AbstractSpectrumOperator {
 //			System.err.println(Arrays.toString(spectra1.getParameterValues()) +"\t"+ 
 //					Arrays.toString(spectra2.getParameterValues()));
 		}
-		spectrumModel.setSpectrumOperationRecord(OP, twoSpectrumIndex, twoPositionIndex);
+		spectrumModel.setOperationRecord(OP, twoSpectrumIndex, twoPositionIndex);
 		
 		spectrumModel.endSpectrumOperation();
 
@@ -183,7 +183,7 @@ public class RecombinationSpectrumOperator extends AbstractSpectrumOperator {
 
 
 	@Override
-	public SpectrumOperation getSpectrumOperation() {
+	public OperationType getSpectrumOperation() {
 		return OP;
 	}
 	

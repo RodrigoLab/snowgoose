@@ -29,8 +29,8 @@ import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import srp.spectrum.SpectrumAlignmentModel;
-import srp.spectrum.SpectrumOperationRecord;
+import srp.evolution.OperationRecord;
+import srp.evolution.spectrum.SpectrumAlignmentModel;
 import dr.evolution.datatype.DataType;
 import dr.evolution.tree.NodeRef;
 import dr.evolution.tree.Tree;
@@ -223,7 +223,7 @@ public class SpectrumTreeLikelihood extends AbstractSpectrumTreeLikelihood {
         } 
 
         else if (model == spectrumModel){
-        	SpectrumOperationRecord record = spectrumModel.getSpectrumOperationRecord();
+        	OperationRecord record = spectrumModel.getOperationRecord();
 			int spectrumIndex = record.getSpectrumIndex();
 //			int siteIndex = record.getAllSiteIndexs()[0];
 //        	updateExternalNodeIndex = -1;
@@ -283,7 +283,7 @@ public class SpectrumTreeLikelihood extends AbstractSpectrumTreeLikelihood {
      */
     @Override
 	protected void acceptState() {
-    	SpectrumOperationRecord record = spectrumModel.getSpectrumOperationRecord();
+    	OperationRecord record = spectrumModel.getOperationRecord();
 
 	}
     @Override
@@ -615,7 +615,7 @@ public class SpectrumTreeLikelihood extends AbstractSpectrumTreeLikelihood {
     public String diagnostic(){
     	StringBuilder sb = new StringBuilder();
     	sb.append("Diagnostic!\n");
-    	SpectrumOperationRecord record = spectrumModel.getSpectrumOperationRecord();
+    	OperationRecord record = spectrumModel.getOperationRecord();
 		int spectrumIndex = record.getSpectrumIndex();
 		int siteIndex = record.getSingleIndex();
 //    	updateExternalNodeIndex = -1;

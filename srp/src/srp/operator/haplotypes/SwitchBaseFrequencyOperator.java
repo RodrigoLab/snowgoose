@@ -2,10 +2,10 @@ package srp.operator.haplotypes;
 
 import java.util.Arrays;
 
-import srp.haplotypes.old.OldHaplotypeModel;
-import srp.haplotypes.old.OldHapOperation;
-import srp.haplotypes.old.OldHapSwapInfo;
-import srp.shortreads.AlignmentMapping;
+import srp.evolution.haplotypes.old.OldHapOperation;
+import srp.evolution.haplotypes.old.OldHapSwapInfo;
+import srp.evolution.haplotypes.old.OldHaplotypeModel;
+import srp.evolution.shortreads.AlignmentMapping;
 import dr.evolution.datatype.Nucleotides;
 import dr.inference.model.Parameter;
 import dr.inference.operators.AbstractCoercableOperator;

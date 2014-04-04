@@ -1,8 +1,8 @@
-package srp.spectrum;
+package srp.evolution.spectrum;
 
 import java.util.ArrayList;
 
-import srp.spectrum.CategorySpectraParameter.CategoryType;
+import srp.evolution.spectrum.CategorySpectraParameter.CategoryType;
 
 //public class Spectrum implements Identifiable, Attributable{// extends AbstractModel{
 public class CategorySpectrum extends AbstractSpectrum {

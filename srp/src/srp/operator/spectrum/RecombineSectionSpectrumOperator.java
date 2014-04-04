@@ -4,10 +4,10 @@ import java.util.Arrays;
 
 import org.apache.commons.math3.util.FastMath;
 
-import srp.spectrum.SpectraParameter;
-import srp.spectrum.Spectrum;
-import srp.spectrum.SpectrumAlignmentModel;
-import srp.spectrum.SpectrumOperation;
+import srp.evolution.OperationType;
+import srp.evolution.spectrum.SpectraParameter;
+import srp.evolution.spectrum.Spectrum;
+import srp.evolution.spectrum.SpectrumAlignmentModel;
 import dr.inference.operators.CoercionMode;
 import dr.inference.operators.MCMCOperator;
 import dr.inference.operators.OperatorFailedException;
@@ -16,7 +16,7 @@ import dr.math.MathUtils;
 public class RecombineSectionSpectrumOperator extends AbstractSpectrumOperator {
 
 	public static final String OPERATOR_NAME = RecombineSectionSpectrumOperator.class.getSimpleName();
-	public static final SpectrumOperation OP = SpectrumOperation.RECOMBINATION;
+	public static final OperationType OP = OperationType.RECOMBINATION;
 	
 	private final int SWAP_MIN = 1;
 	
@@ -101,7 +101,7 @@ public class RecombineSectionSpectrumOperator extends AbstractSpectrumOperator {
 //			System.err.println(Arrays.toString(spectra1.getParameterValues()) +"\t"+ 
 //					Arrays.toString(spectra2.getParameterValues()));
 		}
-		spectrumModel.setSpectrumOperationRecord(OP, twoSpectrumIndex, twoPositionIndex);
+		spectrumModel.setOperationRecord(OP, twoSpectrumIndex, twoPositionIndex);
 		
 		spectrumModel.endSpectrumOperation();
 
@@ -204,7 +204,7 @@ public class RecombineSectionSpectrumOperator extends AbstractSpectrumOperator {
 
 
 	@Override
-	public SpectrumOperation getSpectrumOperation() {
+	public OperationType getSpectrumOperation() {
 		return OP;
 	}
 	

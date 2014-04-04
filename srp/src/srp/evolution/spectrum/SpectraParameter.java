@@ -1,4 +1,4 @@
-package srp.spectrum;
+package srp.evolution.spectrum;
 
 import java.util.Arrays;
 

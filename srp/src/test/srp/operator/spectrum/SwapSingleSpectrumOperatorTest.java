@@ -12,14 +12,14 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import srp.evolution.OperationRecord;
+import srp.evolution.shortreads.AlignmentMapping;
+import srp.evolution.spectrum.SpectraParameter;
+import srp.evolution.spectrum.Spectrum;
+import srp.evolution.spectrum.SpectrumAlignmentModel;
 import srp.haplotypes.AlignmentUtils;
 import srp.operator.spectrum.RecombineSectionSpectrumOperator;
 import srp.operator.spectrum.SwapSingleSpectrumOperator;
-import srp.shortreads.AlignmentMapping;
-import srp.spectrum.SpectraParameter;
-import srp.spectrum.Spectrum;
-import srp.spectrum.SpectrumAlignmentModel;
-import srp.spectrum.SpectrumOperationRecord;
 import dr.inference.operators.CoercionMode;
 import dr.inference.operators.OperatorFailedException;
 
@@ -67,7 +67,7 @@ public class SwapSingleSpectrumOperatorTest {
 			try {
 				op.doOperation();
 				
-				SpectrumOperationRecord opRecord = spectrumModel.getSpectrumOperationRecord();
+				OperationRecord opRecord = spectrumModel.getOperationRecord();
 				int spectrumIndex = opRecord.getSpectrumIndex();
 				int siteIndex = opRecord.getSingleIndex();
 

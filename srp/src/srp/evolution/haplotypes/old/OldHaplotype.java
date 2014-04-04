@@ -1,4 +1,4 @@
-package srp.haplotypes.old;
+package srp.evolution.haplotypes.old;
 
 import dr.evolution.datatype.DataType;
 import dr.evolution.sequence.Sequence;

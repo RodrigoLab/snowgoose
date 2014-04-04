@@ -6,10 +6,10 @@ import java.util.Set;
 
 import org.apache.commons.math3.util.FastMath;
 
-import srp.spectrum.SpectraParameter;
-import srp.spectrum.Spectrum;
-import srp.spectrum.SpectrumAlignmentModel;
-import srp.spectrum.SpectrumOperation;
+import srp.evolution.OperationType;
+import srp.evolution.spectrum.SpectraParameter;
+import srp.evolution.spectrum.Spectrum;
+import srp.evolution.spectrum.SpectrumAlignmentModel;
 
 import com.google.common.primitives.Ints;
 
@@ -23,7 +23,7 @@ public class DirichletAlphaSpectrumOperator extends AbstractDirichletSpectrumOpe
 	
 	public static final String OPERATOR_NAME = DirichletAlphaSpectrumOperator.class.getSimpleName();
 //	public static final SpectrumOperation OP = SpectrumOperation.DIRICHLET;
-	public static final SpectrumOperation OP = SpectrumOperation.DELTA_SINGLE;
+	public static final OperationType OP = OperationType.SINGLE;
 	
 //    private Parameter parameter = null;
 
@@ -99,7 +99,7 @@ public class DirichletAlphaSpectrumOperator extends AbstractDirichletSpectrumOpe
 		
 		double ratio = (x - y);
 		
-		spectrumModel.setSpectrumOperationRecord(OP, spectrumIndex, siteIndex);
+		spectrumModel.setOperationRecord(OP, spectrumIndex, siteIndex);
 		
 		spectrumModel.endSpectrumOperation();
 //		System.out.print("diriAlpha: "+ratio +"\t");
@@ -164,7 +164,7 @@ public class DirichletAlphaSpectrumOperator extends AbstractDirichletSpectrumOpe
 
 
 	@Override
-	public SpectrumOperation getSpectrumOperation() {
+	public OperationType getSpectrumOperation() {
 		return OP;
 	}
 

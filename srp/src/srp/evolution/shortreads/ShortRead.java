@@ -1,4 +1,4 @@
-package srp.shortreads;
+package srp.evolution.shortreads;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
