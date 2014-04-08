@@ -32,7 +32,7 @@ import dr.inference.operators.OperatorSchedule;
 import dr.inference.operators.SimpleOperatorSchedule;
 import dr.math.MathUtils;
 
-public class ShortReadLikelihoodTest {
+public class OldShortReadLikelihoodTest {
 
 	
 	private OldHaplotypeModel haplotypeModel;

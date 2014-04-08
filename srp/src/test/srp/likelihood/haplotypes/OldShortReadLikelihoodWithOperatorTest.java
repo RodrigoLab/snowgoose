@@ -33,7 +33,7 @@ import dr.inference.operators.CoercionMode;
 import dr.inference.operators.MCMCOperator;
 import dr.math.MathUtils;
 
-public class ShortReadLikelihoodWithOperatorTest {
+public class OldShortReadLikelihoodWithOperatorTest {
 
 	
 	private OldHaplotypeModel haplotypeModelH4;

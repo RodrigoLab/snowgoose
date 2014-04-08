@@ -24,6 +24,7 @@ import dr.inference.model.Variable.ChangeType;
 
 
 @SuppressWarnings({ "unused", "serial" })
+@Deprecated
 public class ShortReadLikelihood extends AbstractModelLikelihood {
 
 	
