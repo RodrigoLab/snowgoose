@@ -42,8 +42,12 @@ public abstract class AbstractSingleOperator extends SimpleMCMCOperator {
 		return MathUtils.nextInt(haplotypeLength);
 	}
 	
-	public char getNextBase(){
-		int i = MathUtils.nextInt(DIMENSION);
+	public char getNextDiffBase(int oldState){
+		int i = oldState;
+		do {
+			i = MathUtils.nextInt(DIMENSION);
+		} while (i == oldState);
+
 		return DNA_CHARS[i];
 	}
 

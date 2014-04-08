@@ -6,12 +6,12 @@ import java.util.List;
 
 import srp.dr.ext.TreeLikelihoodExt;
 import srp.evolution.haplotypes.old.OldHaplotypeModel;
-import srp.operator.haplotypes.BaseSingleEmpiricalOperator;
-import srp.operator.haplotypes.BaseSingleFrequencyOperator;
-import srp.operator.haplotypes.BasesMultiEmpiricalOperator;
-import srp.operator.haplotypes.HaplotypeRecombinationOperator;
-import srp.operator.haplotypes.HaplotypeSwapSectionOperator;
-import srp.operator.haplotypes.SwitchBaseFrequencyOperator;
+import srp.operator.haplotypes.old.BaseSingleEmpiricalOperator;
+import srp.operator.haplotypes.old.BaseSingleFrequencyOperator;
+import srp.operator.haplotypes.old.BasesMultiEmpiricalOperator;
+import srp.operator.haplotypes.old.HaplotypeRecombinationOperator;
+import srp.operator.haplotypes.old.HaplotypeSwapSectionOperator;
+import srp.operator.haplotypes.old.SwitchBaseFrequencyOperator;
 import dr.evolution.datatype.Nucleotides;
 import dr.evomodel.branchratemodel.StrictClockBranchRates;
 import dr.evomodel.operators.ExchangeOperator;
@@ -120,100 +120,6 @@ public class MCMCSetupHelperHaplotype extends MCMCSetupHelper {
 		return treeLikelihood;
 	}
 
-	public static ArrayList<MCMCOperator> defalutOperators(OperatorSchedule schedule,
-			OldHaplotypeModel haplotypeModel,
-				Parameter... parameters) {
-	
-			MCMCOperator operator;
-//			ArrayList<MCMCOperator> OperatorList = new ArrayList<MCMCOperator>();
-	
-	//		operator = new SingleBaseOperator(haplotypeModel, 0);
-	//		operator.setWeight(opSmall);
-	//		schedule.addOperator(operator);
-	//
-	//		operator = new SingleBaseUniformOperator(haplotypeModel, 0);
-	//		operator.setWeight(opSmall);
-	//		schedule.addOperator(operator);
-	
-	//		operator = new SingleBaseEmpiricalOperator(haplotypeModel, 0);
-	//		operator.setWeight(opLarge);
-	//		schedule.addOperator(operator);
-	
-	//		operator = new SwapBasesMultiOperator(haplotypeModel, 12, CoercionMode.COERCION_ON);
-	//		operator.setWeight(opLarge);
-	//		schedule.addOperator(operator);
-	//
-	//		operator = new SwapBasesUniformOperator(haplotypeModel, 12, CoercionMode.COERCION_ON);
-	//		operator.setWeight(opLarge);
-	//		schedule.addOperator(operator);
-	//
-	//		operator = new SwapBasesEmpiricalOperator(haplotypeModel, 1, CoercionMode.COERCION_OFF);
-	//		operator.setWeight(opLarge);
-	//		schedule.addOperator(operator);
-	
-	//		operator = new SwapBasesEmpiricalOperator(haplotypeModel, 2, CoercionMode.COERCION_OFF);
-	//		operator.setWeight(opLarge);
-	//		schedule.addOperator(operator);
-	//		operator = new SwapBasesEmpiricalOperator(haplotypeModel, 5, CoercionMode.COERCION_OFF);
-	//		operator.setWeight(opLarge);
-	//		schedule.addOperator(operator);
-	//		operator = new SwapBasesEmpiricalOperator(haplotypeModel, 5, CoercionMode.COERCION_ON);
-	//		operator.setWeight(opLarge);
-	//		schedule.addOperator(operator);
-	
-			operator = new HaplotypeRecombinationOperator(haplotypeModel, 12);
-			operator.setWeight(3.0);
-	//		schedule.addOperator(operator);
-	
-			operator = new HaplotypeSwapSectionOperator(haplotypeModel, 12, CoercionMode.COERCION_ON);
-			operator.setWeight(opSmall);
-	//		schedule.addOperator(operator);
-			
-			for (Parameter parameter : parameters) {
-	
-				String parameterName = parameter.getParameterName();
-				
-				if("kappa".equals(parameterName)){
-					operator = new ScaleOperator(parameter, 0.75);
-					operator.setWeight(opTiny);
-					schedule.addOperator(operator);
-				}
-				else if("frequency".equals(parameterName)){
-					operator = new DeltaExchangeOperator(parameter, new int[] { 1,
-							1, 1, 1 }, 0.01, 0.1, false, CoercionMode.COERCION_ON);
-					operator.setWeight(opTiny);
-	//				operator.setWeight(opHuge);
-					schedule.addOperator(operator);
-					
-	//				operator = new ColumnOperator(haplotypeModel, haplotypeModel.getHaplotypeCount(), parameter, null);
-	//				operator.setWeight(opMed);
-	////				schedule.addOperator(operator);
-					
-					operator = new SwitchBaseFrequencyOperator(haplotypeModel, 0.8, 
-							parameter, CoercionMode.COERCION_ON);
-					operator.setWeight(opMed);
-					schedule.addOperator(operator);
-					//good seq: low (switch) prob, most accepted with same posterior
-					//			high switchProb, low accept, but with diff posterior
-					//bad seq: high (switchProb), accept with different posterior
-					//			low switch,  accept with same post
-					
-	//				operator = new SingleBaseFrequencyOperator(haplotypeModel, parameter);
-	//				operator.setWeight(opMed);
-	////				schedule.addOperator(operator);
-				}
-				else if("populationSize".equals(parameterName)){
-					operator = new ScaleOperator(parameter, 0.75);
-					operator.setWeight(opTiny);
-					schedule.addOperator(operator);
-				}
-				
-			}
-			
-			return null;
-		}
-
-
 	public static List<MCMCOperator> defalutTreeOperators(OperatorSchedule schedule,
 			TreeModel treeModel) {
 	
@@ -260,7 +166,100 @@ public class MCMCSetupHelperHaplotype extends MCMCSetupHelper {
 			return null;
 		}
 
-	public static ArrayList<MCMCOperator> testOperators(
+	public static ArrayList<MCMCOperator> defalutOperatorsOldHaplotype(OperatorSchedule schedule,
+				OldHaplotypeModel haplotypeModel,
+					Parameter... parameters) {
+		
+				MCMCOperator operator;
+	//			ArrayList<MCMCOperator> OperatorList = new ArrayList<MCMCOperator>();
+		
+		//		operator = new SingleBaseOperator(haplotypeModel, 0);
+		//		operator.setWeight(opSmall);
+		//		schedule.addOperator(operator);
+		//
+		//		operator = new SingleBaseUniformOperator(haplotypeModel, 0);
+		//		operator.setWeight(opSmall);
+		//		schedule.addOperator(operator);
+		
+		//		operator = new SingleBaseEmpiricalOperator(haplotypeModel, 0);
+		//		operator.setWeight(opLarge);
+		//		schedule.addOperator(operator);
+		
+		//		operator = new SwapBasesMultiOperator(haplotypeModel, 12, CoercionMode.COERCION_ON);
+		//		operator.setWeight(opLarge);
+		//		schedule.addOperator(operator);
+		//
+		//		operator = new SwapBasesUniformOperator(haplotypeModel, 12, CoercionMode.COERCION_ON);
+		//		operator.setWeight(opLarge);
+		//		schedule.addOperator(operator);
+		//
+		//		operator = new SwapBasesEmpiricalOperator(haplotypeModel, 1, CoercionMode.COERCION_OFF);
+		//		operator.setWeight(opLarge);
+		//		schedule.addOperator(operator);
+		
+		//		operator = new SwapBasesEmpiricalOperator(haplotypeModel, 2, CoercionMode.COERCION_OFF);
+		//		operator.setWeight(opLarge);
+		//		schedule.addOperator(operator);
+		//		operator = new SwapBasesEmpiricalOperator(haplotypeModel, 5, CoercionMode.COERCION_OFF);
+		//		operator.setWeight(opLarge);
+		//		schedule.addOperator(operator);
+		//		operator = new SwapBasesEmpiricalOperator(haplotypeModel, 5, CoercionMode.COERCION_ON);
+		//		operator.setWeight(opLarge);
+		//		schedule.addOperator(operator);
+		
+				operator = new HaplotypeRecombinationOperator(haplotypeModel, 12);
+				operator.setWeight(3.0);
+		//		schedule.addOperator(operator);
+		
+				operator = new HaplotypeSwapSectionOperator(haplotypeModel, 12, CoercionMode.COERCION_ON);
+				operator.setWeight(opSmall);
+		//		schedule.addOperator(operator);
+				
+				for (Parameter parameter : parameters) {
+		
+					String parameterName = parameter.getParameterName();
+					
+					if("kappa".equals(parameterName)){
+						operator = new ScaleOperator(parameter, 0.75);
+						operator.setWeight(opTiny);
+						schedule.addOperator(operator);
+					}
+					else if("frequency".equals(parameterName)){
+						operator = new DeltaExchangeOperator(parameter, new int[] { 1,
+								1, 1, 1 }, 0.01, 0.1, false, CoercionMode.COERCION_ON);
+						operator.setWeight(opTiny);
+		//				operator.setWeight(opHuge);
+						schedule.addOperator(operator);
+						
+		//				operator = new ColumnOperator(haplotypeModel, haplotypeModel.getHaplotypeCount(), parameter, null);
+		//				operator.setWeight(opMed);
+		////				schedule.addOperator(operator);
+						
+						operator = new SwitchBaseFrequencyOperator(haplotypeModel, 0.8, 
+								parameter, CoercionMode.COERCION_ON);
+						operator.setWeight(opMed);
+						schedule.addOperator(operator);
+						//good seq: low (switch) prob, most accepted with same posterior
+						//			high switchProb, low accept, but with diff posterior
+						//bad seq: high (switchProb), accept with different posterior
+						//			low switch,  accept with same post
+						
+		//				operator = new SingleBaseFrequencyOperator(haplotypeModel, parameter);
+		//				operator.setWeight(opMed);
+		////				schedule.addOperator(operator);
+					}
+					else if("populationSize".equals(parameterName)){
+						operator = new ScaleOperator(parameter, 0.75);
+						operator.setWeight(opTiny);
+						schedule.addOperator(operator);
+					}
+					
+				}
+				
+				return null;
+			}
+
+	public static ArrayList<MCMCOperator> testOperatorsOldHaplotype(
 			OperatorSchedule schedule,
 			OldHaplotypeModel haplotypeModel,
 				Parameter... parameters) {

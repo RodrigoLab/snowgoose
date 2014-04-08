@@ -33,7 +33,7 @@ import dr.inference.operators.OperatorSchedule;
 import dr.inference.operators.SimpleOperatorSchedule;
 import dr.inferencexml.model.CompoundLikelihoodParser;
 
-public class MainMCMCFull {
+public class MainMCMCFullOldHaplotype {
 
 	public static void main(String[] args) throws Exception {
 
@@ -105,7 +105,7 @@ public class MainMCMCFull {
 //		ArrayList<MCMCOperator> defalutOperatorsList = 
 //		schedule.addOperators(MCMCSetupHelperHaplotype.defalutOperators(haplotypeModel, freqs, popSize, kappa));
 //		schedule.addOperators(MCMCSetupHelperHaplotype.defalutTreeOperators(treeModel));
-		MCMCSetupHelperHaplotype.defalutOperators(schedule, haplotypeModel, freqs, popSize, kappa);
+		MCMCSetupHelperHaplotype.defalutOperatorsOldHaplotype(schedule, haplotypeModel, freqs, popSize, kappa);
 		MCMCSetupHelperHaplotype.defalutTreeOperators(schedule, treeModel);
 				
 		

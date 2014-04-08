@@ -36,6 +36,7 @@ public abstract class AbstractAlignmentModel extends AbstractModel implements Ta
 
 	public AbstractAlignmentModel(String name) {
 		super(name);
+		operationRecord = new OperationRecord();
 	}
 
 	public void startAlignmentModelOperation() {

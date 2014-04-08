@@ -10,7 +10,7 @@ public class BaseSingleOperator extends AbstractSingleOperator {
 	public static final String OPERATOR_NAME = BaseSingleOperator.class.getSimpleName();
 
 	
-	public BaseSingleOperator(HaplotypeModel haplotypeModel, int nothing) {
+	public BaseSingleOperator(HaplotypeModel haplotypeModel) {
 		super(haplotypeModel);
 	}
 
@@ -20,10 +20,12 @@ public class BaseSingleOperator extends AbstractSingleOperator {
 		haplotypeModel.startAlignmentModelOperation();
 
 		int hapIndex = getNextHapIndex();
-		int siteIndex = getNextSiteIndex();
-		char newChar = getNextBase();
-
 		Haplotype haplotype = haplotypeModel.getHaplotype(hapIndex);
+		
+		int siteIndex = getNextSiteIndex();
+		int oldState = haplotype.getState(siteIndex);
+		char newChar = getNextDiffBase(oldState);
+		
 		haplotype.setCharAt(siteIndex, newChar);
 		haplotypeModel.setOperationRecord(OP, hapIndex, siteIndex);
 

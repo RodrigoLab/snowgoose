@@ -7,11 +7,12 @@ public class TestUtils {
 
 	public static final double UNITTEST_THRESHOLD = 1e-8;
 	public static final double THRESHOLD = MarkovChain.EVALUATION_TEST_THRESHOLD;
-	public static void assertExpectationRange(double mean, double value, double error) {
-        double upper = value + error;
-        double lower = value - error;
+	
+	public static void assertExpectationRange(double mean, double expectedValue, double error) {
+        double upper = expectedValue + error;
+        double lower = expectedValue - error;
 
-        assertTrue("Expected value is: " + value + " but got " + mean + " +/- " + error,
+        assertTrue("Expected value is: " + expectedValue + " but got " + mean + " +/- " + error,
                 upper > mean && lower < mean);
     }
 	
