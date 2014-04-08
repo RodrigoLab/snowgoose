@@ -19,8 +19,7 @@ public class Haplotype extends Sequence {
 	
 //	@Deprecated 
 //	StringBuilder sequenceString;
-	@Deprecated
-	String storeHaplotype;
+
 	
 	char[] haplotype;
 	char[] storedHaplotype;
@@ -54,6 +53,7 @@ public class Haplotype extends Sequence {
 		haplotype[index]=newChar;
 	}
 
+	@Deprecated
 	public char replaceCharAt(int index, int newChar){
 		char oldChar = getChar(index);
 		setCharAt(index, (char) newChar);

@@ -162,5 +162,95 @@ public class HaplotypeTest {
 		
 		
 	}
+	
+	
+	@Test
+	public void testStoreRestoreStateInt() throws Exception {
+		for (int i = 0; i < haplotype.getLength(); i++) {
+			haplotype.storeState(i);
+		}
+		assertEquals("ACGT", haplotype.getSequenceString());;
+		haplotype.setSequenceString("TTAA");
+		assertEquals("TTAA", haplotype.getSequenceString());;
+		
+		haplotype.restoreState(0);
+		assertEquals("ATAA", haplotype.getSequenceString());;
+		
+		haplotype.restoreState(3);
+		assertEquals("ATAT", haplotype.getSequenceString());;
+		
+		haplotype.restoreState(1);
+		assertEquals("ACAT", haplotype.getSequenceString());;
+		
+		haplotype.restoreState(2);
+		assertEquals("ACGT", haplotype.getSequenceString());;
+		
+		haplotype.storeState(0);
+		haplotype.setCharAt(0, 'T');
+		assertEquals("TCGT", haplotype.getSequenceString());;
+		haplotype.restoreState(0);
 
+		haplotype.storeState(0);
+		haplotype.setCharAt(1, 'T');
+		assertEquals("ATGT", haplotype.getSequenceString());;
+		haplotype.restoreState(1);
+		assertEquals("ACGT", haplotype.getSequenceString());;
+		
+		haplotype.setCharAt(1, 'G');
+		haplotype.storeState(1);
+		assertEquals("AGGT", haplotype.getSequenceString());;
+		haplotype.setCharAt(3, 'C');
+		haplotype.storeState(3);
+		assertEquals("AGGC", haplotype.getSequenceString());;
+		haplotype.setCharAt(3, 'T');
+		haplotype.restoreState(3);
+		haplotype.storeState(3);
+		assertEquals("AGGC", haplotype.getSequenceString());;
+		haplotype.setCharAt(3, 'A');
+		haplotype.restoreState(3);
+		haplotype.storeState(3);
+		assertEquals("AGGC", haplotype.getSequenceString());;
+		haplotype.setCharAt(3, 'C');
+		haplotype.storeState(3);
+		assertEquals("AGGC", haplotype.getSequenceString());;
+
+	}
+	@Test
+	public void testStoreRestoreState() throws Exception {
+		
+		haplotype = new Haplotype("AACCGGTT");
+		haplotype.storeState();
+		haplotype.setSequenceString("TTTTAAAA");
+		assertEquals("TTTTAAAA", haplotype.getSequenceString());;
+		
+		haplotype.storeState();
+		haplotype.setSequenceString("GCCGAGGA");
+		assertEquals("GCCGAGGA", haplotype.getSequenceString());;
+
+		haplotype.storeState();
+		haplotype.setSequenceString("ATGACCGA");
+		haplotype.restoreState();
+		assertEquals("GCCGAGGA", haplotype.getSequenceString());;
+
+		haplotype.storeState();
+		haplotype.setSequenceString("TTAGGTAG");
+		haplotype.restoreState();
+		assertEquals("GCCGAGGA", haplotype.getSequenceString());;
+
+		haplotype.storeState();
+		haplotype.setSequenceString("CCAGTTAG");
+		assertEquals("CCAGTTAG", haplotype.getSequenceString());;
+		
+		haplotype.storeState();
+		haplotype.setCharAt(0, 'A');
+		assertEquals("ACAGTTAG", haplotype.getSequenceString());;
+		
+		haplotype.storeState();
+		haplotype.setCharAt(1, 'T');
+		haplotype.restoreState();
+		assertEquals("ACAGTTAG", haplotype.getSequenceString());;
+
+	}
+	
+	
 }
