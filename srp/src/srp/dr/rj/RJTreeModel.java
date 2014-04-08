@@ -1,4 +1,4 @@
-package dr.rj;
+package srp.dr.rj;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,44 +29,33 @@ import dr.math.MathUtils;
 import dr.util.Attributable;
 
 
-public class SSTreeModel extends AbstractModel implements MutableTree {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 5192228883120179211L;
+public class RJTreeModel extends AbstractModel implements MutableTree {
 
 	//
 	// Public stuff
 	//
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7300035033711283685L;
+
 	public static final String TREE_MODEL = "treeModel";
 
 	private static final boolean TEST_NODE_BOUNDS = false;
-	//
-	// SSTreeModel
-	//
-	private static final int SCALE_TAXA_FACTOR = 2;
-	private int initExternalNode = 16;
-//	private int initInternalNode = initExternalNode-1;
 
-	private NodeRef trueRoot;
-	private int trueExternalNodeCount;
-	private int trueInternalNodeCount;
-	private int trueNodeCount;
-	
-
-	public SSTreeModel(String name) {
+	public RJTreeModel(String name) {
 		super(name);
 		nodeCount = 0;
 		externalNodeCount = 0;
 		internalNodeCount = 0;
 	}
 
-	public SSTreeModel(Tree tree) {
+	public RJTreeModel(Tree tree) {
 		this(TREE_MODEL, tree, false);
 	}
 
-	public SSTreeModel(String id, Tree tree) {
+	public RJTreeModel(String id, Tree tree) {
 
 		this(TREE_MODEL, tree, false);
 		setId(id);
@@ -77,7 +66,7 @@ public class SSTreeModel extends AbstractModel implements MutableTree {
 	 * TreeModel Useful for constructing a TreeModel from a NEXUS file entry
 	 */
 
-	public SSTreeModel(String name, Tree tree, boolean copyAttributes) {
+	public RJTreeModel(String name, Tree tree, boolean copyAttributes) {
 
 		super(name);
 
@@ -94,20 +83,8 @@ public class SSTreeModel extends AbstractModel implements MutableTree {
 
 		internalNodeCount = binaryTree.getInternalNodeCount();
 		externalNodeCount = binaryTree.getExternalNodeCount();
-		trueInternalNodeCount = internalNodeCount;
-		trueExternalNodeCount = externalNodeCount;
-		trueNodeCount = internalNodeCount + externalNodeCount;
 
-//		System.err.println(internalNodeCount +"\t"+ externalNodeCount);
-		externalNodeCount = initExternalNode;
-		while(trueExternalNodeCount > externalNodeCount ){
-//			System.err.println(internalNodeCount +"\t"+ externalNodeCount);
-			externalNodeCount *= SCALE_TAXA_FACTOR;
-		}
-		internalNodeCount = externalNodeCount-1;
 		nodeCount = internalNodeCount + externalNodeCount;
-
-//		System.err.println(externalNode/Count +"\t"+ internalNodeCount );
 
 		nodes = new Node[nodeCount];
 		storedNodes = new Node[nodeCount];
@@ -119,7 +96,7 @@ public class SSTreeModel extends AbstractModel implements MutableTree {
 
 		do {
 			node = (Node) Tree.Utils.postorderSuccessor(this, node);
-//			System.err.print(node.number +"\t" + node.getHeight());
+			System.err.print(node.number +"\t" + node.getHeight());
 			if (node.isExternal()) {
 				node.number = i;
 
@@ -127,8 +104,8 @@ public class SSTreeModel extends AbstractModel implements MutableTree {
 				storedNodes[i] = new Node();
 				storedNodes[i].taxon = node.taxon;
 				storedNodes[i].number = i;
+
 				i++;
-				
 			} else {
 				node.number = j;
 
@@ -138,73 +115,18 @@ public class SSTreeModel extends AbstractModel implements MutableTree {
 
 				j++;
 			}
-//			System.err.println("\t"+ node.number +"\t" + node.getHeight());
+			System.err.println("\t"+ node.number +"\t" + node.getHeight());
 		} while (node != root);
-		
-//		System.out.println("i"+i +"\tj"+ j);
-		for (; i < externalNodeCount; i++) {
-			nodes[i] = createEmptyNode(i);
-			storedNodes[i] = createEmptyNode(i);
-		}
-		for (; j < nodeCount; j++) {
-			nodes[j] = createEmptyNode(j);
-			storedNodes[j] = createEmptyNode(j);
-		}
-		
-		int trueRootIndex = root.getNumber();
-		trueRoot = nodes[trueRootIndex];
-		
-//		System.out.println(externalNodeCount +"\t"+ internalNodeCount );
-//		System.out.println(trueExternalNodeCount +"\t"+ trueInternalNodeCount);
-//		System.out.println("start: "+j +"\t"+ trueRootIndex );
-		int trueRootIndexPlus1 = trueRootIndex+1;
-		int internalNodeCountMinus1 = internalNodeCount-1;
-		if(trueRootIndexPlus1 != j){
-			root = nodes[--j];
-			root.addChild(nodes[trueRootIndex]);
-//			System.out.println("connect fake root"+root.toString() +"\t"+ root.getChildCount());
-			if(j> trueRootIndexPlus1){
-				root.addChild(nodes[--j]);
 
-				while(j>trueRootIndexPlus1){
-					int otherChildIndex = j-internalNodeCountMinus1;
-					nodes[j].addChild(nodes[otherChildIndex]);
-					nodes[j].addChild(nodes[--j]);
-				}
-				int otherChildIndex = j-internalNodeCountMinus1;
-//					System.out.println("last j\t"+j +"\t"+otherChildIndex);
-				nodes[j].addChild(nodes[otherChildIndex]);
-				nodes[j].addChild(nodes[--otherChildIndex]);
-				
-			}
-			else{
-				root.addChild(nodes[externalNodeCount-1]);
-			}
-				
-			
-		}
 		// must be done here to allow programmatic running of BEAST
 		setupHeightBounds();
-//		System.out.println(root.getNumber() +"\t"+ trueRoot.getNumber());
-//		Node newNode = new Node(this, root);
-		
 	}
-
-	private Node createEmptyNode(int i) {
-		Node n = new Node();
-		n.number = i;
-		n.heightParameter = new Parameter.Default(0.0);
-		n.taxon = new Taxon(Integer.toString(i));
-		addVariable(n.heightParameter);
-		return n;
-	}
-
 
 	/*
 	 * New constructor that does NOT alter tree branch length
 	 */
 
-	public SSTreeModel(String name, Tree tree, boolean copyAttributes,
+	public RJTreeModel(String name, Tree tree, boolean copyAttributes,
 			boolean isCorrectHeight) {
 
 		super(name);
@@ -1682,12 +1604,12 @@ public class SSTreeModel extends AbstractModel implements MutableTree {
 	/**
 	 * number of external nodes
 	 */
-	private int externalNodeCount;
+	private final int externalNodeCount;
 
 	/**
 	 * number of internal nodes (including root)
 	 */
-	private int internalNodeCount;
+	private final int internalNodeCount;
 
 	/**
 	 * holds the units of the trees branches.
@@ -1699,9 +1621,9 @@ public class SSTreeModel extends AbstractModel implements MutableTree {
 	private boolean hasRates = false;
 	private boolean hasTraits = false;
 
-	public SSTreeModel insertNode() {
+	public RJTreeModel insertNode() {
 
-//		System.out.println(this.toString());
+		System.out.println(this.toString());
 		double logq = 0.0;
 
 		NodeRef iGrandfather, iBrother;
@@ -1711,36 +1633,37 @@ public class SSTreeModel extends AbstractModel implements MutableTree {
 
 		final int nNodes = this.getNodeCount();
 		NodeRef root = this.getRoot();
+		
+
+		
 
 		int MAX_TRIES = 1000;
-		int noSpareNode = externalNodeCount - trueExternalNodeCount;
-		if(noSpareNode==0){
-			noSpareNode = doubleTheTree();
-		}
+
 		
 		Node parentNode;
 		Node childNode;
 		do {
-			childNode = nodes[MathUtils.nextInt(trueNodeCount)];
+			childNode = nodes[MathUtils.nextInt(nodeCount)];
 		} while (root == childNode);
 		System.err.println(nodeCount +"\t"+ nodes.length);
 		
 		parentNode = childNode.parent;
-
 		
-//		System.err.println(childNode.getNumber() + "\t" + childNode.getHeight()
-//				+ "\t" + childNode.getChildCount());
-//		System.err.println(parentNode.getNumber() + "\t"+parentNode.getChildCount());
-//		System.err.println(parentNode==root);
-//		System.err.println( "\t" + parentNode.getChild(0).getNumber() + "\t"
-//				+ parentNode.getChild(1).getNumber());
+
+		System.err.println(childNode.getNumber() + "\t" + childNode.getHeight()
+				+ "\t" + childNode.getChildCount());
+		System.err.println(parentNode.getNumber() + "\t"+parentNode.getChildCount());
+		System.err.println(parentNode==root);
+		System.err.println( "\t" + parentNode.getChild(0).getNumber() + "\t"
+				+ parentNode.getChild(1).getNumber());
 		// FlexibleNode fn = (FlexibleNode) tree.getParent(childNode);
 		// fn.getHeight();
 		double u = MathUtils.nextDouble();
 		double childHeight = childNode.getHeight();
 		double parentHeight = parentNode.getHeight();
-		double newExternalHeight = childHeight + u * (parentHeight - childHeight);
-		double newInternalHeight = parentHeight - newExternalHeight;
+		double newTipHeight = childHeight + u * (parentHeight - childHeight);
+		double newNodeHeight = parentHeight - newTipHeight;
+
 		
 //		newNode.setupHeightBounds();
 //		newNode.setHeight(newNodeHeight);
@@ -1750,35 +1673,9 @@ public class SSTreeModel extends AbstractModel implements MutableTree {
 //		System.err.println(newNode.getNumber() + "\t"
 //				+ newNode.getHeight() + "\t" + newNode.getChildCount());
 		
-
-//		Node newExternalNode = createEmptyNode(trueExternalNodeCount);
-		Node newExternalNode = new Node();
-		newExternalNode.number = trueExternalNodeCount;
-		newExternalNode.heightParameter = new Parameter.Default(newExternalHeight);
-		newExternalNode.taxon = new Taxon("XXXhap_"+trueExternalNodeCount);
-		addVariable(newExternalNode.heightParameter);
-//		newExternalNode.setHeight(newExternalHeight);
-		nodes[trueExternalNodeCount] = newExternalNode;
-		
-//		Node newInternalNode = createEmptyNode(trueNodeCount+1);
-		Node newInternalNode = new Node();
-		newInternalNode.number = trueNodeCount+1;
-		newInternalNode.heightParameter = new Parameter.Default(newInternalHeight);
-		newInternalNode.taxon = new Taxon("YYhap_"+trueNodeCount+1);
-		addVariable(newInternalNode.heightParameter);
-		nodes[trueNodeCount+1] = newInternalNode;
-		
-		System.out.println(nodes[trueExternalNodeCount].toString());
-		System.out.println(nodes[trueNodeCount+1].toString());
-//		newInternalNode.setHeight(newInternalHeight);
-		
-		trueExternalNodeCount++;
-		trueInternalNodeCount++;
-		trueNodeCount = trueExternalNodeCount+trueInternalNodeCount;
-//		
-//		Node newTip = new Node(this, parentNode);
-//		newTip.removeChild(0);
-//		newTip.removeChild(1);
+		Node newTip = new Node(this, parentNode);
+		newTip.removeChild(0);
+		newTip.removeChild(1);
 //		newTip.number=0;
 //		newNode.setHeight(newTipHeight);
 
@@ -1788,53 +1685,50 @@ public class SSTreeModel extends AbstractModel implements MutableTree {
 //				System.out.println(p + "\t" + parentNode.getChildCount());
 //			}
 //		}
-//		Node newNode = new Node(this, parentNode);
+		Node newNode = new Node(this, parentNode);
 		
-		
-//		newNode.removeChild(0);
-//		newNode.removeChild(1);
-		newInternalNode.addChild(childNode);
-		newInternalNode.addChild(newExternalNode);
-		
-		newExternalNode.parent = newInternalNode;
+		//
+		newNode.removeChild(0);
+		newNode.removeChild(1);
+		newNode.addChild(childNode);
+		newNode.addChild(newTip);
 //		newNode.number=12;
-//		newNode.parent = parentNode;
-//		newTip.parent = newNode;
+		newNode.parent = parentNode;
+		newTip.parent = newNode;
 		
 		parentNode.removeChild(childNode);
-		parentNode.addChild(newInternalNode);
-
-//		//
-		System.err.println(parentNode.getNumber() + "\t"
-				+ parentNode.getHeight() + "\t" + parentNode.getChildCount());
-
-		System.err.println("child");
-		System.err.println(childNode.getNumber() + "\t" + childNode.getHeight()
-				+ "\t" + childNode.getChildCount());
-		System.err.println("parent");
-		System.err.println(parentNode.getNumber() + "\t"
-				+ parentNode.getHeight() + "\t" + parentNode.getChildCount());
-		System.err.println("\t" + parentNode.getChild(0).getNumber() + "\t"
-				+ parentNode.getChild(1).getNumber());
-
-		System.err.println("newNode");
-		System.err.println(newInternalNode.getNumber() + "\t" + newInternalNode.getHeight()
-				+ "\t" + newInternalNode.getChildCount());
-		System.err.println("newTip");
-		System.err.println(newExternalNode.getNumber() + "\t" + newExternalNode.getHeight()
-				+ "\t" + newExternalNode.getChildCount());
-
-		SimpleNode newRoot = new SimpleNode(this, root);
-		SimpleTree st = new SimpleTree(newRoot);
-		SSTreeModel a = new SSTreeModel(st);
+		parentNode.addChild(newNode);
 		
-		System.err.println(getInternalNodeCount() + "\t"
-				+ getExternalNodeCount());
-		System.err.println(st.getInternalNodeCount() + "\t"
-				+ st.getExternalNodeCount());
-		System.err.println(a.getInternalNodeCount() + "\t"
-				+ a.getExternalNodeCount());
-
+		//
+		 System.err.println(parentNode.getNumber()+"\t"+
+		 parentNode.getHeight() +"\t"+
+		 parentNode.getChildCount() );
+		 
+		 System.err.println("child");
+		 System.err.println(childNode.getNumber() + "\t" + childNode.getHeight()
+					+ "\t" + childNode.getChildCount());
+		 System.err.println("parent");
+			System.err.println(parentNode.getNumber() + "\t"
+					+ parentNode.getHeight() + "\t" + parentNode.getChildCount());
+			System.err.println( "\t" + parentNode.getChild(0).getNumber() + "\t"
+					+ parentNode.getChild(1).getNumber());
+			
+		System.err.println("newNode");
+		 System.err.println(newNode.getNumber() + "\t" + newNode.getHeight()
+					+ "\t" + newNode.getChildCount());
+		 System.err.println("newTip");
+		 System.err.println(newTip.getNumber() + "\t" + newTip.getHeight()
+					+ "\t" + newTip.getChildCount());
+		 
+		 SimpleNode newRoot = new SimpleNode(this, root);
+		 SimpleTree st = new SimpleTree(newRoot); 
+		 RJTreeModel newTreeModel = new RJTreeModel(st);
+		 
+		 System.err.println(getInternalNodeCount() +"\t"+ getExternalNodeCount());
+		 System.err.println(st.getInternalNodeCount() +"\t"+ st.getExternalNodeCount());
+		 System.err.println(newTreeModel.getInternalNodeCount() +"\t"+ newTreeModel.getExternalNodeCount());
+		 
+		 
 //		  +"\t"+ parentNode.getChild(0).getNumber() +"\t"+
 //		 parentNode.getChild(1).getNumber());
 //		// //
@@ -1842,30 +1736,13 @@ public class SSTreeModel extends AbstractModel implements MutableTree {
 		// FlexibleTree ft = new FlexibleTree(fn);
 		//
 //		 System.err.println(st.toString());
-//System.err.println("==========+");
-//		root = st.getRoot();
-//		 NodeRef node = root;
-//			do {
-//				node = Tree.Utils.postorderSuccessor(st, node);
-////				System.err.println(node.getNumber());
-//			} while (node != root);
-		return a;
-	}
-	
-    
-	private int doubleTheTree() {
-		throw new RuntimeException("Not yet implemented");
-//		return 0;
-	}
-
-	public NodeRef getTrueRoot() {
-        return trueRoot;
-    }
-	
-	public int getTrueExternalNodeCount() {
-		return trueExternalNodeCount;
-	}
-	public int getTrueInternalNodeCount() {
-		return trueInternalNodeCount;
+System.err.println("==========+");
+		root = st.getRoot();
+		 NodeRef node = root;
+			do {
+				node = Tree.Utils.postorderSuccessor(st, node);
+				System.err.println(node.getNumber());
+			} while (node != root);
+		return newTreeModel;
 	}
 }

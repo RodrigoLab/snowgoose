@@ -6,6 +6,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import jebl.evolution.sequences.Sequence;
+import srp.dr.ext.SeqGenExt;
+import srp.dr.ext.TreeLikelihoodExt;
 import srp.evolution.OperationRecord;
 import srp.evolution.OperationType;
 import srp.evolution.haplotypes.old.OldHapOperation;
@@ -20,8 +22,6 @@ import dr.evolution.util.Taxon;
 import dr.evomodel.sitemodel.SiteModel;
 import dr.evomodel.substmodel.SubstitutionModel;
 import dr.evomodel.tree.TreeModel;
-import dr.ext.SeqGenExt;
-import dr.ext.TreeLikelihoodExt;
 import dr.inference.model.Model;
 import dr.inference.model.Parameter;
 import dr.inference.model.Variable;

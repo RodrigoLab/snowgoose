@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import org.apache.commons.math3.random.RandomDataGenerator;
 
+import srp.dr.ext.TreeLikelihoodExt;
 import srp.evolution.haplotypes.old.OldHaplotypeModel;
 import srp.evolution.spectrum.SpectrumAlignmentModel;
 import srp.likelihood.spectrum.treelikelihood.SpectrumTreeLikelihood;
@@ -36,7 +37,6 @@ import dr.evomodel.tree.TreeModel;
 import dr.evomodelxml.sitemodel.GammaSiteModelParser;
 import dr.evomodelxml.substmodel.HKYParser;
 import dr.evomodelxml.treelikelihood.TreeLikelihoodParser;
-import dr.ext.TreeLikelihoodExt;
 import dr.inference.model.Parameter;
 import dr.inference.operators.CoercionMode;
 import dr.inference.operators.DeltaExchangeOperator;

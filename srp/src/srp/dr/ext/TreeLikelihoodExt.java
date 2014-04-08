@@ -1,4 +1,4 @@
-package dr.ext;
+package srp.dr.ext;
 
 import srp.evolution.haplotypes.old.OldHaplotypeModel;
 import dr.evolution.alignment.PatternList;

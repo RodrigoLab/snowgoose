@@ -13,6 +13,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import srp.core.DataImporter;
+import srp.dr.ext.SitePatternsExt;
+import srp.dr.ext.TreeLikelihoodExt;
 import srp.evolution.haplotypes.old.OldHapOperation;
 import srp.evolution.haplotypes.old.OldHaplotypeModel;
 import srp.evolution.shortreads.AlignmentMapping;
@@ -38,8 +40,6 @@ import dr.evomodel.treelikelihood.TreeLikelihood;
 import dr.evomodelxml.coalescent.ConstantPopulationModelParser;
 import dr.evomodelxml.sitemodel.GammaSiteModelParser;
 import dr.evomodelxml.substmodel.HKYParser;
-import dr.ext.SitePatternsExt;
-import dr.ext.TreeLikelihoodExt;
 import dr.inference.model.Parameter;
 import dr.inference.operators.CoercionMode;
 import dr.inference.operators.SimpleMCMCOperator;

@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import srp.core.MCMCSetupHelper;
 import srp.core.MCMCSetupHelperSpectrum;
+import srp.dr.ext.TreeLikelihoodExt;
 import srp.evolution.haplotypes.old.OldHaplotypeModel;
 import srp.evolution.shortreads.AlignmentMapping;
 import srp.evolution.spectrum.SpectraParameter;
@@ -40,7 +41,6 @@ import dr.evomodel.tree.TreeModel;
 import dr.evomodel.treelikelihood.TreeLikelihood;
 import dr.evomodelxml.sitemodel.GammaSiteModelParser;
 import dr.evomodelxml.substmodel.HKYParser;
-import dr.ext.TreeLikelihoodExt;
 import dr.inference.markovchain.MarkovChain;
 import dr.inference.mcmc.MCMC;
 import dr.inference.mcmc.MCMCOptions;

@@ -8,6 +8,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import srp.core.DataImporter;
+import srp.dr.rj.RJTreeModel;
 import srp.evolution.haplotypes.old.OldHaplotypeModel;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.coalescent.CoalescentSimulator;
@@ -17,7 +18,6 @@ import dr.evolution.util.Units;
 import dr.evomodel.coalescent.ConstantPopulationModel;
 import dr.evomodelxml.coalescent.ConstantPopulationModelParser;
 import dr.inference.model.Parameter;
-import dr.rj.RJTreeModel;
 
 public class RJTreeModelTest {
 

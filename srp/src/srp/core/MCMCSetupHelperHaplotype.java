@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import srp.dr.ext.TreeLikelihoodExt;
 import srp.evolution.haplotypes.old.OldHaplotypeModel;
 import srp.operator.haplotypes.BaseSingleEmpiricalOperator;
 import srp.operator.haplotypes.BaseSingleFrequencyOperator;
@@ -23,7 +24,6 @@ import dr.evomodel.tree.TreeModel;
 import dr.evomodelxml.sitemodel.GammaSiteModelParser;
 import dr.evomodelxml.substmodel.HKYParser;
 import dr.evomodelxml.treelikelihood.TreeLikelihoodParser;
-import dr.ext.TreeLikelihoodExt;
 import dr.inference.model.Parameter;
 import dr.inference.operators.CoercionMode;
 import dr.inference.operators.DeltaExchangeOperator;

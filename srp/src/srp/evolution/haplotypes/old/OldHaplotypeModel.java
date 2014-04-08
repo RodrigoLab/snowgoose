@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import srp.dr.ext.SeqGenExt;
+import srp.dr.ext.TreeLikelihoodExt;
 import srp.evolution.shortreads.AlignmentMapping;
 import srp.haplotypes.AbstractHaplotypeModel;
 import jebl.evolution.sequences.Sequence;
@@ -16,8 +18,6 @@ import dr.evolution.util.Taxon;
 import dr.evomodel.sitemodel.SiteModel;
 import dr.evomodel.substmodel.SubstitutionModel;
 import dr.evomodel.tree.TreeModel;
-import dr.ext.SeqGenExt;
-import dr.ext.TreeLikelihoodExt;
 import dr.inference.model.Model;
 import dr.inference.model.Parameter;
 import dr.inference.model.Variable;

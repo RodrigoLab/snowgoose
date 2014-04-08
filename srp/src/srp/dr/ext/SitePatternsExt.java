@@ -1,4 +1,4 @@
-package dr.ext;
+package srp.dr.ext;
 
 import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.SitePatterns;

@@ -11,6 +11,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import srp.core.DataImporter;
+import srp.dr.rj.SSTreeModel;
 import srp.evolution.haplotypes.old.OldHaplotypeModel;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.coalescent.CoalescentSimulator;
@@ -24,7 +25,6 @@ import dr.evomodel.tree.TreeModel;
 import dr.evomodelxml.coalescent.ConstantPopulationModelParser;
 import dr.inference.model.Parameter;
 import dr.math.MathUtils;
-import dr.rj.SSTreeModel;
 
 public class SSTreeModelTest {
 	

@@ -15,6 +15,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import srp.core.DataImporter;
+import srp.dr.rj.SSHaplotypeModel;
 import srp.evolution.haplotypes.old.OldHapOperation;
 import srp.evolution.haplotypes.old.OldHaplotype;
 import srp.evolution.shortreads.AlignmentMapping;
@@ -25,8 +26,6 @@ import dr.evolution.datatype.DataType;
 import dr.evolution.util.Taxon;
 import dr.inference.model.Parameter;
 import dr.math.MathUtils;
-import dr.rj.SSHaplotypeModel;
-//import srp.haplotypes.HaplotypeModel;
 
 
 public class SSHaplotypeModelTest {

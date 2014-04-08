@@ -23,7 +23,7 @@
  * Boston, MA  02110-1301  USA
  */
 
-package dr.rj;
+package srp.dr.rj;
 
 import java.util.logging.Logger;
 

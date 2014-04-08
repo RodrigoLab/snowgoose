@@ -6,6 +6,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import srp.dr.ext.TreeLikelihoodExt;
 import srp.evolution.haplotypes.old.OldHaplotypeModel;
 import srp.evolution.haplotypes.old.OldHaplotypeModelUtils;
 import srp.haplotypes.HaplotypeLoggerWithTrueHaplotype;
@@ -21,7 +22,6 @@ import dr.evomodel.coalescent.ConstantPopulationModel;
 import dr.evomodel.tree.TreeLogger;
 import dr.evomodel.tree.TreeModel;
 import dr.evomodelxml.coalescent.ConstantPopulationModelParser;
-import dr.ext.TreeLikelihoodExt;
 import dr.inference.loggers.MCLogger;
 import dr.inference.loggers.TabDelimitedFormatter;
 import dr.inference.mcmc.MCMC;
