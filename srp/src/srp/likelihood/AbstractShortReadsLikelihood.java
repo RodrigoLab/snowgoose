@@ -33,7 +33,7 @@ public abstract class AbstractShortReadsLikelihood extends
 	public static final double NOT_ERROR_RATE = 1-ERROR_RATE;
 	public static final double LOG_ERROR_RATE = Math.log(ERROR_RATE);
 	public static final double LOG_NOT_ERROR_RATE = Math.log(NOT_ERROR_RATE);
-//	public static final double LOG_ONE_MINUS_ERROR_RATE = Math.log(1-ERROR_RATE);
+	public static final double LOG_ONE_MINUS_ERROR_RATE = Math.log(1-ERROR_RATE);
 	public static final double C = 1e-250;
 	public static final double LOG_C = Math.log(C);
 
@@ -50,10 +50,13 @@ public abstract class AbstractShortReadsLikelihood extends
 	protected double logLikelihood;
 	protected double storedLogLikelihood;
 	
+	protected double[] eachSrpLogLikelihood;
+	protected double[] storedEachSrpLogLikelihood;
+
 	protected boolean likelihoodKnown;
 	
-	protected int spectrumLength;
-	protected int spectrumCount;
+	protected int sequenceLength;
+	protected int sequenceCount;
 
 	protected MultiType multiType;
 

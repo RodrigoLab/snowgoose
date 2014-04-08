@@ -46,13 +46,13 @@ public class BaseSingleOperatorTest {
 
 	@Test
 	public void testOperator() throws Exception {
-		String[] seqs = new String[]{
-				"AACCGGTT",
-				"...GCTAT",
-				"ACCGT...",
-				};
+//		String[] seqs = new String[]{
+//				"AACCGGTT",
+//				"...GCTAT",
+//				"ACCGT...",
+//				};
 
-		HaplotypeModel haplotypeModel = new HaplotypeModel(AlignmentUtils.createAlignment(seqs), 5);
+		HaplotypeModel haplotypeModel = new HaplotypeModel(5, 10);//AlignmentUtils.createAlignment(seqs));
 		SimpleMCMCOperator op = new BaseSingleOperator(haplotypeModel);
 
 		char[][] storedChars = new char[haplotypeModel.getHaplotypeCount()][haplotypeModel.getHaplotypeLength()];

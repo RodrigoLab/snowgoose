@@ -33,9 +33,9 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 
 
 	private void initHaplotypes() {
-		for (int i = 0; i < haplotypeCount; i++) {
+		for (int i = 0; i < sequenceCount; i++) {
 			Taxon taxon = new Taxon(TAXON_PREFIX + i);
-			Haplotype haplotype = new Haplotype(taxon, haplotypeLength);
+			Haplotype haplotype = new Haplotype(taxon, sequenceLength);
 			setHaplotype(i, haplotype);
 		}
 
@@ -53,7 +53,9 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 
 		
 	}
-
+	public HaplotypeModel(String[] sequences){
+		this(AlignmentUtils.createAlignment(sequences));
+	}
 	public HaplotypeModel(Alignment trueAlignment) {
 		this(trueAlignment.getSequenceCount(), trueAlignment.getSiteCount());
 

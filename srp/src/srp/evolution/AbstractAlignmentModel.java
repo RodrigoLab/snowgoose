@@ -6,6 +6,7 @@ import java.util.List;
 
 import srp.dr.evolution.datatype.ShortReads;
 import dr.evolution.datatype.DataType;
+import dr.evolution.sequence.Sequence;
 import dr.evolution.util.Taxon;
 import dr.evolution.util.TaxonList;
 import dr.inference.model.AbstractModel;
@@ -32,13 +33,25 @@ public abstract class AbstractAlignmentModel extends AbstractModel implements Ta
 	protected String id = null;
 	protected Attributable.AttributeHelper attributes = null;
 	
-
+	protected int sequenceCount;
+	protected int sequenceLength;
 
 	public AbstractAlignmentModel(String name) {
 		super(name);
 		operationRecord = new OperationRecord();
 	}
 
+
+	public int getAbstractLength() {
+		return sequenceLength;
+	}
+
+	public int getAbstractCount() {
+		return sequenceCount;
+	}
+	
+	public abstract <T extends Sequence> T getHaplotype(int i);
+	
 	public void startAlignmentModelOperation() {
 		// System.err.println("\n!!!startSpectrumOperation");
 		isEdit = true;

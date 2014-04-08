@@ -22,11 +22,7 @@ public abstract class AbstractShortReadsSpectrumLikelihood extends AbstractShort
 	protected StateLikelihood stateLikelihood;
 	protected SpectrumAlignmentModel spectrumModel;
 	
-
-
-	protected double[] eachSrpLogLikelihood;
-	protected double[] storedEachSrpLogLikelihood;
-
+	
 	protected double[] sumScaledSrpLogLikelihood;
 	protected double[] storedSumSrpLogLikelihood;
 	
@@ -78,7 +74,7 @@ public abstract class AbstractShortReadsSpectrumLikelihood extends AbstractShort
 
 	protected void storeIJ(int i, int j) {
 		
-		int offset = i*spectrumCount+j;
+		int offset = i*sequenceCount+j;
 		storedSpectrumLogLikelihood[offset] = spectrumLogLikelihood[offset];
 		storedScaledSpectrumLogLikelihood[offset] = scaledSpectrumLogLikelihood[offset];
 	}
@@ -89,7 +85,7 @@ public abstract class AbstractShortReadsSpectrumLikelihood extends AbstractShort
 	}
 	
 	protected void restoreIJ(int i, int j) {
-		int offset = i*spectrumCount+j;
+		int offset = i*sequenceCount+j;
 		spectrumLogLikelihood[offset] = storedSpectrumLogLikelihood[offset];
 		scaledSpectrumLogLikelihood[offset] = storedScaledSpectrumLogLikelihood[offset];
 

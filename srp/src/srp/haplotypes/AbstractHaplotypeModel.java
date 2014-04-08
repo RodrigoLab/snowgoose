@@ -11,25 +11,19 @@ public abstract class AbstractHaplotypeModel extends AbstractAlignmentModel impl
 
 	private static final long serialVersionUID = -214692337132875593L;
 
-	protected final int haplotypeLength;
-	protected final int haplotypeCount;
+//	protected final int haplotypeLength;
+//	protected final int haplotypeCount;
 	private Haplotype[] haplotypes;
 
 	
-	public AbstractHaplotypeModel(String name, int hapLength, int hapCount) {
+	public AbstractHaplotypeModel(String name, int hapCount, int hapLength) {
 		super(name);
-		this.haplotypeCount = hapCount;
-		this.haplotypeLength = hapLength;
-		haplotypes = new Haplotype[haplotypeCount];
+		System.out.println(operationRecord.getOperation());
+		this.sequenceCount = hapCount;
+		this.sequenceLength = hapLength;
+		haplotypes = new Haplotype[sequenceCount];
 	}
 
-	public int getHaplotypeLength() {
-		return haplotypeLength;
-	}
-
-	public int getHaplotypeCount() {
-		return haplotypeCount;
-	}
 
 	public Haplotype getHaplotype(int i){
 		return haplotypes[i];
@@ -43,6 +37,13 @@ public abstract class AbstractHaplotypeModel extends AbstractAlignmentModel impl
 		haplotypes[hapIndex] = haplotype;
 	}
 	
+	public int getHaplotypeLength() {
+		return getAbstractLength();
+	}
+
+	public int getHaplotypeCount() {
+		return getAbstractCount();
+	}
 
     // **************************************************************
     // SequenceList IMPLEMENTATION

@@ -11,7 +11,7 @@ import srp.evolution.haplotypes.old.OldHaplotypeModelUtils;
 import srp.haplotypes.HaplotypeLoggerWithTrueHaplotype;
 import srp.haplotypes.HaplotypeModel;
 import srp.haplotypes.SPSDist;
-import srp.likelihood.haplotypes.ShortReadsHaplotypesLikelihood;
+import srp.likelihood.haplotypes.ShortReadsHaplotypeLikelihood;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.util.TaxonList;
 import dr.evolution.util.Units;
@@ -89,14 +89,14 @@ public class MainMCMCHaplotype {
 		TreeLikelihoodExt treeLikelihood = (TreeLikelihoodExt) parameterList.get("treeLikelihood");
 		
 		// ShortReadLikelihood
-		ShortReadsHaplotypesLikelihood srpLikelihood = new ShortReadsHaplotypesLikelihood(haplotypeModel, haplotypeModel.getAlignmentMapping());
+		ShortReadsHaplotypeLikelihood srpLikelihood = new ShortReadsHaplotypeLikelihood(haplotypeModel, haplotypeModel.getAlignmentMapping());
 
 		// CompoundLikelihood
 		HashMap<String, Likelihood> compoundlikelihoods = MCMCSetupHelperHaplotype.setupCompoundLikelihood(
 				popSize, kappa, coalescent, treeLikelihood, srpLikelihood);
 		Likelihood prior = compoundlikelihoods.get(CompoundLikelihoodParser.PRIOR);
 		Likelihood likelihood = compoundlikelihoods.get(CompoundLikelihoodParser.LIKELIHOOD);
-		Likelihood shortReadLikelihood = compoundlikelihoods.get(ShortReadsHaplotypesLikelihood.SHORT_READ_LIKELIHOOD);
+		Likelihood shortReadLikelihood = compoundlikelihoods.get(ShortReadsHaplotypeLikelihood.SHORT_READ_LIKELIHOOD);
 		Likelihood posterior = compoundlikelihoods.get(CompoundLikelihoodParser.POSTERIOR);
 		
 		// Operators
@@ -152,7 +152,7 @@ public class MainMCMCHaplotype {
 		// log Haplotype
 //		Alignment trueAlignment = dataImporter.importAlignment(trueHaplotypeFile);
 //		AlignmentMapping alignmentMapping = new AlignmentMapping(shortReads);
-		ShortReadsHaplotypesLikelihood trueSrp = new ShortReadsHaplotypesLikelihood(HaplotypeModel.factory(shortReads, trueAlignment), haplotypeModel.getAlignmentMapping());
+		ShortReadsHaplotypeLikelihood trueSrp = new ShortReadsHaplotypeLikelihood(HaplotypeModel.factory(shortReads, trueAlignment), haplotypeModel.getAlignmentMapping());
 		System.err.println("\'trueShortReadLikelihood\': "+trueSrp.getLogLikelihood());
 		loggers[3] = new HaplotypeLoggerWithTrueHaplotype(haplotypeModel, trueAlignment, logHaplotypeName, logInterval*10);
 		
