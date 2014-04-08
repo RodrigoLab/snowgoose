@@ -1,59 +1,49 @@
 package srp.haplotypes;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import srp.evolution.AbstractAlignmentModel;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.PatternList;
-import dr.evolution.datatype.DataType;
 import dr.evolution.sequence.Sequence;
 import dr.evolution.util.Taxon;
-import dr.inference.model.AbstractModel;
-import dr.util.Attributable;
+import dr.math.distributions.HalfTDistribution;
 
 public abstract class AbstractHaplotypeModel extends AbstractAlignmentModel implements Alignment {
 
-	
-	public AbstractHaplotypeModel(String name) {
-		super(name);
-	}
-
 	private static final long serialVersionUID = -214692337132875593L;
 
+	protected final int haplotypeLength;
+	protected final int haplotypeCount;
+	private Haplotype[] haplotypes;
 
-	protected int haplotypesLength;
-	protected ArrayList<Haplotype> haplotypes;
-
-	public String getHaplotypeString(int i) {
-		return haplotypes.get(i).getSequenceString();
-		
+	
+	public AbstractHaplotypeModel(String name, int hapLength, int hapCount) {
+		super(name);
+		this.haplotypeCount = hapCount;
+		this.haplotypeLength = hapLength;
+		haplotypes = new Haplotype[haplotypeCount];
 	}
 
 	public int getHaplotypeLength() {
-	
-		return haplotypesLength;
+		return haplotypeLength;
 	}
 
 	public int getHaplotypeCount() {
-		return haplotypes.size();
+		return haplotypeCount;
 	}
 
 	public Haplotype getHaplotype(int i){
-		return haplotypes.get(i);
+		return haplotypes[i];
 	}
 	
-	public void removeHaplotype(int i) {
-		haplotypes.remove(i);
-		
-	}
-
-
 	public char getHaplotypeCharAt(int hapIndex, int charIndex) {
-		return haplotypes.get(hapIndex).getChar(charIndex);
+		return haplotypes[hapIndex].getChar(charIndex);
 	}
 	
+	protected void setHaplotype(int hapIndex, Haplotype haplotype){
+		haplotypes[hapIndex] = haplotype;
+	}
+	
+
     // **************************************************************
     // SequenceList IMPLEMENTATION
     // **************************************************************
@@ -267,7 +257,7 @@ public abstract class AbstractHaplotypeModel extends AbstractAlignmentModel impl
 	@Override
 	public String getAlignedSequenceString(int sequenceIndex) {
 		
-		return getHaplotypeString(sequenceIndex);
+		return haplotypes[sequenceIndex].getSequenceString();
 	}
 
 	/**
@@ -276,7 +266,7 @@ public abstract class AbstractHaplotypeModel extends AbstractAlignmentModel impl
 	@Override
 	public String getUnalignedSequenceString(int sequenceIndex) {
 		
-		return getHaplotypeString(sequenceIndex);
+		return haplotypes[sequenceIndex].getSequenceString();
 	}
 
 

@@ -135,6 +135,10 @@ public abstract class AbstractAlignmentModel extends AbstractModel implements Ta
 				.println("Call handleVariableChangedEvent in CategorySpectrumAlignmentModel");
 	}
 
+	@Override
+	protected void acceptState() {
+		//Do nothing
+	}
     // **************************************************************
     // TaxonList IMPLEMENTATION
     // **************************************************************

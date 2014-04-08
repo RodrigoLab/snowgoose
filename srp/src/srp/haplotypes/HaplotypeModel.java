@@ -8,11 +8,13 @@ import java.util.List;
 import jebl.evolution.sequences.Sequence;
 import srp.dr.ext.SeqGenExt;
 import srp.dr.ext.TreeLikelihoodExt;
+import srp.evolution.OperationRecord;
 import srp.evolution.OperationType;
 import srp.evolution.haplotypes.old.OldHapOperation;
 import srp.evolution.haplotypes.old.OldHapSwapInfo;
 import srp.evolution.haplotypes.old.OldHaplotypeModel;
 import srp.evolution.shortreads.AlignmentMapping;
+import srp.evolution.spectrum.Spectrum;
 import srp.evolution.spectrum.SpectrumAlignmentModel;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.datatype.DataType;
@@ -35,67 +37,28 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 	private static final long serialVersionUID = -5057514703825711955L;
 
 	private boolean DEBUG = false;
-	
-//	private static final int HAP_INDEX = OldHapSwapInfo.SWAPBASE_HAP_INDEX;
-//	private static final int POS_INDEX = OldHapSwapInfo.SWAPBASE_POS_INDEX;
-//	private static final int NEW_CHAR_INDEX = OldHapSwapInfo.SWAPBASE_NEW_CHAR_INDEX;
-//	private static final int OLD_CHAR_INDEX = OldHapSwapInfo.SWAPBASE_OLD_CHAR_INDEX;
 
 	private static final int NUCLEOTIDE_STATES[] = Nucleotides.NUCLEOTIDE_STATES;
 	private static final char[] VALID_CHARS = initValidChars4();
 	private static final int INDEX_OF_LAST_VALID_CHARS = VALID_CHARS.length-1;
 	
-
-//	int haplotypesCount;
-	AlignmentMapping aMap;
-
-	
-//	protected OperationRecord operationRecord;
-	
-	private boolean isEdit;
-	
-	
-	private HaplotypeModel(AlignmentMapping aMap){
-		super(MODEL_NAME);
-
-		this.aMap = aMap;
-		haplotypesLength = this.aMap.getLength();
-		
-		haplotypes = new ArrayList<Haplotype>();
-
-
-		
-//		storedCumSumFrequency[INDEX_OF_LAST_VALID_CHARS]=1;
-	}
-	private HaplotypeModel(Alignment shortReads) {
-		this(new AlignmentMapping(shortReads));
-	}
-
-
 	private static char[] initValidChars4() {
 		char[] validChar = new char[4];
 		System.arraycopy(Nucleotides.NUCLEOTIDE_CHARS, 0, validChar, 0, validChar.length);
 		return validChar;
 	}
 
-	private void addHaplotype(Haplotype haplotype) {
+//	private void addHaplotype(Haplotype haplotype) {
+//
+//	    haplotypes.add(haplotype);
+//	
+//	}
 
-	    haplotypes.add(haplotype);
-	
-	}
-
-	private void initSeqs(int hapCount){
-		
-		char[] temp = new char[haplotypesLength];
-		Arrays.fill(temp, DataType.GAP_CHARACTER);
-		String tempSeq = String.valueOf(temp);
-		
-		for (int i = 0; i < hapCount; i++) {
-			Taxon t = new Taxon(TAXON_PREFIX+i); 
-			Haplotype haplotype = new Haplotype(t, tempSeq);
-			addHaplotype(haplotype);
-			randomHaplotype(i);
-
+	private void initHaplotypes(){
+		for (int i = 0; i < haplotypeCount; i++) {
+			Taxon taxon = new Taxon(TAXON_PREFIX+i); 
+			Haplotype haplotype = new Haplotype(taxon, haplotypeLength);
+			setHaplotype(i, haplotype);
 		}
 
 //
@@ -116,36 +79,41 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 	}
 	
 
+	
 	private void randomHaplotype(int hapIndex) {
-		Haplotype haplotype = haplotypes.get(hapIndex);
-		for (int i = 0; i < haplotypesLength; i++) {
+		Haplotype haplotype = getHaplotype(hapIndex);
+		for (int i = 0; i < haplotypeLength; i++) {
 			//TODO: Which is the "good" starting point
 //			char newChar = (char) aMap.nextBaseAt(i);
 			char newChar = (char) aMap.nextBaseEqualFreq();
 			haplotype.setCharAt(i, newChar);
-			
 		}
 	}
 	
-	public HaplotypeModel(AlignmentMapping aMap, int hapCount) {
-		this(aMap);		
-		initSeqs(hapCount);
+	public HaplotypeModel(int hapCount, int hapLength) {
+		super(MODEL_NAME, hapCount, hapLength);
+		initHaplotypes();
+//		this.haplotypeCount = hapCount;
+//		this.haplotypeLength = hapLength;
+
+//		haplotypes = new ArrayList<Haplotype>();
+
 		
 	}
 
-	public HaplotypeModel(AlignmentMapping aMap, Alignment trueAlignment) {
-		this(aMap);
+	public HaplotypeModel(Alignment trueAlignment) {
+		this(trueAlignment.getSequenceCount(), trueAlignment.getSiteCount());
 
 		for (int i = 0; i < trueAlignment.getSequenceCount(); i++) {
 			Haplotype haplotype = new Haplotype(trueAlignment.getSequence(i));
-			addHaplotype(haplotype);
+			setHaplotype(i, haplotype);
 		}
 	}
 	
-	public HaplotypeModel(Alignment shortReads, int hapCount) {
-		this(new AlignmentMapping(shortReads), hapCount);
-
-	}	
+//	public HaplotypeModel(Alignment shortReads, int hapCount) {
+//		this(new AlignmentMapping(shortReads), hapCount);
+//
+//	}	
 	
 /////////////////////////////////////
 
@@ -259,17 +227,6 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 ////		treeChangedEvents.clear();
 //	}
 
-	@Override
-	protected void handleModelChangedEvent(Model model, Object object, int index) {
-		System.err.println("Call handleModelChangedEvent");
-		
-	}
-
-	@Override
-	protected void handleVariableChangedEvent(Variable variable, int index,
-			ChangeType type) {
-		System.err.println("Call handleVariableChangedEvent");
-	}
 
 	@Override
 	protected void acceptState() {
@@ -446,9 +403,9 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 	}
 	
 	
-	public AlignmentMapping getAlignmentMapping() {
-		return aMap;
-	}
+//	public AlignmentMapping getAlignmentMapping() {
+//		return aMap;
+//	}
 
 	public double getLogqFrequency(int oldChar, int newChar){
 		return storedLogqMatrix[NUCLEOTIDE_STATES[oldChar]][NUCLEOTIDE_STATES[newChar]];
@@ -546,7 +503,7 @@ System.out.println((time2 - time1) + "\t");
 	private double[] storedCumSumFrequency = new double[INDEX_OF_LAST_VALID_CHARS];
 	private double[][] storedLogqMatrix = new double[4][4];
 
-
+	@Deprecated AlignmentMapping aMap;
 	public void simulateSequence(TreeLikelihoodExt treeLikelihood) {
 
         double substitutionRate = 1000.1;//(getHaplotypeCount()*getHaplotypeLength()) ;
@@ -661,7 +618,7 @@ System.out.println((time2 - time1) + "\t");
 		Haplotype haplotype = haplotypes.get(hapIndex);
 		
 		int[] allOldChars = new int[allNewChars.length];
-		for (int i = 0; i < haplotypesLength; i++) {
+		for (int i = 0; i < haplotypeLength; i++) {
 			int newChar = allNewChars[i];
 			if(newChar>0){
 				allOldChars[i] = haplotype.replaceCharAt(i, newChar);
@@ -677,7 +634,7 @@ System.out.println((time2 - time1) + "\t");
 		
 		Haplotype haplotype = haplotypes.get(hapIndex);
 
-		for (int i = 0; i < haplotypesLength; i++) {
+		for (int i = 0; i < haplotypeLength; i++) {
 			int newChar = allPosChars[0][i];
 			if(newChar>0){
 				allPosChars[1][i] = haplotype.replaceCharAt(i, newChar);
@@ -793,7 +750,7 @@ System.out.println((time2 - time1) + "\t");
 	public static HaplotypeModel factory(Alignment shortReads, Alignment trueAlignment){
 		
 		AlignmentMapping alignmentMapping = new AlignmentMapping(shortReads);
-		HaplotypeModel haplotypeModel = new HaplotypeModel(alignmentMapping, trueAlignment);
+		HaplotypeModel haplotypeModel = new HaplotypeModel(trueAlignment);
 		return haplotypeModel;
 	}	
 }

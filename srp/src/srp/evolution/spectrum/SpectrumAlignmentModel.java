@@ -68,7 +68,7 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 		
 		spectrumList = new ArrayList<Spectrum>();
 //		storedSpectrumList = new ArrayList<Spectrum>();
-		operationRecord = new OperationRecord();
+//		operationRecord = new OperationRecord();
 	}
 
 	public static SpectrumAlignmentModel duplicateSpectrumAlignmentModel(SpectrumAlignmentModel oldModel){

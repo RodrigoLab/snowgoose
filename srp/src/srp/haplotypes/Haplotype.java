@@ -9,6 +9,7 @@ import dr.evolution.datatype.DataType;
 import dr.evolution.datatype.Nucleotides;
 import dr.evolution.sequence.Sequence;
 import dr.evolution.util.Taxon;
+import dr.math.MathUtils;
 
 public class Haplotype extends Sequence {
 
@@ -26,13 +27,29 @@ public class Haplotype extends Sequence {
 	int haplotypeLength;
 
 	public static final DataType DATATYPE = Nucleotides.INSTANCE;
-			
-	public Haplotype(String sequence) {
+	public static final int STATE_COUNT = DATATYPE.getStateCount();
+
+	public Haplotype(int haplotypeLength) {
 		setDataType(DATATYPE);
 		sequenceString = null;
-		haplotypeLength = sequence.length();
-		haplotype = new char[haplotypeLength];
-		storedHaplotype = new char[haplotypeLength];
+		this.haplotypeLength = haplotypeLength;
+		haplotype = new char[this.haplotypeLength];
+		storedHaplotype = new char[this.haplotypeLength];
+		initHaplotype();
+	}
+
+	private void initHaplotype() {
+
+		for (int i = 0; i < haplotypeLength; i++) {
+			int state = MathUtils.nextInt(STATE_COUNT);
+			char newChar = DATATYPE.getChar(state);
+			haplotype[i] = newChar;
+		}
+		
+	}
+
+	public Haplotype(String sequence) {
+		this(sequence.length());
 		setSequenceString(sequence.toUpperCase());
 	}
 
@@ -42,6 +59,11 @@ public class Haplotype extends Sequence {
 
 	public Haplotype(Taxon taxon, String sequence) {
 		this(sequence);
+		setTaxon(taxon);
+	}
+
+	public Haplotype(Taxon taxon, int haplotypeLength) {
+		this(haplotypeLength);
 		setTaxon(taxon);
 	}
 
