@@ -1,8 +1,6 @@
 package srp.operator.haplotypes;
 
-import srp.evolution.OperationRecord;
 import srp.evolution.OperationType;
-import srp.evolution.shortreads.AlignmentMapping;
 import srp.haplotypes.HaplotypeModel;
 import dr.evolution.datatype.DataType;
 import dr.evolution.datatype.Nucleotides;
@@ -21,15 +19,11 @@ public abstract class AbstractSingleOperator extends SimpleMCMCOperator {
 	 
 	protected HaplotypeModel haplotypeModel;
 	
-	@Deprecated
-	public AlignmentMapping alignmentMapping;
-
 	public AbstractSingleOperator(HaplotypeModel haplotypeModel) {
 		this.haplotypeModel = haplotypeModel;
 		haplotypeCount = this.haplotypeModel.getHaplotypeCount();
 		haplotypeLength = this.haplotypeModel.getHaplotypeLength();
 		
-		alignmentMapping = this.haplotypeModel.getAlignmentMapping();
 	}
 
 	

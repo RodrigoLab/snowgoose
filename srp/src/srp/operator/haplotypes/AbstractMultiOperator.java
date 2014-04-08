@@ -1,13 +1,8 @@
 package srp.operator.haplotypes;
 
-import java.util.Arrays;
-
 import org.apache.commons.math3.util.FastMath;
 
-import com.google.common.primitives.Ints;
-
 import srp.evolution.OperationType;
-import srp.evolution.shortreads.AlignmentMapping;
 import srp.haplotypes.HaplotypeModel;
 import dr.evolution.datatype.DataType;
 import dr.evolution.datatype.Nucleotides;
@@ -31,9 +26,6 @@ public abstract class AbstractMultiOperator extends AbstractCoercableOperator {
 
 	protected int basesCount;
 
-//	protected int[][] allPosChars;
-	@Deprecated protected AlignmentMapping alignmentMapping;
-
 	private double autoOptimize;
 	private double scaleFactor;
 	private int[] haplotypeLengthArray;
@@ -45,7 +37,6 @@ public abstract class AbstractMultiOperator extends AbstractCoercableOperator {
 		this.basesCount = basesCount;
 		haplotypeLength = this.haplotypeModel.getHaplotypeLength();
 		haplotypeCount = this.haplotypeModel.getHaplotypeCount();
-		alignmentMapping = this.haplotypeModel.getAlignmentMapping();
 		
 //		allPosChars = new int[2][haplotypeLength];
 		haplotypeLengthArray = new int[haplotypeLength];
