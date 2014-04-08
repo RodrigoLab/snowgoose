@@ -1,10 +1,11 @@
 package srp.operator.haplotypes;
 
-import srp.evolution.haplotypes.old.OldHaplotypeModel;
+import srp.haplotypes.Haplotype;
+import srp.haplotypes.HaplotypeModel;
 import dr.inference.operators.CoercionMode;
 import dr.inference.operators.OperatorFailedException;
 
-public class BasesMultiOperator extends AbstractBasesMultiOperator {
+public class BasesMultiOperator extends AbstractMultiOperator {
 
 
 	public final static String OPERATOR_NAME = BasesMultiOperator.class.getSimpleName();
@@ -13,16 +14,12 @@ public class BasesMultiOperator extends AbstractBasesMultiOperator {
 	
 
 	
-	public BasesMultiOperator(OldHaplotypeModel haplotypeModel, int length, CoercionMode mode) {
+	public BasesMultiOperator(HaplotypeModel haplotypeModel, int length, CoercionMode mode) {
 		super(haplotypeModel, length, mode);
 		
 	}
 
-    @Override
-	public String getPerformanceSuggestion() {
 
-		return "";
-	}
 	@Override
 	public String getOperatorName() {
 
@@ -33,16 +30,27 @@ public class BasesMultiOperator extends AbstractBasesMultiOperator {
 	@Override
 	public double doOperation() throws OperatorFailedException {
 
-		haplotypeModel.startHaplotypeOperation();
-		resetAllPosChars();
-		
-		for (int i = 0; i < swapLength; i++) {
-			int[] posChar = alignmentMapping.getNextBase();
-			allPosChars[0][posChar[0]] = posChar[1];
-		}
-		haplotypeModel.swapHaplotypeMultiBases(OP, allPosChars);
+		haplotypeModel.startAlignmentModelOperation();
 
-		haplotypeModel.endHaplotypeOperation();
+		int hapIndex = getNextHapIndex();
+		Haplotype haplotype = haplotypeModel.getHaplotype(hapIndex);
+//	    
+//	    
+		int[] siteIndexs = 
+				generateUniqueSites(basesCount);
+
+		for (int i = 0; i < basesCount; i++) {
+			
+//			SpectraParameter spectra = spectrum.getSpectra(siteIndexs[i]);
+//			swapFrequency(spectra);
+			char newChar = getNextBase();
+			haplotype.setCharAt(i, newChar);
+	        
+		}
+        // symmetrical move so return a zero hasting ratio
+		haplotypeModel.setOperationRecord(OP, hapIndex, siteIndexs);
+	
+		haplotypeModel.endAlignmentModelOperation();
 
 		return 0.0;
 	}

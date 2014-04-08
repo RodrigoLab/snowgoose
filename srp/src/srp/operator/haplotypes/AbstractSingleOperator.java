@@ -32,10 +32,7 @@ public abstract class AbstractSingleOperator extends SimpleMCMCOperator {
 		alignmentMapping = this.haplotypeModel.getAlignmentMapping();
 	}
 
-	@Override
-	public String getPerformanceSuggestion() {
-		return "";
-	}
+	
 
 	public int getNextHapIndex(){
 		return MathUtils.nextInt(haplotypeCount);

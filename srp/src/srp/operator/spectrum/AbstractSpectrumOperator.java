@@ -120,7 +120,7 @@ public abstract class AbstractSpectrumOperator extends AbstractCoercableOperator
 //	    return sites;
 //	}
 	
-	public int[] randomSampleSites(int m, int[] sampleArray){ //time:0.5
+	public static int[] randomSampleSites(int m, int[] sampleArray){ //time:0.5
 		int[] sites = new int[m];
 		int length = sampleArray.length;
 		for (int i = 0; i < m; i++) {

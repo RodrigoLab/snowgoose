@@ -8,7 +8,7 @@ import dr.inference.operators.OperatorFailedException;
 public class BaseSingleOperator extends AbstractSingleOperator {
 
 	public static final String OPERATOR_NAME = BaseSingleOperator.class.getSimpleName();
-	public static final OperationType OP = OperationType.SINGLE;
+
 	
 	public BaseSingleOperator(HaplotypeModel haplotypeModel, int nothing) {
 		super(haplotypeModel);
