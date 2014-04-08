@@ -64,7 +64,7 @@ public class RecombineSectionSpectrumOperator extends AbstractSpectrumOperator {
 	@Override
 	public double doOperation() throws OperatorFailedException {
 
-		spectrumModel.startSpectrumOperation();
+		spectrumModel.startAlignmentModelOperation();
 		
 		twoSpectrumIndex[0] = MathUtils.nextInt(spectrumCount);
 //		twoSpectrumIndex[1] = -1; 
@@ -103,7 +103,7 @@ public class RecombineSectionSpectrumOperator extends AbstractSpectrumOperator {
 		}
 		spectrumModel.setOperationRecord(OP, twoSpectrumIndex, twoPositionIndex);
 		
-		spectrumModel.endSpectrumOperation();
+		spectrumModel.endAlignmentModelOperation();
 
 		return 0.0;
 	}

@@ -1,25 +1,33 @@
 package srp.operator.haplotypes;
 
-import srp.evolution.haplotypes.old.OldHaplotypeModel;
+import srp.evolution.OperationType;
+import srp.haplotypes.Haplotype;
+import srp.haplotypes.HaplotypeModel;
 import dr.inference.operators.OperatorFailedException;
 
-public class BaseSingleOperator extends AbstractBaseSingleOperator {
+public class BaseSingleOperator extends AbstractSingleOperator {
 
-	public final static String OPERATOR_NAME = BaseSingleOperator.class.getSimpleName();
-
-	public BaseSingleOperator(OldHaplotypeModel haplotypeModel, int nothing) {
+	public static final String OPERATOR_NAME = BaseSingleOperator.class.getSimpleName();
+	public static final OperationType OP = OperationType.SINGLE;
+	
+	public BaseSingleOperator(HaplotypeModel haplotypeModel, int nothing) {
 		super(haplotypeModel);
 	}
 
 	@Override
 	public double doOperation() throws OperatorFailedException {
 
-		haplotypeModel.startHaplotypeOperation();
+		haplotypeModel.startAlignmentModelOperation();
 
-		int[] posChar = alignmentMapping.getNextBase();
-		haplotypeModel.swapHaplotypeSingleBase(OP, posChar);
+		int hapIndex = getNextHapIndex();
+		int siteIndex = getNextSiteIndex();
+		char newChar = getNextBase();
 
-		haplotypeModel.endHaplotypeOperation();
+		Haplotype haplotype = haplotypeModel.getHaplotype(hapIndex);
+		haplotype.setCharAt(siteIndex, newChar);
+		haplotypeModel.setOperationRecord(OP, hapIndex, siteIndex);
+
+		haplotypeModel.endAlignmentModelOperation();
 
 		return 0.0;
 	}

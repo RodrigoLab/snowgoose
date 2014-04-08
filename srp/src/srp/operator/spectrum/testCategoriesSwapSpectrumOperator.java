@@ -74,7 +74,7 @@ public class testCategoriesSwapSpectrumOperator extends AbstractSpectrumOperator
 	@Override
 	public double doOperation() throws OperatorFailedException {
 
-		spectrumModel.startSpectrumOperation();
+		spectrumModel.startAlignmentModelOperation();
 
 //		spectrumModel.swapHaplotypeSingleBase(OP, posChar);
 		int spectrumIndex = MathUtils.nextInt(spectrumCount);
@@ -127,7 +127,7 @@ public class testCategoriesSwapSpectrumOperator extends AbstractSpectrumOperator
 
 		spectrumModel.setOperationRecord(OP, spectrumIndex, siteIndexs);
 		
-		spectrumModel.endSpectrumOperation();
+		spectrumModel.endAlignmentModelOperation();
 		
 		return 0;
 	}

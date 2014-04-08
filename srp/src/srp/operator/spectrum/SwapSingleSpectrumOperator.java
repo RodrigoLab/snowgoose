@@ -39,7 +39,7 @@ public class SwapSingleSpectrumOperator extends AbstractSwapSpectrumOperator{
 	@Override
 	public double doOperation() throws OperatorFailedException {
 
-		spectrumModel.startSpectrumOperation();
+		spectrumModel.startAlignmentModelOperation();
 
 		int spectrumIndex = MathUtils.nextInt(spectrumCount);
 		int siteIndex = MathUtils.nextInt(spectrumLength);
@@ -52,7 +52,7 @@ public class SwapSingleSpectrumOperator extends AbstractSwapSpectrumOperator{
 
 		spectrumModel.setOperationRecord(OP, spectrumIndex, siteIndex);
 		
-		spectrumModel.endSpectrumOperation();
+		spectrumModel.endAlignmentModelOperation();
 
 		return 0.0;
 	}

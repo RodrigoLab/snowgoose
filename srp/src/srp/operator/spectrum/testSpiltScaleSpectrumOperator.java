@@ -48,7 +48,7 @@ public class testSpiltScaleSpectrumOperator extends AbstractSpectrumOperator {
 	@Override
 	public double doOperation() throws OperatorFailedException {
 
-		spectrumModel.startSpectrumOperation();
+		spectrumModel.startAlignmentModelOperation();
 
 //		spectrumModel.swapHaplotypeSingleBase(OP, posChar);
 		int spectrumIndex = MathUtils.nextInt(spectrumCount);
@@ -213,7 +213,7 @@ public class testSpiltScaleSpectrumOperator extends AbstractSpectrumOperator {
         // symmetrical move so return a zero hasting ratio
 		spectrumModel.setOperationRecord(OP, spectrumIndex, siteIndexs);
 		
-		spectrumModel.endSpectrumOperation();
+		spectrumModel.endAlignmentModelOperation();
 //		(goingUp - goingDown - 2) * Math.log(scale);
 		
 		return 2 * Math.log(scale);

@@ -40,7 +40,7 @@ public class SwapColumnSpectrumOperator extends AbstractSwapSpectrumOperator {
 	@Override
 	public double doOperation() throws OperatorFailedException {
 
-		spectrumModel.startSpectrumOperation();
+		spectrumModel.startAlignmentModelOperation();
 		int siteIndex = MathUtils.nextInt(spectrumLength);
 		
 		for (int i = 0; i < spectrumCount; i++) {
@@ -51,7 +51,7 @@ public class SwapColumnSpectrumOperator extends AbstractSwapSpectrumOperator {
         // symmetrical move so return a zero hasting ratio
 		spectrumModel.setOperationRecord(OP, fixSpectrumIndexArray, siteIndex);
 		
-		spectrumModel.endSpectrumOperation();
+		spectrumModel.endAlignmentModelOperation();
 
 		return 0.0;
 	}

@@ -53,7 +53,7 @@ public class testSpiltMergeThreeWaySpectrumOperator extends AbstractSpectrumOper
 	@Override
 	public double doOperation() throws OperatorFailedException {
 
-		spectrumModel.startSpectrumOperation();
+		spectrumModel.startAlignmentModelOperation();
 
 //		spectrumModel.swapHaplotypeSingleBase(OP, posChar);
 		int spectrumIndex = MathUtils.nextInt(spectrumCount);
@@ -135,7 +135,7 @@ public class testSpiltMergeThreeWaySpectrumOperator extends AbstractSpectrumOper
 
 		spectrumModel.setOperationRecord(OP, spectrumIndex, siteIndexs);
 		
-		spectrumModel.endSpectrumOperation();
+		spectrumModel.endAlignmentModelOperation();
 		
 		return 0;
 	}

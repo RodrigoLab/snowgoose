@@ -8,7 +8,6 @@ import java.util.List;
 import jebl.evolution.sequences.Sequence;
 import srp.dr.ext.SeqGenExt;
 import srp.dr.ext.TreeLikelihoodExt;
-import srp.evolution.OperationRecord;
 import srp.evolution.OperationType;
 import srp.evolution.haplotypes.old.OldHapOperation;
 import srp.evolution.haplotypes.old.OldHapSwapInfo;
@@ -50,7 +49,7 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 	AlignmentMapping aMap;
 
 	
-	protected OperationRecord operationRecord;
+//	protected OperationRecord operationRecord;
 	
 	private boolean isEdit;
 	
@@ -159,63 +158,54 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 //	public double[] getSpecturmFrequencies(int spectrumIndex, int i) {
 //			return getHaplotype(spectrumIndex).getFrequenciesAt(i);
 //	}
+//
+//	public void resetHaplotypeOperation () {
+//		operationRecord.setOperation(OperationType.FULL);
+//	}
+//
+//	public OperationRecord getHaplotypeOperationRecord() {
+//		return operationRecord;
+//	}
+//
+//	public OperationType getHaplotypeOperation () {
+//		return operationRecord.getOperation();
+//	}
+//
+//	public void setHaplotypeOperationRecord(OperationType op,
+//			int[] twoSpectrumIndex, int[] swapPositionIndex) {
+//
+//		operationRecord.setRecord(op, twoSpectrumIndex,
+//				swapPositionIndex);
+//	}
+//
+//	public void setHaplotypeOperationRecord(OperationType op, int siteIndex,
+//			double... delta) {
+//		operationRecord.setRecord(op, siteIndex, delta);
+//	}
+//
+//	public void setHaplotypeOperationRecord(OperationType op,
+//			int spectrumIndex, int siteIndex) {
+//		operationRecord.setRecord(op, spectrumIndex, siteIndex);
+//	}
+//
+//	public void setHaplotypeOperationRecord(OperationType op,
+//			int spectrumIndex, int siteIndex, double delta) {
+//		operationRecord.setRecord(op, spectrumIndex, siteIndex);
+//	}
+//
+//	public void setHaplotypeOperationRecord(OperationType op,
+//			int spectrumIndex, int[] siteIndexs, double... delta) {
+//		operationRecord.setRecord(op, spectrumIndex, siteIndexs, delta);
+//
+//	}
+//
+//	public void setHaplotypeOperationRecord(OperationType op,
+//			int[] spectrumIndexs, int siteIndex) {
+//		// subcolumn
+//		operationRecord.setRecord(op, spectrumIndexs, siteIndex);
+//
+//	}
 
-	public void resetHaplotypeOperation () {
-		operationRecord.setOperation(OperationType.FULL);
-	}
-
-	public OperationRecord getHaplotypeOperationRecord() {
-		return operationRecord;
-	}
-
-	public OperationType getHaplotypeOperation () {
-		return operationRecord.getOperation();
-	}
-
-	public void setHaplotypeOperationRecord(OperationType op,
-			int[] twoSpectrumIndex, int[] swapPositionIndex) {
-
-		operationRecord.setRecord(op, twoSpectrumIndex,
-				swapPositionIndex);
-	}
-
-	public void setHaplotypeOperationRecord(OperationType op, int siteIndex,
-			double... delta) {
-		operationRecord.setRecord(op, siteIndex, delta);
-	}
-
-	public void setHaplotypeOperationRecord(OperationType op,
-			int spectrumIndex, int siteIndex) {
-		operationRecord.setRecord(op, spectrumIndex, siteIndex);
-	}
-
-	public void setHaplotypeOperationRecord(OperationType op,
-			int spectrumIndex, int siteIndex, double delta) {
-		operationRecord.setRecord(op, spectrumIndex, siteIndex);
-	}
-
-	public void setHaplotypeOperationRecord(OperationType op,
-			int spectrumIndex, int[] siteIndexs, double... delta) {
-		operationRecord.setRecord(op, spectrumIndex, siteIndexs, delta);
-
-	}
-
-	public void setHaplotypeOperationRecord(OperationType op,
-			int[] spectrumIndexs, int siteIndex) {
-		// subcolumn
-		operationRecord.setRecord(op, spectrumIndexs, siteIndex);
-
-	}
-
-
-	public void startHaplotypeOperation (){
-		isEdit = true;
-	}
-
-	public void endHaplotypeOperation (){
-		isEdit = false;
-		fireModelChanged();
-	}
 
 	
 	
@@ -632,7 +622,7 @@ System.out.println((time2 - time1) + "\t");
 	@Deprecated int NEW_CHAR_INDEX = 2;
 	@Deprecated int OLD_CHAR_INDEX = 3;
 	
-	
+	@Deprecated
 	public void swapHaplotypeColumn(int[] posChar){
 
 		int[] allOldChars = new int[getHaplotypeCount()];
@@ -646,6 +636,7 @@ System.out.println((time2 - time1) + "\t");
 
 
 	}
+	@Deprecated
 	public int[] swapHaplotypeSingleBase(OldHapOperation op, int[] posChar){
 
 		swapBaseRecord[POS_INDEX] = posChar[0];
@@ -679,6 +670,7 @@ System.out.println((time2 - time1) + "\t");
 //		swapInfo.storeOperation(op, new int[]{hapIndex}, allPosChars);
 		
 	}
+	@Deprecated
 	public void swapHaplotypeMultiBases(OldHapOperation op, int[][] allPosChars){
 		int hapIndex = MathUtils.nextInt(getHaplotypeCount());
 		
@@ -695,7 +687,7 @@ System.out.println((time2 - time1) + "\t");
 //		swapInfo.storeOperation(op, new int[]{hapIndex}, allPosChars);
 		
 	}
-
+	@Deprecated
 	private char setNewCharFromFrequency(){
 		
 		double d = MathUtils.nextDouble();
@@ -707,7 +699,7 @@ System.out.println((time2 - time1) + "\t");
 		}
 		return VALID_CHARS[INDEX_OF_LAST_VALID_CHARS];
 	}
-	
+	@Deprecated
 	public double swapNextDiffBaseFrequency(OldHapOperation op, Parameter frequency) {
 	
 		checkFrequencyParameter(frequency);
@@ -734,7 +726,7 @@ System.out.println((time2 - time1) + "\t");
 		
 		return logq;
 	}
-
+	@Deprecated
 	public int[] getNextBaseFrequency(Parameter frequency) {
 	
 		checkFrequencyParameter(frequency);
@@ -765,6 +757,7 @@ System.out.println((time2 - time1) + "\t");
 //		return oldChar;
 //		
 //	}
+	@Deprecated
 	private void resetHaplotypeToOldChar(int[] swapRecord){
 		Haplotype haplotype = haplotypes.get(swapRecord[0]);
 		haplotype.replaceCharAt(swapRecord[1], swapRecord[3]);
@@ -780,15 +773,15 @@ System.out.println((time2 - time1) + "\t");
 //	}
 //	
 //	
-
+	@Deprecated
 	public OldHapSwapInfo getSwapInfo() {
 		return swapInfo;
 	}
-	
+	@Deprecated
 	public void storeOperationRecord(OldHapOperation op, int[]... opRecord){
 		swapInfo.storeOperation(op, opRecord);
 	}
-	
+	@Deprecated
 	private void storeOperationRecord(OldHapOperation op, int hapIndex,
 			int[][] opRecord) {
 		swapInfo.storeOperation(op, opRecord[0], opRecord[1]);

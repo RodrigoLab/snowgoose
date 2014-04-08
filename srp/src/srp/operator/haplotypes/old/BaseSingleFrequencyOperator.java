@@ -1,4 +1,4 @@
-package srp.operator.haplotypes;
+package srp.operator.haplotypes.old;
 
 import srp.evolution.haplotypes.old.OldHapSwapInfo;
 import srp.evolution.haplotypes.old.OldHaplotypeModel;
@@ -6,7 +6,7 @@ import dr.evolution.datatype.Nucleotides;
 import dr.inference.model.Parameter;
 import dr.inference.operators.OperatorFailedException;
 
-public class BaseSingleFrequencyOperator extends AbstractSingleOperator {
+public class BaseSingleFrequencyOperator extends AbstractBaseSingleOperator {
 
 	
 	public final static String OPERATOR_NAME = BaseSingleFrequencyOperator.class.getSimpleName();

@@ -14,13 +14,13 @@ public class OperationRecord {
 	private OperationType operation;
 	private int spectrumIndex;
 	private int singleIndex;
-	private double[] delta;
+	
 	private int[] allSiteIndexs;
 	private int[] recombinationPositionIndex;
 	private int[] recombinationSpectrumIndex;
 	private int[] allSpectrumIndexs;
 
-	
+	@Deprecated private double[] delta;
 
 		
 	
@@ -86,7 +86,7 @@ public class OperationRecord {
 		
 	}
 
-
+	@Deprecated
 	public void setRecord(OperationType op, int columnIndex, double[] delta) {
 		//Column
 		setOperation(op);
@@ -101,13 +101,19 @@ public class OperationRecord {
 //		this.allSiteIndexs = siteIndexs;
 //	}
 
-
+	@Deprecated
 	public void setRecord(OperationType op, int spectrumIndex, int[] siteIndexs, double[] delta) {
 		//Multi //Swap
 		setOperation(op);
 		this.spectrumIndex = spectrumIndex;
 		this.allSiteIndexs = siteIndexs;
 		this.delta = delta;
+	}
+	public void setRecord(OperationType op, int spectrumIndex, int[] siteIndexs) {
+		//Multi //Swap
+		setOperation(op);
+		this.spectrumIndex = spectrumIndex;
+		this.allSiteIndexs = siteIndexs;
 	}
 	public void setRecord(OperationType op, int spectrumIndex, int siteIndex) {
 		//Single

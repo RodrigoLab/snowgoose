@@ -27,7 +27,7 @@ public abstract class AbstractAlignmentModel extends AbstractModel implements Ta
 	
 	protected boolean isEdit;
 	protected DataType dataType;
-	protected OperationRecord OperationRecord;
+	protected OperationRecord operationRecord;
 	
 	protected String id = null;
 	protected Attributable.AttributeHelper attributes = null;
@@ -38,12 +38,12 @@ public abstract class AbstractAlignmentModel extends AbstractModel implements Ta
 		super(name);
 	}
 
-	public void startSpectrumOperation() {
+	public void startAlignmentModelOperation() {
 		// System.err.println("\n!!!startSpectrumOperation");
 		isEdit = true;
 	}
 
-	public void endSpectrumOperation() {
+	public void endAlignmentModelOperation() {
 		isEdit = false;
 		// System.err.println("!!!!!!!endSpectrumOperation, fireModelCHanged");
 		fireModelChanged();
@@ -59,51 +59,58 @@ public abstract class AbstractAlignmentModel extends AbstractModel implements Ta
 
 
 	public void resetOperation() {
-		OperationRecord.setOperation(OperationType.FULL);
+		operationRecord.setOperation(OperationType.FULL);
 	}
 
 	public OperationRecord getOperationRecord() {
-		return OperationRecord;
+		return operationRecord;
 	}
 
 	public OperationType getOperation() {
-		return OperationRecord.getOperation();
+		return operationRecord.getOperation();
 	}
 
 	public void setOperationRecord(OperationType op,
 			int[] twoSpectrumIndex, int[] swapPositionIndex) {
 
-		OperationRecord.setRecord(op, twoSpectrumIndex,
-				swapPositionIndex);
-	}
-
-	public void setOperationRecord(OperationType op, int siteIndex,
-			double... delta) {
-		OperationRecord.setRecord(op, siteIndex, delta);
+		operationRecord.setRecord(op, twoSpectrumIndex, swapPositionIndex);
 	}
 
 	public void setOperationRecord(OperationType op,
 			int spectrumIndex, int siteIndex) {
-		OperationRecord.setRecord(op, spectrumIndex, siteIndex);
+		operationRecord.setRecord(op, spectrumIndex, siteIndex);
 	}
 
 	public void setOperationRecord(OperationType op,
-			int spectrumIndex, int siteIndex, double delta) {
-		OperationRecord.setRecord(op, spectrumIndex, siteIndex);
-	}
-
-	public void setOperationRecord(OperationType op,
-			int spectrumIndex, int[] siteIndexs, double... delta) {
-		OperationRecord.setRecord(op, spectrumIndex, siteIndexs, delta);
+			int spectrumIndex, int[] siteIndexs) {
+		operationRecord.setRecord(op, spectrumIndex, siteIndexs);
 
 	}
 
 	public void setOperationRecord(OperationType op,
 			int[] spectrumIndexs, int siteIndex) {
 		// subcolumn
-		OperationRecord.setRecord(op, spectrumIndexs, siteIndex);
+		operationRecord.setRecord(op, spectrumIndexs, siteIndex);
 
 	}
+	@Deprecated
+	public void setOperationRecord(OperationType op, int siteIndex,
+			double... delta) {
+		operationRecord.setRecord(op, siteIndex, delta);
+	}
+
+	@Deprecated
+	public void setOperationRecord(OperationType op,
+			int spectrumIndex, int siteIndex, double delta) {
+		operationRecord.setRecord(op, spectrumIndex, siteIndex);
+	}
+	@Deprecated
+	public void setOperationRecord(OperationType op,
+			int spectrumIndex, int[] siteIndexs, double... delta) {
+		operationRecord.setRecord(op, spectrumIndex, siteIndexs, delta);
+
+	}
+
 	@Override
 	public void fireModelChanged() {
 		// for (TreeChangedEvent treeChangedEvent : treeChangedEvents) {

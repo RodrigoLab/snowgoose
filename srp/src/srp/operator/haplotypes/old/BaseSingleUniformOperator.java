@@ -1,15 +1,15 @@
-package srp.operator.haplotypes;
+package srp.operator.haplotypes.old;
 
 import srp.evolution.haplotypes.old.OldHaplotypeModel;
 import dr.inference.operators.OperatorFailedException;
 
-public class BaseSingleEmpiricalOperator extends AbstractSingleOperator {
+public class BaseSingleUniformOperator extends AbstractBaseSingleOperator {
 
-	public final static String OPERATOR_NAME = BaseSingleEmpiricalOperator.class.getSimpleName();
+	public final static String OPERATOR_NAME = BaseSingleUniformOperator.class.getSimpleName();
 
-	public BaseSingleEmpiricalOperator(HaplotypeModel haplotypeModel,
-			int nothing) {
+	public BaseSingleUniformOperator(OldHaplotypeModel haplotypeModel, int nothing) {
 		super(haplotypeModel);
+
 	}
 
 	@Override
@@ -17,7 +17,8 @@ public class BaseSingleEmpiricalOperator extends AbstractSingleOperator {
 
 		haplotypeModel.startHaplotypeOperation();
 
-		int[] posChar = alignmentMapping.getNextBaseEmpirical();
+		int[] posChar = alignmentMapping.getNextBaseUniform();
+		
 		haplotypeModel.swapHaplotypeSingleBase(OP, posChar);
 
 		haplotypeModel.endHaplotypeOperation();

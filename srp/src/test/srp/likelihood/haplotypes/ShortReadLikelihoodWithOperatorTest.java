@@ -15,7 +15,7 @@ import srp.evolution.haplotypes.old.OldHaplotypeModelUtils;
 import srp.evolution.shortreads.AlignmentMapping;
 import srp.haplotypes.SPSDist;
 import srp.likelihood.haplotypes.ShortReadLikelihood;
-import srp.operator.haplotypes.AbstractBaseSingleOperator;
+import srp.operator.haplotypes.AbstractSingleOperator;
 import srp.operator.haplotypes.AbstractBasesMultiOperator;
 import srp.operator.haplotypes.BaseSingleEmpiricalOperator;
 import srp.operator.haplotypes.BaseSingleFrequencyOperator;
@@ -81,20 +81,20 @@ public class ShortReadLikelihoodWithOperatorTest {
 	public void testCalculateLikelihoodSingleBase() throws Exception {
 		
 		MCMCOperator op = new BaseSingleOperator(haplotypeModelH4, 0);
-		runTestCalculateSrpLikelihoodOperators(haplotypeModelH4, op, AbstractBaseSingleOperator.OP);
+		runTestCalculateSrpLikelihoodOperators(haplotypeModelH4, op, AbstractSingleOperator.OP);
 		
 	}
 	@Test
 	public void testCalculateLikelihoodSingleBaseUniform() throws Exception {
 		
 		MCMCOperator op = new BaseSingleUniformOperator(haplotypeModelH4, 0);
-		runTestCalculateSrpLikelihoodOperators(haplotypeModelH4, op, AbstractBaseSingleOperator.OP);
+		runTestCalculateSrpLikelihoodOperators(haplotypeModelH4, op, AbstractSingleOperator.OP);
 	}
 	@Test
 	public void testCalculateLikelihoodSingleBaseEmpirical() throws Exception {
 		
 		MCMCOperator op = new BaseSingleEmpiricalOperator(haplotypeModelH4, 0);
-		runTestCalculateSrpLikelihoodOperators(haplotypeModelH4, op, AbstractBaseSingleOperator.OP);
+		runTestCalculateSrpLikelihoodOperators(haplotypeModelH4, op, AbstractSingleOperator.OP);
 	}
 	
 	@Test
@@ -103,7 +103,7 @@ public class ShortReadLikelihoodWithOperatorTest {
 
 		Parameter freqs = new Parameter.Default("frequency", haplotypeModelH4.getStateFrequencies());
 		MCMCOperator op = new BaseSingleFrequencyOperator(haplotypeModelH4, freqs);
-		runTestCalculateSrpLikelihoodOperators(haplotypeModelH4, op, AbstractBaseSingleOperator.OP);
+		runTestCalculateSrpLikelihoodOperators(haplotypeModelH4, op, AbstractSingleOperator.OP);
 		
 		
 	}

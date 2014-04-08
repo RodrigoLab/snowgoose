@@ -46,7 +46,7 @@ public class DeltaExchangeSingleSpectrumOperator extends AbstractSpectrumOperato
 	@Override
 	public double doOperation() throws OperatorFailedException {
 	
-		spectrumModel.startSpectrumOperation();
+		spectrumModel.startAlignmentModelOperation();
 
 		int spectrumIndex = MathUtils.nextInt(spectrumCount);
 		int siteIndex = MathUtils.nextInt(spectrumLength);
@@ -84,7 +84,7 @@ public class DeltaExchangeSingleSpectrumOperator extends AbstractSpectrumOperato
         // symmetrical move so return a zero hasting ratio
 		spectrumModel.setOperationRecord(OP, spectrumIndex, siteIndex, d);
 		
-		spectrumModel.endSpectrumOperation();
+		spectrumModel.endAlignmentModelOperation();
 
 		return 0.0;
 	}

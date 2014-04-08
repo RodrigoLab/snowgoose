@@ -75,7 +75,7 @@ public class DirichletSpectrumOperator extends AbstractDirichletSpectrumOperator
 	@Override
 	public double doOperation() throws OperatorFailedException {
 
-		spectrumModel.startSpectrumOperation();
+		spectrumModel.startAlignmentModelOperation();
 
 		int spectrumIndex = MathUtils.nextInt(spectrumCount);
 		Spectrum spectrum = spectrumModel.getSpectrum(spectrumIndex);
@@ -100,7 +100,7 @@ public class DirichletSpectrumOperator extends AbstractDirichletSpectrumOperator
 
 		spectrumModel.setOperationRecord(OP, spectrumIndex, siteIndexs);
 		
-		spectrumModel.endSpectrumOperation();
+		spectrumModel.endAlignmentModelOperation();
 //		System.out.print("diriMulti: "+ratio +"\t");
 		return ratio;
 	}

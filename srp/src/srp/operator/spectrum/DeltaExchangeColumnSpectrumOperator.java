@@ -43,7 +43,7 @@ public class DeltaExchangeColumnSpectrumOperator extends AbstractSpectrumOperato
 	@Override
 	public double doOperation() throws OperatorFailedException {
 
-		spectrumModel.startSpectrumOperation();
+		spectrumModel.startAlignmentModelOperation();
 
 //		int[] posChar = alignmentMapping.getNextBase();
 //		spectrumModel.swapHaplotypeSingleBase(OP, posChar);
@@ -99,7 +99,7 @@ public class DeltaExchangeColumnSpectrumOperator extends AbstractSpectrumOperato
         // symmetrical move so return a zero hasting ratio
 		spectrumModel.setOperationRecord(OP, fixSpectrumIndexArray, siteIndex);
 		
-		spectrumModel.endSpectrumOperation();
+		spectrumModel.endAlignmentModelOperation();
 
 		return 0.0;
 	}

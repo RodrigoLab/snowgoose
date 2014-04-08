@@ -55,7 +55,7 @@ public class SwapSubColumnSpectrumOperator extends AbstractSwapSpectrumOperator 
 	@Override
 	public double doOperation() throws OperatorFailedException {
 
-		spectrumModel.startSpectrumOperation();
+		spectrumModel.startAlignmentModelOperation();
 		int siteIndex = MathUtils.nextInt(spectrumLength);
 
 		int[] spectrumIndexs = randomSiteHashSet(swapSpectrumCount, spectrumLength);
@@ -68,7 +68,7 @@ public class SwapSubColumnSpectrumOperator extends AbstractSwapSpectrumOperator 
 		}
 
 		spectrumModel.setOperationRecord(OP, spectrumIndexs, siteIndex);
-		spectrumModel.endSpectrumOperation();
+		spectrumModel.endAlignmentModelOperation();
 
 		return 0.0;
 	}

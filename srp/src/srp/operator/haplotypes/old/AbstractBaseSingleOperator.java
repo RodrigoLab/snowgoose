@@ -1,4 +1,4 @@
-package srp.operator.haplotypes;
+package srp.operator.haplotypes.old;
 
 import srp.evolution.haplotypes.old.OldHapOperation;
 import srp.evolution.haplotypes.old.OldHaplotypeModel;
