@@ -1,4 +1,4 @@
-package test.srp.operator.haplotypes;
+package test.srp.operator.haplotypes.old;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;

@@ -1,18 +1,19 @@
 package srp.operator.haplotypes;
 
-import srp.evolution.haplotypes.old.OldHapOperation;
+import srp.evolution.OperationType;
 import srp.evolution.haplotypes.old.OldHaplotype;
 import srp.evolution.haplotypes.old.OldHaplotypeModel;
+import srp.operator.haplotypes.old.AbstractBasesMultiOperator;
 import dr.inference.operators.CoercionMode;
 import dr.inference.operators.OperatorFailedException;
 import dr.math.MathUtils;
 
 
-public class HaplotypeSwapSectionOperator extends AbstractBasesMultiOperator {
+public class HaplotypeSwapSectionOperator extends HaplotypeRecombinationOperator {
 
 	
 	public final static String OPERATOR_NAME = HaplotypeSwapSectionOperator.class.getSimpleName();
-	public final static OldHapOperation OP = OldHapOperation.SWAPSECTION;
+	public final static OperationType OP = OperationType.RECOMBINATION;
 
 	
 	

@@ -1,9 +1,8 @@
-package test.srp.operator.haplotypes;
+package test.srp.operator.haplotypes.old;
 
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 import java.util.Arrays;
 
@@ -16,7 +15,7 @@ import org.junit.Test;
 import srp.evolution.haplotypes.old.OldHaplotypeModel;
 import srp.evolution.shortreads.AlignmentMapping;
 import srp.haplotypes.AlignmentUtils;
-import srp.operator.haplotypes.AbstractBasesMultiOperator;
+import srp.operator.haplotypes.old.AbstractBasesMultiOperator;
 import dr.inference.operators.CoercableMCMCOperator;
 import dr.inference.operators.CoercionMode;
 import dr.inference.operators.OperatorFailedException;

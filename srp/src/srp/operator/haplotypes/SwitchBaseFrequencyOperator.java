@@ -2,10 +2,11 @@ package srp.operator.haplotypes;
 
 import java.util.Arrays;
 
-import srp.evolution.haplotypes.old.OldHapOperation;
+import srp.evolution.OperationType;
 import srp.evolution.haplotypes.old.OldHapSwapInfo;
 import srp.evolution.haplotypes.old.OldHaplotypeModel;
 import srp.evolution.shortreads.AlignmentMapping;
+import srp.haplotypes.HaplotypeModel;
 import dr.evolution.datatype.Nucleotides;
 import dr.inference.model.Parameter;
 import dr.inference.operators.AbstractCoercableOperator;
@@ -15,11 +16,11 @@ import dr.math.MathUtils;
 
 public class SwitchBaseFrequencyOperator extends AbstractCoercableOperator {
 
-	public final static OldHapOperation OP = OldHapOperation.SWAPSINGLE;
+	public final static OperationType OP = OperationType.SINGLE;
 	
 //	protected final int haplotypeLength;
 
-	protected OldHaplotypeModel haplotypeModel;
+	protected HaplotypeModel haplotypeModel;
 
 //	protected int swapLength;
 
@@ -39,7 +40,7 @@ public class SwitchBaseFrequencyOperator extends AbstractCoercableOperator {
 
 	private double switchProb;
 
-	public SwitchBaseFrequencyOperator(OldHaplotypeModel haplotypeModel, double switchProb, Parameter freqs, CoercionMode mode )  {
+	public SwitchBaseFrequencyOperator(HaplotypeModel haplotypeModel, double switchProb, Parameter freqs, CoercionMode mode )  {
 		super(mode);
 		this.frequency = freqs;
 			

@@ -1,5 +1,4 @@
-package test.srp.operator.haplotypes;
-
+package test.srp.operator.haplotypes.old;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -15,30 +14,30 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import srp.evolution.haplotypes.old.OldHaplotypeModel;
-import srp.evolution.haplotypes.old.OldHaplotypeModelUtils;
 import srp.evolution.shortreads.AlignmentMapping;
 import srp.haplotypes.AlignmentUtils;
 import srp.likelihood.haplotypes.ShortReadLikelihood;
-import srp.operator.haplotypes.BasesMultiUniformOperator;
+import srp.operator.haplotypes.old.BaseSingleOperator;
 import dr.evolution.alignment.SimpleAlignment;
+import dr.evomodelxml.substmodel.HKYParser;
 import dr.inference.loggers.ArrayLogFormatter;
 import dr.inference.loggers.MCLogger;
 import dr.inference.mcmc.MCMC;
 import dr.inference.mcmc.MCMCOptions;
 import dr.inference.model.CompoundLikelihood;
 import dr.inference.model.Likelihood;
-import dr.inference.operators.CoercableMCMCOperator;
-import dr.inference.operators.CoercionMode;
+import dr.inference.model.Parameter;
 import dr.inference.operators.MCMCOperator;
 import dr.inference.operators.OperatorFailedException;
 import dr.inference.operators.OperatorSchedule;
+import dr.inference.operators.ScaleOperator;
 import dr.inference.operators.SimpleMCMCOperator;
 import dr.inference.operators.SimpleOperatorSchedule;
 import dr.inference.trace.ArrayTraceList;
 import dr.inference.trace.Trace;
 import dr.inferencexml.model.CompoundLikelihoodParser;
 
-public class BasesMultiUniformOperatorTest {
+public class BaseSingleOperatorTest {
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -56,7 +55,6 @@ public class BasesMultiUniformOperatorTest {
 	public void tearDown() throws Exception {
 	}
 
-
 	@Test
 	public void testGetOperatorName() {
 		String[] seqs = new String[]{
@@ -69,16 +67,14 @@ public class BasesMultiUniformOperatorTest {
 		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
 		
 		OldHaplotypeModel haplotypeModel = new OldHaplotypeModel(aMap, 3);
-		
-		int nBases = 10;
-		CoercableMCMCOperator operator = new BasesMultiUniformOperator(haplotypeModel, nBases, null);
-    	assertEquals(operator.getOperatorName(), "BasesMultiUniformOperator");
+
+		SimpleMCMCOperator operator = new BaseSingleOperator(haplotypeModel, 0);
+    	assertEquals(operator.getOperatorName(), "BaseSingleOperator");
     	assertEquals(operator.getPerformanceSuggestion(), "");
 	}
 
-
 	@Test
-	public void testDoOperation() throws OperatorFailedException {
+	public void testDoOperationReject() throws OperatorFailedException {
 		String[] seqs = new String[]{
 				"GGGGGGGGGGGGG.....",
 				".....CCCCCCCCCCCCCCCCCCCCCCCCCCC....",
@@ -87,15 +83,17 @@ public class BasesMultiUniformOperatorTest {
 //				 AAAAACCCCCGCGCCTTCGGTCGTTTTCTATAGGGG"
 //				 AAAAACCCCCGCGCCTTCGGTCGTTTTCTATAGGGG
 				};
+		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
 		
 		String[] haps = new String[]{
 //				"AAAAACCCCCGGGGGTTTTTACGTACACTATATATA"
 //				"CCCCCTTTTTAAAAAGGGGGTCGATGCAGTAGCTAG"
 				"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
 				};
-		
-		OldHaplotypeModel haplotypeModel = OldHaplotypeModelUtils.createHaplotypeModel(seqs, haps);
-    	SimpleMCMCOperator operator = new BasesMultiUniformOperator(haplotypeModel, 5, CoercionMode.COERCION_OFF);
+		SimpleAlignment hapAlignment = AlignmentUtils.createAlignment(haps);
+		OldHaplotypeModel haplotypeModel = new OldHaplotypeModel(aMap, hapAlignment);
+
+    	BaseSingleOperator operator = new BaseSingleOperator(haplotypeModel, 0);
     	
     	
     	for (int i = 0; i < 100; i++) {
@@ -111,6 +109,7 @@ public class BasesMultiUniformOperatorTest {
 		}
 
 	}
+
 	@Test
 	public void testDoOperationMCMC() {
 		String[] seqs = new String[]{
@@ -118,14 +117,14 @@ public class BasesMultiUniformOperatorTest {
 				".....CCCCCCCCCCCCCCCCCCCTTTTCCCC....",
 				"..........GGGGGGGGGGGGGGCGCGTATAGGGG",
 				"...............TTTTTTTTTACACTATA....",
-				"CCCCCTTTTTAAAAAGGGGGTCGATGCAGTAGCTAG"
+//				"CCCCCTTTTTAAAAAGGGGGTCGATGCAGTAGCTAG"
 //				 AAAAACCCCCGCGCCTTCGGTCGTTTTCTATAGGGG"
 //				 AAAAACCCCCGCGCCTTCGGTCGTTTTCTATAGGGG
 				};
 		AlignmentMapping aMap = AlignmentUtils.createAlignmentMapping(seqs);
 		
 		String[] haps = new String[]{
-				"AAAAACCCCCGGGGGTTTTTACGTACACTATATATA",
+//				"AAAAACCCCCGGGGGTTTTTACGTACACTATATATA"
 				"CCCCCTTTTTAAAAAGGGGGTCGATGCAGTAGCTAG"
 //				"AAAAAAAAAAAAAAAAAATTTTTTTTTTTTTTTTTT"
 				};
@@ -136,7 +135,13 @@ public class BasesMultiUniformOperatorTest {
     	// Operators
     	OperatorSchedule schedule = new SimpleOperatorSchedule();
 
-    	MCMCOperator operator = new BasesMultiUniformOperator(haplotypeModel, 3, CoercionMode.COERCION_OFF);
+    	Parameter kappa = new Parameter.Default(HKYParser.KAPPA, 1.0, 0, 100.0);
+    	MCMCOperator operator = new ScaleOperator(kappa, 0.75);
+    	schedule.addOperator(operator);
+
+    	int index = 0;
+    	
+    	operator = new BaseSingleOperator(haplotypeModel, index);
     	operator.setWeight(3.0);
     	schedule.addOperator(operator);
     	
@@ -162,18 +167,19 @@ public class BasesMultiUniformOperatorTest {
 
     	ArrayLogFormatter formatter = new ArrayLogFormatter(false);
     	
-    	int lengthScaler = 1;
+    	int lengthScaler = 10;
     	MCLogger[] loggers = new MCLogger[1];
     	loggers[0] = new MCLogger(formatter, lengthScaler*1, false);
     	loggers[0].add(shortReadlikelihood );
     	loggers[0].add(srpLikelihood);
     	loggers[0].add(posterior);
+    	loggers[0].add(kappa);
 
     	// MCMC
     	MCMC mcmc = new MCMC("mcmc1");
-    	MCMCOptions options = new MCMCOptions(lengthScaler*100);
+    	MCMCOptions options = new MCMCOptions(lengthScaler*10);
 //    	options.setChainLength(10000);
-//    	options.setChainLength(lengthScaler*100);
+//    	options.setChainLength(lengthScaler*10);
 //    	options.setUseCoercion(true); // autoOptimize = true
 //    	options.setCoercionDelay(lengthScaler*5);
 //    	options.setTemperature(1.0);
@@ -213,5 +219,7 @@ public class BasesMultiUniformOperatorTest {
 //			System.out.println(trace.getTraceT9ype());
 			
 	}
+
+
 
 }

@@ -1,4 +1,4 @@
-package test.srp.operator.haplotypes;
+package test.srp.operator.haplotypes.old;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -18,7 +18,7 @@ import srp.evolution.haplotypes.old.OldHaplotypeModelUtils;
 import srp.evolution.shortreads.AlignmentMapping;
 import srp.haplotypes.AlignmentUtils;
 import srp.likelihood.haplotypes.ShortReadLikelihood;
-import srp.operator.haplotypes.BaseSingleFrequencyOperator;
+import srp.operator.haplotypes.old.BaseSingleFrequencyOperator;
 import test.TestUtils;
 import dr.evolution.alignment.SimpleAlignment;
 import dr.inference.loggers.ArrayLogFormatter;

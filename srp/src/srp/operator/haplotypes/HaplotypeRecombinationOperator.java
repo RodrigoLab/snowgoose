@@ -1,8 +1,8 @@
 package srp.operator.haplotypes;
 
-import srp.evolution.haplotypes.old.OldHapOperation;
+import srp.evolution.OperationType;
 import srp.evolution.haplotypes.old.OldHaplotype;
-import srp.evolution.haplotypes.old.OldHaplotypeModel;
+import srp.haplotypes.HaplotypeModel;
 import dr.inference.operators.OperatorFailedException;
 import dr.inference.operators.SimpleMCMCOperator;
 import dr.math.MathUtils;
@@ -10,19 +10,19 @@ import dr.math.MathUtils;
 public class HaplotypeRecombinationOperator extends SimpleMCMCOperator {
 
 	public final static String OPERATOR_NAME = HaplotypeRecombinationOperator.class.getSimpleName();
-	public final static OldHapOperation OP = OldHapOperation.SWAPSECTION;
+	public final static OperationType OP = OperationType.RECOMBINATION;
 
 	@Deprecated
 	private int index;
 	private int haplotypeLength;
-	private OldHaplotypeModel haplotypeModel;
+	private HaplotypeModel haplotypeModel;
 	
 //	public AlignmentSwapBaseOperator(Parameter parameter, HaplotypeModel haplotypeModel, int index, CoercionMode mode) {
 ////		super(mode);
 //	}
 
 	
-	public HaplotypeRecombinationOperator(OldHaplotypeModel haplotypeModel, int nothing) {
+	public HaplotypeRecombinationOperator(HaplotypeModel haplotypeModel, int nothing) {
 //		super(mode);
 		this.index = nothing;
 		this.haplotypeModel= haplotypeModel; 

@@ -1,8 +1,7 @@
-package test.srp.operator.haplotypes;
+package test.srp.operator.haplotypes.old;
 
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.After;
@@ -15,11 +14,12 @@ import srp.evolution.haplotypes.old.OldHaplotypeModel;
 import srp.evolution.haplotypes.old.OldHaplotypeModelUtils;
 import srp.evolution.shortreads.AlignmentMapping;
 import srp.haplotypes.AlignmentUtils;
-import srp.operator.haplotypes.HaplotypeRecombinationOperator;
+import srp.operator.haplotypes.old.HaplotypeSwapSectionOperator;
+import dr.inference.operators.CoercableMCMCOperator;
+import dr.inference.operators.CoercionMode;
 import dr.inference.operators.SimpleMCMCOperator;
 
-
-public class HaplotypeRecombinationOperatorTest {
+public class HaplotypeSwapSectionOperatorTest {
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -36,7 +36,7 @@ public class HaplotypeRecombinationOperatorTest {
 	@After
 	public void tearDown() throws Exception {
 	}
-	
+
 	@Test
 	public void testGetOperatorName() {
 		String[] seqs = new String[]{
@@ -50,13 +50,14 @@ public class HaplotypeRecombinationOperatorTest {
 		
 		OldHaplotypeModel haplotypeModel = new OldHaplotypeModel(aMap, 3);
 
-		SimpleMCMCOperator operator = new HaplotypeRecombinationOperator(haplotypeModel, 0);
-    	assertEquals(operator.getOperatorName(), "HaplotypeRecombinationOperator");
+		int nBases = 10;
+		CoercableMCMCOperator operator = new HaplotypeSwapSectionOperator(haplotypeModel, nBases, null);
+    	assertEquals(operator.getOperatorName(), "HaplotypeSwapSectionOperator");
     	assertEquals(operator.getPerformanceSuggestion(), "");
     	
+    	
+    	
 	}
-
-	
 	@Test
 	public void testDoOperation() throws Exception {
 		
@@ -69,27 +70,26 @@ public class HaplotypeRecombinationOperatorTest {
 				"AAAAAAAAAA",
 				"CCCCCCCCCC"
 				};
-		
-		for (int i = 1; i < 1000; i++) {
+
+
+		for (int i = 1; i < 10; i++) {
 			OldHaplotypeModel haplotypeModel = OldHaplotypeModelUtils.createHaplotypeModel(srp, haps);
-			HaplotypeRecombinationOperator op = new HaplotypeRecombinationOperator(haplotypeModel, i);
-			op.doOperation();
-			String s0 = haplotypeModel.getHaplotypeString(0);
-			String s1 = haplotypeModel.getHaplotypeString(1);
-			assertTrue( StringUtils.countMatches(s0, "A")>0 && StringUtils.countMatches(s0, "A")<10);
-			assertTrue( StringUtils.countMatches(s0, "C")>0 && StringUtils.countMatches(s0, "C")<10);
-			assertTrue( StringUtils.countMatches(s1, "A")>0 && StringUtils.countMatches(s1, "A")<10);
-			assertTrue( StringUtils.countMatches(s1, "C")>0 && StringUtils.countMatches(s1, "C")<10);
-			assertEquals(10, StringUtils.getLevenshteinDistance(s0, s1));
+			SimpleMCMCOperator op = new HaplotypeSwapSectionOperator(haplotypeModel, i, CoercionMode.COERCION_OFF);
 
-			haplotypeModel.reject();
-			assertEquals(haps[0], haplotypeModel.getHaplotypeString(0));
-			assertEquals(haps[1], haplotypeModel.getHaplotypeString(1));
-
+			for (int j = 0; j < 100; j++) {
+				op.doOperation();
+				String s0 = haplotypeModel.getHaplotypeString(0);
+				String s1 = haplotypeModel.getHaplotypeString(1);
+				assertEquals(10-i, StringUtils.countMatches(s0, "A"));
+				assertEquals(i, StringUtils.countMatches(s0, "C"));
+				assertEquals(i, StringUtils.countMatches(s1, "A"));
+				assertEquals(10-i, StringUtils.countMatches(s1, "C"));
+				haplotypeModel.reject();
+				assertEquals(haps[0], haplotypeModel.getHaplotypeString(0));
+				assertEquals(haps[1], haplotypeModel.getHaplotypeString(1));
+			}
 		}
-	}
 		
+	}
 	
-	
-
 }

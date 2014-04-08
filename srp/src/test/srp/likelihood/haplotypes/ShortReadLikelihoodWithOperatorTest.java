@@ -15,18 +15,18 @@ import srp.evolution.haplotypes.old.OldHaplotypeModelUtils;
 import srp.evolution.shortreads.AlignmentMapping;
 import srp.haplotypes.SPSDist;
 import srp.likelihood.haplotypes.ShortReadLikelihood;
-import srp.operator.haplotypes.AbstractSingleOperator;
-import srp.operator.haplotypes.AbstractBasesMultiOperator;
-import srp.operator.haplotypes.BaseSingleEmpiricalOperator;
-import srp.operator.haplotypes.BaseSingleFrequencyOperator;
-import srp.operator.haplotypes.BaseSingleOperator;
-import srp.operator.haplotypes.BaseSingleUniformOperator;
-import srp.operator.haplotypes.BasesMultiEmpiricalOperator;
-import srp.operator.haplotypes.BasesMultiOperator;
-import srp.operator.haplotypes.BasesMultiUniformOperator;
-import srp.operator.haplotypes.ColumnOperator;
-import srp.operator.haplotypes.HaplotypeRecombinationOperator;
-import srp.operator.haplotypes.HaplotypeSwapSectionOperator;
+import srp.operator.haplotypes.old.AbstractBaseSingleOperator;
+import srp.operator.haplotypes.old.AbstractBasesMultiOperator;
+import srp.operator.haplotypes.old.BaseSingleEmpiricalOperator;
+import srp.operator.haplotypes.old.BaseSingleFrequencyOperator;
+import srp.operator.haplotypes.old.BaseSingleOperator;
+import srp.operator.haplotypes.old.BaseSingleUniformOperator;
+import srp.operator.haplotypes.old.BasesMultiEmpiricalOperator;
+import srp.operator.haplotypes.old.BasesMultiOperator;
+import srp.operator.haplotypes.old.BasesMultiUniformOperator;
+import srp.operator.haplotypes.old.ColumnOperator;
+import srp.operator.haplotypes.old.HaplotypeRecombinationOperator;
+import srp.operator.haplotypes.old.HaplotypeSwapSectionOperator;
 import dr.evolution.alignment.Alignment;
 import dr.inference.model.Parameter;
 import dr.inference.operators.CoercionMode;
@@ -81,20 +81,20 @@ public class ShortReadLikelihoodWithOperatorTest {
 	public void testCalculateLikelihoodSingleBase() throws Exception {
 		
 		MCMCOperator op = new BaseSingleOperator(haplotypeModelH4, 0);
-		runTestCalculateSrpLikelihoodOperators(haplotypeModelH4, op, AbstractSingleOperator.OP);
+		runTestCalculateSrpLikelihoodOperators(haplotypeModelH4, op, AbstractBaseSingleOperator.OP);
 		
 	}
 	@Test
 	public void testCalculateLikelihoodSingleBaseUniform() throws Exception {
 		
 		MCMCOperator op = new BaseSingleUniformOperator(haplotypeModelH4, 0);
-		runTestCalculateSrpLikelihoodOperators(haplotypeModelH4, op, AbstractSingleOperator.OP);
+		runTestCalculateSrpLikelihoodOperators(haplotypeModelH4, op, AbstractBaseSingleOperator.OP);
 	}
 	@Test
 	public void testCalculateLikelihoodSingleBaseEmpirical() throws Exception {
 		
 		MCMCOperator op = new BaseSingleEmpiricalOperator(haplotypeModelH4, 0);
-		runTestCalculateSrpLikelihoodOperators(haplotypeModelH4, op, AbstractSingleOperator.OP);
+		runTestCalculateSrpLikelihoodOperators(haplotypeModelH4, op, AbstractBaseSingleOperator.OP);
 	}
 	
 	@Test
@@ -103,7 +103,7 @@ public class ShortReadLikelihoodWithOperatorTest {
 
 		Parameter freqs = new Parameter.Default("frequency", haplotypeModelH4.getStateFrequencies());
 		MCMCOperator op = new BaseSingleFrequencyOperator(haplotypeModelH4, freqs);
-		runTestCalculateSrpLikelihoodOperators(haplotypeModelH4, op, AbstractSingleOperator.OP);
+		runTestCalculateSrpLikelihoodOperators(haplotypeModelH4, op, AbstractBaseSingleOperator.OP);
 		
 		
 	}

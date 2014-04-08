@@ -38,4 +38,6 @@ public class BaseSingleOperator extends AbstractSingleOperator {
 		return OPERATOR_NAME;
 	}
 
+
+
 }

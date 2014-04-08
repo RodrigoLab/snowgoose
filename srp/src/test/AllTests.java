@@ -9,7 +9,7 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({ 
 //	test.dr.ext.TreeLikelihoodExtTest.class, //slow
 	test.srp.haplotypes.AAllTestsHaplotypes.class,
-	test.srp.operator.haplotypes.AAllTestsHaplotyesOperator.class,
+	test.srp.operator.haplotypes.old.AAllTestsHaplotyesOperator.class,
 	test.srp.likelihood.haplotypes.AllTestsLikelihood.class,
 	test.srp.shortreads.AAllTestsShortreads.class,
 	test.srp.spectrum.AAllTestsSpectrum.class,

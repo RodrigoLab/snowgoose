@@ -18,7 +18,7 @@ import srp.evolution.haplotypes.old.OldHaplotypeModelUtils;
 import srp.evolution.shortreads.AlignmentMapping;
 import srp.haplotypes.AlignmentUtils;
 import srp.likelihood.haplotypes.ShortReadLikelihood;
-import srp.operator.haplotypes.BaseSingleOperator;
+import srp.operator.haplotypes.old.BaseSingleOperator;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.SimpleAlignment;
 import dr.inference.mcmc.MCMC;

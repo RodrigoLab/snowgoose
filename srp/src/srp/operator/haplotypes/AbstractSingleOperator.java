@@ -46,4 +46,12 @@ public abstract class AbstractSingleOperator extends SimpleMCMCOperator {
 		int i = MathUtils.nextInt(DIMENSION);
 		return DNA_CHARS[i];
 	}
+
+
+
+	@Override
+	public String getPerformanceSuggestion() {
+		return "";
+	}
+	
 }
