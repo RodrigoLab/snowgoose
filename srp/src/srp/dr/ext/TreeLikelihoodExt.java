@@ -1,6 +1,8 @@
 package srp.dr.ext;
 
 import srp.evolution.haplotypes.old.OldHaplotypeModel;
+import srp.haplotypes.HaplotypeModel;
+import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.PatternList;
 import dr.evolution.tree.NodeRef;
 import dr.evolution.tree.Tree;
@@ -14,10 +16,10 @@ import dr.inference.model.Model;
 
 public class TreeLikelihoodExt extends TreeLikelihood {
 
-	private OldHaplotypeModel haplotypeModel;
+	private HaplotypeModel haplotypeModel;
 	private SitePatternsExt sitePatternExt;
 
-	public TreeLikelihoodExt(OldHaplotypeModel haplotypeModel, TreeModel treeModel,
+	public TreeLikelihoodExt(HaplotypeModel haplotypeModel, TreeModel treeModel,
 			SiteModel siteModel, BranchRateModel branchRateModel,
 			TipStatesModel tipStatesModel, boolean useAmbiguities,
 			boolean allowMissingTaxa, boolean storePartials,
@@ -48,6 +50,11 @@ public class TreeLikelihoodExt extends TreeLikelihood {
     	if (model == haplotypeModel){
 //    		System.out.println("GOOD here");
     		sitePatternExt.updateAlignment(haplotypeModel);
+    		updatePatternListExt(sitePatternExt);
+    		likelihoodKnown = false;
+    	}
+    	else if (model == oldHaplotypeModel){ //REMOVE: Remove OldHaplotype
+    		sitePatternExt.updateAlignment(oldHaplotypeModel);
     		updatePatternListExt(sitePatternExt);
     		likelihoodKnown = false;
     	}
@@ -117,7 +124,7 @@ public class TreeLikelihoodExt extends TreeLikelihood {
 		boolean allowMissingTaxa = false;
 //		boolean storePartials,
 //		boolean forceJavaCore, 
-		boolean forceRescaling = false;
+//		boolean forceRescaling = false;
 
 		        try {
 //		            this.siteModel = siteModel;
@@ -327,5 +334,23 @@ public class TreeLikelihoodExt extends TreeLikelihood {
 	private void resetRootPartials() {
 		rootPartials = null;		
 	}
-	
+
+	@Deprecated private OldHaplotypeModel oldHaplotypeModel;
+	@Deprecated
+	public TreeLikelihoodExt(OldHaplotypeModel haplotypeModel, TreeModel treeModel,
+			SiteModel siteModel, BranchRateModel branchRateModel,
+			TipStatesModel tipStatesModel, boolean useAmbiguities,
+			boolean allowMissingTaxa, boolean storePartials,
+			boolean forceJavaCore, boolean forceRescaling) {
+		
+		
+		super(new SitePatternsExt (haplotypeModel, null, 0, -1, 1, true),
+				treeModel, siteModel, branchRateModel,
+				tipStatesModel, useAmbiguities, allowMissingTaxa,
+				storePartials, forceJavaCore, forceRescaling);
+		
+		this.sitePatternExt = (SitePatternsExt) getPatternList(); 
+		this.oldHaplotypeModel = haplotypeModel;
+		addModel(this.oldHaplotypeModel);
+	}
 }

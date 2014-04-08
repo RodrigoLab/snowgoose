@@ -11,6 +11,7 @@ import srp.dr.ext.TreeLikelihoodExt;
 import srp.evolution.OperationType;
 import srp.evolution.haplotypes.old.OldHapOperation;
 import srp.evolution.haplotypes.old.OldHapSwapInfo;
+import srp.evolution.haplotypes.old.OldHaplotypeModel;
 import srp.evolution.shortreads.AlignmentMapping;
 import srp.evolution.spectrum.SpectrumAlignmentModel;
 import dr.evolution.alignment.Alignment;
@@ -789,5 +790,10 @@ System.out.println((time2 - time1) + "\t");
 	}
 
 
-	
+	public static HaplotypeModel factory(Alignment shortReads, Alignment trueAlignment){
+		
+		AlignmentMapping alignmentMapping = new AlignmentMapping(shortReads);
+		HaplotypeModel haplotypeModel = new HaplotypeModel(alignmentMapping, trueAlignment);
+		return haplotypeModel;
+	}	
 }

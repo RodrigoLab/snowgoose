@@ -33,7 +33,7 @@ import dr.inference.operators.OperatorSchedule;
 import dr.inference.operators.SimpleOperatorSchedule;
 import dr.inferencexml.model.CompoundLikelihoodParser;
 
-public class MainMCMCFullOldHaplotype {
+public class OldHaplotypeMainMCMCFull {
 
 	public static void main(String[] args) throws Exception {
 
@@ -76,14 +76,14 @@ public class MainMCMCFullOldHaplotype {
 
 		// Random treeModel
 		ConstantPopulationModel popModel = new ConstantPopulationModel(popSize, Units.Type.YEARS);
-		TreeModel treeModel = MCMCSetupHelperHaplotype.setupRandomTreeModel(popModel, haplotypeModel, Units.Type.YEARS);
+		TreeModel treeModel = OldMCMCSetupHelperHaplotype.setupRandomTreeModel(popModel, haplotypeModel, Units.Type.YEARS);
 		
 		// Coalescent likelihood
 		CoalescentLikelihood coalescent = new CoalescentLikelihood(treeModel,null, new ArrayList<TaxonList>(), popModel);
 		coalescent.setId("coalescent");
 
 		// Simulate haplotypes, treeLikelihood
-		HashMap<String, Object> parameterList = MCMCSetupHelperHaplotype.setupTreeLikelihoodHaplotypeModel(treeModel, haplotypeModel);
+		HashMap<String, Object> parameterList = OldMCMCSetupHelperHaplotype.setupTreeLikelihoodHaplotypeModel(treeModel, haplotypeModel);
 		Parameter kappa = (Parameter) parameterList.get("kappa");
 		Parameter freqs = (Parameter) parameterList.get("freqs");
 		StrictClockBranchRates branchRateModel = (StrictClockBranchRates) parameterList.get("branchRateModel");
@@ -93,7 +93,7 @@ public class MainMCMCFullOldHaplotype {
 		ShortReadLikelihood srpLikelihood = new ShortReadLikelihood(haplotypeModel);
 
 		// CompoundLikelihood
-		HashMap<String, Likelihood> compoundlikelihoods = MCMCSetupHelperHaplotype.setupCompoundLikelihood(
+		HashMap<String, Likelihood> compoundlikelihoods = OldMCMCSetupHelperHaplotype.setupCompoundLikelihood(
 				popSize, kappa, coalescent, treeLikelihood, srpLikelihood);
 		Likelihood prior = compoundlikelihoods.get(CompoundLikelihoodParser.PRIOR);
 		Likelihood likelihood = compoundlikelihoods.get(CompoundLikelihoodParser.LIKELIHOOD);
@@ -105,8 +105,8 @@ public class MainMCMCFullOldHaplotype {
 //		ArrayList<MCMCOperator> defalutOperatorsList = 
 //		schedule.addOperators(MCMCSetupHelperHaplotype.defalutOperators(haplotypeModel, freqs, popSize, kappa));
 //		schedule.addOperators(MCMCSetupHelperHaplotype.defalutTreeOperators(treeModel));
-		MCMCSetupHelperHaplotype.defalutOperatorsOldHaplotype(schedule, haplotypeModel, freqs, popSize, kappa);
-		MCMCSetupHelperHaplotype.defalutTreeOperators(schedule, treeModel);
+		OldMCMCSetupHelperHaplotype.defalutOperatorsOldHaplotype(schedule, haplotypeModel, freqs, popSize, kappa);
+		OldMCMCSetupHelperHaplotype.defalutTreeOperators(schedule, treeModel);
 				
 		
 //		MCMCOperator operator;
@@ -129,7 +129,7 @@ public class MainMCMCFullOldHaplotype {
 		MCLogger[] loggers = new MCLogger[4];
 		// log tracer
 		loggers[0] = new MCLogger(logTracerName, logInterval, false, 0);
-		MCMCSetupHelperHaplotype.addToLogger(loggers[0], 
+		OldMCMCSetupHelperHaplotype.addToLogger(loggers[0], 
 //				posterior, prior, likelihood, shortReadLikelihood,
 				rootHeight 
 				//rateParameter,
@@ -138,7 +138,7 @@ public class MainMCMCFullOldHaplotype {
 				);
 		// System.out
 		loggers[1] = new MCLogger(new TabDelimitedFormatter(System.out), logInterval, true, logInterval*2);
-		MCMCSetupHelperHaplotype.addToLogger(loggers[1],
+		OldMCMCSetupHelperHaplotype.addToLogger(loggers[1],
 //				freqs
 //				posterior, prior, likelihood, shortReadLikelihood,
 				popSize, kappa, coalescent, rootHeight
@@ -158,7 +158,7 @@ public class MainMCMCFullOldHaplotype {
 		loggers[3] = new HaplotypeLoggerWithTrueHaplotype(haplotypeModel, trueAlignment, logHaplotypeName, logInterval*10);
 		
 		// MCMC
-		MCMCOptions options = MCMCSetupHelperHaplotype.setMCMCOptions(logInterval, totalSamples);
+		MCMCOptions options = OldMCMCSetupHelperHaplotype.setMCMCOptions(logInterval, totalSamples);
 		
 		MCMC mcmc = new MCMC("mcmc1");
 		mcmc.setShowOperatorAnalysis(true);
