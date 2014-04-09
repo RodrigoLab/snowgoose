@@ -9,6 +9,7 @@ import srp.evolution.spectrum.CategorySpectraParameter.CategoryType;
 import srp.evolution.spectrum.SpectraParameter.SpectraType;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.datatype.Nucleotides;
+import dr.evolution.sequence.Sequence;
 import dr.evolution.util.Taxon;
 import dr.inference.model.Model;
 import dr.inference.model.Variable;
@@ -80,6 +81,7 @@ public class CategorySpectrumAlignmentModel extends AbstractSpectrumAlignmentMod
 		return categorySpectrumList.size();
 	}
 
+	
 	@Override
 	public CategorySpectrum getSpectrum(int i){
 		return categorySpectrumList.get(i);

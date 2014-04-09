@@ -7,6 +7,7 @@ import srp.evolution.OperationType;
 import srp.evolution.OperationRecord;
 import srp.evolution.spectrum.SpectraParameter.SpectraType;
 import dr.evolution.alignment.Alignment;
+import dr.evolution.sequence.Sequence;
 import dr.evolution.util.Taxon;
 import dr.util.NumberFormatter;
 
@@ -335,7 +336,7 @@ public class SpectrumAlignmentModel extends AbstractSpectrumAlignmentModel  {
 		
 	}
 
-
+	
 
 		
 }

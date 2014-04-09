@@ -10,6 +10,7 @@ import com.carrotsearch.hppc.BitSet;
 
 import srp.dr.evolution.datatype.ShortReads;
 import srp.evolution.AbstractAlignmentModel;
+import srp.evolution.OperationRecord;
 import srp.evolution.OperationType;
 import srp.evolution.shortreads.ShortReadMapping;
 import srp.evolution.spectrum.SpectrumAlignmentModel;
@@ -67,8 +68,8 @@ public abstract class AbstractShortReadsLikelihood extends
 	protected boolean[] srpSwitch;
 	protected Set<Integer> allSrpPos;
 	protected BitSet bitSet;
-	protected AbstractAlignmentModel alignmentModel;
 	
+	protected OperationRecord operationRecord;
 	
 	public AbstractShortReadsLikelihood(String name) {
 		super(name);
@@ -76,16 +77,18 @@ public abstract class AbstractShortReadsLikelihood extends
 
 
 	protected double calculateLogLikelihood() {
-		
-		OperationType operation = alignmentModel.getOperation();
-		double logLikelihood = Double.NEGATIVE_INFINITY;
 
+//		OperationType operation = alignmentModel.getOperation();
+		OperationType operation = operationRecord.getOperation();
+		double logLikelihood = Double.NEGATIVE_INFINITY;
+//		System.out.println("A" +"\t"+ operation);
 		if(debug){
 			System.out.println("Calculate ShortReadLikelihood:\t"+operation);
 		}
 		switch (operation) {
 		case NONE:
-			logLikelihood = calculateSrpLikelihoodFull();
+//			logLikelihood = calculateSrpLikelihoodFull();
+			logLikelihood = calculateSrpLikelihoodFullMaster();
 			break;
 		case FULL:
 			logLikelihood = calculateSrpLikelihoodFullMaster();

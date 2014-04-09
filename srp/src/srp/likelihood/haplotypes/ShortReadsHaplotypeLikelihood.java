@@ -60,6 +60,7 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 	protected double[] sumScaledSrpLogLikelihood;
 	protected double[] storedSumSrpLogLikelihood;
 
+	protected HaplotypeModel alignmentModel;
 	
 	@Deprecated protected double[] allStateLogLikelihood;
 	@Deprecated protected double[] allStoredStateLogLikelihood;
@@ -71,6 +72,8 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 	private int[][] storedAllDists;
 	
 	@Deprecated protected StateLikelihood stateLikelihood;
+
+	
 
 	public ShortReadsHaplotypeLikelihood(HaplotypeModel haplotypeModel, ShortReadMapping srpMap){
 //		this(haplotypeModel, srpMap, DistType.flat);
@@ -118,9 +121,9 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 		liS = new LikelihoodScaler(LOG_C);
 		
 		srpCount = srpMap.getSrpCount();
-		sequenceCount = alignmentModel.getSequenceCount();
+		sequenceCount = alignmentModel.getAbstractCount();
 		sequenceLength = alignmentModel.getAbstractLength();
-		
+		operationRecord = alignmentModel.getOperationRecord();
 		this.srpSwitch = new boolean[srpCount];
 		this.allSrpPos = new HashSet<Integer>();
 		this.srpIndex = new int[srpCount];
@@ -152,7 +155,6 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 			String srp = srpArray[i];
 			for (int j = 0; j < sequenceLength; j++) {
 				allSrpState2D[i][j] = getStateAtK(srp, j);
-
 			}
 		}
 		
@@ -1032,7 +1034,7 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 			liS.reset();
 			for (int j = 0; j < sequenceCount; j++) {
 
-				int dist = LikelihoodUtils.Dist(start, end, srp, alignmentModel.getAlignedSequenceString(j));
+				int dist = LikelihoodUtils.Dist(start, end, srp, alignmentModel.getHaplotype(j).getSequenceString());
 				allDists[i][j]=dist;
 				liS.add(logPD[dist]);
 //				liS.scaleLogProb(logPD[dist]);

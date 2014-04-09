@@ -50,7 +50,7 @@ public abstract class AbstractAlignmentModel extends AbstractModel implements Ta
 		return sequenceCount;
 	}
 	
-	public abstract <T extends Sequence> T getHaplotype(int i);
+	
 	
 	public void startAlignmentModelOperation() {
 		// System.err.println("\n!!!startSpectrumOperation");
