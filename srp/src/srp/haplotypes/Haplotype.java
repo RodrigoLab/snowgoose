@@ -3,6 +3,8 @@ package srp.haplotypes;
 import java.io.BufferedReader;
 import java.io.FileReader;
 
+import srp.evolution.spectrum.Spectrum;
+
 import com.google.common.primitives.Chars;
 
 import dr.evolution.datatype.DataType;
@@ -82,7 +84,10 @@ public class Haplotype extends Sequence {
 		return oldChar;
 	}
 	
-
+//	@Override
+	public char getStoredChar(int index) {
+        return storedHaplotype[index];
+    }
 	// **************************************
 	// OVERRIDE ALL (almost all) methods
 	// Do NOT call setState()!!
@@ -202,6 +207,14 @@ public class Haplotype extends Sequence {
 		char[] temp = storedHaplotype;
 		storedHaplotype = haplotype;
 		haplotype = temp;
+	}
+
+	public static Haplotype duplicateHaplotype(Haplotype oldHaplotype) {
+		
+		Taxon newTaxon = oldHaplotype.getTaxon();
+		Haplotype newHaplotype = new Haplotype(newTaxon, oldHaplotype.getSequenceString());
+
+		return newHaplotype;
 	}
 
 

@@ -8,6 +8,7 @@ import srp.dr.ext.SeqGenExt;
 import srp.dr.ext.TreeLikelihoodExt;
 import srp.evolution.OperationType;
 import srp.evolution.shortreads.AlignmentMapping;
+import srp.evolution.spectrum.Spectrum;
 import srp.evolution.spectrum.SpectrumAlignmentModel;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.datatype.Nucleotides;
@@ -464,5 +465,21 @@ System.out.println((time2 - time1) + "\t");
 		
 		HaplotypeModel haplotypeModel = new HaplotypeModel(trueAlignment);
 		return haplotypeModel;
+	}
+
+
+
+
+	public static HaplotypeModel duplicateHaplotypeModel(
+			HaplotypeModel oldModel) {
+		HaplotypeModel haplotypeModel = new HaplotypeModel(oldModel.getHaplotypeCount(), oldModel.getHaplotypeLength());
+
+		for (int i = 0; i < oldModel.getHaplotypeCount(); i++) {
+			Haplotype haplotype = Haplotype.duplicateHaplotype(oldModel.getHaplotype(i));
+			haplotypeModel.setHaplotype(i, haplotype);
+		}
+		
+		return haplotypeModel;
+
 	}	
 }

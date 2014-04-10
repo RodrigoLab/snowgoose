@@ -52,7 +52,6 @@ public class DirichletSpectrumOperator extends AbstractDirichletSpectrumOperator
 //		baseCount = 
 		this.swapBasesCount = baseCount;
         setWeight(1.0);
-
         parameterWeights = new int[this.spectrumModel.getDataType().getStateCount()];
         for (int i = 0; i < parameterWeights.length; i++) {
             parameterWeights[i] = 1;

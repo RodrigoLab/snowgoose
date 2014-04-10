@@ -6,6 +6,7 @@ import java.util.List;
 
 import srp.dr.evolution.datatype.ShortReads;
 import dr.evolution.datatype.DataType;
+import dr.evolution.datatype.Nucleotides;
 import dr.evolution.sequence.Sequence;
 import dr.evolution.util.Taxon;
 import dr.evolution.util.TaxonList;
@@ -39,9 +40,16 @@ public abstract class AbstractAlignmentModel extends AbstractModel implements Ta
 	public AbstractAlignmentModel(String name) {
 		super(name);
 		operationRecord = new OperationRecord();
+		dataType = DATA_TYPE;
 	}
 
-
+	public int getSequenceCount() {
+		return sequenceCount;
+	}
+	public int getSequenceLength(){
+		return sequenceLength;
+	}
+	
 	public int getAbstractLength() {
 		return sequenceLength;
 	}

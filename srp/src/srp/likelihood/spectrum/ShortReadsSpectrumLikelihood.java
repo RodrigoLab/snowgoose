@@ -66,7 +66,7 @@ public class ShortReadsSpectrumLikelihood  extends AbstractShortReadsSpectrumLik
 		super(SHORT_READ_LIKELIHOOD);
 		this.spectrumModel = spectrumModel;
 		this.srpMap = srpMap;
-
+		operationRecord = spectrumModel.getOperationRecord();
 //		multiType = MultiType.Array;
 		multiType = MultiType.BitSet;
 		
@@ -83,6 +83,7 @@ public class ShortReadsSpectrumLikelihood  extends AbstractShortReadsSpectrumLik
 		addModel(this.spectrumModel);
 		
 		preprocessLikelihoodAlignmentMap();
+		calculateSrpLikelihoodFull();//TODO FIX this? shouldn't needed
 		getLogLikelihood();
 		
 		

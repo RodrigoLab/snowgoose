@@ -255,7 +255,7 @@ public class ShortReadsHaplotypeLikelihoodTest {
 		double currentScore = srL.getLogLikelihood();
 		
 		for (int i = 0; i < 1e4; i++) {
-			
+
 			srL.storeModelState();
 			double oldScore = currentScore;
 			logr[0] = -Double.MAX_VALUE;
@@ -354,6 +354,7 @@ public class ShortReadsHaplotypeLikelihoodTest {
         BaseSingleOperator op = new BaseSingleOperator(haplotypeModel);
         for (int i = 0; i < 1e2; i++) {
         	op.doOperation();
+        	
         	srpLikelihood.storeModelState();
 			srpLikelihood.makeDirty();
 
@@ -417,11 +418,8 @@ public class ShortReadsHaplotypeLikelihoodTest {
 
         logLikelihood = CSRLikelihood.getLogLikelihood();
         assertEquals(expected, logLikelihood, 1e-10);
-        
-
-	}
-
-	
+     
+	}	
 
 	@Test
 	public void testCalculateLikelihoodTime() throws Exception {
@@ -433,7 +431,7 @@ public class ShortReadsHaplotypeLikelihoodTest {
 		double ite =  1e3;
 		for (int i = 0; i < ite; i++) {
 			srL.makeDirty();
-//			logLikelihood = srL.getLogLikelihood();
+			logLikelihood = srL.getLogLikelihood();
 		}
 		long time2 = System.currentTimeMillis();
 		System.out.println((time2 - time1)/ite + " ms per full calculation");
@@ -453,7 +451,6 @@ public class ShortReadsHaplotypeLikelihoodTest {
 
 			time1 = System.currentTimeMillis();
 			logLikelihood = srL.getLogLikelihood();
-			
 			
 			time2 = System.currentTimeMillis();
 			total += (time2-time1);

@@ -1,5 +1,6 @@
 package srp.operator.haplotypes;
 
+import srp.evolution.OperationType;
 import srp.haplotypes.Haplotype;
 import srp.haplotypes.HaplotypeModel;
 import dr.inference.operators.CoercionMode;
@@ -10,7 +11,7 @@ public class BasesMultiOperator extends AbstractMultiOperator {
 
 	public final static String OPERATOR_NAME = BasesMultiOperator.class.getSimpleName();
 //	public final static Operation OP = Operation.SWAPMULTI;
-
+	public static final OperationType OP = OperationType.MULTI;
 	
 
 	

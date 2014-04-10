@@ -18,7 +18,7 @@ public abstract class AbstractHaplotypeModel extends AbstractAlignmentModel impl
 	
 	public AbstractHaplotypeModel(String name, int hapCount, int hapLength) {
 		super(name);
-		System.out.println(operationRecord.getOperation());
+
 		this.sequenceCount = hapCount;
 		this.sequenceLength = hapLength;
 		haplotypes = new Haplotype[sequenceCount];
@@ -52,10 +52,10 @@ public abstract class AbstractHaplotypeModel extends AbstractAlignmentModel impl
 	/*
 	 * Call getHaplotypesCount(), return haplotypesCount
 	 */
-	@Override
-	public int getSequenceCount() {
-		return getHaplotypeCount();
-	}
+//	@Override
+//	public int getSequenceCount() {
+//		return getHaplotypeCount();
+//	}
 
 	@Override
 	public Sequence getSequence(int i) {

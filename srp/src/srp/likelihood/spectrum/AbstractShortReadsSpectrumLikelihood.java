@@ -126,9 +126,7 @@ public abstract class AbstractShortReadsSpectrumLikelihood extends AbstractShort
 	
 	}
 	
-	public OperationType getOperation() {
-		return spectrumModel.getOperation();
-	}
+
 
 	
 	public enum DistType {

@@ -10,7 +10,7 @@ import dr.inference.operators.AbstractCoercableOperator;
 import dr.inference.operators.CoercionMode;
 import dr.math.MathUtils;
 
-public abstract class AbstractMultiOperator extends AbstractCoercableOperator {
+public abstract class AbstractMultiOperator extends AbstractHaplotypeOperator {
 
 	public static final OperationType OP = OperationType.MULTI;
 	public static final DataType DATATYPE = Nucleotides.INSTANCE;
@@ -19,10 +19,7 @@ public abstract class AbstractMultiOperator extends AbstractCoercableOperator {
 	
 	private static final int MIN_BASE = 1;
 	
-	protected final int haplotypeLength;
-	protected final int haplotypeCount;
 
-	protected HaplotypeModel haplotypeModel;
 
 	protected int basesCount;
 
@@ -31,12 +28,9 @@ public abstract class AbstractMultiOperator extends AbstractCoercableOperator {
 	private int[] haplotypeLengthArray;
 	
 	public AbstractMultiOperator(HaplotypeModel haplotypeModel, int basesCount, CoercionMode mode) {
-		super(mode);
+		super(haplotypeModel, mode);
 		
-		this.haplotypeModel = haplotypeModel;
 		this.basesCount = basesCount;
-		haplotypeLength = this.haplotypeModel.getHaplotypeLength();
-		haplotypeCount = this.haplotypeModel.getHaplotypeCount();
 		
 //		allPosChars = new int[2][haplotypeLength];
 		haplotypeLengthArray = new int[haplotypeLength];
@@ -93,6 +87,7 @@ public abstract class AbstractMultiOperator extends AbstractCoercableOperator {
 //	    return items.subList(0, m);
 	    return sites;
 	}
+	
 	@Override
 	public double getCoercableParameter() {
 	    return autoOptimize;

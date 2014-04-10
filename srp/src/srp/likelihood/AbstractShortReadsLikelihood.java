@@ -13,7 +13,9 @@ import srp.evolution.AbstractAlignmentModel;
 import srp.evolution.OperationRecord;
 import srp.evolution.OperationType;
 import srp.evolution.shortreads.ShortReadMapping;
+import srp.evolution.spectrum.AbstractSpectrumAlignmentModel;
 import srp.evolution.spectrum.SpectrumAlignmentModel;
+import srp.haplotypes.AbstractHaplotypeModel;
 import srp.likelihood.stateLikelihood.BetaMeanStateLikelihood;
 import srp.likelihood.stateLikelihood.BetaModeStateLikelihood;
 import srp.likelihood.stateLikelihood.ChisqStateLikelihood;
@@ -46,7 +48,7 @@ public abstract class AbstractShortReadsLikelihood extends
 	private static final double EVALUATION_TEST_THRESHOLD = 1e-8;
   
 
-	protected boolean debug;
+	protected boolean debug = true;;
 	
 	protected double logLikelihood;
 	protected double storedLogLikelihood;
@@ -81,7 +83,7 @@ public abstract class AbstractShortReadsLikelihood extends
 //		OperationType operation = alignmentModel.getOperation();
 		OperationType operation = operationRecord.getOperation();
 		double logLikelihood = Double.NEGATIVE_INFINITY;
-//		System.out.println("A" +"\t"+ operation);
+
 		if(debug){
 			System.out.println("Calculate ShortReadLikelihood:\t"+operation);
 		}
@@ -91,7 +93,7 @@ public abstract class AbstractShortReadsLikelihood extends
 			logLikelihood = calculateSrpLikelihoodFullMaster();
 			break;
 		case FULL:
-			logLikelihood = calculateSrpLikelihoodFullMaster();
+			logLikelihood = calculateSrpLikelihoodFull();
 			break;
 		case SINGLE:
 			logLikelihood = calculateSrpLikelihoodSingle();
@@ -171,6 +173,9 @@ public abstract class AbstractShortReadsLikelihood extends
 		this.multiType = type;
 	}
 
+	public OperationType getOperation() {
+		return operationRecord.getOperation();
+	}
 	
 	protected static int getStateAtK(String fullSrp, int k) {
 		char srpChar = fullSrp.charAt(k);//TODO: change to char[] at hight lv or at ShortReadMapping
@@ -184,7 +189,11 @@ public abstract class AbstractShortReadsLikelihood extends
 	protected void handleModelChangedEvent(Model model, Object object, int index) {
         
         likelihoodKnown = false;
-		
+//		if(model instanceof AbstractHaplotypeModel){
+//        if(model instanceof AbstractAlignmentModel){
+//			operationRecord = ((AbstractAlignmentModel) model).getOperationRecord();
+//			System.out.println(operationRecord.getOperation());
+//		}
 	}
 
 	@SuppressWarnings("rawtypes")

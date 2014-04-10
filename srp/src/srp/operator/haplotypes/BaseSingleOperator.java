@@ -8,7 +8,7 @@ import dr.inference.operators.OperatorFailedException;
 public class BaseSingleOperator extends AbstractSingleOperator {
 
 	public static final String OPERATOR_NAME = BaseSingleOperator.class.getSimpleName();
-
+	public static final OperationType OP = OperationType.SINGLE;
 	
 	public BaseSingleOperator(HaplotypeModel haplotypeModel) {
 		super(haplotypeModel);
@@ -39,6 +39,30 @@ public class BaseSingleOperator extends AbstractSingleOperator {
 	
 		return OPERATOR_NAME;
 	}
+
+	@Override
+	public double getCoercableParameter() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void setCoercableParameter(double value) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public double getRawParameter() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+//	@Override
+//	public OperationType getOperationType() {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
 
 
 

@@ -186,7 +186,8 @@ public class LikelihoodUtils {
 //		System.out.println(Arrays.toString(c));
 		for (int i = start; i < end; i++) {
 //			match = (srCharArray[count] - hapCharArray[i]);
-			match = (srpString.charAt(count) - hapString.charAt(i));
+			match = srpString.charAt(count) ;
+					match -= hapString.charAt(i);
 			dist += (match==ZERO)? 0:1;
 //				System.out.println(count +"\t"+ i+"\t"+ match +"\t"+ (srCharArray[count] - hapCharArray[i]) +"\t");
 			count++;
