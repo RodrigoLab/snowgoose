@@ -1,6 +1,7 @@
 package srp.likelihood;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.w3c.dom.Document;
@@ -37,7 +38,7 @@ public abstract class AbstractShortReadsLikelihood extends
 	public static final double LOG_ERROR_RATE = Math.log(ERROR_RATE);
 	public static final double LOG_NOT_ERROR_RATE = Math.log(NOT_ERROR_RATE);
 	public static final double LOG_ONE_MINUS_ERROR_RATE = Math.log(1-ERROR_RATE);
-	public static final double C = 1e-250;
+	public static final double C = 1e-200;
 	public static final double LOG_C = Math.log(C);
 
 	public static final DataType DATA_TYPE = ShortReads.INSTANCE;
@@ -46,35 +47,75 @@ public abstract class AbstractShortReadsLikelihood extends
 	public static final int GAP_STATE = DATA_TYPE.getGapState();;
 	
 	private static final double EVALUATION_TEST_THRESHOLD = 1e-8;
-  
 
-	protected boolean debug = true;;
+	protected boolean debug = false;;
 	
 	protected double logLikelihood;
 	protected double storedLogLikelihood;
 	
 	protected double[] eachSrpLogLikelihood;
 	protected double[] storedEachSrpLogLikelihood;
+	
+	protected double[] sumScaledSrpLogLikelihood;
+	protected double[] storedSumScaledSrpLogLikelihood;
+
 
 	protected boolean likelihoodKnown;
 	
 	protected int sequenceLength;
 	protected int sequenceCount;
+	protected int srpCount;
+
+	
+	protected ShortReadMapping srpMap;
+	protected OperationRecord operationRecord;
 
 	protected MultiType multiType;
+	protected boolean[] srpSwitch; //MultiType.Array
+	protected Set<Integer> allSrpPos; //MultiType.Hash
+	protected BitSet bitSet; //MultiType.BitSet
+	protected int[] srpIndex; //MultiType.BitSet
+	protected int srpIndexCount; //MultiType.BitSet
 
-	protected ShortReadMapping srpMap;
+	protected int[][] mapToSrpArray;	
 	
-	protected int[][] mapToSrpArray;
-	
-	protected boolean[] srpSwitch;
-	protected Set<Integer> allSrpPos;
-	protected BitSet bitSet;
-	
-	protected OperationRecord operationRecord;
-	
-	public AbstractShortReadsLikelihood(String name) {
+	protected int[][] allSrpState2D;
+	protected char[][] allSrpChar2D;
+//	protected String[] srpArray;
+
+	public AbstractShortReadsLikelihood(String name, ShortReadMapping srpMap) {
 		super(name);
+		
+		preprocessShortReadMapping(srpMap);
+	}
+
+
+	private void preprocessShortReadMapping(ShortReadMapping srpMap2) {
+
+		this.srpMap = srpMap2;
+		srpCount = srpMap.getSrpCount();
+		
+		srpSwitch = new boolean[srpCount];
+		allSrpPos = new HashSet<Integer>();
+		bitSet = new BitSet(srpCount);
+		srpIndex = new int[srpCount];
+		
+		logLikelihood = Double.NEGATIVE_INFINITY;
+		storedLogLikelihood = Double.NEGATIVE_INFINITY;
+
+		sumScaledSrpLogLikelihood = new double[srpCount];
+		storedSumScaledSrpLogLikelihood = new double[srpCount];
+		
+		eachSrpLogLikelihood = new double[srpCount];
+		storedEachSrpLogLikelihood = new double[srpCount];
+
+		
+		mapToSrpArray = srpMap.getMapToSrpArray();
+		allSrpState2D = srpMap.getSrpState2DArray();
+		allSrpChar2D = srpMap.getSrpChar2DArray();
+				
+		
+		
 	}
 
 
@@ -90,7 +131,7 @@ public abstract class AbstractShortReadsLikelihood extends
 		switch (operation) {
 		case NONE:
 //			logLikelihood = calculateSrpLikelihoodFull();
-			logLikelihood = calculateSrpLikelihoodFullMaster();
+			logLikelihood = calculateSrpLikelihoodFull();
 			break;
 		case FULL:
 			logLikelihood = calculateSrpLikelihoodFull();

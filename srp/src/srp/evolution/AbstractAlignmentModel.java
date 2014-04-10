@@ -50,14 +50,7 @@ public abstract class AbstractAlignmentModel extends AbstractModel implements Ta
 		return sequenceLength;
 	}
 	
-	public int getAbstractLength() {
-		return sequenceLength;
-	}
-
-	public int getAbstractCount() {
-		return sequenceCount;
-	}
-	
+		
 	
 	
 	public void startAlignmentModelOperation() {

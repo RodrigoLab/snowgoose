@@ -114,9 +114,11 @@ public class ShortReadsCategoriesSpectrumLikelihood  extends AbstractShortReadsS
 	
 	
 	public ShortReadsCategoriesSpectrumLikelihood(CategorySpectrumAlignmentModel spectrumModel, ShortReadMapping srpMap, DistType distType){
-		super(SHORT_READ_LIKELIHOOD);
+		
+		super(SHORT_READ_LIKELIHOOD, srpMap);
+		System.err.println("Warning!!! Incompletely implementation");
 		this.spectrumModel = spectrumModel;
-		this.srpMap = srpMap;
+
 
 //		multiType = MultiType.Array;
 		multiType = MultiType.BitSet;

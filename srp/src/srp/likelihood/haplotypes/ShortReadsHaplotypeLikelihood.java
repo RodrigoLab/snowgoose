@@ -46,22 +46,13 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 
 	private final double MIN_LOG_LIKELIHOOD;
 
-	private int srpCount;
+	
 
 	private LikelihoodScaler liS;
 
-	private int[][] allSrpState2D;
-	private char[][] allSrpChar2D;
 
-	private int[] srpIndex;
 
-	private String[] srpArray;
-
-	private int srpIndexCount;
-
-	protected double[] sumScaledSrpLogLikelihood;
-	protected double[] storedSumSrpLogLikelihood;
-
+	
 	protected HaplotypeModel alignmentModel;
 	
 	@Deprecated protected double[] allStateLogLikelihood;
@@ -78,12 +69,9 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 	
 
 	public ShortReadsHaplotypeLikelihood(HaplotypeModel haplotypeModel, ShortReadMapping srpMap){
-//		this(haplotypeModel, srpMap, DistType.flat);
-//	}
-//	public ShortReadsHaplotypesLikelihood(HaplotypeModel haplotypeModel, ShortReadMapping srpMap, DistType distType){
-		super(SHORT_READ_LIKELIHOOD);
+		super(SHORT_READ_LIKELIHOOD, srpMap);
 		this.alignmentModel = haplotypeModel;
-		this.srpMap = srpMap;
+
 		operationRecord = alignmentModel.getOperationRecord();
 //		multiType = MultiType.Array;
 		multiType = MultiType.BitSet;
@@ -102,18 +90,14 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 		
 		preprocessLikelihoodAlignmentMap();
 
-		calculateSrpLikelihoodFull();//TODO FIX this? shouldn't needed
+//		calculateSrpLikelihoodFull();//TODO FIX this? shouldn't needed
 		getLogLikelihood();
-		
-		
+				
 		storeEverything();
 		
 		for (int j = 0; j < sequenceCount; j++) {
 			Haplotype haplotype = haplotypeModel.getHaplotype(j);
 			haplotype.storeState();
-//			for (int s = 0; s < sequenceLength; s++) {
-//				spectrum.getSpectra(s).storeState();
-//			}
 		}
 		
 	}
@@ -125,16 +109,16 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 		
 		liS = new LikelihoodScaler(LOG_C);
 		
-		srpCount = srpMap.getSrpCount();
-		sequenceCount = alignmentModel.getAbstractCount();
-		sequenceLength = alignmentModel.getAbstractLength();
+//		srpCount = srpMap.getSrpCount();
+		sequenceCount = alignmentModel.getHaplotypeCount();
+//		sequenceLength = alignmentModel.getHaplotypeLength();
 		operationRecord = alignmentModel.getOperationRecord();
-		this.srpSwitch = new boolean[srpCount];
-		this.allSrpPos = new HashSet<Integer>();
-		this.srpIndex = new int[srpCount];
+//		this.srpSwitch = new boolean[srpCount];
+//		this.allSrpPos = new HashSet<Integer>();
+//		this.srpIndex = new int[srpCount];
 		
-		logLikelihood = Double.NEGATIVE_INFINITY;
-		storedLogLikelihood = Double.NEGATIVE_INFINITY;
+//		logLikelihood = Double.NEGATIVE_INFINITY;
+//		storedLogLikelihood = Double.NEGATIVE_INFINITY;
 
 //		spectrumLogLikelihood = new double[srpCount*sequenceCount];
 //		storedSpectrumLogLikelihood = new double[srpCount*sequenceCount];
@@ -142,32 +126,34 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 //		scaledSpectrumLogLikelihood = new double[srpCount*sequenceCount];
 //		storedScaledSpectrumLogLikelihood = new double[srpCount*sequenceCount];
 //		
-		sumScaledSrpLogLikelihood = new double[srpCount];
-		storedSumSrpLogLikelihood = new double[srpCount];
-
-		
-		eachSrpLogLikelihood = new double[srpCount];
-		storedEachSrpLogLikelihood = new double[srpCount];
+//		sumScaledSrpLogLikelihood = new double[srpCount];
+//		storedSumSrpLogLikelihood = new double[srpCount];
+//
+//		
+//		eachSrpLogLikelihood = new double[srpCount];
+//		storedEachSrpLogLikelihood = new double[srpCount];
 
 //		allStateLogLikelihood = new double[sequenceLength*STATE_COUNT];
 //		allStoredStateLogLikelihood = new double[sequenceLength*STATE_COUNT];
 		
-		srpArray = srpMap.getSrpArray();
-		mapToSrpArray = srpMap.getMapToSrpArray();
-		allSrpState2D = new int[srpArray.length][sequenceLength];
-		
-		allSrpChar2D = new char[srpArray.length][sequenceLength];
-		
-		for (int i = 0; i < srpArray.length; i++) {
-			String srp = srpArray[i];
-			for (int j = 0; j < sequenceLength; j++) {
-				allSrpState2D[i][j] = getStateAtK(srp, j);
-				allSrpChar2D[i][j] = srp.charAt(j);
-			}
-		}
-		
-		
-		bitSet = new BitSet(srpCount);
+//		mapToSrpArray = srpMap.getMapToSrpArray();
+//		
+//		
+//		String[] srpArray = srpMap.getSrpArray();
+//		
+//		allSrpState2D = new int[srpArray.length][sequenceLength];
+//		allSrpChar2D = new char[srpArray.length][sequenceLength];
+//		
+//		for (int i = 0; i < srpArray.length; i++) {
+//			String srp = srpArray[i];
+//			for (int j = 0; j < sequenceLength; j++) {
+//				allSrpState2D[i][j] = getStateAtK(srp, j);
+//				allSrpChar2D[i][j] = srp.charAt(j);
+//			}
+//		}
+//		
+//		
+//		bitSet = new BitSet(srpCount);
 		
 		
 		scaledLogBinomialDesnity = new HashMap<Integer, double[]>();
@@ -197,15 +183,15 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 			scaledLogBinomialDesnity.put(srLength, scaledBinomD);
 		}
 		
-		for (int i = 0; i < srpCount; i++) {
-			String srp = srpMap.getSrpFragment(i);//srpArray[i]
-			int start = srpMap.getSrpStart(i);
-			int end = srpMap.getSrpEnd(i);
-			for (int j = 0; j < sequenceCount; j++) {
-				int dist = LikelihoodUtils.Dist(start, end, srp, alignmentModel.getHaplotype(j).getSequenceString());
-				allDists[i][j]=dist;
-			}
-		}
+//		for (int i = 0; i < srpCount; i++) {
+//			String srp = srpMap.getSrpFragment(i);//srpArray[i]
+//			int start = srpMap.getSrpStart(i);
+//			int end = srpMap.getSrpEnd(i);
+//			for (int j = 0; j < sequenceCount; j++) {
+//				int dist = LikelihoodUtils.Dist(start, end, srp, alignmentModel.getHaplotype(j).getSequenceString());
+//				allDists[i][j]=dist;
+//			}
+//		}
 	}
 
 
@@ -213,7 +199,7 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 	protected double calculateSrpLikelihoodFull() {
 
 
-		System.out.println("calculateSrpLikelihoodFull");
+//		System.out.println("calculateSrpLikelihoodFull");
 		for (int i = 0; i < srpCount; i++) {
 			
 			String srp = srpMap.getSrpFragment(i);//srpArray[i]
@@ -226,7 +212,7 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 			for (int j = 0; j < sequenceCount; j++) {
 
 				int dist = LikelihoodUtils.Dist(start, end, srp, alignmentModel.getHaplotype(j).getSequenceString());
-//				allDists[i][j]=dist;
+				allDists[i][j]=dist;
 				liS.add(logPD[dist]);
 //				liS.scaleLogProb(logPD[dist]);
 			}	
@@ -307,7 +293,7 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 		int k = operationRecord.getSingleIndex();//AllSiteIndexs()[0];
 		double currentLogLikelihood = getStoredLogLikelihood();
 		
-		System.out.println("StartSingle" +"\t"+ j +"\t"+ k +"\t"+ currentLogLikelihood);
+//		System.out.println("StartSingle" +"\t"+ j +"\t"+ k +"\t"+ currentLogLikelihood);
 //		SpectraParameter spectra = haplotypeModel.getHaplotype(j).getSpectra(k);
 //		ArrayList<Integer> mapToSrp = srpMap.getMapToSrp(k);
 
@@ -327,8 +313,7 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 	
 		if(newChar!= oldChar){ // if(newChar!= oldChar && isHapEqualNew)
 	//		getChar(k);
-			int[] mapArray = mapToSrpArray[k];
-			for (int i : mapArray){
+			for (int i : mapToSrpArray[k]){
 				int srpLength = srpMap.getSrpLength(i);
 	//			int state = getStateAtK(fullSrp, k);
 	//			int state = allSrpState2D[i][k];
@@ -362,16 +347,9 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 					int oldDist = storedAllDists[srpIndex][hapIndex];
 					int newDist = storedAllDists[srpIndex][hapIndex] + deltaDist;
 					allDists[srpIndex][hapIndex] = newDist;
-					System.out.println(oldChar +"\t"+ newChar +"\t"+ oldDist +"\t"+ newDist);
-//						liS.reset();		
-//						for (int s = 0; s < sequenceCount ; s++) {
-//							liS.add(logPD[allDists[srpIndex][s]]);
-//						}
-//						eachSrpLogLikelihood[srpIndex] = liS.getLogLikelihood();
-						
 					
 					currentLogLikelihood -= eachSrpLogLikelihood[i];
-					System.out.println(logPD[oldDist] +"\t"+ logPD[newDist] +"\t"+ eachSrpLogLikelihood[i] +"\t"+ sumScaledSrpLogLikelihood[i]);
+					
 					sumScaledSrpLogLikelihood[i] -= logPD[oldDist];//scaledSpectrumLogLikelihood[offset];
 			
 //						spectrumLogLikelihood[offset] -= storedStateLn; 
@@ -381,11 +359,86 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 					sumScaledSrpLogLikelihood[i] += logPD[newDist];//scaledSpectrumLogLikelihood[offset];
 
 					eachSrpLogLikelihood[i] = LikelihoodScaler.getLogLikelihood(sumScaledSrpLogLikelihood[i], LOG_C);
-					System.out.println(eachSrpLogLikelihood[i] + "\t"
-							+ sumScaledSrpLogLikelihood[i]);
+					
 					currentLogLikelihood += eachSrpLogLikelihood[i];
 
 				}
+			}
+		}
+		double trueL = calculateSrpLikelihoodFullMaster();
+		if((trueL - currentLogLikelihood)> 1e-6) {
+			System.out.println("DEBUG "+trueL +"\t"+ currentLogLikelihood);
+			
+			for (int i: mapToSrpArray[k]) {
+				
+				String srp = srpMap.getSrpFragment(i);//srpArray[i]
+				int start = srpMap.getSrpStart(i);
+				int end = srpMap.getSrpEnd(i);
+				
+				double[] logPD = scaledLogBinomialDesnity.get(srpMap.getSrpLength(i));
+
+				liS.reset();
+				double oldPD = 0;
+				double newPD = -1;
+				for (int hj = 0; hj < sequenceCount; hj++) {
+
+					int dist = LikelihoodUtils.Dist(start, end, srp, alignmentModel.getHaplotype(hj).getSequenceString());
+//					System.out.println(hj +" "+ j +":\t"+ dist +"\t"+ storedAllDists[i][hj] +"\t"+ (dist == storedAllDists[i][hj]));
+					liS.add(logPD[dist]);
+					
+					if(hj == j){
+						int srpLength = srpMap.getSrpLength(i);
+						char srpChar = allSrpChar2D[i][k];
+						int deltaDist = 0;
+						if (srpChar==newChar){
+							deltaDist = -1;
+						}
+						else if(srpChar==oldChar){
+							deltaDist = 1;
+						}
+						if (deltaDist != 0) {
+		
+							int srpIndex = i; int hapIndex = j; 
+			
+							logPD = scaledLogBinomialDesnity.get(srpLength);
+							int oldDist = storedAllDists[srpIndex][hapIndex];
+							int newDist = storedAllDists[srpIndex][hapIndex] + deltaDist;
+//							System.out.println();
+							oldPD = logPD[oldDist];
+							newPD = logPD[newDist];
+							System.out.println(hj + " " + j + ":\t" + dist
+									+ "\t" + storedAllDists[i][hj] + "\t" +
+									logPD[oldDist] +"\t"+ logPD[newDist]
+									+ (dist == storedAllDists[i][hj]));
+						}
+					}
+//					liS.scaleLogProb(logPD[dist]);
+				}	
+				
+				double e1 = liS.getSumScaledLikelihood(); 
+				double e2 = liS.getLogLikelihood();
+				
+				System.out.println((e1 == sumScaledSrpLogLikelihood[i]));
+				double d1 = e1 - newPD;
+				double d2 = storedSumScaledSrpLogLikelihood[i] - oldPD;
+				double d3 = sumScaledSrpLogLikelihood[i] - newPD;
+				System.out.println((d1==d2) +"\t"+ d1 +"\t"+ d2);
+				System.out.println((d2==d3) +"\t"+ d2 +"\t"+ d3);
+				if(e2 != 	eachSrpLogLikelihood[i]){
+					System.out.println(i +"\t"+ eachSrpLogLikelihood[i] + "\t" + e2 +"\t"+ 
+							(eachSrpLogLikelihood[i] -e2) +"\t"+ 
+							e1 +"\t"+  
+							sumScaledSrpLogLikelihood[i]
+							
+							);
+					
+
+					
+				}
+				else{
+					System.out.println(i);
+				}
+					
 			}
 		}
 		return currentLogLikelihood;
@@ -918,7 +971,7 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 
 	private void storeI(int i) {
 		storedEachSrpLogLikelihood[i] = eachSrpLogLikelihood[i];
-		storedSumSrpLogLikelihood[i] = sumScaledSrpLogLikelihood[i];
+		storedSumScaledSrpLogLikelihood[i] = sumScaledSrpLogLikelihood[i];
 		
 	}
 
@@ -936,6 +989,9 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 	
 	
 	private void storeEverything() {
+
+		System.arraycopy(eachSrpLogLikelihood, 0, storedEachSrpLogLikelihood, 0, eachSrpLogLikelihood.length);
+		System.arraycopy(sumScaledSrpLogLikelihood, 0, storedSumScaledSrpLogLikelihood, 0, sumScaledSrpLogLikelihood.length);
 		for (int i = 0; i < allDists.length; i++) {
 			System.arraycopy(allDists[i], 0, storedAllDists[i], 0, sequenceCount);
 		}
@@ -1103,7 +1159,7 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 
 	private void restoreI(int i) {
 		eachSrpLogLikelihood[i] = storedEachSrpLogLikelihood[i];
-		sumScaledSrpLogLikelihood[i] = storedSumSrpLogLikelihood[i]; 
+		sumScaledSrpLogLikelihood[i] = storedSumScaledSrpLogLikelihood[i]; 
 	}
 
 
@@ -1114,6 +1170,10 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 
 
 	private void restoreEverything() {
+		
+		System.arraycopy(storedEachSrpLogLikelihood, 0, eachSrpLogLikelihood, 0, eachSrpLogLikelihood.length);
+		System.arraycopy(storedSumScaledSrpLogLikelihood, 0, sumScaledSrpLogLikelihood, 0, sumScaledSrpLogLikelihood.length);
+
 		for (int i = 0; i < allDists.length; i++) {
 			System.arraycopy(storedAllDists[i], 0, allDists[i], 0, sequenceCount);
 		}
@@ -1131,7 +1191,7 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 	public double calculateSrpLikelihoodFullMaster() {
 
 
-		System.out.println("calculateSrpLikelihoodMaster");
+//		System.out.println("calculateSrpLikelihoodMaster");
 		double logLikelihood = 0;
 		for (int i = 0; i < srpCount; i++) {
 			
@@ -1145,7 +1205,6 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 			for (int j = 0; j < sequenceCount; j++) {
 
 				int dist = LikelihoodUtils.Dist(start, end, srp, alignmentModel.getHaplotype(j).getSequenceString());
-//				allDists[i][j]=dist;
 				liS.add(logPD[dist]);
 //				liS.scaleLogProb(logPD[dist]);
 			}	

@@ -39,19 +39,19 @@ every position ~ 100ish reads.
 public class ShortReadMapping {
 
 	private static final int GAP = '-';
-	private static final DataType DATA_TYPE =Nucleotides.INSTANCE;
+	private static final DataType DATA_TYPE = Nucleotides.INSTANCE;
 
 	private static final double[] EQUAL_FREQ = new double[]{0.25, 0.5, 0.75, 1};
 	
-	private ArrayList<Integer>[] mapToSrp; // each [] = position, each ArrayList
-											// = map to which read
+	private ArrayList<Integer>[] mapToSrp; // each [] = position, each ArrayList map to which read
+	
 	private HashMap<String, Integer> seqNameToSeqID; // map sequence_name >xxxto int
 
 	private ArrayList<Character>[] listOfAvailableChar;
 	private ArrayList<int[]> listOfAvailableChar2 = new ArrayList<int[]>();
 	private ArrayList<ShortRead> shortReads;
 
-	private int haplotypeLength;
+	private int fullHaplotypeLength;
 	private Integer srpCount;
 	private double[] cumFreq;
 	
@@ -62,8 +62,9 @@ public class ShortReadMapping {
 	private int[][] mapToSrpArray;
 	private BitSet[] bitSetArray;
 	private BitVector[] bitVectorArray;
+	
 	private void init(int l) {
-		haplotypeLength = l;
+		fullHaplotypeLength = l;
 		srpCount = 0;
 
 		cumFreq = new double['U'];
@@ -71,9 +72,9 @@ public class ShortReadMapping {
 		seqNameToSeqID = new HashMap<String, Integer>();
 		shortReads = new ArrayList<ShortRead>();
 
-		listOfAvailableChar = new ArrayList[haplotypeLength];
-		mapToSrp = new ArrayList[haplotypeLength];
-		for (int i = 0; i < haplotypeLength; i++) {
+		listOfAvailableChar = new ArrayList[fullHaplotypeLength];
+		mapToSrp = new ArrayList[fullHaplotypeLength];
+		for (int i = 0; i < fullHaplotypeLength; i++) {
 			mapToSrp[i] = new ArrayList<Integer>();
 		}
 
@@ -84,13 +85,13 @@ public class ShortReadMapping {
 		init( srpAlignment.getSiteCount() );
 		
 		@SuppressWarnings("unchecked")
-		HashSet<Character>[] setsOfAvailableChar = new HashSet[haplotypeLength];
+		HashSet<Character>[] setsOfAvailableChar = new HashSet[fullHaplotypeLength];
 
 		for (int i = 0; i < setsOfAvailableChar.length; i++) {
 			setsOfAvailableChar[i] = new HashSet<Character>();
 		}
 		
-        int[][] frequencies = new int[haplotypeLength][DATA_TYPE.getAmbiguousStateCount()];
+        int[][] frequencies = new int[fullHaplotypeLength][DATA_TYPE.getAmbiguousStateCount()];
 
 
 		for (int i = 0; i < srpAlignment.getSequenceCount(); i++) {
@@ -129,15 +130,54 @@ public class ShortReadMapping {
 	public BitVector getBitVector(int i){
 		return bitVectorArray[i];
 	}
+	public int[][] getSrpState2DArray() {
+		String[] srpArray = getSrpArray();
+		int[][] state2DArray = new int[srpArray.length][fullHaplotypeLength];
+	
+		for (int i = 0; i < srpArray.length; i++) {
+			String srp = srpArray[i];
+			for (int j = 0; j < fullHaplotypeLength; j++) {
+				
+				char srpChar = srp.charAt(j);//TODO: change to char[] at hight lv or at ShortReadMapping
+				int state = DATA_TYPE.getState(srpChar);
+				state2DArray[i][j] = state;
+			}
+		}
+	
+		return state2DArray;
+	}
+
+	public char[][] getSrpChar2DArray() {
+			String[] srpArray = getSrpArray();
+			char[][] srpChar2D = new char[srpArray.length][fullHaplotypeLength];
+		
+			for (int i = 0; i < srpArray.length; i++) {
+				String srp = srpArray[i];
+				for (int j = 0; j < fullHaplotypeLength; j++) {
+	//				allSrpState2D[i][j] = getStateAtK(srp, j);
+					srpChar2D[i][j] = srp.charAt(j);
+				}
+			}
+			
+			
+		
+			return srpChar2D;
+		}
+
+	public int[][] getMapToSrpArray(){
+		return mapToSrpArray;
+	}
+
+	public String[] getSrpArray(){
+		return srpArray;
+	}
+
 	private void createSrpArray() {
 		srpArray = new String[srpCount];
 		for (int i = 0; i < srpArray.length; i++) {
 			srpArray[i] = shortReads.get(i).getFullSrp();
 		}
 		
-	}
-	public int[][] getMapToSrpArray(){
-		return mapToSrpArray;
 	}
 	private void createMapToSrpArray(){
 		mapToSrpArray = new int[mapToSrp.length][];
@@ -160,10 +200,6 @@ public class ShortReadMapping {
 		
 		
 	}
-	public String[] getSrpArray(){
-		return srpArray;
-	}
-
 	@Deprecated
 	private void calculateCumFreq() {
 		cumFreq = new double[] { cumFreq['A'], cumFreq['C'], cumFreq['G'], cumFreq['T'] };
@@ -179,7 +215,7 @@ public class ShortReadMapping {
 
 	@Deprecated
 	private void calculateListOfAvailableChar(HashSet<Character>[] setsOfAvailableChar) {
-		for (int i = 0; i < haplotypeLength; i++) {
+		for (int i = 0; i < fullHaplotypeLength; i++) {
 			listOfAvailableChar[i] = new ArrayList<Character>(setsOfAvailableChar[i]);
 
 			Character[] temp = new Character[setsOfAvailableChar[i].size()];
@@ -277,7 +313,7 @@ public class ShortReadMapping {
 	}
 
 	public int getLength() {
-		return haplotypeLength;
+		return fullHaplotypeLength;
 	}
 
 	public int getSrpCount() {

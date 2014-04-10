@@ -38,11 +38,11 @@ public abstract class AbstractHaplotypeModel extends AbstractAlignmentModel impl
 	}
 	
 	public int getHaplotypeLength() {
-		return getAbstractLength();
+		return getSequenceLength();
 	}
 
 	public int getHaplotypeCount() {
-		return getAbstractCount();
+		return getSequenceCount();
 	}
 
     // **************************************************************

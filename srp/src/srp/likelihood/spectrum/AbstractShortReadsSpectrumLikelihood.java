@@ -23,8 +23,8 @@ public abstract class AbstractShortReadsSpectrumLikelihood extends AbstractShort
 	protected SpectrumAlignmentModel spectrumModel;
 	
 	
-	protected double[] sumScaledSrpLogLikelihood;
-	protected double[] storedSumSrpLogLikelihood;
+//	protected double[] sumScaledSrpLogLikelihood;
+//	protected double[] storedSumSrpLogLikelihood;
 	
 	
 	protected double[] spectrumLogLikelihood;
@@ -34,8 +34,8 @@ public abstract class AbstractShortReadsSpectrumLikelihood extends AbstractShort
 	protected double[] storedScaledSpectrumLogLikelihood;
 	
 	
-	public AbstractShortReadsSpectrumLikelihood(String name) {
-		super(name);
+	public AbstractShortReadsSpectrumLikelihood(String name, ShortReadMapping srpMap) {
+		super(name, srpMap);
 	}
 
 
@@ -81,7 +81,7 @@ public abstract class AbstractShortReadsSpectrumLikelihood extends AbstractShort
 
 	protected void storeI(int i) {
 		storedEachSrpLogLikelihood[i] = eachSrpLogLikelihood[i];
-		storedSumSrpLogLikelihood[i] = sumScaledSrpLogLikelihood[i];
+		storedSumScaledSrpLogLikelihood[i] = sumScaledSrpLogLikelihood[i];
 	}
 	
 	protected void restoreIJ(int i, int j) {
@@ -95,7 +95,7 @@ public abstract class AbstractShortReadsSpectrumLikelihood extends AbstractShort
 
 	protected void restoreI(int i) {
 		eachSrpLogLikelihood[i] = storedEachSrpLogLikelihood[i];
-		sumScaledSrpLogLikelihood[i] = storedSumSrpLogLikelihood[i]; 
+		sumScaledSrpLogLikelihood[i] = storedSumScaledSrpLogLikelihood[i]; 
 		
 	}
 
@@ -104,7 +104,7 @@ public abstract class AbstractShortReadsSpectrumLikelihood extends AbstractShort
 	protected void storeEverything() {
 	
 		System.arraycopy(eachSrpLogLikelihood, 0, storedEachSrpLogLikelihood, 0, eachSrpLogLikelihood.length);
-		System.arraycopy(sumScaledSrpLogLikelihood, 0, storedSumSrpLogLikelihood, 0, sumScaledSrpLogLikelihood.length);
+		System.arraycopy(sumScaledSrpLogLikelihood, 0, storedSumScaledSrpLogLikelihood, 0, sumScaledSrpLogLikelihood.length);
 		System.arraycopy(spectrumLogLikelihood,0, storedSpectrumLogLikelihood, 0, spectrumLogLikelihood.length);
 		System.arraycopy(scaledSpectrumLogLikelihood,0, storedScaledSpectrumLogLikelihood, 0, scaledSpectrumLogLikelihood.length);
 	}
@@ -112,7 +112,7 @@ public abstract class AbstractShortReadsSpectrumLikelihood extends AbstractShort
 	protected void restoreEverything(){
 		
 		System.arraycopy(storedEachSrpLogLikelihood, 0, eachSrpLogLikelihood, 0, eachSrpLogLikelihood.length);
-		System.arraycopy(storedSumSrpLogLikelihood, 0, sumScaledSrpLogLikelihood, 0, sumScaledSrpLogLikelihood.length);
+		System.arraycopy(storedSumScaledSrpLogLikelihood, 0, sumScaledSrpLogLikelihood, 0, sumScaledSrpLogLikelihood.length);
 		System.arraycopy(storedSpectrumLogLikelihood, 0, spectrumLogLikelihood, 0, storedSpectrumLogLikelihood.length);
 		System.arraycopy(storedScaledSpectrumLogLikelihood, 0, scaledSpectrumLogLikelihood, 0, storedScaledSpectrumLogLikelihood.length);
 	}

@@ -42,17 +42,17 @@ public class ShortReadsSpectrumLikelihood  extends AbstractShortReadsSpectrumLik
 
 	private final double MIN_LOG_LIKELIHOOD;
 
-	private int srpCount;
+//	private int srpCount;
 
 	private LikelihoodScaler liS;
 
-	private int[][] allSrpState2D;
-
-	private int[] srpIndex;
-
-	private String[] srpArray;
-
-	private int srpIndexCount;
+//	private int[][] allSrpState2D;
+//
+//	private int[] srpIndex;
+//
+//	private String[] srpArray;
+//
+//	private int srpIndexCount;
 
 	protected double[] allStateLogLikelihood;
 	protected double[] allStoredStateLogLikelihood;
@@ -63,17 +63,15 @@ public class ShortReadsSpectrumLikelihood  extends AbstractShortReadsSpectrumLik
 	}
 	
 	public ShortReadsSpectrumLikelihood(SpectrumAlignmentModel spectrumModel, ShortReadMapping srpMap, DistType distType){
-		super(SHORT_READ_LIKELIHOOD);
+		super(SHORT_READ_LIKELIHOOD, srpMap);
 		this.spectrumModel = spectrumModel;
-		this.srpMap = srpMap;
+
 		operationRecord = spectrumModel.getOperationRecord();
 //		multiType = MultiType.Array;
 		multiType = MultiType.BitSet;
-		
-//		type = MultiType.Hash;
-//		type = MultiType.All;
-//		distTypeCode = "flat";//"betaMean"  "betaMode" "gTest"
+
 		setDistType(distType);
+		
 		MIN_LOG_LIKELIHOOD = stateLikelihood.caluclateStateLogLikelihood(SpectraParameter.MIN_FREQ);
 		
 		
@@ -82,7 +80,7 @@ public class ShortReadsSpectrumLikelihood  extends AbstractShortReadsSpectrumLik
 		
 		addModel(this.spectrumModel);
 		
-		preprocessLikelihoodAlignmentMap();
+		preprocessLikelihoodShortReadMap();
 		calculateSrpLikelihoodFull();//TODO FIX this? shouldn't needed
 		getLogLikelihood();
 		
@@ -100,7 +98,7 @@ public class ShortReadsSpectrumLikelihood  extends AbstractShortReadsSpectrumLik
 	}
 	
 
-	private void preprocessLikelihoodAlignmentMap() {
+	private void preprocessLikelihoodShortReadMap() {
 //		makeDirty();
 		
 		liS = new LikelihoodScaler(LOG_C);
@@ -122,18 +120,15 @@ public class ShortReadsSpectrumLikelihood  extends AbstractShortReadsSpectrumLik
 		scaledSpectrumLogLikelihood = new double[srpCount*sequenceCount];
 		storedScaledSpectrumLogLikelihood = new double[srpCount*sequenceCount];
 		
-		sumScaledSrpLogLikelihood = new double[srpCount];
-		storedSumSrpLogLikelihood = new double[srpCount];
 
-		
-		eachSrpLogLikelihood = new double[srpCount];
-		storedEachSrpLogLikelihood = new double[srpCount];
 
 		allStateLogLikelihood = new double[sequenceLength*STATE_COUNT];
 		allStoredStateLogLikelihood = new double[sequenceLength*STATE_COUNT];
 		
-		srpArray = srpMap.getSrpArray();
 		mapToSrpArray = srpMap.getMapToSrpArray();
+		
+		String[] srpArray = srpMap.getSrpArray();
+		
 		allSrpState2D = new int[srpArray.length][sequenceLength];
 
 		for (int i = 0; i < srpArray.length; i++) {
@@ -233,9 +228,7 @@ public class ShortReadsSpectrumLikelihood  extends AbstractShortReadsSpectrumLik
 		stateLikelihood.calculateStatesLogLikelihood(spectra, 0, allStateLogLikelihood);
 		stateLikelihood.calculateStoredStatesLogLikelihood(spectra, 0, allStoredStateLogLikelihood);
 
-////		for (int i : mapToSrp) {
-		int[] mapArray = mapToSrpArray[k];
-		for (int i : mapArray){
+		for (int i : mapToSrpArray[k]){
 //			String fullSrp = srpMap.getSrpFull(i);
 //			int state = getStateAtK(fullSrp, k);
 			int state = allSrpState2D[i][k];
