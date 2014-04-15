@@ -4,34 +4,28 @@ import srp.evolution.OperationType;
 import srp.evolution.haplotypes.old.OldHaplotype;
 import srp.haplotypes.Haplotype;
 import srp.haplotypes.HaplotypeModel;
+import dr.inference.operators.CoercionMode;
 import dr.inference.operators.OperatorFailedException;
 import dr.inference.operators.SimpleMCMCOperator;
 import dr.math.MathUtils;
 
-public class HaplotypeRecombinationOperator extends AbstractSingleOperator {
+public class HaplotypeRecombinationOperator extends AbstractMultiOperator {
 
 	public final static String OPERATOR_NAME = HaplotypeRecombinationOperator.class.getSimpleName();
 	public final static OperationType OP = OperationType.RECOMBINATION;
 
 	
 	public HaplotypeRecombinationOperator(HaplotypeModel haplotypeModel, int nothing) {
-		super(haplotypeModel);
+		super(haplotypeModel, 0, CoercionMode.COERCION_OFF);
 //		this.index = nothing;
 //		this.haplotypeModel= haplotypeModel; 
 //		this.haplotypeLength = this.haplotypeModel.getHaplotypeLength();
 		
 	}
 
-	@Override
-	public String getPerformanceSuggestion() {
-
-		return "";
-	}
-
-	@Override
-	public String getOperatorName() {
-
-		return OPERATOR_NAME;
+	public HaplotypeRecombinationOperator(HaplotypeModel haplotypeModel,
+			int length, CoercionMode mode) {
+		super(haplotypeModel, length, mode);
 	}
 
 	@Override
@@ -80,6 +74,12 @@ public class HaplotypeRecombinationOperator extends AbstractSingleOperator {
 		return 0.0;
 	}
 
+
+	@Override
+	public String getOperatorName() {
+	
+		return OPERATOR_NAME;
+	}
 
 	@Override
 	public OperationType getOperationType() {

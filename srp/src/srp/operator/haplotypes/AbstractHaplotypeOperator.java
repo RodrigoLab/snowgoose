@@ -45,7 +45,8 @@ public abstract class AbstractHaplotypeOperator extends AbstractCoercableOperato
 	public int getNextSiteIndex() {
 		return MathUtils.nextInt(haplotypeLength);
 	}
-
+	
+	
 	public abstract OperationType getOperationType();
 
 	public static char getNextDiffBase(int oldState) {

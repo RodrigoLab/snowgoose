@@ -25,6 +25,7 @@ import srp.likelihood.spectrum.AbstractShortReadsSpectrumLikelihood.DistType;
 import srp.operator.haplotypes.AbstractHaplotypeOperator;
 import srp.operator.haplotypes.BaseSingleOperator;
 import srp.operator.haplotypes.BasesMultiOperator;
+import srp.operator.haplotypes.HaplotypeRecombinationOperator;
 import srp.operator.spectrum.AbstractSpectrumOperator;
 import srp.operator.spectrum.DeltaExchangeColumnSpectrumOperator;
 import srp.operator.spectrum.DeltaExchangeMultiSpectrumOperator;
@@ -58,7 +59,7 @@ public class TimeTrialShortReadsHaplotypeLikelihoodTest {
 	public static final double NOT_ERROR = ShortReadsHaplotypeLikelihood.NOT_ERROR_RATE;
 	private static final double THRESHOLD = MarkovChain.EVALUATION_TEST_THRESHOLD;
 	
-	private static boolean combine = false;
+	private static boolean combine = true;
 //	private static final double EVALUATION_TEST_THRESHOLD = 1e-8;
 	
 	@BeforeClass
@@ -147,7 +148,21 @@ public class TimeTrialShortReadsHaplotypeLikelihoodTest {
 			String summary = timeTrialOperator(likelihood, op, ite);
 			System.out.println(summary + "\t" + op.getOperatorName() +"\t"+ bases);
 		}
+	}	
+	
+	@Test
+	public void testTimeTrialRecombination() throws Exception {
+		double ite = 1e4;
+		for (int i = 0; i < 10; i++) {
+			System.out.print("Run "+i +"\t");
+		
+			int bases = 0;
+			AbstractHaplotypeOperator op = new HaplotypeRecombinationOperator(haplotypeModel, 0);
+			String summary = timeTrialOperator(likelihood, op, ite);
+			System.out.println(summary + "\t" + op.getOperatorName() +"\t"+ bases);
+		}
 	}
+	
 	public static String timeTrialOperator(
 			ShortReadsHaplotypeLikelihood likelihood2,
 			AbstractHaplotypeOperator op, double ite) {
@@ -164,7 +179,7 @@ public class TimeTrialShortReadsHaplotypeLikelihoodTest {
 			ShortReadsHaplotypeLikelihood likelihood2,
 			AbstractHaplotypeOperator op, double ite) {
 		System.gc();
-		double scale = ite*1e3;
+		double scale = 1e3;
 		int count = 0;
 		long totalTime = 0;
 		do {
@@ -188,7 +203,7 @@ public class TimeTrialShortReadsHaplotypeLikelihoodTest {
 			} catch (OperatorFailedException e) {
 			}
 		} while (count < ite);
-		String summary = "TimeTrial: " + totalTime/scale + "\t" + totalTime /scale
+		String summary = "TimeTrial: " + totalTime/scale + "\t" + totalTime/scale/ite
 				+ "/calculation\t"+ite+" ite.";
 		return summary;
 	}

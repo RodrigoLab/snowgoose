@@ -22,6 +22,8 @@ import srp.likelihood.haplotypes.ShortReadsHaplotypeLikelihood;
 import srp.operator.haplotypes.AbstractHaplotypeOperator;
 import srp.operator.haplotypes.BaseSingleOperator;
 import srp.operator.haplotypes.BasesMultiOperator;
+import srp.operator.haplotypes.HaplotypeRecombinationOperator;
+import srp.operator.spectrum.RecombineSectionSpectrumOperator;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.SimpleAlignment;
 import dr.inference.markovchain.MarkovChain;
@@ -419,7 +421,7 @@ public class ShortReadsHaplotypeLikelihoodTest {
 	}
 
 	@Test
-	public void testFullvsSingleStoreRestore() throws Exception {
+	public void testFullvsSingle() throws Exception {
 
 //		DeltaExchangeSingleSpectrumOperator op = new DeltaExchangeSingleSpectrumOperator(
 //				spectrumModel, 0.25, null);
@@ -437,9 +439,20 @@ public class ShortReadsHaplotypeLikelihoodTest {
 		
 		assertLikelihoodOperator(haplotypeModel, schedule);
 	}
-
 	@Test
-	public void testFullvsMultiStoreRestore() throws Exception {
+	public void testFullvsRecombination() throws Exception {
+
+		OperatorSchedule schedule = new SimpleOperatorSchedule();
+		MCMCOperator op;
+		
+		op = new HaplotypeRecombinationOperator(haplotypeModel, 0);
+		schedule.addOperator(op);
+		
+		assertLikelihoodOperator(haplotypeModel, schedule);
+	}
+	
+	@Test
+	public void testFullvsMulti() throws Exception {
 
 		OperatorSchedule schedule = new SimpleOperatorSchedule();
 		MCMCOperator op;

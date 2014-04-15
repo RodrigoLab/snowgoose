@@ -3,6 +3,8 @@ package srp.operator.haplotypes;
 import srp.evolution.OperationType;
 import srp.evolution.haplotypes.old.OldHaplotype;
 import srp.evolution.haplotypes.old.OldHaplotypeModel;
+import srp.haplotypes.Haplotype;
+import srp.haplotypes.HaplotypeModel;
 import srp.operator.haplotypes.old.AbstractBasesMultiOperator;
 import dr.inference.operators.CoercionMode;
 import dr.inference.operators.OperatorFailedException;
@@ -13,7 +15,7 @@ public class HaplotypeSwapSectionOperator extends HaplotypeRecombinationOperator
 
 	
 	public final static String OPERATOR_NAME = HaplotypeSwapSectionOperator.class.getSimpleName();
-	public final static OperationType OP = OperationType.RECOMBINATION;
+//	public final static OperationType OP = OperationType.RECOMBINATION;
 
 	
 	
@@ -22,16 +24,12 @@ public class HaplotypeSwapSectionOperator extends HaplotypeRecombinationOperator
 //	}
 
 	
-	public HaplotypeSwapSectionOperator(OldHaplotypeModel haplotypeModel, int length, CoercionMode mode) {
+	public HaplotypeSwapSectionOperator(HaplotypeModel haplotypeModel, int length, CoercionMode mode) {
 		super(haplotypeModel, length, mode);
 
 	}
 
-	@Override
-	public String getPerformanceSuggestion() {
 
-		return "";
-	}
 
 	@Override
 	public String getOperatorName() {
@@ -44,41 +42,51 @@ public class HaplotypeSwapSectionOperator extends HaplotypeRecombinationOperator
 	public double doOperation() throws OperatorFailedException {
 		
 
-		haplotypeModel.startHaplotypeOperation();
-			
-		int hapIndex1 = MathUtils.nextInt( haplotypeModel.getHaplotypeCount());
-		int hapIndex2 = hapIndex1;
+
+		haplotypeModel.startAlignmentModelOperation();
+		
+		
+		int[] twoHaplotypeIndex = new int[2];
+		int[] twoPositionIndex = new int[2];
+		
+		
+		twoHaplotypeIndex[0] = getNextHapIndex();
+		twoHaplotypeIndex[1] = twoHaplotypeIndex[0];
 		
 		do{
-			hapIndex2 = MathUtils.nextInt( haplotypeModel.getHaplotypeCount());
-		} while(hapIndex1==hapIndex2);
+			twoHaplotypeIndex[1] = getNextHapIndex();
+		} while(twoHaplotypeIndex[0]==twoHaplotypeIndex[1]);
 
-		OldHaplotype h1 = haplotypeModel.getHaplotype(hapIndex1);
-		OldHaplotype h2 = haplotypeModel.getHaplotype(hapIndex2);
+		Haplotype h1 = haplotypeModel.getHaplotype(twoHaplotypeIndex[0]);
+		Haplotype h2 = haplotypeModel.getHaplotype(twoHaplotypeIndex[1]);
 		
-		String oldS1 = h1.getSequenceString();
-		String oldS2 = h2.getSequenceString();
-		int start = MathUtils.nextInt(haplotypeLength-swapLength+1);
-		int end = start + swapLength; 
+		twoPositionIndex[0] = getNextSiteIndex();
+		twoPositionIndex[1]= twoPositionIndex[0]+ basesCount;
+		if(twoPositionIndex[1]>haplotypeLength){
+			twoPositionIndex[1] = twoPositionIndex[0];
+			twoPositionIndex[0] -= basesCount;
+		}
 
+		for (int i = twoPositionIndex[0]; i < twoPositionIndex[1]; i++) {
+			char c1 = h1.getChar(i);
+			h1.setCharAt(i, h2.getChar(i));
+			h2.setCharAt(i, c1);
+		}
 
-		String temp1 = oldS1.substring(start, end);
-		String temp2 = oldS2.substring(start, end);
+//		int start = twoPositionIndex[0];
+//		int end = twoPositionIndex[1];
+//		String oldS1 = h1.getSequenceString();
+//		String oldS2 = h2.getSequenceString();
+//		String temp1 = oldS1.substring(start, end);
+//		String temp2 = oldS2.substring(start, end);
+//		String newS1 = oldS1.substring(0, start) + temp2 + oldS1.substring(end);
+//		String newS2 = oldS2.substring(0, start) + temp1 + oldS2.substring(end);
+//		h1.setSequenceString(newS1);
+//		h2.setSequenceString(newS2);
 
-		String newS1 = oldS1.substring(0, start) + temp2 + oldS1.substring(end);
-		String newS2 = oldS2.substring(0, start) + temp1 + oldS2.substring(end);
-		
-		h1.storeState();
-		h1.setSequenceString(newS1);
-		
-		h2.storeState();
-		h2.setSequenceString(newS2);
-		
-		int[] swapHaplotype = {hapIndex1, hapIndex2, start, end};
+		haplotypeModel.setOperationRecord(OP, twoHaplotypeIndex, twoPositionIndex);
+		haplotypeModel.endAlignmentModelOperation();
 
-		haplotypeModel.storeOperationRecord(OP, swapHaplotype);
-		haplotypeModel.endHaplotypeOperation();
-		
 		return 0.0;
 		
 		
