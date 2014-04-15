@@ -37,17 +37,16 @@ public class BasesMultiOperator extends AbstractMultiOperator {
 		Haplotype haplotype = haplotypeModel.getHaplotype(hapIndex);
 //	    
 //	    
-		int[] siteIndexs = 
-				generateUniqueSites(basesCount);
+		int[] siteIndexs = generateUniqueSites(basesCount);
 
-		for (int i = 0; i < basesCount; i++) {
-			
+		for (int i : siteIndexs) {
+			System.out.print(i +"\t");
 //			SpectraParameter spectra = spectrum.getSpectra(siteIndexs[i]);
 //			swapFrequency(spectra);
 			char newChar = getNextBase();
 			haplotype.setCharAt(i, newChar);
 	        
-		}
+		}System.out.println();
         // symmetrical move so return a zero hasting ratio
 		haplotypeModel.setOperationRecord(OP, hapIndex, siteIndexs);
 	

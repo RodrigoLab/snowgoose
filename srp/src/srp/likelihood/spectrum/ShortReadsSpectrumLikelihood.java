@@ -37,8 +37,8 @@ public class ShortReadsSpectrumLikelihood  extends AbstractShortReadsSpectrumLik
 
 	private static final boolean DEBUG = false;
 	
-    public static final String SHORT_READ_LIKELIHOOD = "ShortReadSpectrumLikelihood";
-	public static final String NAME = SHORT_READ_LIKELIHOOD;
+//    public static final String SHORT_READ_LIKELIHOOD = "ShortReadSpectrumLikelihood";
+	public static final String NAME = "ShortReadSpectrumLikelihood";
 
 	private final double MIN_LOG_LIKELIHOOD;
 

@@ -207,8 +207,8 @@ public class MCMCSetupHelperHaplotype extends MCMCSetupHelper {
 		//		schedule.addOperator(operator);
 		
 				operator = new BaseSingleOperator(haplotypeModel);
-				operator.setWeight(opSmall);
-		//		schedule.addOperator(operator);
+				operator.setWeight(opLarge);
+				schedule.addOperator(operator);
 				
 				for (Parameter parameter : parameters) {
 		

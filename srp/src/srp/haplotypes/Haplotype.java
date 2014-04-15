@@ -47,6 +47,7 @@ public class Haplotype extends Sequence {
 			char newChar = DATATYPE.getChar(state);
 			haplotype[i] = newChar;
 		}
+		storeState();
 		
 	}
 
@@ -215,6 +216,10 @@ public class Haplotype extends Sequence {
 		Haplotype newHaplotype = new Haplotype(newTaxon, oldHaplotype.getSequenceString());
 
 		return newHaplotype;
+	}
+
+	public String getStoredSequenceString() {
+    	return String.valueOf(storedHaplotype);
 	}
 
 

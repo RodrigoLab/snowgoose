@@ -21,6 +21,7 @@ import srp.haplotypes.HaplotypeModel;
 import srp.likelihood.haplotypes.ShortReadsHaplotypeLikelihood;
 import srp.operator.haplotypes.AbstractHaplotypeOperator;
 import srp.operator.haplotypes.BaseSingleOperator;
+import srp.operator.haplotypes.BasesMultiOperator;
 import srp.operator.spectrum.DeltaExchangeColumnSpectrumOperator;
 import srp.operator.spectrum.DeltaExchangeMultiSpectrumOperator;
 import srp.operator.spectrum.DirichletSpectrumOperator;
@@ -71,7 +72,7 @@ public class ShortReadsHaplotypeLikelihoodOperatorTest {
 //		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/snowgoose/srp/unittest/", "H4_srp.fasta");
 		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/snowgoose/srp/unittest/", "SpectrumTest_50srp_200bp.fasta");
 		srpMap = new ShortReadMapping(alignment);
-		haplotypeModel = new HaplotypeModel(alignment);
+		haplotypeModel = new HaplotypeModel(5, srpMap.getLength());
 	}
 
 	@After
@@ -135,196 +136,16 @@ public class ShortReadsHaplotypeLikelihoodOperatorTest {
 		assertArrayEquals(expecteds, eachLikelihood, 1e-8);
 	}
 
-	
-	@Test
-	public void testCalculateLikelihoodSpectrum() {
-		String[] seqs = new String[]{
-				".AA",
-				".AC",
-				".GT"
-				};
-		SimpleAlignment alignment = AlignmentUtils.createAlignment(seqs);
-		ShortReadMapping srpMap = new ShortReadMapping(alignment);
-		
-		int spectrumLength = 3;
-		HaplotypeModel spectrumModel = new HaplotypeModel(spectrumLength, 1);
-		ShortReadsHaplotypeLikelihood likelihood = new ShortReadsHaplotypeLikelihood(spectrumModel, srpMap);
-
-		double[] eachLikelihood = likelihood.unittestMethodGetEachLikelihood();
-		double[] expecteds = new double[]{ 
-				0+Math.log(0.25*NOT_ERROR+0.75*ERROR)*2,
-				0+Math.log(0.25*NOT_ERROR+0.75*ERROR)*1+Math.log(0.25*NOT_ERROR+0.75*ERROR)*1,
-				0+Math.log(0.25*NOT_ERROR+0.75*ERROR)*0+Math.log(0.25*NOT_ERROR+0.75*ERROR)*2
-			};
-		assertArrayEquals(expecteds, eachLikelihood, 1e-8);
-		
-//		logLikelihood = likelihood .getLogLikelihood();
-//		expected = -0.086061253223681313806*4; //dbinom(0,8,E,log=T)
-//		assertEquals("0 mismatch",expected, logLikelihood, 1e-10);
-
-//		double[] expecteds = new double[]{ 
-//				0+Math.log((0.25*NOT_ERROR+0.75*ERROR)*2),
-//				0+Math.log((0.25*NOT_ERROR+0.75*ERROR)*1)+Math.log((0.75*NOT_ERROR+0.25*ERROR)*1),
-//				0+Math.log((0.25*NOT_ERROR+0.75*ERROR)*1)+Math.log((0.75*NOT_ERROR+0.25*ERROR)*1)
-//			};
-
-	}
-
-
-
-	@Test
-	public void testCalculateLikelihoodCustomSpectrum() {
-		String[] seqs = new String[]{
-				"AAAC",
-				"AACT",
-				"ACGT"
-				};
-		
-		SimpleAlignment alignment = AlignmentUtils.createAlignment(seqs);
-		ShortReadMapping srpMap = new ShortReadMapping(alignment);
-		
-		int spectrumLength = seqs[0].length();
-		HaplotypeModel spectrumModel = new HaplotypeModel(spectrumLength, 1);
-		Spectrum spectrum = spectrumModel.getSpectrum(0);
-		for (int i = 0; i < spectrum.getLength(); i++) {
-			double[] freqs = new double[]{1-(0.1*i*3), 0.1*i, 0.1*i, 0.1*i};
-			spectrum.resetSpectra(i, freqs);
-//			System.out.println("SITE: "+i +"\t"+  Arrays.toString(spectrum.getFrequencies(i)));
-		}
-//		spectrumModel.setSpectrum(0, spectrum);
-		
-		ShortReadsHaplotypeLikelihood likelihood = new ShortReadsHaplotypeLikelihood(spectrumModel, srpMap);
-
-		double[] eachLikelihood = likelihood.unittestMethodGetEachLikelihood();
-//		System.out.println(Arrays.toString(eachLikelihood));
-		//Site1: 1, 0, 0, 0
-		//Site2: 0.7, 0.1, 0.1, 0.1
-		//Site3: 0.4, 0.2, 0.2, 0.2
-		//Site4: 0.1, 0.3, 0.3, 0.3
-		double[] expecteds = new double[] {
-				// MMMD
-				Math.log((1 * NOT_ERROR + 0 * ERROR)
-						* (0.7 * NOT_ERROR + 0.3 * ERROR)
-						* (0.4 * NOT_ERROR + 0.6 * ERROR)
-						* (0.3 * NOT_ERROR + 0.7 * ERROR)),
-				// MMDD
-				Math.log((1 * NOT_ERROR + 0 * ERROR)
-						* (0.7 * NOT_ERROR + 0.3 * ERROR)
-						* (0.2 * NOT_ERROR + 0.8 * ERROR)
-						* (0.3 * NOT_ERROR + 0.7 * ERROR)),
-
-				// MDDD
-				Math.log((1 * NOT_ERROR + 0 * ERROR)
-						* (0.1 * NOT_ERROR + 0.9 * ERROR)
-						* (0.2 * NOT_ERROR + 0.8 * ERROR)
-						* (0.3 * NOT_ERROR + 0.7 * ERROR)) 
-		};
-		assertArrayEquals(expecteds, eachLikelihood, 1e-8);
-		
-		//
-		seqs = new String[]{
-				"AACC",
-				"AACC",
-				"GGTT",
-				"GGTT"
-				};
-		
-		alignment = AlignmentUtils.createAlignment(seqs);
-		srpMap = new ShortReadMapping(alignment);
-		
-		spectrumLength = seqs[0].length();
-		spectrumModel = new HaplotypeModel(spectrumLength, 2);
-
-		spectrum = spectrumModel.getSpectrum(0);
-		double[] freqs = new double[]{0.5, 0, 0.5, 0};
-		spectrum.resetSpectra(0, freqs);
-		spectrum.resetSpectra(1, freqs);
-		freqs = new double[]{0, 0.5, 0, 0.5};
-		spectrum.resetSpectra(2, freqs);
-		spectrum.resetSpectra(3, freqs);
-		
-		spectrum = spectrumModel.getSpectrum(1);
-		freqs = new double[]{0.5, 0, 0.5, 0};
-		spectrum.resetSpectra(0, freqs);
-		spectrum.resetSpectra(1, freqs);
-		freqs = new double[]{0, 0.5, 0, 0.5};
-		spectrum.resetSpectra(2, freqs);
-		spectrum.resetSpectra(3, freqs);
-		
-		String[] trueSeq = new String[]{
-				"AACC",
-				"GGTT"
-		};
-		HaplotypeModel spectrumModel2 = new HaplotypeModel(spectrumLength, 2);
-//		SpectrumAlignmentModel spectrumModel2 = new SpectrumAlignmentModel(AlignmentUtils.createAlignment(trueSeq) );
-		spectrum = spectrumModel2.getSpectrum(0);
-		freqs = new double[]{1, 0, 0, 0};
-		spectrum.resetSpectra(0, freqs);
-		spectrum.resetSpectra(1, freqs);
-		freqs = new double[]{0, 1, 0, 0};
-		spectrum.resetSpectra(2, freqs);
-		spectrum.resetSpectra(3, freqs);
-		
-		spectrum = spectrumModel2.getSpectrum(1);
-		freqs = new double[]{0, 0, 1, 0};
-		spectrum.resetSpectra(0, freqs);
-		spectrum.resetSpectra(1, freqs);
-		freqs = new double[]{0, 0, 0, 1};
-		spectrum.resetSpectra(2, freqs);
-		spectrum.resetSpectra(3, freqs);
-//			System.out.println("SITE: "+i +"\t"+  Arrays.toString(spectrum.getFrequencies(i)));
-		
-//		spectrumModel.setSpectrum(0, spectrum);
-		
-		likelihood = new ShortReadsHaplotypeLikelihood(spectrumModel, srpMap);
-
-		eachLikelihood = likelihood.unittestMethodGetEachLikelihood();
-		double logLikelihood = likelihood.getLogLikelihood();
-		System.out.println(logLikelihood);
-		System.out.println(Arrays.toString(eachLikelihood));
-
-		
-		likelihood = new ShortReadsHaplotypeLikelihood(spectrumModel2, srpMap);
-		eachLikelihood = likelihood.unittestMethodGetEachLikelihood();
-		logLikelihood = likelihood.getLogLikelihood();
-		System.out.println(logLikelihood);
-		
-		System.out.println(Arrays.toString(eachLikelihood));
-		//Site1: 1, 0, 0, 0
-		//Site2: 0.7, 0.1, 0.1, 0.1
-		//Site3: 0.4, 0.2, 0.2, 0.2
-		//Site4: 0.1, 0.3, 0.3, 0.3
-//		double[] expecteds = new double[] {
-//				// MMMD
-//				Math.log((1 * NOT_ERROR + 0 * ERROR)
-//						* (0.7 * NOT_ERROR + 0.3 * ERROR)
-//						* (0.4 * NOT_ERROR + 0.6 * ERROR)
-//						* (0.3 * NOT_ERROR + 0.7 * ERROR)),
-//				// MMDD
-//				Math.log((1 * NOT_ERROR + 0 * ERROR)
-//						* (0.7 * NOT_ERROR + 0.3 * ERROR)
-//						* (0.2 * NOT_ERROR + 0.8 * ERROR)
-//						* (0.3 * NOT_ERROR + 0.7 * ERROR)),
-//
-//				// MDDD
-//				Math.log((1 * NOT_ERROR + 0 * ERROR)
-//						* (0.1 * NOT_ERROR + 0.9 * ERROR)
-//						* (0.2 * NOT_ERROR + 0.8 * ERROR)
-//						* (0.3 * NOT_ERROR + 0.7 * ERROR)) 
-//		};
-//		assertArrayEquals(expecteds, eachLikelihood, 1e-8);
-		
-
-	}
 	@Test
 	public void testFullvsMaster() throws Exception {
 	
 		ShortReadsHaplotypeLikelihood likelihood = new ShortReadsHaplotypeLikelihood(haplotypeModel, srpMap);
 		
-		for (int i = 0; i < 1e3; i++) {
+		for (int i = 0; i < 1e4; i++) {
 			int hapCount = MathUtils.nextInt(7)+3;
 			int hapLength = srpMap.getLength();
 			haplotypeModel = new HaplotypeModel(hapCount, hapLength);
+
 //				likelihood.makeDirty();
 			likelihood = new ShortReadsHaplotypeLikelihood(haplotypeModel, srpMap);
 			double logLikelihoodFull = likelihood.getLogLikelihood();
@@ -338,44 +159,21 @@ public class ShortReadsHaplotypeLikelihoodOperatorTest {
 		}
 	}
 	
-//	
-//	@Test
-//	public void testFullvsSingle() throws Exception {
-//	
-//		ShortReadsHaplotypeLikelihood likelihood = new ShortReadsHaplotypeLikelihood(spectrumModel);
-//		
-////		SpectrumOperationRecord record = spectrumModel.getSpectrumOperationRecord();
-//		DeltaExchangeSingleSpectrumOperator op = new DeltaExchangeSingleSpectrumOperator(spectrumModel, 0.25, null);
-//		
-//		for (int i = 0; i < 1e4; i++) {
-//			try {
-//				op.doOperation();
-//				double logLikelihoodSingle = likelihood.getLogLikelihood();
-//				assertEquals(SpectrumOperation.DELTA_SINGLE, likelihood.getOperation());
-//				
-//				likelihood.makeDirty();
-//				double logLikelihoodFull = likelihood.getLogLikelihood();
-//				assertEquals(SpectrumOperation.FULL, likelihood.getOperation());
-//				assertEquals(logLikelihoodFull, logLikelihoodSingle, THRESHOLD);
-//				
-//			} catch (Exception e) {
-//			}
-//		}
-//	}
 
 	private void assertLikelihoodOperator(HaplotypeModel haplotypeModel,
 			OperatorSchedule schedule) {
 		
 		boolean DEBUG = true;
 
-		int ite = (int) 1e4;
+		int ite = (int) 1e2;
 		
 		ShortReadsHaplotypeLikelihood likelihood = new ShortReadsHaplotypeLikelihood(haplotypeModel, srpMap);
-		double logLikelihoodOperator;
+		double logLikelihoodOperator = 0;
 		double logLikelihoodFull;
+		double logLikelihoodMaster;
 
 		for (int i = 0; i < ite; i++) {
-			
+			System.out.println("================== ite: "+i);
 			likelihood.storeModelState();
 			
 			boolean operatorSucceeded = true;
@@ -401,9 +199,9 @@ public class ShortReadsHaplotypeLikelihoodOperatorTest {
 				HaplotypeModel haplotypeModelFull = HaplotypeModel.duplicateHaplotypeModel(haplotypeModel);
 				ShortReadsHaplotypeLikelihood likelihoodFull = new ShortReadsHaplotypeLikelihood(haplotypeModelFull, srpMap);
 				logLikelihoodFull = likelihoodFull.getLogLikelihood();
+//				logLikelihoodMaster = likelihood.calculateSrpLikelihoodFullMaster();
 				assertEquals(OperationType.NONE, likelihoodFull.getOperation());
-				assertEquals(logLikelihoodFull, logLikelihoodOperator, THRESHOLD); 
-
+				assertEquals(logLikelihoodFull, logLikelihoodOperator, THRESHOLD);
 				double rand = MathUtils.nextDouble();
 				accept = rand>0.5;
 			}
@@ -420,6 +218,12 @@ public class ShortReadsHaplotypeLikelihoodOperatorTest {
 //			}
 
 		}
+//		logLikelihoodOperator = likelihood.getLogLikelihood();
+//		
+//		HaplotypeModel haplotypeModelFull = HaplotypeModel.duplicateHaplotypeModel(haplotypeModel);
+//		ShortReadsHaplotypeLikelihood likelihoodFull = new ShortReadsHaplotypeLikelihood(haplotypeModelFull, srpMap);
+//		logLikelihoodFull = likelihoodFull.getLogLikelihood();
+//		assertEquals(logLikelihoodFull, logLikelihoodOperator, THRESHOLD);
 	}
 
 	@Test
@@ -448,13 +252,7 @@ public class ShortReadsHaplotypeLikelihoodOperatorTest {
 		OperatorSchedule schedule = new SimpleOperatorSchedule();
 		MCMCOperator op;
 		
-		op = new DirichletSpectrumOperator(haplotypeModel, 5, 100, null);
-		schedule.addOperator(op);
-		
-		op = new DeltaExchangeMultiSpectrumOperator(haplotypeModel, 3, 0.1, null);
-		schedule.addOperator(op);
-		
-		op = new SwapMultiSpectrumOperator(haplotypeModel, 3, true, null);
+		op = new BasesMultiOperator(haplotypeModel, 5, null);
 		schedule.addOperator(op);
 		
 		assertLikelihoodOperator(haplotypeModel, schedule);

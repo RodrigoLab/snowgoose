@@ -54,8 +54,8 @@ public class LikelihoodScaler {
 
 	public double getLogLikelihood(){
 		
-		double logLikelihood = Math.log(sumScaledLikelihood) + logScaler;
-		return logLikelihood;
+//		double logLikelihood = Math.log(sumScaledLikelihood) + logScaler;
+		return getLogLikelihood(sumScaledLikelihood, logScaler);//logLikelihood;
 	}
 
 	public void addLogProb(double logProb){

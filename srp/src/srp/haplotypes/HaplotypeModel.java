@@ -28,8 +28,8 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 	private static final int NUCLEOTIDE_STATES[] = Nucleotides.NUCLEOTIDE_STATES;
 	private static final int STATE_COUTN = DATA_TYPE.getStateCount();
 
-	private boolean DEBUG = false;
-
+//	private boolean DEBUG = false;
+	private boolean DEBUG = true;
 
 	private void initHaplotypes() {
 		for (int i = 0; i < sequenceCount; i++) {
