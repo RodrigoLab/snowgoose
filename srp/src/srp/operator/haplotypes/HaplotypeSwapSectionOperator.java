@@ -32,13 +32,6 @@ public class HaplotypeSwapSectionOperator extends HaplotypeRecombinationOperator
 
 
 	@Override
-	public String getOperatorName() {
-
-		return OPERATOR_NAME;
-	}
-
-
-    @Override
 	public double doOperation() throws OperatorFailedException {
 		
 
@@ -91,6 +84,14 @@ public class HaplotypeSwapSectionOperator extends HaplotypeRecombinationOperator
 		
 		
 		
+	}
+
+
+
+	@Override
+	public String getOperatorName() {
+	
+		return OPERATOR_NAME;
 	}
 
 }

@@ -26,6 +26,7 @@ import srp.operator.haplotypes.AbstractHaplotypeOperator;
 import srp.operator.haplotypes.BaseSingleOperator;
 import srp.operator.haplotypes.BasesMultiOperator;
 import srp.operator.haplotypes.HaplotypeRecombinationOperator;
+import srp.operator.haplotypes.HaplotypeSwapSectionOperator;
 import srp.operator.spectrum.AbstractSpectrumOperator;
 import srp.operator.spectrum.DeltaExchangeColumnSpectrumOperator;
 import srp.operator.spectrum.DeltaExchangeMultiSpectrumOperator;
@@ -59,7 +60,7 @@ public class TimeTrialShortReadsHaplotypeLikelihoodTest {
 	public static final double NOT_ERROR = ShortReadsHaplotypeLikelihood.NOT_ERROR_RATE;
 	private static final double THRESHOLD = MarkovChain.EVALUATION_TEST_THRESHOLD;
 	
-	private static boolean combine = true;
+	private static boolean combine = false;
 //	private static final double EVALUATION_TEST_THRESHOLD = 1e-8;
 	
 	@BeforeClass
@@ -126,15 +127,15 @@ public class TimeTrialShortReadsHaplotypeLikelihoodTest {
 	
 	@Test
 	public void testTimeTrialSingle() throws Exception {
-		double ite = 1e5;
+		double ite = 5e4;
 		for (int i = 0; i < 10; i++) {
 			System.out.print("Run "+i +"\t");
 		
-			int bases = 10;
 			AbstractHaplotypeOperator op = new BaseSingleOperator(haplotypeModel);
 			String summary = timeTrialOperator(likelihood, op, ite);
-			System.out.println(summary + "\t" + op.getOperatorName() +"\t"+ bases);
+			System.out.println(summary );
 		}
+		System.out.println();
 	}
 	
 	@Test
@@ -146,8 +147,9 @@ public class TimeTrialShortReadsHaplotypeLikelihoodTest {
 			int bases = 5;
 			AbstractHaplotypeOperator op = new BasesMultiOperator(haplotypeModel, bases, CoercionMode.COERCION_OFF);
 			String summary = timeTrialOperator(likelihood, op, ite);
-			System.out.println(summary + "\t" + op.getOperatorName() +"\t"+ bases);
+			System.out.println(summary +"\t"+ bases);
 		}
+		System.out.println();
 	}	
 	
 	@Test
@@ -156,11 +158,13 @@ public class TimeTrialShortReadsHaplotypeLikelihoodTest {
 		for (int i = 0; i < 10; i++) {
 			System.out.print("Run "+i +"\t");
 		
-			int bases = 0;
-			AbstractHaplotypeOperator op = new HaplotypeRecombinationOperator(haplotypeModel, 0);
+			int bases = 5;
+//			AbstractHaplotypeOperator op = new HaplotypeRecombinationOperator(haplotypeModel, 0);
+			AbstractHaplotypeOperator op = new HaplotypeSwapSectionOperator(haplotypeModel, bases, null);
 			String summary = timeTrialOperator(likelihood, op, ite);
-			System.out.println(summary + "\t" + op.getOperatorName() +"\t"+ bases);
+			System.out.println(summary +"\t"+ bases);
 		}
+		System.out.println();
 	}
 	
 	public static String timeTrialOperator(
@@ -204,7 +208,7 @@ public class TimeTrialShortReadsHaplotypeLikelihoodTest {
 			}
 		} while (count < ite);
 		String summary = "TimeTrial: " + totalTime/scale + "\t" + totalTime/scale/ite
-				+ "/calculation\t"+ite+" ite.";
+				+ "/calculation\t"+ite+" ite.\t"+op.getOperatorName();
 		return summary;
 	}
 
@@ -250,7 +254,7 @@ public class TimeTrialShortReadsHaplotypeLikelihoodTest {
 		} while (count < ite);
 		String summary = "TimeTrial: " + operatorTime/scale + "\t" + likelihoodTime/scale
 				+ "\t" + storeTime/scale + "\t" + (System.nanoTime()-totalTime)/scale +
-				"/calculation\t" + ite + " ite.";
+				"/calculation\t" + ite + " ite.\t"+op.getOperatorName();
 
 		return summary;
 	}

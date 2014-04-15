@@ -729,15 +729,12 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 			for (int i = bitSet.nextSetBit(0); i >= 0; i = bitSet.nextSetBit(i+1)) {
 				srpIndex[count++] = i;
 //				count++;
-				updateLikelihoodRecomb(i, j0, j1, siteIndexs, haplotype0, haplotype1, currentLogLikelihood);
+				currentLogLikelihood = updateLikelihoodRecomb(i, j0, j1, siteIndexs, haplotype0, haplotype1, currentLogLikelihood);
 //				currentLogLikelihood = updateLikelihoodAtIJ(i, j0,
 //						siteIndexs, haplotype0, currentLogLikelihood);
 //				currentLogLikelihood = updateLikelihoodAtIJ(i, j1,
 //						siteIndexs, haplotype1, currentLogLikelihood);
-
-
 			}
-			System.exit(-1);
 			srpIndexCount = count;
 
 			
@@ -828,9 +825,12 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 			Haplotype haplotype0, Haplotype haplotype1, double currentLogLikelihood) {
 		deltaCount=0;
 		updateAllDists(i, j0, siteIndexs, haplotype0);
+//		currentLogLikelihood = updateEachSrpAtI(i, currentLogLikelihood);
 		updateAllDists(i, j1, siteIndexs, haplotype1);
 		currentLogLikelihood = updateEachSrpAtI(i, currentLogLikelihood);
-		System.out.println(deltaCount);
+		
+//		updateLikelihoodAtIJ(i, j0, siteIndexs, haplotype0, currentLogLikelihood)
+//		System.out.println(deltaCount +"\t"+ i);
 		return currentLogLikelihood;
 		
 	}

@@ -23,6 +23,7 @@ import srp.operator.haplotypes.AbstractHaplotypeOperator;
 import srp.operator.haplotypes.BaseSingleOperator;
 import srp.operator.haplotypes.BasesMultiOperator;
 import srp.operator.haplotypes.HaplotypeRecombinationOperator;
+import srp.operator.haplotypes.HaplotypeSwapSectionOperator;
 import srp.operator.spectrum.RecombineSectionSpectrumOperator;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.SimpleAlignment;
@@ -447,6 +448,11 @@ public class ShortReadsHaplotypeLikelihoodTest {
 		
 		op = new HaplotypeRecombinationOperator(haplotypeModel, 0);
 		schedule.addOperator(op);
+		op.setWeight(1);
+		
+		op = new HaplotypeSwapSectionOperator(haplotypeModel, 10, null);
+		schedule.addOperator(op);
+		op.setWeight(10);
 		
 		assertLikelihoodOperator(haplotypeModel, schedule);
 	}
@@ -478,18 +484,4 @@ public class ShortReadsHaplotypeLikelihoodTest {
 
 	}
 
-	@Test
-	public void testFullvsRecombinationStoreRestore() throws Exception {
-
-		OperatorSchedule schedule = new SimpleOperatorSchedule();
-		MCMCOperator op;
-		
-//		op = new RecombinationSpectrumOperator(haplotypeModel);
-//		schedule.addOperator(op);
-//		
-//		op = new RecombineSectionSpectrumOperator(haplotypeModel, 2, null);
-//		schedule.addOperator(op);
-		
-		assertLikelihoodOperator(haplotypeModel, schedule);
-	}
 }
