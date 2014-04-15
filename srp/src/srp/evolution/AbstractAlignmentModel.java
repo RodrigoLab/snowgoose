@@ -87,24 +87,26 @@ public abstract class AbstractAlignmentModel extends AbstractModel implements Ta
 
 	public void setOperationRecord(OperationType op,
 			int[] twoSpectrumIndex, int[] swapPositionIndex) {
-
+		//Recom
 		operationRecord.setRecord(op, twoSpectrumIndex, swapPositionIndex);
 	}
 
 	public void setOperationRecord(OperationType op,
 			int spectrumIndex, int siteIndex) {
+		//Single
 		operationRecord.setRecord(op, spectrumIndex, siteIndex);
 	}
 
 	public void setOperationRecord(OperationType op,
 			int spectrumIndex, int[] siteIndexs) {
+		//Multi
 		operationRecord.setRecord(op, spectrumIndex, siteIndexs);
 
 	}
 
 	public void setOperationRecord(OperationType op,
 			int[] spectrumIndexs, int siteIndex) {
-		// subcolumn
+		//Column, subcolumn
 		operationRecord.setRecord(op, spectrumIndexs, siteIndex);
 
 	}

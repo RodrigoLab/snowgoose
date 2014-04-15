@@ -2,58 +2,35 @@ package srp.operator.haplotypes;
 
 import srp.evolution.OperationType;
 import srp.evolution.shortreads.AlignmentMapping;
+import srp.evolution.spectrum.SpectraParameter;
+import srp.haplotypes.Haplotype;
 import srp.haplotypes.HaplotypeModel;
 import dr.inference.model.Parameter;
 import dr.inference.operators.AbstractCoercableOperator;
 import dr.inference.operators.CoercionMode;
 import dr.inference.operators.OperatorFailedException;
+import dr.math.MathUtils;
 
 
-public class ColumnOperator extends AbstractCoercableOperator {
+public class ColumnOperator extends AbstractHaplotypeOperator {
 
 	
 	public final static String OPERATOR_NAME = ColumnOperator.class.getSimpleName();
 	public final static OperationType OP = OperationType.COLUMN;
-	private HaplotypeModel haplotypeModel;
-	private int noOfHap;
-	private int haplotypeLength;
-	private AlignmentMapping alignmentMapping;
-	private int haplotypeCount;
-	private Parameter frequency;
-
 	
+//	private int noOfHap;
+	private int[] fixHaplotypeIndexArray;
 	
-//	public AlignmentSwapBaseOperator(Parameter parameter, HaplotypeModel haplotypeModel, int index, CoercionMode mode) {
-////		super(mode);
-//	}
+	public ColumnOperator(HaplotypeModel haplotypeModel, int noOfHap, CoercionMode mode) {
+		super(haplotypeModel, mode);
 
-	
-	public ColumnOperator(HaplotypeModel haplotypeModel, int noOfHap, Parameter freqs, CoercionMode mode) {
-		super(mode);
-
-		this.frequency = freqs;
-		this.haplotypeModel = haplotypeModel;
-		this.noOfHap = noOfHap;
-		
-		haplotypeLength = this.haplotypeModel.getHaplotypeLength();
-		haplotypeCount = this.haplotypeModel.getHaplotypeCount();
-		this.noOfHap = haplotypeCount;
-				
-		alignmentMapping = this.haplotypeModel.getAlignmentMapping();
-		
-		
-//		allPosChars = new int[2][haplotypeLength];
-	
-		
-//		checkParameterIsValid();
-		
-//		scaleFactor = (int) (haplotypeLength*0.01);
-
-//		if (scaleFactor <1) {
-//			scaleFactor = 1;
-//		}
-		
-//		convertToAutoOptimize(this.noOfHap);
+//		this.noOfHap = noOfHap;
+//		this.noOfHap = haplotypeCount;
+ 
+		fixHaplotypeIndexArray = new int[haplotypeCount];
+		for (int i = 0; i < fixHaplotypeIndexArray.length; i++) {
+			fixHaplotypeIndexArray[i] = i;
+		}
 	}
 
 	@Override
@@ -63,26 +40,25 @@ public class ColumnOperator extends AbstractCoercableOperator {
 	}
 
 	@Override
-	public String getOperatorName() {
-
-		return OPERATOR_NAME;
-	}
-
-
-    @Override
 	public double doOperation() throws OperatorFailedException {
 		
+		haplotypeModel.startAlignmentModelOperation();
 
-		haplotypeModel.startHaplotypeOperation();
+		int siteIndex = getNextSiteIndex();
+		
+		for (int i = 0; i < haplotypeCount; i++) {
+			Haplotype haplotype= haplotypeModel.getHaplotype(i);
+			
+			int oldState = haplotype.getState(siteIndex);
+			char newChar = getNextDiffBase(oldState);
+			haplotype.setCharAt(siteIndex, newChar);
+		}
 
-//		int[] posChar = alignmentMapping.getNextBaseFrequency(frequency);
-		int[] posChar = haplotypeModel.getNextBaseFrequency(frequency);
+		haplotypeModel.setOperationRecord(OP, fixHaplotypeIndexArray, siteIndex);
+
+		haplotypeModel.endAlignmentModelOperation();
 		
-		haplotypeModel.swapHaplotypeColumn(posChar);
-		
-		haplotypeModel.endHaplotypeOperation();
-		
-		return 0.0;//Incorrect!!??
+		return 0.0;
 		
 		
 		
@@ -102,6 +78,17 @@ public class ColumnOperator extends AbstractCoercableOperator {
 	@Override
 	public double getRawParameter() {
 		return 0;
+	}
+
+	@Override
+	public String getOperatorName() {
+	
+		return OPERATOR_NAME;
+	}
+
+	@Override
+	public OperationType getOperationType() {
+		return OP;
 	}
 
 }

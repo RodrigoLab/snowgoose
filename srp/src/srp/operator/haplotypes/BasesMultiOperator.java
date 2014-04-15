@@ -23,13 +23,6 @@ public class BasesMultiOperator extends AbstractMultiOperator {
 
 
 	@Override
-	public String getOperatorName() {
-
-		return OPERATOR_NAME;
-	}
-
-
-	@Override
 	public double doOperation() throws OperatorFailedException {
 
 		haplotypeModel.startAlignmentModelOperation();
@@ -55,6 +48,13 @@ public class BasesMultiOperator extends AbstractMultiOperator {
 		haplotypeModel.endAlignmentModelOperation();
 
 		return 0.0;
+	}
+
+
+	@Override
+	public String getOperatorName() {
+	
+		return OPERATOR_NAME;
 	}
 
 }

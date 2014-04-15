@@ -78,6 +78,21 @@ public abstract class AbstractMultiOperator extends AbstractHaplotypeOperator {
 	    return sites;
 	}
 	
+	public OperationType getOperationType() {
+		return OP;
+	}
+
+
+
+	@Override
+	public final String getPerformanceSuggestion() {
+		String s = "Tuning "+basesCount; 
+		return s;
+	
+	}
+
+
+
 	@Override
 	public double getCoercableParameter() {
 	    return autoOptimize;
@@ -88,12 +103,19 @@ public abstract class AbstractMultiOperator extends AbstractHaplotypeOperator {
 		convertFromAutoOptimizeToValue(autoOpt);
 	}
 
-	private void convertFromAutoOptimizeToValue(double autoOpt) {
+	@Override
+	public double getRawParameter() {
+        return basesCount;
+    }
+
+    private void convertFromAutoOptimizeToValue(double autoOpt) {
 		autoOptimize = autoOpt;
 		basesCount = MIN_BASE + (int) FastMath.exp(autoOptimize);
-
+	
 		checkParameterIsValid();
 	}
+
+
 
 	private double convertToAutoOptimize(int length) {
 		basesCount = length;
@@ -102,38 +124,26 @@ public abstract class AbstractMultiOperator extends AbstractHaplotypeOperator {
 	    return autoOptimize;
 	}
 
+
+
 	private void checkParameterIsValid() {
 		if (basesCount > haplotypeLength){
 			basesCount = haplotypeLength;
 		}
 	}
-	
-    @Override
-	public double getRawParameter() {
-        return basesCount;
-    }
 
-    @Override
+
+
+	@Override
 	public double getTargetAcceptanceProbability() {
-        return 0.234;
-    }
+	    return 0.234;
+	}
 
-    @Override
-	public final String getPerformanceSuggestion() {
-    	String s = "Tuning "+basesCount; 
-    	return s;
 
-    }
 
-    @Override
+	@Override
 	public String toString() {
-        return getOperatorName() + "(AbstractToString())";
-    }
-
-
-	
-	public OperationType getOperationType() {
-		return OP;
+	    return getOperatorName() + "(AbstractToString())";
 	}
 
 	
