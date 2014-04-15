@@ -11,8 +11,10 @@ import test.srp.likelihood.LikelihoodScalerTest;
 
 	LikelihoodScalerTest.class,
 	LikelihoodUtilsTest.class, 
-	OldShortReadLikelihoodTest.class,
-	OldShortReadLikelihoodWithOperatorTest.class
+//	OldShortReadLikelihoodTest.class,
+//	OldShortReadLikelihoodWithOperatorTest.class
+	ShortReadsHaplotypeLikelihoodTest.class,
+//	TimeTrialShortReadsHaplotypeLikelihoodTest.class
 })
 public class AllTestsLikelihood {
 

@@ -27,11 +27,11 @@ public class LikelihoodScaler {
 	 * 
 	 */
 
-	private double logScaler;
+	private final double LOG_SCALER;
 	private double sumScaledLikelihood;
 
 	public LikelihoodScaler(double logScaler){
-		this.logScaler = logScaler;
+		this.LOG_SCALER = logScaler;
 		reset();
 	}
 	
@@ -39,11 +39,6 @@ public class LikelihoodScaler {
 		sumScaledLikelihood = 0;		
 	}
 
-	public double getLogLikelihood(double sumScaledLikelihood){
-		
-		double logLikelihood = Math.log(sumScaledLikelihood) + logScaler;
-		return logLikelihood;
-	}
 
 	public static double getLogLikelihood(double sumScaledLikelihood, double logScaler){
 		
@@ -55,25 +50,25 @@ public class LikelihoodScaler {
 	public double getLogLikelihood(){
 		
 //		double logLikelihood = Math.log(sumScaledLikelihood) + logScaler;
-		return getLogLikelihood(sumScaledLikelihood, logScaler);//logLikelihood;
+		return getLogLikelihood(sumScaledLikelihood, LOG_SCALER);//logLikelihood;
 	}
 
 	public void addLogProb(double logProb){
-		sumScaledLikelihood += scale(logProb, logScaler);
+		sumScaledLikelihood += scale(logProb, LOG_SCALER);
 	}
 
 	public void minusLogProb(double logProb){
-		sumScaledLikelihood -= scale(logProb, logScaler);
+		sumScaledLikelihood -= scale(logProb, LOG_SCALER);
 	}
 
 	public void addLogProbMulti(double logProb, int count){
-		double sum = scale(logProb, logScaler) * count;
+		double sum = scale(logProb, LOG_SCALER) * count;
 		sumScaledLikelihood += sum;
 	}
 
 
 	public double scale(double logProb){
-		return scale(logProb, logScaler);
+		return scale(logProb, LOG_SCALER);
 //		return Math.exp(logProb - logScaler);
 //		return (logProb - logScaler);
 //		double a = Math.exp(logProb - logScaler);
@@ -118,13 +113,5 @@ public class LikelihoodScaler {
 	}
 
 	
-	@Deprecated
-	public double sumLogLikelihood(double[] scaledLogLikelihood) {
-		double logLikelihood = 0;
-		for (int i = 0; i < scaledLogLikelihood.length; i++) {
-			logLikelihood += Math.log(scaledLogLikelihood[i]) ;
-		}
-		logLikelihood += (logScaler*scaledLogLikelihood.length);
-		return logLikelihood;
-	}
+
 }

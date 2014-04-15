@@ -38,7 +38,7 @@ public abstract class AbstractShortReadsLikelihood extends
 	public static final double LOG_ERROR_RATE = Math.log(ERROR_RATE);
 	public static final double LOG_NOT_ERROR_RATE = Math.log(NOT_ERROR_RATE);
 	public static final double LOG_ONE_MINUS_ERROR_RATE = Math.log(1-ERROR_RATE);
-	public static final double C = 1;//1e-100;
+	public static final double C = 1e-300;
 	public static final double LOG_C = Math.log(C);
 
 	public static final DataType DATA_TYPE = ShortReads.INSTANCE;
@@ -67,7 +67,7 @@ public abstract class AbstractShortReadsLikelihood extends
 	protected int sequenceCount;
 	protected int srpCount;
 
-	
+	protected LikelihoodScaler liS;
 	protected ShortReadMapping srpMap;
 	protected OperationRecord operationRecord;
 
@@ -86,7 +86,7 @@ public abstract class AbstractShortReadsLikelihood extends
 
 	public AbstractShortReadsLikelihood(String name, ShortReadMapping srpMap) {
 		super(name);
-		
+		liS = new LikelihoodScaler(LOG_C);
 		preprocessShortReadMapping(srpMap);
 	}
 
@@ -182,9 +182,7 @@ public abstract class AbstractShortReadsLikelihood extends
 	protected double getStoredLogLikelihood() {
 		return storedLogLikelihood;
 	}
-	protected double getCurrentLogLikelihood() {
-		return logLikelihood;
-	}
+	
 
 
 	protected void recalculateArray(int[] siteIndexs) {

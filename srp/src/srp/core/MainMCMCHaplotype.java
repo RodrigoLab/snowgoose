@@ -3,17 +3,22 @@ package srp.core;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import srp.dr.ext.TreeLikelihoodExt;
 import srp.evolution.haplotypes.old.OldHaplotypeModelUtils;
 import srp.evolution.shortreads.ShortReadMapping;
+import srp.evolution.spectrum.SpectraParameter.SpectraType;
 import srp.haplotypes.HaplotypeLoggerWithTrueHaplotype;
 import srp.haplotypes.HaplotypeModel;
 import srp.haplotypes.SPSDist;
 import srp.likelihood.AbstractShortReadsLikelihood;
 import srp.likelihood.haplotypes.ShortReadsHaplotypeLikelihood;
+import srp.likelihood.spectrum.AbstractShortReadsSpectrumLikelihood.DistType;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.util.TaxonList;
 import dr.evolution.util.Units;
@@ -38,20 +43,60 @@ public class MainMCMCHaplotype {
 
 	public static void main(String[] args) throws Exception {
 
-		String dataDir = "/home/sw167/workspaceSrp/snowgoose/srp/unittest/testData/";
-		int runIndex = 51;
-		int totalSamples = 1000;
-		int logInterval = 1000;
-		int noOfTrueHaplotype = 7;
-		int noOfRecoveredHaplotype=4;
-		dataDir += "H7_"+runIndex;
-		
+//		String dataDir = "/home/sw167/workspaceSrp/snowgoose/srp/unittest/testData/";
+//		int runIndex = 51;
+//		int totalSamples = 1000;
+//		int logInterval = 1000;
+//		int noOfTrueHaplotype = 7;
+//		int noOfRecoveredHaplotype=7;
+//		dataDir += "H7_"+runIndex + File.separator;
+//		
 //		String dataDir = args[0];
 //		int runIndex = Integer.parseInt(args[1]);
 //		int totalSamples = Integer.parseInt(args[2]);
 //		int logInterval = Integer.parseInt(args[3]);
 //		int noOfTrueHaplotype = Integer.parseInt(args[4]);
 //		int noOfRecoveredHaplotype= Integer.parseInt(args[5]);
+		
+
+		String dataDir;
+		int runIndex;
+		int totalSamples;
+		int logInterval;
+		int noOfTrueHaplotype;
+		int noOfRecoveredHaplotype;
+		boolean randomTree = true;
+		boolean randomSpectrum = true;
+
+		
+//		boolean commandLine = true;
+//		commandLine = false;
+		
+		if(args.length ==6){
+			dataDir = args[0];
+			runIndex = Integer.parseInt(args[1]);
+			totalSamples = Integer.parseInt(args[2]);
+			logInterval = Integer.parseInt(args[3]);
+			noOfTrueHaplotype = Integer.parseInt(args[4]);
+			noOfRecoveredHaplotype= Integer.parseInt(args[5]);
+		}
+		
+		else{	
+			dataDir = "/home/sw167/workspaceSrp/snowgoose/srp/unittest/testData/";
+			runIndex = 51;
+			dataDir += "H7_"+runIndex+"/";
+			
+			totalSamples = 1000	;
+			logInterval = 10000 ;
+			
+			randomTree = true;
+//			randomTree = false;
+			
+			randomSpectrum = true;
+
+			noOfTrueHaplotype = 7;
+			noOfRecoveredHaplotype=7;
+		}
 		
 		String hapRunIndex = "H"+noOfTrueHaplotype+"_"+runIndex;
 		String shortReadFile = hapRunIndex +"_Srp.fasta";
@@ -132,19 +177,19 @@ public class MainMCMCHaplotype {
 		// log tracer
 		loggers[0] = new MCLogger(logTracerName, logInterval, false, 0);
 		MCMCSetupHelperHaplotype.addToLogger(loggers[0], 
-//				posterior, prior, likelihood, shortReadLikelihood,
-				rootHeight 
+				posterior, prior, likelihood, shortReadLikelihood,
+				rootHeight, 
 				//rateParameter,
-//				popSize, kappa, coalescent,
-//				freqs
+				popSize, kappa, coalescent,
+				freqs
 				);
 		// System.out
 		loggers[1] = new MCLogger(new TabDelimitedFormatter(System.out), logInterval, true, logInterval*2);
 		MCMCSetupHelperHaplotype.addToLogger(loggers[1],
 //				freqs
-//				posterior, 
-//				prior, 
-//				likelihood, 
+				posterior, 
+				prior, 
+				likelihood, 
 				shortReadLikelihood,
 				popSize, kappa, coalescent, rootHeight
 				);

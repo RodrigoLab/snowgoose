@@ -7,6 +7,7 @@ import java.util.List;
 import srp.dr.ext.TreeLikelihoodExt;
 import srp.haplotypes.HaplotypeModel;
 import srp.operator.haplotypes.BaseSingleOperator;
+import srp.operator.haplotypes.BasesMultiOperator;
 import dr.evolution.datatype.Nucleotides;
 import dr.evomodel.branchratemodel.StrictClockBranchRates;
 import dr.evomodel.operators.ExchangeOperator;
@@ -207,6 +208,10 @@ public class MCMCSetupHelperHaplotype extends MCMCSetupHelper {
 		//		schedule.addOperator(operator);
 		
 				operator = new BaseSingleOperator(haplotypeModel);
+				operator.setWeight(opLarge);
+				schedule.addOperator(operator);
+				
+				operator = new BasesMultiOperator(haplotypeModel, 3, CoercionMode.COERCION_ON);
 				operator.setWeight(opLarge);
 				schedule.addOperator(operator);
 				

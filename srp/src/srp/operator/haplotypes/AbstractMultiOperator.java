@@ -57,11 +57,6 @@ public abstract class AbstractMultiOperator extends AbstractHaplotypeOperator {
 //		return MathUtils.nextInt(haplotypeLength);
 //	}
 	
-	public char getNextBase(){
-		int i = MathUtils.nextInt(DIMENSION);
-		return DNA_CHARS[i];
-	}
-	
 	public int[] generateUniqueSites(int m) {
 		int[] siteIndexs = randomSampleSites(m, haplotypeLengthArray);
 		return siteIndexs;

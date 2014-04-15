@@ -47,4 +47,18 @@ public abstract class AbstractHaplotypeOperator extends AbstractCoercableOperato
 
 	public abstract OperationType getOperationType();
 
+	public static char getNextDiffBase(int oldState) {
+		int i = oldState;
+		do {
+			i = MathUtils.nextInt(DIMENSION);
+		} while (i == oldState);
+	
+		return DNA_CHARS[i];
+	}
+
+	public static char getNextBase() {
+		int i = MathUtils.nextInt(DIMENSION);
+		return DNA_CHARS[i];
+	}
+
 }
