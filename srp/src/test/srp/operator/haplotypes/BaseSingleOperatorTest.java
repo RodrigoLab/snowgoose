@@ -1,6 +1,7 @@
 package test.srp.operator.haplotypes;
 
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -14,9 +15,13 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import srp.evolution.OperationRecord;
+import srp.evolution.OperationType;
+import srp.evolution.haplotypes.old.OldHaplotypeModel;
+import srp.evolution.shortreads.AlignmentMapping;
 import srp.haplotypes.AlignmentUtils;
 import srp.haplotypes.Haplotype;
 import srp.haplotypes.HaplotypeModel;
+import srp.operator.haplotypes.AbstractHaplotypeOperator;
 import srp.operator.haplotypes.BaseSingleOperator;
 import test.TestUtils;
 import dr.evolution.datatype.DataType;
@@ -43,6 +48,16 @@ public class BaseSingleOperatorTest {
 	public void tearDown() throws Exception {
 	}
 
+	@Test
+	public void testGetOperatorName() {
+		
+		HaplotypeModel haplotypeModel = new HaplotypeModel(5, 100);
+
+		AbstractHaplotypeOperator operator = new BaseSingleOperator(haplotypeModel);
+    	assertEquals(operator.getOperatorName(), "BaseSingleOperator");
+    	assertEquals(operator.getPerformanceSuggestion(), "");
+    	assertEquals(operator.getOperationType(), OperationType.SINGLE);
+	}
 
 	@Test
 	public void testOperator() throws Exception {

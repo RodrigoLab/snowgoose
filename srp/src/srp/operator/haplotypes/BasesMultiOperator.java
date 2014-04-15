@@ -11,8 +11,7 @@ import dr.inference.operators.OperatorFailedException;
 public class BasesMultiOperator extends AbstractMultiOperator {
 
 
-	public final static String OPERATOR_NAME = BasesMultiOperator.class.getSimpleName();
-//	public final static Operation OP = Operation.SWAPMULTI;
+	public static final String OPERATOR_NAME = BasesMultiOperator.class.getSimpleName();
 	public static final OperationType OP = OperationType.MULTI;
 	
 

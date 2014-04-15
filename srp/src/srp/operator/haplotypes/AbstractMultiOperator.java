@@ -13,10 +13,7 @@ import dr.math.MathUtils;
 public abstract class AbstractMultiOperator extends AbstractHaplotypeOperator {
 
 	public static final OperationType OP = OperationType.MULTI;
-	public static final DataType DATATYPE = Nucleotides.INSTANCE;
-	public static final char[] DNA_CHARS = {'A','C','G','T'};
-	public static final int DIMENSION = DNA_CHARS.length;
-	
+
 	private static final int MIN_BASE = 1;
 	
 

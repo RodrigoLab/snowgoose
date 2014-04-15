@@ -21,5 +21,20 @@ public abstract class AbstractSingleOperator extends AbstractHaplotypeOperator {
 	public String getPerformanceSuggestion() {
 		return "";
 	}
+
+	@Override
+	public double getCoercableParameter() {
+		return 0;
+	}
+
+	@Override
+	public void setCoercableParameter(double value) {
+	}
+
+	@Override
+	public double getRawParameter() {
+		return 0;
+	}
+
 	
 }

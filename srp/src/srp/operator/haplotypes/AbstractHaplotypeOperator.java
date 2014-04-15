@@ -18,6 +18,7 @@ public abstract class AbstractHaplotypeOperator extends AbstractCoercableOperato
 	public static final DataType DATATYPE = Nucleotides.INSTANCE;
 	public static final char[] DNA_CHARS = {'A','C','G','T'};
 	public static final int DIMENSION = DNA_CHARS.length;
+	
 	public final int haplotypeCount;
 	public final int haplotypeLength;
 	protected HaplotypeModel haplotypeModel;
