@@ -283,7 +283,7 @@ public class SpectrumTreeLikelihood extends AbstractSpectrumTreeLikelihood {
      */
     @Override
 	protected void acceptState() {
-    	OperationRecord record = spectrumModel.getOperationRecord();
+//    	OperationRecord record = spectrumModel.getOperationRecord();
 
 	}
     @Override

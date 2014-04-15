@@ -1,5 +1,7 @@
 package srp.operator.haplotypes;
 
+import java.util.Arrays;
+
 import srp.evolution.OperationType;
 import srp.haplotypes.Haplotype;
 import srp.haplotypes.HaplotypeModel;
@@ -40,13 +42,13 @@ public class BasesMultiOperator extends AbstractMultiOperator {
 		int[] siteIndexs = generateUniqueSites(basesCount);
 
 		for (int i : siteIndexs) {
-			System.out.print(i +"\t");
+			
 //			SpectraParameter spectra = spectrum.getSpectra(siteIndexs[i]);
 //			swapFrequency(spectra);
 			char newChar = getNextBase();
 			haplotype.setCharAt(i, newChar);
 	        
-		}System.out.println();
+		}
         // symmetrical move so return a zero hasting ratio
 		haplotypeModel.setOperationRecord(OP, hapIndex, siteIndexs);
 	

@@ -28,8 +28,8 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 	private static final int NUCLEOTIDE_STATES[] = Nucleotides.NUCLEOTIDE_STATES;
 	private static final int STATE_COUTN = DATA_TYPE.getStateCount();
 
-//	private boolean DEBUG = false;
-	private boolean DEBUG = true;
+	private static final boolean DEBUG = false;
+//	private boolean DEBUG = true;
 
 	private void initHaplotypes() {
 		for (int i = 0; i < sequenceCount; i++) {
@@ -99,18 +99,14 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 		int siteIndex;
 		int[] siteIndexs;
 		Haplotype haplotype;
+		if (DEBUG) {
+			System.out.println("StoreState in SpectrumAlignment:\t"+ operation);
+		}
 		switch (operation) {
 		case NONE:
-			if (DEBUG) {
-				System.out.println("StoreState in SpectrumAlignment:\t"
-						+ operation);
-			}
+			
 			break;
 		case FULL:
-			if (DEBUG) {
-				System.out.println("StoreState in SpectrumAlignment:\t"
-						+ operation);
-			}
 			for (int i = 0; i < getHaplotypeCount(); i++) {
 				haplotype = getHaplotype(i);
 				haplotype.storeState();
@@ -128,7 +124,7 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 			spectrumIndex = operationRecord.getSpectrumIndex();
 			siteIndexs = operationRecord.getAllSiteIndexs();
 			haplotype = getHaplotype(spectrumIndex);
-			for (int s = 0; s < siteIndexs.length; s++) {
+			for (int s: siteIndexs){
 				haplotype.storeState(s);
 			}
 			break;
@@ -167,19 +163,15 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 		int siteIndex;
 		Haplotype haplotype;
 		int[] siteIndexs;
-
+		if (DEBUG) {
+			System.out.println("RestoreState in SpectrumAlignment:\t" + operation);
+		}
 //		System.err.println("zzzzRestore SpectrumAlignment: "+operation);
 		switch (operation) {
 		
 		case NONE:
-			if(DEBUG){
-				System.out.println("RestoreState in SpectrumAlignment:\t"+operation);
-			}
 			break;
 		case FULL:
-			if(DEBUG){
-				System.out.println("RestoreState in SpectrumAlignment:\t"+operation);
-			}
 			for (int i = 0; i < getHaplotypeCount(); i++) {
 				haplotype = getHaplotype(i);
 				haplotype.restoreState();

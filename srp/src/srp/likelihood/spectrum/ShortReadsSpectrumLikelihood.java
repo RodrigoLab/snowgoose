@@ -215,9 +215,9 @@ public class ShortReadsSpectrumLikelihood  extends AbstractShortReadsSpectrumLik
 	protected double calculateSrpLikelihoodSingle() {
 
 //System.out.println("StartSingle");
-		OperationRecord record = spectrumModel.getOperationRecord();
-		int j = record.getSpectrumIndex(); 
-		int k = record.getSingleIndex();//AllSiteIndexs()[0];
+//		OperationRecord record = spectrumModel.getOperationRecord();
+		int j = operationRecord.getSpectrumIndex(); 
+		int k = operationRecord.getSingleIndex();//AllSiteIndexs()[0];
 		double currentLogLikelihood = getStoredLogLikelihood();
 		SpectraParameter spectra = spectrumModel.getSpectrum(j).getSpectra(k);
 //		ArrayList<Integer> mapToSrp = srpMap.getMapToSrp(k);
@@ -248,10 +248,10 @@ public class ShortReadsSpectrumLikelihood  extends AbstractShortReadsSpectrumLik
 	
 	protected double calculateSrpLikelihoodMulti() {
 		
-		OperationRecord record = spectrumModel.getOperationRecord();
+//		OperationRecord record = spectrumModel.getOperationRecord();
 
-		int[] siteIndexs = record.getAllSiteIndexs();
-		int j= record.getSpectrumIndex(); 
+		int[] siteIndexs = operationRecord.getAllSiteIndexs();
+		int j= operationRecord.getSpectrumIndex(); 
 		Spectrum spectrum = spectrumModel.getSpectrum(j);
 		
 //		stateLikelihood.calculateStatesLogLikelihood(spectra, allStateLogLikelihood2D[k]);
@@ -314,10 +314,10 @@ public class ShortReadsSpectrumLikelihood  extends AbstractShortReadsSpectrumLik
 
 	protected double calculateSrpLikelihoodColumn() {
 
-		OperationRecord record = spectrumModel.getOperationRecord();
-		int k = record.getSingleIndex();
+//		OperationRecord record = spectrumModel.getOperationRecord();
+		int k = operationRecord.getSingleIndex();
 		ArrayList<Integer> mapToSrp = srpMap.getMapToSrp(k);
-		int[] allSpectrumIndexs = record.getAllSpectrumIndexs();
+		int[] allSpectrumIndexs = operationRecord.getAllSpectrumIndexs();
 		double currentLogLikelihood = getStoredLogLikelihood();
 		
 		for (int j : allSpectrumIndexs) {
@@ -962,9 +962,9 @@ public class ShortReadsSpectrumLikelihood  extends AbstractShortReadsSpectrumLik
 			
 			
 			
-				OperationRecord record = spectrumModel.getOperationRecord();
+//				OperationRecord record = spectrumModel.getOperationRecord();
 //				int[] siteIndexs = record.getAllSiteIndexs();
-				int j= record.getSpectrumIndex(); 
+				int j= operationRecord.getSpectrumIndex(); 
 				Spectrum spectrum = spectrumModel.getSpectrum(j);
 				
 //				stateLikelihood.calculateStatesLogLikelihood(spectra, allStateLogLikelihood[k]);

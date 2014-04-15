@@ -51,9 +51,7 @@ public abstract class AbstractMultiOperator extends AbstractHaplotypeOperator {
 		
 	}
 
-	public int getNextHapIndex(){
-		return MathUtils.nextInt(haplotypeCount);
-	}
+
 	
 //	public int getNextSiteIndex(){
 //		return MathUtils.nextInt(haplotypeLength);
