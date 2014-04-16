@@ -8,6 +8,8 @@ import srp.dr.ext.TreeLikelihoodExt;
 import srp.haplotypes.HaplotypeModel;
 import srp.operator.haplotypes.BaseSingleOperator;
 import srp.operator.haplotypes.BasesMultiOperator;
+import srp.operator.haplotypes.ColumnOperator;
+import srp.operator.haplotypes.HaplotypeSwapSectionOperator;
 import dr.evolution.datatype.Nucleotides;
 import dr.evomodel.branchratemodel.StrictClockBranchRates;
 import dr.evomodel.operators.ExchangeOperator;
@@ -211,9 +213,18 @@ public class MCMCSetupHelperHaplotype extends MCMCSetupHelper {
 				operator.setWeight(opLarge);
 				schedule.addOperator(operator);
 				
-				operator = new BasesMultiOperator(haplotypeModel, 3, CoercionMode.COERCION_ON);
-				operator.setWeight(opLarge);
-				schedule.addOperator(operator);
+//				operator = new BasesMultiOperator(haplotypeModel, 3, CoercionMode.COERCION_ON);
+//				operator.setWeight(opLarge/10.0);
+//				schedule.addOperator(operator);
+//				
+//				operator = new HaplotypeSwapSectionOperator(haplotypeModel, 5, CoercionMode.COERCION_ON);
+//				operator.setWeight(opLarge);
+//				schedule.addOperator(operator);
+//				
+//				operator = new ColumnOperator(haplotypeModel, 7, CoercionMode.COERCION_OFF);
+//				operator.setWeight(opLarge);
+//				schedule.addOperator(operator);
+				
 				
 				for (Parameter parameter : parameters) {
 		

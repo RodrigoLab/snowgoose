@@ -610,7 +610,7 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 
 //		OperationRecord record = alignmentModel.getOperationRecord();
 		int k = operationRecord.getSingleIndex();
-		ArrayList<Integer> mapToSrp = srpMap.getMapToSrp(k);
+
 		int[] allSpectrumIndexs = operationRecord.getAllSpectrumIndexs();
 		double currentLogLikelihood = getStoredLogLikelihood();
 		
@@ -662,37 +662,11 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 	
 	protected double calculateSrpLikelihoodSubColumn() {
 
-		OperationRecord record = alignmentModel.getOperationRecord();
-		int k = record.getSingleIndex();
-		ArrayList<Integer> mapToSrp = srpMap.getMapToSrp(k);
-		int[] allSpectrumIndexs = record.getAllSpectrumIndexs();
+//		int k = operationRecord.getSingleIndex();
+//		int[] allSpectrumIndexs = operationRecord.getAllSpectrumIndexs();
 		
 		double currentLogLikelihood = getStoredLogLikelihood();
 
-//		for (int j = 0; j < spectrumCount; j++) {
-//		for (int j : allSpectrumIndexs) {
-//			SpectraParameter spectra = haplotypeModel.getHaplotype(j).getSpectra(k);
-//			
-//			int kOffset = j*sequenceCount;
-//			stateLikelihood.calculateStatesLogLikelihood(spectra, kOffset, allStateLogLikelihood);
-//			stateLikelihood.calculateStoredStatesLogLikelihood(spectra, kOffset, allStoredStateLogLikelihood);
-//	
-//		}
-		
-		for (int i : mapToSrp) {
-//			String fullSrp = srpMap.getSrpFull(i);
-//			int state = getStateAtK(fullSrp, k);
-			int state = allSrpState2D[i][k];
-//			for (int j = 0; j < spectrumCount; j++) {
-			for (int j : allSpectrumIndexs) {
-				if (state < STATE_COUNT) {
-					currentLogLikelihood = updateLikelihoodAtIJK(i, j, j*STATE_COUNT+state,
-							currentLogLikelihood);
-				}
-			}
-			
-
-		}
 		return currentLogLikelihood;
 	}
 
@@ -742,13 +716,7 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 		int multihere;
 		double currentLogLikelihood = getStoredLogLikelihood();
 		if(multiType == MultiType.BitSet){
-
-			bitSet.clear();
-//			BitSet bitSet = new BitSet(srpCount);
-			for (int s : siteIndexs) {
-				BitSet tempSet = srpMap.getBitSet(s);
-				bitSet.or(tempSet);
-			}
+			recalculateBitSet(siteIndexs);
 			
 			int count = 0;
 			for (int i = bitSet.nextSetBit(0); i >= 0; i = bitSet.nextSetBit(i+1)) {
@@ -792,48 +760,6 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 
 
 
-	private double updateLikelihoodAtIJK(int i, int j, int state, 
-//			double[] statesLogLikelihood, double[] storedStatesLogLikelihood, 
-			double currentLogLikelihood) {
-	
-		int srpIndex = i; int hapIndex = j; 
-		int swapPos = 0; 
-		int newChar = 0; 
-		int oldChar = 0;
-//		int srpIndex, int hapIndex, int swapPos, int newChar, int oldChar
-		ShortRead srp = srpMap.getShortRead(srpIndex);
-		int srpChar = srp.getFullSrpCharAt(swapPos);
-		
-		int deltaDist = 0;//calculateDeltaDist(srpChar, newChar, oldChar);
-
-		if (deltaDist!= 0){
-			double[] logPD = scaledLogBinomialDesnity.get(srp.getLength());
-			int oldDist = storedAllDists[srpIndex][hapIndex];
-			int newDist = storedAllDists[srpIndex][hapIndex] + deltaDist;
-			allDists[srpIndex][hapIndex] = newDist;
-	
-			liS.reset();		
-			for (int s = 0; s < sequenceCount ; s++) {
-				liS.add(logPD[allDists[srpIndex][s]]);
-			}
-			eachSrpLogLikelihood[srpIndex] = liS.getLogLikelihood();
-			
-			
-			currentLogLikelihood -= eachSrpLogLikelihood[i];
-			sumScaledSrpLogLikelihood[i] -= logPD[oldDist];//scaledSpectrumLogLikelihood[offset];
-	
-//			spectrumLogLikelihood[offset] -= storedStateLn; 
-//			spectrumLogLikelihood[offset] += stateLn;
-//			scaledSpectrumLogLikelihood[offset] = LikelihoodScaler.scale(spectrumLogLikelihood[offset], LOG_C);
-			
-			sumScaledSrpLogLikelihood[i] += logPD[newDist];//scaledSpectrumLogLikelihood[offset];
-
-			eachSrpLogLikelihood[i] = LikelihoodScaler.getLogLikelihood(sumScaledSrpLogLikelihood[i], LOG_C);
-			currentLogLikelihood += eachSrpLogLikelihood[i];
-		}
-
-		return currentLogLikelihood;
-	}
 
 
 	private double updateLikelihoodAtIJ(int i, int j, int[] siteIndexs, 
@@ -916,7 +842,6 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 		OperationType operation = operationRecord.getOperation();
 //		int spectrumIndex;
 //		int siteIndex; = spectrumOperationRecord.getAllSiteIndexs()[0];
-		ArrayList<Integer> mapToSrp;
 
 		int j;
 		int k;
@@ -934,8 +859,8 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 		
 		case SWAP_SUBCOLUMN:
 			k= operationRecord.getSingleIndex();
-			mapToSrp = srpMap.getMapToSrp(k);
-			for (int i : mapToSrp) {
+			
+			for (int i : mapToSrpArray[k]){
 				storeI(i);
 				for (j = 0; j < sequenceCount; j++) {
 					storeIJ(i, j);
@@ -947,9 +872,6 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 		
 			j = operationRecord.getSpectrumIndex();
 			k = operationRecord.getSingleIndex();//AllSiteIndexs()[0];
-//			mapToSrp = srpMap.getMapToSrp(k);
-//			spectrumModel.getSpectrum(j).getSpectra(k).storeState();
-//			for (int i : mapToSrp) {
 			
 			for (int i : mapToSrpArray[k]){
 				storeI(i);
@@ -993,10 +915,7 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 			}
 			else if(multiType==MultiType.All){
 				for (int kk : siteIndexs) {
-//				for (int s = 0; s < siteIndexs.length; s++) {
-//					k = siteIndexs[s];
-					mapToSrp = srpMap.getMapToSrp(kk);
-					for (int i : mapToSrp) {
+					for (int i : mapToSrpArray[kk]){
 						storeI(i);
 						storeIJ(i, j);
 					}
@@ -1128,7 +1047,7 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 		OperationType operation = operationRecord.getOperation();
 //		int spectrumIndex;
 //		int siteIndex = spectrumOperationRecord.getAllSiteIndexs()[0];
-		ArrayList<Integer> mapToSrp;
+//		ArrayList<Integer> mapToSrp;
 //		int[] siteIndexs;
 		int j;
 		int k;
@@ -1146,8 +1065,7 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 		case COLUMN:
 		
 			k = operationRecord.getSingleIndex();
-			mapToSrp = srpMap.getMapToSrp(k);
-			for (int i : mapToSrp) {
+			for (int i : mapToSrpArray[k]){
 				restoreI(i);
 				for (j = 0; j < sequenceCount; j++) {
 					restoreIJ(i, j);
@@ -1201,8 +1119,7 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 			}
 			else if(multiType==MultiType.All){
 				for (int kk : siteIndexs) {
-					mapToSrp = srpMap.getMapToSrp(kk);
-					for (int i : mapToSrp) {
+					for (int i : mapToSrpArray[kk]){
 						restoreI(i);
 						restoreIJ(i, j);
 					}
