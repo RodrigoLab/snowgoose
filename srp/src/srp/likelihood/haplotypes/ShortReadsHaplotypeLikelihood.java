@@ -621,16 +621,41 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 //			stateLikelihood.calculateStatesLogLikelihood(spectra, kOffset, allStateLogLikelihood);
 //			stateLikelihood.calculateStoredStatesLogLikelihood(spectra, kOffset, allStoredStateLogLikelihood);
 //		}
-		for (int i : mapToSrp) {
-			int state = allSrpState2D[i][k];
-			for (int j : allSpectrumIndexs) {
-//				currentLogLikelihood = updateLikelihoodAtIJK(i, j, state, allStateLogLikelihood2D[j],
-//						allStoredStateLogLikelihood2D[j], currentLogLikelihood);
-				if (state < STATE_COUNT) {
-					currentLogLikelihood = updateLikelihoodAtIJK(i, j, j*STATE_COUNT+state,
-							currentLogLikelihood);
-				}
+//		for (int i : mapToSrp) {
+//			int state = allSrpState2D[i][k];
+//			for (int j : allSpectrumIndexs) {
+////				currentLogLikelihood = updateLikelihoodAtIJK(i, j, state, allStateLogLikelihood2D[j],
+////						allStoredStateLogLikelihood2D[j], currentLogLikelihood);
+//				if (state < STATE_COUNT) {
+//					currentLogLikelihood = updateLikelihoodAtIJK(i, j, j*STATE_COUNT+state,
+//							currentLogLikelihood);
+//				}
+//			}
+//		}
+		char[] oldChars = new char[allSpectrumIndexs.length]; 
+		char[] newChars = new char[allSpectrumIndexs.length];
+		int[] shortList = new int[allSpectrumIndexs.length];
+		int count = 0;
+		for (int j : allSpectrumIndexs) {
+			Haplotype haplotype = alignmentModel.getHaplotype(j);
+			oldChars[j] = haplotype.getStoredChar(k);
+			newChars[j] = haplotype.getChar(k);
+			if(oldChars[j] != newChars[j]){
+				shortList[count++] = j;
 			}
+		}
+//		shortList.toArray(a)
+
+		for (int i : mapToSrpArray[k]){
+			char srpChar = allSrpChar2D[i][k];
+			for (int s = 0; s < count; s++) {
+				int j = shortList[s];
+				int deltaDist = calculateDeltaDist(srpChar, newChars[j], oldChars[j]);
+				allDists[i][j] += deltaDist;
+			}
+//		}
+//		for (int i : mapToSrpArray[k]){
+			currentLogLikelihood = updateEachSrpAtI(i, currentLogLikelihood);
 		}
 		return currentLogLikelihood;
 	}

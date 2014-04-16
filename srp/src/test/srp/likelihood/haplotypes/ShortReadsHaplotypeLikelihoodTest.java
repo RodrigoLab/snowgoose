@@ -22,6 +22,7 @@ import srp.likelihood.haplotypes.ShortReadsHaplotypeLikelihood;
 import srp.operator.haplotypes.AbstractHaplotypeOperator;
 import srp.operator.haplotypes.BaseSingleOperator;
 import srp.operator.haplotypes.BasesMultiOperator;
+import srp.operator.haplotypes.ColumnOperator;
 import srp.operator.haplotypes.HaplotypeRecombinationOperator;
 import srp.operator.haplotypes.HaplotypeSwapSectionOperator;
 import srp.operator.spectrum.RecombineSectionSpectrumOperator;
@@ -476,9 +477,10 @@ public class ShortReadsHaplotypeLikelihoodTest {
 		OperatorSchedule schedule = new SimpleOperatorSchedule();
 		MCMCOperator op; 
 
+		op = new ColumnOperator(haplotypeModel, haplotypeModel.getHaplotypeCount(), null);
 //		op = new DeltaExchangeColumnSpectrumOperator(
 //				haplotypeModel, 0.1, null);
-//		schedule.addOperator(op);
+		schedule.addOperator(op);
 		
 		assertLikelihoodOperator(haplotypeModel, schedule);
 
