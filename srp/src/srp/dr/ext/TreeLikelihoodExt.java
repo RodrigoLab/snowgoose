@@ -1,5 +1,6 @@
 package srp.dr.ext;
 
+import srp.evolution.OperationRecord;
 import srp.evolution.haplotypes.old.OldHaplotypeModel;
 import srp.haplotypes.HaplotypeModel;
 import dr.evolution.alignment.Alignment;
@@ -7,6 +8,7 @@ import dr.evolution.alignment.PatternList;
 import dr.evolution.tree.NodeRef;
 import dr.evolution.tree.Tree;
 import dr.evolution.util.TaxonList;
+import dr.evolution.util.TaxonList.MissingTaxonException;
 import dr.evomodel.branchratemodel.BranchRateModel;
 import dr.evomodel.sitemodel.SiteModel;
 import dr.evomodel.tree.TreeModel;
@@ -47,13 +49,60 @@ public class TreeLikelihoodExt extends TreeLikelihood {
      */
     @Override
 	protected void handleModelChangedEvent(Model model, Object object, int index) {
+    	System.out.println("handleModelChangedEvent in TreeLikelihoodExt\t"+model.getModelName());
     	if (model == haplotypeModel){
-//    		System.out.println("GOOD here");
+    		System.out.println("GOOD here");
     		sitePatternExt.updateAlignment(haplotypeModel);
     		updatePatternListExt(sitePatternExt);
+    		
+    		
+    		
+    		
+            	OperationRecord record = haplotypeModel.getOperationRecord();
+    			int spectrumIndex = record.getSpectrumIndex();
+//    			int siteIndex = record.getAllSiteIndexs()[0];
+            	int updateExternalNodeIndex = -1;
+//            	spectrumIndex -> taxonName -> indexOnTree
+    			String taxonId = haplotypeModel.getTaxonId(spectrumIndex);
+                updateExternalNodeIndex = treeModel.getTaxonIndex(taxonId );
+//                int index = spectrumModel.getTaxonIndex(id);
+
+                if (updateExternalNodeIndex == -1) {
+                	try {
+    					throw new TaxonList.MissingTaxonException("Taxon, " + taxonId + ", in tree, " + treeModel.getId() +
+    					          ", is not found in patternList, " + haplotypeModel.getId());
+    				} catch (MissingTaxonException e) {
+    					e.printStackTrace();
+    				}
+                }
+//                updateAllNodes();
+                double[] partials = new double[patternCount * stateCount];
+                int v = 0;
+                //TODO only update one part of the array
+//                System.out.println("Update Node: "+updateExternalNodeIndex +"\tSpectrumIndex: "+ spectrumIndex);
+//                for (int i = 0; i < patternCount; i++) {
+//                    double[] frequencies = spectrumModel.getSpecturmFrequencies(spectrumIndex, i);
+//                    //TODO use siteIndex here
+////                    System.out.println(Arrays.toString(frequencies));
+//                    for (int j = 0; j < stateCount; j++) {
+//                    	partials[v] = frequencies[j];
+//                        v++;
+//                    }
+//                }
+////                updateAllNodes();
+//                updateAllPatterns();
+//                makeDirty();
+//                likelihoodCore.setNodePartialsForUpdate(updateExternalNodeIndex);
+//                likelihoodCore.setCurrentNodePartials(updateExternalNodeIndex, partials);
+
+                
+            
+    		
+    		
     		likelihoodKnown = false;
     	}
     	else if (model == oldHaplotypeModel){ //REMOVE: Remove OldHaplotype
+    		System.out.println("BAD! using oldHaplotypeModel");
     		sitePatternExt.updateAlignment(oldHaplotypeModel);
     		updatePatternListExt(sitePatternExt);
     		likelihoodKnown = false;
@@ -64,16 +113,22 @@ public class TreeLikelihoodExt extends TreeLikelihood {
     }
     @Override
 	protected void restoreState() {
-
+//    	System.out.println("restore state");
 //        if (storePartials) {
 //            likelihoodCore.restoreState();
 //        } else {
 //            updateAllNodes();
 //        }
-    	sitePatternExt.updateAlignment(haplotypeModel);
-		updatePatternListExt(sitePatternExt);
+//    	sitePatternExt.updateAlignment(haplotypeModel);
+//		updatePatternListExt(sitePatternExt);
         super.restoreState();
 
+    }
+    
+    @Override
+    protected void storeState(){
+//    	System.out.println("storeState");
+    	super.storeState();
     }
 
 
@@ -208,19 +263,19 @@ public class TreeLikelihoodExt extends TreeLikelihood {
 //		        System.out.println(getStatistic(0).getDimension()+"\t"+ getStatistic(0).getStatisticValue(10));
 	}
 
-	public void updatePatternList(SitePatternsExt patterns, OldHaplotypeModel haplotypeModel) {
-//		TODO: more test required
-//		Alignment alignment = haplotypeModel.getAlignment();
-        
-		patterns.updateAlignment(haplotypeModel);
-		updatePatternListExt(patterns);
-	}
-
-	public void updatePatternList(OldHaplotypeModel haplotypeModel) {
-//		TODO: more test required
-//		sitePatternExt.updateAlignment(haplotypeModel);
-		updatePatternListExt(haplotypeModel);
-	}
+//	public void updatePatternList(SitePatternsExt patterns, OldHaplotypeModel haplotypeModel) {
+////		TODO: more test required
+////		Alignment alignment = haplotypeModel.getAlignment();
+//        
+//		patterns.updateAlignment(haplotypeModel);
+//		updatePatternListExt(patterns);
+//	}
+//
+//	public void updatePatternList(OldHaplotypeModel haplotypeModel) {
+////		TODO: more test required
+////		sitePatternExt.updateAlignment(haplotypeModel);
+//		updatePatternListExt(haplotypeModel);
+//	}
 
 	public SiteModel getSiteModel(){
 		return siteModel;

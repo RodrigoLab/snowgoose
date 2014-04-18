@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.logging.LogManager;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -15,13 +16,13 @@ import org.junit.Test;
 import srp.core.DataImporter;
 import srp.dr.ext.SitePatternsExt;
 import srp.dr.ext.TreeLikelihoodExt;
-import srp.evolution.haplotypes.old.OldHapOperation;
-import srp.evolution.haplotypes.old.OldHaplotypeModel;
-import srp.evolution.shortreads.AlignmentMapping;
+import srp.evolution.shortreads.ShortReadMapping;
+import srp.haplotypes.HaplotypeModel;
 import srp.haplotypes.SPSDist;
-import srp.likelihood.haplotypes.ShortReadLikelihood;
-import srp.operator.haplotypes.old.BaseSingleOperator;
-import srp.operator.haplotypes.old.BasesMultiUniformOperator;
+import srp.likelihood.haplotypes.ShortReadsHaplotypeLikelihood;
+import srp.operator.haplotypes.BaseSingleOperator;
+import srp.operator.haplotypes.BasesMultiOperator;
+import test.TestUtils;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.SitePatterns;
 import dr.evolution.datatype.Nucleotides;
@@ -60,7 +61,9 @@ public class TreeLikelihoodExtTest {
 
 	@Before
 	public void setUp() throws Exception {
-
+//		java.util.logging.ConsoleHandler = NONE;
+//		logger.setUseParentHandlers(false)
+		LogManager.getLogManager().reset();
     	// clock model
     	Parameter rateParameter =  new Parameter.Default(StrictClockBranchRates.RATE, 1E-5, 0, 1);
     	branchRateModel = new StrictClockBranchRates(rateParameter);
@@ -102,11 +105,12 @@ public class TreeLikelihoodExtTest {
 		Tree truePhylogeny = dataImporter.importTree(phylogenyFile);
 		
 		Alignment shortReads = dataImporter.importShortReads(shortReadFile);
-		AlignmentMapping aMap = new AlignmentMapping(shortReads);
+		ShortReadMapping srpMap = new ShortReadMapping(shortReads);
 		
-		OldHaplotypeModel haplotypeModel = new OldHaplotypeModel(aMap, alignment);
-		ShortReadLikelihood srpLikelihood = new ShortReadLikelihood(haplotypeModel);
-//		ShortReadLikelihood srpLikelihoodUpdate = new ShortReadLikelihood(haplotypeModel);
+		HaplotypeModel haplotypeModel = new HaplotypeModel(trueAlignment);
+		ShortReadsHaplotypeLikelihood srpLikelihood = new ShortReadsHaplotypeLikelihood(haplotypeModel, srpMap);
+		
+//		ShortReadsHaplotypeLikelihood srpLikelihoodUpdate = new ShortReadsHaplotypeLikelihood(haplotypeModel);
 		
 		TreeModel treeModel = new TreeModel(TreeModel.TREE_MODEL, truePhylogeny, false);
 
@@ -124,31 +128,33 @@ public class TreeLikelihoodExtTest {
         assertEquals(treeLikelihood.getLogLikelihood(), treeLikelihoodExt.getLogLikelihood(), 0);
 		
 		
-		srpLikelihood = new ShortReadLikelihood(haplotypeModel);
+		srpLikelihood = new ShortReadsHaplotypeLikelihood(haplotypeModel, srpMap);
 
-		SimpleMCMCOperator op = new BasesMultiUniformOperator(haplotypeModel, 100, CoercionMode.COERCION_OFF);
+		SimpleMCMCOperator op = new BasesMultiOperator(haplotypeModel, 100, CoercionMode.COERCION_OFF);
 
         for (int i = 0; i < 100; i++) {
         	srpLikelihood.storeModelState();
         	op.doOperation();
 					
 			double likelihood = srpLikelihood.getLogLikelihood();
-			srpLikelihood.acceptModelState();
 
-			haplotypeModel.getSwapInfo().storeOperation(OldHapOperation.NONE);
-			ShortReadLikelihood srpLikelihoodUpdate = new ShortReadLikelihood(haplotypeModel);
-			double fullEvalution = srpLikelihoodUpdate.getLogLikelihood(); 
-			assertEquals(likelihood, fullEvalution, 0);
+			
+			HaplotypeModel haplotypeModelFull = HaplotypeModel.duplicateHaplotypeModel(haplotypeModel);
+			ShortReadsHaplotypeLikelihood likelihoodFull = new ShortReadsHaplotypeLikelihood(haplotypeModelFull, srpMap);
+			double fullEvalution =  likelihoodFull.getLogLikelihood();
+			
+			assertEquals(likelihood, fullEvalution, TestUtils.THRESHOLD);
 			
 			//treeLikelihood
-			treeLikelihoodExt.updatePatternList(haplotypeModel);
+			treeLikelihoodExt.updatePatternListExt(haplotypeModel);
 	    	patterns = new SitePatterns(haplotypeModel, null, 0, -1, 1, true);
 	    	treeLikelihood = new TreeLikelihood(patterns, treeModel, siteModel, branchRateModel, null,
 	    			false, false, true, false, false);
-
+	    	
     		assertEquals(treeLikelihood.getLogLikelihood(), treeLikelihoodExt.getLogLikelihood(), 1e-8);
 
-
+    		srpLikelihood.acceptModelState();
+    		treeLikelihood.acceptModelState();
         }
 
 
@@ -162,7 +168,7 @@ public class TreeLikelihoodExtTest {
 		System.out.println("\t" + (time2 - time1) + "\t");
 		time1 = System.currentTimeMillis();
 		for (int i = 0; i < 1e4; i++) {
-			treeLikelihoodExt.updatePatternList(haplotypeModel);
+			treeLikelihoodExt.updatePatternListExt(haplotypeModel);
 //			treeLikelihoodExt.makeDirty();
 			treeLikelihoodExt.getLogLikelihood();
 		}
@@ -178,7 +184,7 @@ public class TreeLikelihoodExtTest {
 //		treeLikelihoodExt.updatePatternList(patternsExt);
 
 //        treeLikelihoodExt.updatePatternList(patternsExt, haplotypeModel);
-        treeLikelihoodExt.updatePatternList(haplotypeModel);
+        treeLikelihoodExt.updatePatternListExt(haplotypeModel);
 		
 
 		//treeLikelihood
@@ -209,10 +215,10 @@ public class TreeLikelihoodExtTest {
 		Tree truePhylogeny = dataImporter.importTree(phylogenyFile);
 		
 		Alignment shortReads = dataImporter.importShortReads(shortReadFile);
-		AlignmentMapping aMap = new AlignmentMapping(shortReads);
+		ShortReadMapping srpMap = new ShortReadMapping(shortReads);
 		
-		OldHaplotypeModel trueHaplotypes = new OldHaplotypeModel(aMap, trueAlignment);
-		ShortReadLikelihood srpLikelihood = new ShortReadLikelihood(trueHaplotypes);
+		HaplotypeModel trueHaplotypes = new HaplotypeModel(trueAlignment);
+		ShortReadsHaplotypeLikelihood srpLikelihood = new ShortReadsHaplotypeLikelihood(trueHaplotypes, srpMap);
 	
 		
 
@@ -232,14 +238,17 @@ public class TreeLikelihoodExtTest {
 //			}
 		
 		TreeModel treeModel = new TreeModel(TreeModel.TREE_MODEL, truePhylogeny, false);
-		
+//		for (int i = 0; i < trueHaplotypes.getHaplotypeCount(); i++) {
+//			treeModel.setTaxonId(i, trueHaplotypes.getTaxonId(i));
+//		}
+//		
 
 //			LikelihoodCalculation likelihoodModel = new LikelihoodCalculation(treeModel, aMap, trueHaplotypes);
 //			likelihoodModel.setPopSize(3000,0,30000);
 ////			li.setTreeAndAlignment(treeModel, trueAlignment);
 //			System.out.println(likelihoodModel.getTreeLikelihood());
 //			System.out.println(likelihoodModel.getCoalescentLikelhood());
-//			System.out.println(likelihoodModel.getShortReadLikelihood());
+//			System.out.println(likelihoodModel.getShortReadsHaplotypeLikelihood());
 //			System.out.println(likelihoodModel.getLoglikelihood());
 //			System.out.println(srpLikelihood.getLogLikelihood());
 //			System.out.println("=== END True Hap===");
@@ -300,16 +309,16 @@ public class TreeLikelihoodExtTest {
 		
 //
 //			Haplotypes haplotypes = new Haplotypes(aMap, trueAlignment.getSequenceCount());
-    	OldHaplotypeModel haplotypeModel = trueHaplotypes;
+    	HaplotypeModel haplotypeModel = trueHaplotypes;
 ////			for (int i = 0; i < haplotypes.getHaplotypesCount(); i++) {
 ////					haplotypes.randomSeq(i);
 ////				System.out.println(haplotypes.getHaplotype(i) );
 ////			}
 //			likelihoodModel.updateHaplotypes(haplotypes);
-//			likelihoodModel.calculateShortReadLikelihoodFull();
+//			likelihoodModel.calculateShortReadsHaplotypeLikelihoodFull();
 //			System.out.println(likelihoodModel.getTreeLikelihood());
 //			System.out.println(likelihoodModel.getCoalescentLikelhood());
-//			System.out.println(likelihoodModel.getShortReadLikelihood());
+//			System.out.println(likelihoodModel.getShortReadsHaplotypeLikelihood());
 //			System.out.println(likelihoodModel.getLoglikelihood());
 //			
 //System.out.println("====full====");
@@ -319,7 +328,7 @@ public class TreeLikelihoodExtTest {
 ////			li.setTreeAndAlignment(treeModel, trueAlignment);
 //			System.out.println(likelihoodModel.getTreeLikelihood());
 //			System.out.println(likelihoodModel.getCoalescentLikelhood());
-//			System.out.println(likelihoodModel.getShortReadLikelihood());
+//			System.out.println(likelihoodModel.getShortReadsHaplotypeLikelihood());
 //			System.out.println(likelihoodModel.getLoglikelihood());
 //			
 //			
@@ -337,7 +346,7 @@ public class TreeLikelihoodExtTest {
 		}
 		
 		
-		srpLikelihood = new ShortReadLikelihood(haplotypeModel);
+		srpLikelihood = new ShortReadsHaplotypeLikelihood(haplotypeModel, srpMap);
 		
                 
         
@@ -351,7 +360,7 @@ public class TreeLikelihoodExtTest {
 		likelihood = treeLikelihoodExt.getLogLikelihood();
 		System.out.println(likelihood);
 		
-		BaseSingleOperator op = new BaseSingleOperator(haplotypeModel, 0);
+		BaseSingleOperator op = new BaseSingleOperator(haplotypeModel);
         for (int i = 0; i < 100; i++) {
         	op.doOperation();
 //			alignment = haplotypeModel.getAlignment();

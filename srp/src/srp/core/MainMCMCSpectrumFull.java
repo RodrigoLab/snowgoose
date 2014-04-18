@@ -75,7 +75,7 @@ public class MainMCMCSpectrumFull {
 		
 		else{	
 			dataDir = "/home/sw167/workspaceSrp/snowgoose/srp/unittest/testData/";
-			runIndex = 54;
+			runIndex = 51;
 			dataDir += "H7_"+runIndex+"/";
 			
 			totalSamples = 100	;

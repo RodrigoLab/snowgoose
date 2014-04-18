@@ -28,6 +28,7 @@ example mapToSrp[i].size
 
 every position ~ 100ish reads.
  */
+@Deprecated
 public class AlignmentMapping {
 
 	private static final int GAP = '-';

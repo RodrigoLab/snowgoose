@@ -137,7 +137,7 @@ public class MCMCSetupHelperHaplotype extends MCMCSetupHelper {
 			rootHeight.setId("TREE_HEIGHT");
 			operator = new ScaleOperator(rootHeight, 0.75);
 			operator.setWeight(opSmall);
-			schedule.addOperator(operator);
+//			schedule.addOperator(operator);
 	
 			Parameter internalHeights = treeModel.createNodeHeightsParameter(false, true, false);
 			operator = new UniformOperator(internalHeights, 30.0);
@@ -147,19 +147,19 @@ public class MCMCSetupHelperHaplotype extends MCMCSetupHelper {
 			operator = new SubtreeSlideOperator(treeModel, 15.0, 1.0, true, false,
 					false, false, CoercionMode.COERCION_ON);
 			operator.setWeight(opMed);
-			schedule.addOperator(operator);
+//			schedule.addOperator(operator);
 	
 			operator = new ExchangeOperator(ExchangeOperator.NARROW, treeModel, 15.0);
 			operator.setWeight(opMed);
-	//		schedule.addOperator(operator);
+//			schedule.addOperator(operator);
 	
 			operator = new ExchangeOperator(ExchangeOperator.WIDE, treeModel, 3.0);
 			operator.setWeight(opSmall);
-	//		schedule.addOperator(operator);
+//			schedule.addOperator(operator);
 	
 			operator = new WilsonBalding(treeModel, 3.0);
 			operator.setWeight(opSmall);
-			schedule.addOperator(operator);
+//			schedule.addOperator(operator);
 	
 			return null;
 		}
@@ -213,17 +213,17 @@ public class MCMCSetupHelperHaplotype extends MCMCSetupHelper {
 				operator.setWeight(opLarge);
 				schedule.addOperator(operator);
 				
-//				operator = new BasesMultiOperator(haplotypeModel, 3, CoercionMode.COERCION_ON);
-//				operator.setWeight(opLarge/10.0);
-//				schedule.addOperator(operator);
+				operator = new BasesMultiOperator(haplotypeModel, 3, CoercionMode.COERCION_ON);
+				operator.setWeight(opLarge/10.0);
+				schedule.addOperator(operator);
 //				
-//				operator = new HaplotypeSwapSectionOperator(haplotypeModel, 5, CoercionMode.COERCION_ON);
-//				operator.setWeight(opLarge);
-//				schedule.addOperator(operator);
+				operator = new HaplotypeSwapSectionOperator(haplotypeModel, 5, CoercionMode.COERCION_ON);
+				operator.setWeight(opLarge);
+				schedule.addOperator(operator);
 //				
-//				operator = new ColumnOperator(haplotypeModel, 7, CoercionMode.COERCION_OFF);
-//				operator.setWeight(opLarge);
-//				schedule.addOperator(operator);
+				operator = new ColumnOperator(haplotypeModel, 7, CoercionMode.COERCION_OFF);
+				operator.setWeight(opLarge);
+				schedule.addOperator(operator);
 				
 				
 				for (Parameter parameter : parameters) {

@@ -49,7 +49,7 @@ public abstract class AbstractShortReadsLikelihood extends
 	private static final double EVALUATION_TEST_THRESHOLD = 1e-8;
 	public static final String SHORT_READ_LIKELIHOOD = "ShortReadsLikelihood";
 
-	protected boolean debug = false;;
+	protected boolean DEBUG = false;;
 	
 	protected double logLikelihood;
 	protected double storedLogLikelihood;
@@ -126,7 +126,7 @@ public abstract class AbstractShortReadsLikelihood extends
 		OperationType operation = operationRecord.getOperation();
 		double logLikelihood = Double.NEGATIVE_INFINITY;
 
-		if(debug){
+		if(DEBUG){
 			System.out.println("Calculate ShortReadLikelihood:\t"+operation);
 		}
 		switch (operation) {
