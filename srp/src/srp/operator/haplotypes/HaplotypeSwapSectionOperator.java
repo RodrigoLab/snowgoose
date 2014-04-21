@@ -49,7 +49,7 @@ public class HaplotypeSwapSectionOperator extends HaplotypeRecombinationOperator
 		do{
 			twoHaplotypeIndex[1] = getNextHapIndex();
 		} while(twoHaplotypeIndex[0]==twoHaplotypeIndex[1]);
-
+//FIXME fix index -negative index
 		Haplotype h1 = haplotypeModel.getHaplotype(twoHaplotypeIndex[0]);
 		Haplotype h2 = haplotypeModel.getHaplotype(twoHaplotypeIndex[1]);
 		

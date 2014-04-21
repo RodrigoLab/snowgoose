@@ -40,7 +40,7 @@ public class BasesMultiOperator extends AbstractMultiOperator {
 			int oldState = haplotype.getState(i);
 			char newChar = getNextDiffBase(oldState);
 			haplotype.setCharAt(i, newChar);
-	        
+//	        System.out.println(hapIndex +"\t"+ i +"\t from "+oldState +" to new "+ newChar);
 		}
         // symmetrical move so return a zero hasting ratio
 		haplotypeModel.setOperationRecord(OP, hapIndex, siteIndexs);

@@ -3,7 +3,6 @@ package srp.dr.ext;
 import srp.evolution.OperationRecord;
 import srp.evolution.haplotypes.old.OldHaplotypeModel;
 import srp.haplotypes.HaplotypeModel;
-import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.PatternList;
 import dr.evolution.tree.NodeRef;
 import dr.evolution.tree.Tree;
@@ -12,6 +11,7 @@ import dr.evolution.util.TaxonList.MissingTaxonException;
 import dr.evomodel.branchratemodel.BranchRateModel;
 import dr.evomodel.sitemodel.SiteModel;
 import dr.evomodel.tree.TreeModel;
+import dr.evomodel.treelikelihood.AbstractLikelihoodCore;
 import dr.evomodel.treelikelihood.TipStatesModel;
 import dr.evomodel.treelikelihood.TreeLikelihood;
 import dr.inference.model.Model;
@@ -28,7 +28,7 @@ public class TreeLikelihoodExt extends TreeLikelihood {
 			boolean forceJavaCore, boolean forceRescaling) {
 		
 		
-		super(new SitePatternsExt (haplotypeModel, null, 0, -1, 1, true),
+		super(new SitePatternsExt (haplotypeModel),
 				treeModel, siteModel, branchRateModel,
 				tipStatesModel, useAmbiguities, allowMissingTaxa,
 				storePartials, forceJavaCore, forceRescaling);
@@ -36,6 +36,11 @@ public class TreeLikelihoodExt extends TreeLikelihood {
 		this.sitePatternExt = (SitePatternsExt) getPatternList(); 
 		this.haplotypeModel = haplotypeModel;
 		addModel(this.haplotypeModel);
+		
+//		LogManager.getLogManager().reset();
+//		final Logger logger = Logger.getLogger("dr.evomodel");
+//        logger.setLevel(Level.OFF);
+        
 	}
 
 	/**
@@ -43,27 +48,35 @@ public class TreeLikelihoodExt extends TreeLikelihood {
 	 */
 	private static final long serialVersionUID = 6348244745369755426L;
 
-
+    public static long time1 = 0;
+    public static long time2 = 0;
     /**
      * Handles model changed events from the submodels.
      */
     @Override
 	protected void handleModelChangedEvent(Model model, Object object, int index) {
-    	System.out.println("handleModelChangedEvent in TreeLikelihoodExt\t"+model.getModelName());
+//    	System.out.println("handleModelChangedEvent in TreeLikelihoodExt\t"+model.getModelName());
     	if (model == haplotypeModel){
-    		System.out.println("GOOD here");
+//    		System.out.println("GOOD here");
+    		
+//    		sitePatternExt.updateAlignment(haplotypeModel);
+    		long time = System.nanoTime();
     		sitePatternExt.updateAlignment(haplotypeModel);
-    		updatePatternListExt(sitePatternExt);
-    		
-    		
-    		
-    		
+    		long timea = System.nanoTime();
+    		updatePatternListExt();
+    		long timeb = System.nanoTime();
+    		time1 += (timea-time);
+    		time2 += (timeb-timea);
+//    		10042371755	1004.2371755 sitePatternExt.updateAlignment(haplotypeModel);
+//    		10688987126	1068.8987126  sitePatternExt.updateAlignment(haplotypeModel, old);
+//    		158270559	15.8270559 updatePatternListExt();
             	OperationRecord record = haplotypeModel.getOperationRecord();
-    			int spectrumIndex = record.getSpectrumIndex();
-//    			int siteIndex = record.getAllSiteIndexs()[0];
+    			int haplotypeIndex = record.getSpectrumIndex();
+    			
+//    			System.out.println(haplotypeIndex +"\t"+ haplotypeModel.getHaplotypeLength() +"\t"+ Arrays.toString(record.getAllSiteIndexs()));
             	int updateExternalNodeIndex = -1;
 //            	spectrumIndex -> taxonName -> indexOnTree
-    			String taxonId = haplotypeModel.getTaxonId(spectrumIndex);
+    			String taxonId = haplotypeModel.getTaxonId(haplotypeIndex);
                 updateExternalNodeIndex = treeModel.getTaxonIndex(taxonId );
 //                int index = spectrumModel.getTaxonIndex(id);
 
@@ -94,17 +107,35 @@ public class TreeLikelihoodExt extends TreeLikelihood {
 //                makeDirty();
 //                likelihoodCore.setNodePartialsForUpdate(updateExternalNodeIndex);
 //                likelihoodCore.setCurrentNodePartials(updateExternalNodeIndex, partials);
-
+//                int states[] = new int[patternCount];
+//                for (int i = 0; i < patternCount; i++) {
+//                    states[i] = patternList.getPatternState(haplotypeIndex, i);
+//                }
+//                System.out.println(haplotypeIndex +"\t"+ updateExternalNodeIndex);
+//                System.out.println(Arrays.toString(states));
+//                likelihoodCore.getNodeStates(updateExternalNodeIndex, states);
                 
-            
+        		
+                int states2[] = new int[patternCount];
+                AbstractLikelihoodCore likelihoodCoreA = (AbstractLikelihoodCore) likelihoodCore;
+
+                likelihoodCoreA.getNodeStates(updateExternalNodeIndex, states2);
+//                System.out.println(patternCount +"\t"+ Arrays.toString(states2));
+//                updateNode[updateExternalNodeIndex] = true;
+//                likelihoodCore.setNodeMatrixForUpdate(nodeIndex);
+//                likelihoodCore.setNodeStates(updateExternalNodeIndex, states);
+//                System.out.println();
+                
+//                likelihoodCoreA.getNodeStates(j, states2);
+
     		
     		
     		likelihoodKnown = false;
     	}
     	else if (model == oldHaplotypeModel){ //REMOVE: Remove OldHaplotype
     		System.out.println("BAD! using oldHaplotypeModel");
-    		sitePatternExt.updateAlignment(oldHaplotypeModel);
-    		updatePatternListExt(sitePatternExt);
+//    		sitePatternExt.updateAlignment(oldHaplotypeModel);
+//    		updatePatternListExt(sitePatternExt);
     		likelihoodKnown = false;
     	}
     	else{
@@ -193,6 +224,137 @@ public class TreeLikelihoodExt extends TreeLikelihood {
 //		            integrateAcrossCategories = siteModel.integrateAcrossCategories();
 
 		            categoryCount = siteModel.getCategoryCount();
+
+//		            final Logger logger = Logger.getLogger("dr.evomodel");
+//		            String coreName = "Java general";
+//		            boolean forceJavaCore = false;
+//		            if (integrateAcrossCategories) {
+//
+//		                final DataType dataType = patternList.getDataType();
+//
+//		                if (dataType instanceof dr.evolution.datatype.Nucleotides) {
+//
+//		                    if (!forceJavaCore && NativeNucleotideLikelihoodCore.isAvailable()) {
+//		                        coreName = "native nucleotide";
+//		                        likelihoodCore = new NativeNucleotideLikelihoodCore();
+//		                    } else {
+//		                        coreName = "Java nucleotide";
+//		                        likelihoodCore = new NucleotideLikelihoodCore();
+//		                    }
+//
+//		                } 
+//		            } else {
+//		                likelihoodCore = new GeneralLikelihoodCore(patternList.getStateCount());
+//		            }
+
+		            probabilities = new double[stateCount * stateCount];
+
+		            likelihoodCore.initialize(nodeCount, patternCount, categoryCount, integrateAcrossCategories);
+
+		            int extNodeCount = treeModel.getExternalNodeCount();
+		            int intNodeCount = treeModel.getInternalNodeCount();
+		           
+		            {
+		                for (int i = 0; i < extNodeCount; i++) {
+		                    // Find the id of tip i in the patternList
+		                    String id = treeModel.getTaxonId(i);
+		                    int index = patternList.getTaxonIndex(id);
+
+		                    if (index == -1) {
+		                        if (!allowMissingTaxa) {
+		                            throw new TaxonList.MissingTaxonException("Taxon, " + id + ", in tree, " + treeModel.getId() +
+		                                    ", is not found in patternList, " + patternList.getId());
+		                        }
+		                        if (useAmbiguities) {
+		                            setMissingPartials(likelihoodCore, i);
+		                        } else {
+		                            setMissingStates(likelihoodCore, i);
+		                        }
+		                    } else {
+		                        if (useAmbiguities) {
+		                            setPartials(likelihoodCore, patternList, categoryCount, index, i);
+		                        } else {
+		                            setStates(likelihoodCore, patternList, index, i);
+		                        }
+		                    }
+		                }
+		            }
+		            for (int i = 0; i < intNodeCount; i++) {
+		                likelihoodCore.createNodePartials(extNodeCount + i);
+		            }
+
+
+
+		        } catch (TaxonList.MissingTaxonException mte) {
+		            throw new RuntimeException(mte.toString());
+		        }
+
+//		        addStatistic(new SiteLikelihoodsStatistic());
+//		        System.out.println(getStatisticCount());
+//		        System.out.println(getStatistic(0).getDimension()+"\t"+ getStatistic(0).getStatisticValue(10));
+	}
+
+	public void updatePatternListExt() {
+		
+//		sitePatternExt.updateAlignment(haplotypeModel);
+        this.patternList = sitePatternExt;
+//        this.dataType = patternList.getDataType();
+        patternCount = patternList.getPatternCount();
+//        System.out.println("patternCount: "+patternCount);
+//        stateCount = dataType.getStateCount();
+
+        patternWeights = patternList.getPatternWeights();
+
+//        this.treeModel = treeModel;
+//        addModel(treeModel);
+
+//        nodeCount = treeModel.getNodeCount();
+
+//        updateNode = new boolean[nodeCount];
+        for (int i = 0; i < nodeCount; i++) {
+            updateNode[i] = true;
+        }
+
+        likelihoodKnown = false;
+		
+        patternLogLikelihoods = new double[patternCount];
+        resetRootPartials(); 
+//        getRootPartials();
+//        rootPartials = new double[patternCount * stateCount];
+
+//	}
+//
+//	public void tTreeLikelihood(PatternList patternList, TreeModel treeModel,
+//			SiteModel siteModel, BranchRateModel branchRateModel,
+//			TipStatesModel tipStatesModel, 
+//			boolean useAmbiguities,
+//			boolean allowMissingTaxa, boolean storePartials,
+//			boolean forceJavaCore, boolean forceRescaling) {
+
+//		super(TreeLikelihoodParser.TREE_LIKELIHOOD, patternList, treeModel);
+		 
+
+//		        super(TreeLikelihoodParser.TREE_LIKELIHOOD, patternList, treeModel);
+
+//		        this.storePartials = storePartials;
+		boolean useAmbiguities = false;
+		boolean allowMissingTaxa = false;
+//		boolean storePartials,
+//		boolean forceJavaCore, 
+//		boolean forceRescaling = false;
+
+		        try {
+//		            this.siteModel = siteModel;
+//		            addModel(siteModel);
+
+//		            this.frequencyModel = siteModel.getFrequencyModel();
+//		            addModel(frequencyModel);
+
+//		            this.tipStatesModel = tipStatesModel;
+
+//		            integrateAcrossCategories = siteModel.integrateAcrossCategories();
+
+//		            categoryCount = siteModel.getCategoryCount();
 
 //		            final Logger logger = Logger.getLogger("dr.evomodel");
 //		            String coreName = "Java general";

@@ -54,6 +54,7 @@ public class Haplotype extends Sequence {
 	public Haplotype(String sequence) {
 		this(sequence.length());
 		setSequenceString(sequence.toUpperCase());
+		storeState();
 	}
 
 	public Haplotype(Sequence sequence) {
@@ -88,6 +89,10 @@ public class Haplotype extends Sequence {
 //	@Override
 	public char getStoredChar(int index) {
         return storedHaplotype[index];
+    }
+	public int getStoredState(int index) {
+		return dataType.getState(storedHaplotype[index]);
+//        return storedHaplotype[index];
     }
 	// **************************************
 	// OVERRIDE ALL (almost all) methods

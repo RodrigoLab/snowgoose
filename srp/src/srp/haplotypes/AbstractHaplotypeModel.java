@@ -114,7 +114,7 @@ public abstract class AbstractHaplotypeModel extends AbstractAlignmentModel impl
 	public int[] getSitePattern(int siteIndex) {
 
     	int n = getHaplotypeCount();
-
+    	
     	int[] pattern = new int[n];
         for (int i = 0; i < n; i++) {
             Haplotype hap = getHaplotype(i);

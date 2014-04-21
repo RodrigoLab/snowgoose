@@ -1,6 +1,7 @@
 package srp.haplotypes;
 
 
+import java.util.Arrays;
 import java.util.List;
 
 import jebl.evolution.sequences.Sequence;
@@ -64,6 +65,23 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 		return SPSDist.calculeteSPS(this, this);
 	}
 
+	public int[] getStoredSitePattern(int siteIndex){
+
+		int n = getHaplotypeCount();
+    	int[] pattern = new int[n];
+    	int[] newPattern = new int[n];
+        for (int i = 0; i < n; i++) {
+            Haplotype hap = getHaplotype(i);
+            pattern[i] = hap.getStoredState(siteIndex);
+            newPattern[i] = hap.getState(siteIndex);
+//            System.out.println(hap.getChar(siteIndex)+"\t"+ hap.getStoredChar(siteIndex));
+        }
+//        System.out.println(Arrays.toString(pattern) +"\t"+ Arrays.toString(newPattern));
+        
+        return pattern;
+
+	}
+	
 	@Override
 	public String toString(){
 
