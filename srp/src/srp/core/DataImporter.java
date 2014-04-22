@@ -28,7 +28,7 @@ public class DataImporter {
 //	private FlexibleTree tree;
 	
 	private static final double MIN_FREQ = SpectraParameter.MIN_FREQ;
-	private String dataDir;
+	protected String dataDir;
 	
 	public DataImporter(String dataDir){
 		if(dataDir.lastIndexOf(File.separator)!= dataDir.length()){
