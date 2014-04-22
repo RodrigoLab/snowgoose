@@ -31,11 +31,16 @@ import dr.evolution.util.TaxonList;
  *   
  *   78226249	7.8226249			sitePatternExt.updateAlignment(haplotypeModel);
  *   1163143736	116.31437360000001	updatePatternListExt();
+ *   
+ *   update only the change
+ *   ~7-10 sitePatternExt.updateAlignment(haplotypeModel);
+ *   ~7-10 updatePatternListExt();
  */
 public class SitePatternsExt extends SitePatterns {
 
-	private boolean prune;
-	private int pruningThreshold;
+	private static final long serialVersionUID = 8376785905234747979L;
+	private static final boolean UNIQUE_FALSE = false;
+	private static final boolean STRIP_FALSE = false;
 	
 	@Deprecated
 	public SitePatternsExt(Alignment alignment, TaxonList taxa, int from,
@@ -52,73 +57,65 @@ public class SitePatternsExt extends SitePatterns {
           this.every = 1;
 
 	}
+
+	public SitePatternsExt(SiteList siteList, int from, int to, int every){
+		super(siteList, from, to, every, STRIP_FALSE, UNIQUE_FALSE);
+		System.err.println("skiping with \"every\" is not tested, don't think it's going to work");
+	}
+
 	
 	public SitePatternsExt(SiteList siteList) {
-		this(siteList, 0, siteList.getSiteCount()-1, 1, true, false);
+		super(siteList, 0, siteList.getSiteCount() - 1, 1, STRIP_FALSE, UNIQUE_FALSE);
 	}
 	
-	public SitePatternsExt(SiteList siteList, int from, int to, int every,
-			boolean strip, boolean unique) {
-		super(siteList, from, to, every, strip, unique);
 
-		pruningThreshold = siteCount -10;
+	public void updateAlignment(HaplotypeModel haplotypeModel) {
 
-//      setAllPatterns();
+		this.siteList = haplotypeModel;
 
-//      patterns = new int[siteCount*4][];
-//      patterns = new int[siteCount][];
-//
-//      sitePatternIndices = new int[siteCount];
-//      weights = new double[siteCount];
-      //TODO recreate pattern, maybe dont' call super at all
-	}
-	//	public SitePatternsExt(HaplotypeModel haplotypeModel, TaxonList taxa, int from,
-	//			int to, int every, boolean strip) {
-	////		Alignment alignment = haplotypes.getAlignment();
-	//		this(haplotypeModel.getAlignment(), taxa, from, to, every, strip);
-	//	}
-		public void updateAlignment(HaplotypeModel haplotypeModel){
-	
-	      this.siteList = haplotypeModel;
-	
-	
-			OperationRecord record = haplotypeModel.getOperationRecord();
-			int hapIndex = record.getSpectrumIndex();
-			int[] siteIndex = record.getAllSiteIndexs();
-			int[] pattern;
-			switch (record.getOperation()) {
-			case SINGLE:
-				int site = record.getSingleIndex();
-				pattern = haplotypeModel.getSitePattern(site);
-				patterns[site] = pattern;
-	
-				break;
-			case MULTI:
-				for (int s : siteIndex) {
-					pattern = haplotypeModel.getSitePattern(s);
-					patterns[s] = pattern;
-				}
-				break;
-			case COLUMN:
-	
-				break;
-			case RECOMBINATION:
-	
-				break;
-	
-			default:
-				throw new IllegalArgumentException("Invalid operation type "
-						+ record.getOperation());
-				
-	//			case MULTI:
-	//				for (int site : siteIndex) {
-	//					pattern = haplotypeModel.getStoredSitePattern(site);
-	//					removePatternExt(pattern);
-	//					pattern = haplotypeModel.getSitePattern(site);
-	//					sitePatternIndices[site] = addPatternExt(pattern);
-	//				}
+		OperationRecord record = haplotypeModel.getOperationRecord();
+		int hapIndex = record.getSpectrumIndex();
+		int[] siteIndex = record.getAllSiteIndexs();
+		int[] pattern;
+		switch (record.getOperation()) {
+		case SINGLE:
+		case COLUMN:
+			int site = record.getSingleIndex();
+			pattern = haplotypeModel.getSitePattern(site);
+			patterns[site] = pattern;
+
+			break;
+		case MULTI:
+			for (int s : siteIndex) {
+				pattern = haplotypeModel.getSitePattern(s);
+				patterns[s] = pattern;
 			}
+			break;
+//		case COLUMN:
+//
+//			break;
+		case RECOMBINATION:
+			int[] twoPositions = record.getRecombinationPositionIndex();
+			for (int s = twoPositions[0]; s < twoPositions[1]; s++) {
+				pattern = haplotypeModel.getSitePattern(s);
+				patterns[s] = pattern;
+			}
+			
+			break;
+
+		default:
+			throw new IllegalArgumentException("Invalid operation type "
+					+ record.getOperation());
+
+			// case MULTI:
+			// for (int site : siteIndex) {
+			// pattern = haplotypeModel.getStoredSitePattern(site);
+			// removePatternExt(pattern);
+			// pattern = haplotypeModel.getSitePattern(site);
+			// sitePatternIndices[site] = addPatternExt(pattern);
+			// }
 		}
+	}
 
 	@Deprecated
 	private void setAllPatterns() {
@@ -152,6 +149,7 @@ public class SitePatternsExt extends SitePatterns {
         weights = new double[maxPatternCount];
         Arrays.fill(weights, 1.0);
         patternCount = siteCount;
+        pruningThreshold = siteCount -10;
         int site = 0;
 
         for (int i = from; i <= to; i += every) {
@@ -398,10 +396,8 @@ public class SitePatternsExt extends SitePatterns {
 
         return true;
     }
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 8376785905234747979L;
+	private boolean prune;
+	private int pruningThreshold;
 
 //	SitePatterns patterns2 = new SitePatterns(alignment, null, 0, -1, 1, true);
 	

@@ -134,7 +134,7 @@ public class TreeLikelihoodExtTest {
     			false, false, false, false, false);
 		// end
 
-        assertEquals(treeLikelihood.getLogLikelihood(), treeLikelihoodExt.getLogLikelihood(), 0);
+        assertEquals(treeLikelihood.getLogLikelihood(), treeLikelihoodExt.getLogLikelihood(), TestUtils.THRESHOLD);
 		
         ShortReadsHaplotypeLikelihood srpLikelihood = new ShortReadsHaplotypeLikelihood(haplotypeModel, srpMap);
 
@@ -165,51 +165,34 @@ public class TreeLikelihoodExtTest {
         }
 
 
-        long time1, time2;
-		time1 = System.currentTimeMillis();
-		for (int i = 0; i < 1e4; i++) {
-			treeLikelihood.makeDirty();
-			treeLikelihood.getLogLikelihood();
-		}
-		time2 = System.currentTimeMillis();
-		System.out.println("\t" + (time2 - time1) + "\t");
-		time1 = System.currentTimeMillis();
-		for (int i = 0; i < 1e4; i++) {
-			treeLikelihoodExt.updatePatternListExt(haplotypeModel);
-//			treeLikelihoodExt.makeDirty();
-			treeLikelihoodExt.getLogLikelihood();
-		}
-		time2 = System.currentTimeMillis();
-		System.out.println("\t" + (time2 - time1) + "\t");
-
 	}
 	
 	@Test
-		public void testUpdatePatternList2() throws Exception {
-			
-			
-			String dataDir = "/home/sw167/workspaceSrp/snowgoose/srp/unittest/";
-	
-			String trueAlignmentFile = "H6_haplotypes.phyml";
-			String phylogenyFile = "H6_haplotypes.tree";
-			String shortReadFile = "H6_srp.fasta";
-			
-			DataImporter dataImporter = new DataImporter(dataDir);
-			
-			Alignment trueAlignment = dataImporter.importAlignment(trueAlignmentFile);
-			Alignment alignment = dataImporter.importAlignment(trueAlignmentFile);
-			
-			Tree truePhylogeny = dataImporter.importTree(phylogenyFile);
-			
-			Alignment shortReads = dataImporter.importShortReads(shortReadFile);
-			ShortReadMapping srpMap = new ShortReadMapping(shortReads);
-			
-			HaplotypeModel trueHaplotypes = new HaplotypeModel(trueAlignment);
-			ShortReadsHaplotypeLikelihood srpLikelihood = new ShortReadsHaplotypeLikelihood(trueHaplotypes, srpMap);
+	public void testUpdatePatternList2() throws Exception {
 		
-			
-			
-			TreeModel treeModel = new TreeModel(TreeModel.TREE_MODEL, truePhylogeny, false);
+		
+		String dataDir = "/home/sw167/workspaceSrp/snowgoose/srp/unittest/";
+
+		String trueAlignmentFile = "H6_haplotypes.phyml";
+		String phylogenyFile = "H6_haplotypes.tree";
+		String shortReadFile = "H6_srp.fasta";
+		
+		DataImporter dataImporter = new DataImporter(dataDir);
+		
+		Alignment trueAlignment = dataImporter.importAlignment(trueAlignmentFile);
+		Alignment alignment = dataImporter.importAlignment(trueAlignmentFile);
+		
+		Tree truePhylogeny = dataImporter.importTree(phylogenyFile);
+		
+		Alignment shortReads = dataImporter.importShortReads(shortReadFile);
+		ShortReadMapping srpMap = new ShortReadMapping(shortReads);
+		
+		HaplotypeModel trueHaplotypes = new HaplotypeModel(trueAlignment);
+		ShortReadsHaplotypeLikelihood srpLikelihood = new ShortReadsHaplotypeLikelihood(trueHaplotypes, srpMap);
+	
+		
+		
+		TreeModel treeModel = new TreeModel(TreeModel.TREE_MODEL, truePhylogeny, false);
 	//		for (int i = 0; i < trueHaplotypes.getHaplotypeCount(); i++) {
 	//			treeModel.setTaxonId(i, trueHaplotypes.getTaxonId(i));
 	//		}
@@ -245,43 +228,43 @@ public class TreeLikelihoodExtTest {
 	
 				
 			// start
-			
-	    	Parameter popSize = new Parameter.Default(ConstantPopulationModelParser.POPULATION_SIZE, 3000,0,10000);
-	    	ConstantPopulationModel constantModel = new ConstantPopulationModel(popSize, Units.Type.DAYS);//createRandomInitialTree(popSize);
-	
-	    	CoalescentLikelihood coalescent = new CoalescentLikelihood(treeModel, null, new ArrayList<TaxonList>(), constantModel);
-	    	coalescent.setId("coalescent");
-	
-	    	// clock model
-	    	Parameter rateParameter =  new Parameter.Default(StrictClockBranchRates.RATE, 1E-5, 0, 1);
-	    	StrictClockBranchRates branchRateModel = new StrictClockBranchRates(rateParameter);
-	
-	    	// Sub model
-	    	Parameter freqs = new Parameter.Default(alignment.getStateFrequencies());
-	    	Parameter kappa = new Parameter.Default(HKYParser.KAPPA, 1.0, 0, 100.0);
-	
-	    	FrequencyModel f = new FrequencyModel(Nucleotides.INSTANCE, freqs);
-	    	HKY hky = new HKY(kappa, f);
-	
-	    	//siteModel
-	    	GammaSiteModel siteModel = new GammaSiteModel(hky);
-	    	Parameter mu = new Parameter.Default(GammaSiteModelParser.MUTATION_RATE, 1.0, 0, Double.POSITIVE_INFINITY);
-	    	siteModel.setMutationRateParameter(mu);
-	
-	    	//treeLikelihood
-	    	SitePatterns patterns = new SitePatterns(alignment, null, 0, -1, 1, true);
-	
-	//	    	TreeLikelihood treeLikelihood = new TreeLikelihood(patterns, treeModel, siteModel, branchRateModel, null,
-	//	    			false, false, true, false, false);
-	//	    	treeLikelihood.setId(TreeLikelihoodParser.TREE_LIKELIHOOD);
-	
-			// end
-			
-			
-			
+		
+    	Parameter popSize = new Parameter.Default(ConstantPopulationModelParser.POPULATION_SIZE, 3000,0,10000);
+    	ConstantPopulationModel constantModel = new ConstantPopulationModel(popSize, Units.Type.DAYS);//createRandomInitialTree(popSize);
+
+    	CoalescentLikelihood coalescent = new CoalescentLikelihood(treeModel, null, new ArrayList<TaxonList>(), constantModel);
+    	coalescent.setId("coalescent");
+
+    	// clock model
+    	Parameter rateParameter =  new Parameter.Default(StrictClockBranchRates.RATE, 1E-5, 0, 1);
+    	StrictClockBranchRates branchRateModel = new StrictClockBranchRates(rateParameter);
+
+    	// Sub model
+    	Parameter freqs = new Parameter.Default(alignment.getStateFrequencies());
+    	Parameter kappa = new Parameter.Default(HKYParser.KAPPA, 1.0, 0, 100.0);
+
+    	FrequencyModel f = new FrequencyModel(Nucleotides.INSTANCE, freqs);
+    	HKY hky = new HKY(kappa, f);
+
+    	//siteModel
+    	GammaSiteModel siteModel = new GammaSiteModel(hky);
+    	Parameter mu = new Parameter.Default(GammaSiteModelParser.MUTATION_RATE, 1.0, 0, Double.POSITIVE_INFINITY);
+    	siteModel.setMutationRateParameter(mu);
+
+    	//treeLikelihood
+    	SitePatterns patterns = new SitePatterns(alignment, null, 0, -1, 1, true);
+
+//	    	TreeLikelihood treeLikelihood = new TreeLikelihood(patterns, treeModel, siteModel, branchRateModel, null,
+//	    			false, false, true, false, false);
+//	    	treeLikelihood.setId(TreeLikelihoodParser.TREE_LIKELIHOOD);
+
+		// end
+		
+		
+		
 	//
 	//			Haplotypes haplotypes = new Haplotypes(aMap, trueAlignment.getSequenceCount());
-	    	HaplotypeModel haplotypeModel = trueHaplotypes;
+    	HaplotypeModel haplotypeModel = trueHaplotypes;
 	////			for (int i = 0; i < haplotypes.getHaplotypesCount(); i++) {
 	////					haplotypes.randomSeq(i);
 	////				System.out.println(haplotypes.getHaplotype(i) );
@@ -307,42 +290,42 @@ public class TreeLikelihoodExtTest {
 	//
 	//			System.out.println("===");
 	
-	
-			
-			
-			
-			
-			srpLikelihood = new ShortReadsHaplotypeLikelihood(haplotypeModel, srpMap);
-			
-	                
-	        
-	        
-	        int thinning = 1000;
-	        SitePatternsExt patternsExt = new SitePatternsExt(haplotypeModel, null, 0, -1, 1, true);
-	        TreeLikelihoodExt treeLikelihoodExt = new TreeLikelihoodExt(haplotypeModel, treeModel, siteModel, branchRateModel, null,
-	    			false, false, false, false, false);
-	        
-	        double likelihood = srpLikelihood.getLogLikelihood() + treeLikelihoodExt.getLogLikelihood();
-			likelihood = treeLikelihoodExt.getLogLikelihood();
-			System.out.println(likelihood);
-			
-			BaseSingleOperator op = new BaseSingleOperator(haplotypeModel);
-	        for (int i = 0; i < 100; i++) {
-	        	op.doOperation();
-	//			alignment = haplotypeModel.getAlignment();
-				patternsExt.updateAlignment(haplotypeModel);
-				treeLikelihoodExt.updatePatternListExt(patternsExt);
-			}
-			
-			likelihood = treeLikelihoodExt.getLogLikelihood();
-			System.out.println("updated: "+likelihood);
-			treeLikelihoodExt = new TreeLikelihoodExt(haplotypeModel, treeModel, siteModel, branchRateModel, null,
-	    			false, false, false, false, false);
-			likelihood = treeLikelihoodExt.getLogLikelihood();
-			System.out.println("updated: "+likelihood);
-			
-			
+
 		
+		
+		
+		
+		srpLikelihood = new ShortReadsHaplotypeLikelihood(haplotypeModel, srpMap);
+		
+                
+        
+        
+        int thinning = 1000;
+        SitePatternsExt patternsExt = new SitePatternsExt(haplotypeModel, null, 0, -1, 1, true);
+        TreeLikelihoodExt treeLikelihoodExt = new TreeLikelihoodExt(haplotypeModel, treeModel, siteModel, branchRateModel, null,
+    			false, false, false, false, false);
+        
+        double likelihood = srpLikelihood.getLogLikelihood() + treeLikelihoodExt.getLogLikelihood();
+		likelihood = treeLikelihoodExt.getLogLikelihood();
+		System.out.println(likelihood);
+		
+		BaseSingleOperator op = new BaseSingleOperator(haplotypeModel);
+        for (int i = 0; i < 100; i++) {
+        	op.doOperation();
+//			alignment = haplotypeModel.getAlignment();
+			patternsExt.updateAlignment(haplotypeModel);
+			treeLikelihoodExt.updatePatternListExt();
+		}
+		
+		likelihood = treeLikelihoodExt.getLogLikelihood();
+		System.out.println("updated: "+likelihood);
+		treeLikelihoodExt = new TreeLikelihoodExt(haplotypeModel, treeModel, siteModel, branchRateModel, null,
+    			false, false, false, false, false);
+		likelihood = treeLikelihoodExt.getLogLikelihood();
+		System.out.println("updated: "+likelihood);
+		
+		
+	
 	//		
 	//        for (int i = 0; i < 1e5; i++) {
 	//
@@ -422,10 +405,8 @@ public class TreeLikelihoodExtTest {
     	//treeLikelihoodExt
         TreeLikelihoodExt treeLikelihoodExt = new TreeLikelihoodExt(haplotypeModel, treeModel, siteModel, branchRateModel, null,
     			false, false, false, false, false);
-		// end
 
-
-		SimpleMCMCOperator op = new BasesMultiOperator(haplotypeModel, 10, CoercionMode.COERCION_OFF);
+        SimpleMCMCOperator op = new BasesMultiOperator(haplotypeModel, 10, CoercionMode.COERCION_OFF);
 
 		System.out.println(treeLikelihoodExt.getLogLikelihood());
 		System.out.println(treeLikelihoodExt.time1);
@@ -453,29 +434,13 @@ public class TreeLikelihoodExtTest {
         }
         System.out.println(timeo/ite/1e3);
         System.out.println(timel/ite/1e3);
-        
-        
-        System.out.println(treeLikelihoodExt.time1 +"\t"+ treeLikelihoodExt.time1/ite/1e3);
-        System.out.println(treeLikelihoodExt.time2 +"\t"+ treeLikelihoodExt.time2/ite/1e3);
-        System.out.println(treeLikelihoodExt.time3 +"\t"+ treeLikelihoodExt.time3/ite/1e3);
-        //        patternsExt.updateAlignment(haplotypeModel);
-//		treeLikelihoodExt.updatePatternList(patternsExt);
 
-//        treeLikelihoodExt.updatePatternList(patternsExt, haplotypeModel);
-//        treeLikelihoodExt.updatePatternListExt(haplotypeModel);
-		
-
-		//treeLikelihood
-    	//treeLikelihood
-    	SitePatterns patterns = new SitePatterns(haplotypeModel, null, 0, -1, 1, true);
+        HaplotypeModel dupHaplotypeModel = HaplotypeModel.duplicateHaplotypeModel(haplotypeModel);
+    	SitePatterns patterns = new SitePatterns(dupHaplotypeModel, null, 0, -1, 1, true);
     	TreeLikelihood treeLikelihood = new TreeLikelihood(patterns, treeModel, siteModel, branchRateModel, null,
     			false, false, true, false, false);
-//    	patterns = new SitePatterns(haplotypeModel, null, 0, -1, 1, true);
-//    	treeLikelihood = new TreeLikelihood(patterns, treeModel, siteModel, branchRateModel, null,
-//    			false, false, true, false, false);
-
 		assertEquals(treeLikelihood.getLogLikelihood(), treeLikelihoodExt.getLogLikelihood(), 1e-8);
-	      
+	    
 	
 	}
 	
@@ -498,22 +463,15 @@ public class TreeLikelihoodExtTest {
 		schedule.addOperator(op);
 
 		op = new BasesMultiOperator(haplotypeModel, 10, CoercionMode.COERCION_OFF);
-//		schedule.addOperator(op);
+		schedule.addOperator(op);
 
 		op = new ColumnOperator(haplotypeModel, haplotypeModel.getHaplotypeCount(), null);
-//		schedule.addOperator(op);
+		schedule.addOperator(op);
 
 		op = new HaplotypeRecombinationOperator(haplotypeModel, 10, CoercionMode.COERCION_OFF);
-//		schedule.addOperator(op);
+		schedule.addOperator(op);
 
-		System.out.println(treeLikelihoodExt.getLogLikelihood());
-		System.out.println(treeLikelihoodExt.time1);
-        System.out.println(treeLikelihoodExt.time2);
-        
-//      
-        long timeo = 0;
-        long timel = 0;
-        double ite = 1e3;
+		double ite = 1e3;
         for (int i = 0; i < ite; i++) {
 			
 			boolean operatorSucceeded = true;
@@ -528,18 +486,13 @@ public class TreeLikelihoodExtTest {
 			catch (OperatorFailedException e) {
                 operatorSucceeded = false;
 			}
-            
-//            OperationType expectedSpectrumOperation = ((AbstractHaplotypeOperator) mcmcOperator).getOperationType();
 			
 			if(operatorSucceeded){
-//				logLikelihoodOperator = treeLikelihoodExt.getLogLikelihood();
-				
 
 				SitePatterns patterns = new SitePatterns(haplotypeModel, null, 0, -1, 1, true);
 	        	TreeLikelihood treeLikelihood = new TreeLikelihood(patterns, treeModel, siteModel, branchRateModel, null,
 	        			false, false, true, false, false);
 	    		assertEquals(treeLikelihood.getLogLikelihood(), treeLikelihoodExt.getLogLikelihood(), 1e-8);
-
 				
 				double rand = MathUtils.nextDouble();
 				accept = rand>0.5;
@@ -553,43 +506,46 @@ public class TreeLikelihoodExtTest {
 				treeLikelihoodExt.restoreModelState();
 			}
 
-        	
-        	
-        	
-        	
-        	
-        	
-        	
-
-//        	SitePatterns patterns = new SitePatterns(haplotypeModel, null, 0, -1, 1, true);
-//        	TreeLikelihood treeLikelihood = new TreeLikelihood(patterns, treeModel, siteModel, branchRateModel, null,
-//        			false, false, true, false, false);
-//    		assertEquals(treeLikelihood.getLogLikelihood(), treeLikelihoodExt.getLogLikelihood(), 1e-8);
-
         }
-        System.out.println(timeo/ite/1e3);
-        System.out.println(timel/ite/1e3);
+
         
         
-        System.out.println(treeLikelihoodExt.time1 +"\t"+ treeLikelihoodExt.time1/ite/1e3);
-        System.out.println(treeLikelihoodExt.time2 +"\t"+ treeLikelihoodExt.time2/ite/1e3);
-        System.out.println(treeLikelihoodExt.time3 +"\t"+ treeLikelihoodExt.time3/ite/1e3);
-        //        patternsExt.updateAlignment(haplotypeModel);
-//		treeLikelihoodExt.updatePatternList(patternsExt);
-
-//        treeLikelihoodExt.updatePatternList(patternsExt, haplotypeModel);
-//        treeLikelihoodExt.updatePatternListExt(haplotypeModel);
-		
-
-		//treeLikelihood
-    	//treeLikelihood
-    	SitePatterns patterns = new SitePatterns(haplotypeModel, null, 0, -1, 1, true);
+        ite = 1e5;
+        for (int i = 0; i < ite; i++) {
+			
+			boolean operatorSucceeded = true;
+            boolean accept = false;
+            
+			final int opIndex = schedule.getNextOperatorIndex();
+            final MCMCOperator mcmcOperator = schedule.getOperator(opIndex);
+            
+            try{
+            	mcmcOperator.operate();
+            }
+			catch (OperatorFailedException e) {
+                operatorSucceeded = false;
+			}
+			
+			if(operatorSucceeded){
+//				double logLikelihoodOperator = treeLikelihoodExt.getLogLikelihood();
+				
+				double rand = MathUtils.nextDouble();
+				accept = rand>0.5;
+			}
+			if(accept){
+				mcmcOperator.accept(0);
+				treeLikelihoodExt.acceptModelState();
+			}
+			else{
+				mcmcOperator.reject();
+				treeLikelihoodExt.restoreModelState();
+			}
+        
+        }
+        HaplotypeModel dupHaplotypeModel = HaplotypeModel.duplicateHaplotypeModel(haplotypeModel);
+    	SitePatterns patterns = new SitePatterns(dupHaplotypeModel, null, 0, -1, 1, true);
     	TreeLikelihood treeLikelihood = new TreeLikelihood(patterns, treeModel, siteModel, branchRateModel, null,
     			false, false, true, false, false);
-//    	patterns = new SitePatterns(haplotypeModel, null, 0, -1, 1, true);
-//    	treeLikelihood = new TreeLikelihood(patterns, treeModel, siteModel, branchRateModel, null,
-//    			false, false, true, false, false);
-
 		assertEquals(treeLikelihood.getLogLikelihood(), treeLikelihoodExt.getLogLikelihood(), 1e-8);
 	      
 	
