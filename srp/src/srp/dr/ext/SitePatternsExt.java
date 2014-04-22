@@ -12,6 +12,7 @@ import dr.evolution.util.TaxonList;
 
 public class SitePatternsExt extends SitePatterns {
 
+	private boolean prune;
 	public SitePatternsExt(Alignment alignment, TaxonList taxa, int from,
 			int to, int every, boolean strip) {
 		super(alignment, taxa, from, to, every, strip);
@@ -44,6 +45,12 @@ public class SitePatternsExt extends SitePatterns {
       if (this.every <= 0)
           this.every = 1;
 
+//      patterns = new int[siteCount*4][];
+      patterns = new int[siteCount][];
+
+      sitePatternIndices = new int[siteCount];
+      weights = new double[siteCount];
+      //TODO recreate pattern, maybe dont' call super at all
 	}
 
 //	public SitePatternsExt(HaplotypeModel haplotypeModel, TaxonList taxa, int from,
@@ -58,7 +65,8 @@ public class SitePatternsExt extends SitePatterns {
 //      patternCount = 0;
 
 //      invariantCount = 0;
-      int[] pattern;
+//      int[] pattern;
+//      int[] oldPattern;
 
 //      int site = 0;
 		OperationRecord record = haplotypeModel.getOperationRecord();
@@ -72,14 +80,29 @@ public class SitePatternsExt extends SitePatterns {
 		case MULTI:
 //			 for (int site = from; site <= to; site += every) {
 			for (int site : siteIndex) {
-				int[] oldPattern = haplotypeModel.getStoredSitePattern(site);
+				
+				int[] pattern = haplotypeModel.getStoredSitePattern(site);
+				removePatternExt(pattern);
+				
 //System.out.println(patternCount +"\t"+ Arrays.toString(pattern) +"\t"+ sitePatternIndices[site]);				
 				
 //System.out.println(patternCount);
+				
 				pattern = haplotypeModel.getSitePattern(site);
+//				pattern[hapIndex] = haplotypeModel.getState(hapIndex, site);
 //				System.out.println(site +"\t"+  Arrays.toString(oldPattern) +"\t"+  Arrays.toString(pattern));
-				removePatternExt(oldPattern);
+//				removePatternExt(oldPattern);
 				sitePatternIndices[site] = addPatternExt(pattern);
+				
+//				System
+//				pattern[hapIndex] = haplotypeModel.getStoredSitePattern(hapIndex, site);
+//				System.out.println(Arrays.toString(pattern));
+//				int[] oldPattern = haplotypeModel.getStoredSitePattern(site);
+////				removePatternExt(oldPattern);
+//				System.out.println(Arrays.toString(oldPattern));
+//				System.out.println();
+//				removePatternExt(pattern);
+//				sitePatternIndices[site] = addPatternExt(pattern);
 //System.out.println(patternCount +"\t"+ Arrays.toString(pattern) +"\t"+ sitePatternIndices[site]);
 //	System.out.println();
 //	System.exit(-1);
@@ -98,6 +121,10 @@ public class SitePatternsExt extends SitePatterns {
 					+ record.getOperation());
 
 		}
+		if(patternCount>=  (siteCount*3)){
+			prunePatterns();
+			prune = false;
+		}
 	}
 
 	private void removePatternExt(int[] pattern) {
@@ -112,7 +139,8 @@ public class SitePatternsExt extends SitePatterns {
 //						patterns[i][j] = patterns[patternCount-1][j];
 //					}
 //					patternCount--;
-					System.out.println("weigths at "+ i +"==" +"\t"+ weights[i] +"\t What to do now? patternCount--??" );
+//					System.out.println("weigths at "+ i +"==" +"\t"+ weights[i] +"\t What to do now? patternCount--??" );
+					prune = true;
 				}
 				break;
 			}
@@ -142,13 +170,48 @@ public class SitePatternsExt extends SitePatterns {
 		if (isInvariant(pattern)) {
 			invariantCount++;
 		}
-System.out.println(" new pattern. "+patternCount);
+//System.out.println(" new pattern. "+patternCount);
 		int index = patternCount;
 		patterns[index] = pattern;
 		weights[index] = 1.0;
 		patternCount++;
+//        System.out.println(patternCount);
+//      if(patternCount == patterns.length){
+//      	prunePatterns();
+//      }
+
 
 		return index;
+	}
+
+
+    private void prunePatterns() {
+    	
+    	int pruneCount = 0;
+    	double[] tempWeights = new double[weights.length];
+    	
+//    	int[] tempPatterns= new int[patternCount];
+    	System.arraycopy(weights, 0, tempWeights, 0, weights.length);
+//    	System.arraycopy(patterns, 0, tempPatterns, 0, patternCount);
+    	for (int i = 0; i < patternCount; i++) {
+
+    		if(tempWeights[i] > 0.0 ){
+    			
+    			weights[pruneCount] = tempWeights[i];
+    			patterns[pruneCount] = patterns[i];
+    			pruneCount++;
+    		}
+            
+        }
+    	if(pruneCount<patternCount){
+        	System.out.println("pattern conut "+ patternCount +"\tPruneCount"+ pruneCount +"\tdelta: "+ (patternCount-pruneCount) );
+    	}
+    	patternCount = pruneCount;
+    	
+//    	if()
+//    	System.out.println("pattern conut "+ patternCount);
+//    	System.out.println("new pruneCount "+pruneCount);
+		
 	}
 
 	//

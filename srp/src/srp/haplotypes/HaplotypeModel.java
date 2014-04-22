@@ -73,7 +73,7 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
         for (int i = 0; i < n; i++) {
             Haplotype hap = getHaplotype(i);
             pattern[i] = hap.getStoredState(siteIndex);
-            newPattern[i] = hap.getState(siteIndex);
+//            newPattern[i] = hap.getState(siteIndex);
 //            System.out.println(hap.getChar(siteIndex)+"\t"+ hap.getStoredChar(siteIndex));
         }
 //        System.out.println(Arrays.toString(pattern) +"\t"+ Arrays.toString(newPattern));
@@ -81,6 +81,13 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
         return pattern;
 
 	}
+	
+	public int getStoredSitePattern(int hapIndex, int site) {
+		Haplotype hap = getHaplotype(hapIndex);
+		int state = hap.getStoredState(site);
+		return state;
+	}
+
 	
 	@Override
 	public String toString(){
@@ -426,5 +433,6 @@ System.out.println((time2 - time1) + "\t");
 	private double[][] storedLogqMatrix = new double[4][4];
 
 	@Deprecated AlignmentMapping aMap;
+
 	
 }

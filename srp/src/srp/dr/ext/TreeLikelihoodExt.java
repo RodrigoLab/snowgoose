@@ -69,7 +69,11 @@ public class TreeLikelihoodExt extends TreeLikelihood {
     		time2 += (timeb-timea);
 //    		10042371755	1004.2371755 sitePatternExt.updateAlignment(haplotypeModel);
 //    		10688987126	1068.8987126  sitePatternExt.updateAlignment(haplotypeModel, old);
-//    		158270559	15.8270559 updatePatternListExt();
+//    		158270559	15.8270559 updatePatternListExt(); //18.*
+
+//    		236854878	23.6854878 new updateAlignment
+//    		225945163	22.5945163 new updatePatternListExt
+    		
             	OperationRecord record = haplotypeModel.getOperationRecord();
     			int haplotypeIndex = record.getSpectrumIndex();
     			
@@ -180,6 +184,7 @@ public class TreeLikelihoodExt extends TreeLikelihood {
 //        nodeCount = treeModel.getNodeCount();
 
 //        updateNode = new boolean[nodeCount];
+        
         for (int i = 0; i < nodeCount; i++) {
             updateNode[i] = true;
         }
@@ -311,6 +316,7 @@ public class TreeLikelihoodExt extends TreeLikelihood {
 //        nodeCount = treeModel.getNodeCount();
 
 //        updateNode = new boolean[nodeCount];
+        
         for (int i = 0; i < nodeCount; i++) {
             updateNode[i] = true;
         }
@@ -378,7 +384,7 @@ public class TreeLikelihoodExt extends TreeLikelihood {
 //		                likelihoodCore = new GeneralLikelihoodCore(patternList.getStateCount());
 //		            }
 
-		            probabilities = new double[stateCount * stateCount];
+//		            probabilities = new double[stateCount * stateCount];
 
 		            likelihoodCore.initialize(nodeCount, patternCount, categoryCount, integrateAcrossCategories);
 

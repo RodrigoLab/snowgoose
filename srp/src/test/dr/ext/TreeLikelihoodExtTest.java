@@ -89,9 +89,9 @@ public class TreeLikelihoodExtTest {
 
 		String dataDir = "/home/sw167/workspaceSrp/snowgoose/srp/unittest/";
 
-		String trueAlignmentFile = "H4_haplotypes.phyml";
-		String phylogenyFile = "H4_haplotypes.tree";
-		String shortReadFile = "H4_srp.fasta";//"1110_10_align_2.fasta";
+		String trueAlignmentFile = "H6_haplotypes.phyml";
+		String phylogenyFile = "H6_haplotypes.tree";
+		String shortReadFile = "H6_srp.fasta";//"1110_10_align_2.fasta";
 		
 		DataImporter dataImporter = new DataImporter(dataDir);
 		
