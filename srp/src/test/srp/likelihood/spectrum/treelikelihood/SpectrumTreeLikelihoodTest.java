@@ -23,6 +23,7 @@ import srp.haplotypes.AlignmentUtils;
 import srp.haplotypes.SPSDist;
 import srp.likelihood.spectrum.treelikelihood.SpectrumTreeLikelihood;
 import srp.operator.spectrum.DeltaExchangeSingleSpectrumOperator;
+import srp.operator.spectrum.RecombineSectionSpectrumOperator;
 import dr.evolution.alignment.SimpleAlignment;
 import dr.evolution.alignment.SitePatterns;
 import dr.evolution.datatype.Nucleotides;
@@ -229,6 +230,7 @@ public class SpectrumTreeLikelihoodTest {
 				siteModel, null, false, false, true, false, false);
 
 		MCMCOperator op = new DeltaExchangeSingleSpectrumOperator(spectrumModel, 0.1, null);
+//		MCMCOperator op = new RecombineSectionSpectrumOperator(spectrumModel, 10, null);//FAIL!!
 		double likelihood = spectrumTreeLikelihood.getLogLikelihood();
 		double expected = 0;
 		for (int i = 0; i < 1e4; i++) {

@@ -222,7 +222,7 @@ public class SpectrumTreeLikelihood extends AbstractSpectrumTreeLikelihood {
 
         } 
 
-        else if (model == spectrumModel){
+        else if (model == spectrumModel){//FIXME: failed to implement column/recombination operators
         	OperationRecord record = spectrumModel.getOperationRecord();
 			int spectrumIndex = record.getSpectrumIndex();
 //			int siteIndex = record.getAllSiteIndexs()[0];

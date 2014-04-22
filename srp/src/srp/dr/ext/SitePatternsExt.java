@@ -10,9 +10,34 @@ import dr.evolution.alignment.SitePatterns;
 import dr.evolution.util.TaxonList;
 
 
+
+/**
+ * 
+ * @author sw167
+ *
+ *	There are several possible implementation
+ *	with remove/add patterns
+ *	 - need to keep track of the number index and pattern count
+ *	 - need to prune patterns
+ * 1346966067	134.69660670000002	sitePatternExt.updateAlignment(haplotypeModel);
+ * 980860917	98.08609170000001	updatePatternListExt();
+ * 
+ *	with specturmLike idea, number of patterns == number of site. No pooling things together
+ *   - might be slow for long (very long) sequences with repeat patterns
+ *   - very fast updating alignment
+ *   - basically 
+ *   	Arrays.fill(weights, 1.0);
+        patternCount = siteCount;
+ *   
+ *   78226249	7.8226249			sitePatternExt.updateAlignment(haplotypeModel);
+ *   1163143736	116.31437360000001	updatePatternListExt();
+ */
 public class SitePatternsExt extends SitePatterns {
 
 	private boolean prune;
+	private int pruningThreshold;
+	
+	@Deprecated
 	public SitePatternsExt(Alignment alignment, TaxonList taxa, int from,
 			int to, int every, boolean strip) {
 		super(alignment, taxa, from, to, every, strip);
@@ -29,104 +54,125 @@ public class SitePatternsExt extends SitePatterns {
 	}
 	
 	public SitePatternsExt(SiteList siteList) {
-		this(siteList, 0, siteList.getSiteCount() -1, 1, true, true);
+		this(siteList, 0, siteList.getSiteCount()-1, 1, true, false);
 	}
 	
 	public SitePatternsExt(SiteList siteList, int from, int to, int every,
 			boolean strip, boolean unique) {
 		super(siteList, from, to, every, strip, unique);
 
-      if (this.from <= -1)
-          this.from = 0;
+		pruningThreshold = siteCount -10;
 
-      if (this.to <= -1)
-          this.to = siteList.getSiteCount() - 1;
-
-      if (this.every <= 0)
-          this.every = 1;
+//      setAllPatterns();
 
 //      patterns = new int[siteCount*4][];
-      patterns = new int[siteCount][];
-
-      sitePatternIndices = new int[siteCount];
-      weights = new double[siteCount];
+//      patterns = new int[siteCount][];
+//
+//      sitePatternIndices = new int[siteCount];
+//      weights = new double[siteCount];
       //TODO recreate pattern, maybe dont' call super at all
 	}
-
-//	public SitePatternsExt(HaplotypeModel haplotypeModel, TaxonList taxa, int from,
-//			int to, int every, boolean strip) {
-////		Alignment alignment = haplotypes.getAlignment();
-//		this(haplotypeModel.getAlignment(), taxa, from, to, every, strip);
-//	}
-	public void updateAlignment(HaplotypeModel haplotypeModel){
-
-      this.siteList = haplotypeModel;
-
-//      patternCount = 0;
-
-//      invariantCount = 0;
-//      int[] pattern;
-//      int[] oldPattern;
-
-//      int site = 0;
-		OperationRecord record = haplotypeModel.getOperationRecord();
-		int hapIndex = record.getSpectrumIndex();
-		int[] siteIndex = record.getAllSiteIndexs();
-//System.out.println(hapIndex);
-		switch (record.getOperation()) {
-		case SINGLE:
-
-			break;
-		case MULTI:
-//			 for (int site = from; site <= to; site += every) {
-			for (int site : siteIndex) {
-				
-				int[] pattern = haplotypeModel.getStoredSitePattern(site);
-				removePatternExt(pattern);
-				
-//System.out.println(patternCount +"\t"+ Arrays.toString(pattern) +"\t"+ sitePatternIndices[site]);				
-				
-//System.out.println(patternCount);
-				
+	//	public SitePatternsExt(HaplotypeModel haplotypeModel, TaxonList taxa, int from,
+	//			int to, int every, boolean strip) {
+	////		Alignment alignment = haplotypes.getAlignment();
+	//		this(haplotypeModel.getAlignment(), taxa, from, to, every, strip);
+	//	}
+		public void updateAlignment(HaplotypeModel haplotypeModel){
+	
+	      this.siteList = haplotypeModel;
+	
+	
+			OperationRecord record = haplotypeModel.getOperationRecord();
+			int hapIndex = record.getSpectrumIndex();
+			int[] siteIndex = record.getAllSiteIndexs();
+			int[] pattern;
+			switch (record.getOperation()) {
+			case SINGLE:
+				int site = record.getSingleIndex();
 				pattern = haplotypeModel.getSitePattern(site);
-//				pattern[hapIndex] = haplotypeModel.getState(hapIndex, site);
-//				System.out.println(site +"\t"+  Arrays.toString(oldPattern) +"\t"+  Arrays.toString(pattern));
-//				removePatternExt(oldPattern);
-				sitePatternIndices[site] = addPatternExt(pattern);
+				patterns[site] = pattern;
+	
+				break;
+			case MULTI:
+				for (int s : siteIndex) {
+					pattern = haplotypeModel.getSitePattern(s);
+					patterns[s] = pattern;
+				}
+				break;
+			case COLUMN:
+	
+				break;
+			case RECOMBINATION:
+	
+				break;
+	
+			default:
+				throw new IllegalArgumentException("Invalid operation type "
+						+ record.getOperation());
 				
-//				System
-//				pattern[hapIndex] = haplotypeModel.getStoredSitePattern(hapIndex, site);
-//				System.out.println(Arrays.toString(pattern));
-//				int[] oldPattern = haplotypeModel.getStoredSitePattern(site);
-////				removePatternExt(oldPattern);
-//				System.out.println(Arrays.toString(oldPattern));
-//				System.out.println();
-//				removePatternExt(pattern);
-//				sitePatternIndices[site] = addPatternExt(pattern);
-//System.out.println(patternCount +"\t"+ Arrays.toString(pattern) +"\t"+ sitePatternIndices[site]);
-//	System.out.println();
-//	System.exit(-1);
+	//			case MULTI:
+	//				for (int site : siteIndex) {
+	//					pattern = haplotypeModel.getStoredSitePattern(site);
+	//					removePatternExt(pattern);
+	//					pattern = haplotypeModel.getSitePattern(site);
+	//					sitePatternIndices[site] = addPatternExt(pattern);
+	//				}
 			}
-//			System.exit(-1);
-			break;
-		case COLUMN:
-
-			break;
-		case RECOMBINATION:
-
-			break;
-
-		default:
-			throw new IllegalArgumentException("Invalid operation type "
-					+ record.getOperation());
-
 		}
-		if(patternCount>=  (siteCount*3)){
-			prunePatterns();
-			prune = false;
-		}
-	}
 
+	@Deprecated
+	private void setAllPatterns() {
+
+        if (siteList == null) {
+            return;
+        }
+
+        if (from <= -1)
+            from = 0;
+
+        if (to <= -1)
+            to = siteList.getSiteCount() - 1;
+
+        if (every <= 0)
+            every = 1;
+
+//        siteCount = ((to - from) / every) + 1;
+        patternCount = 0;
+        invariantCount = 0;
+
+        sitePatternIndices = new int[siteCount];
+        
+//        System.out.println(siteList.getPatternLength());
+//        System.out.println(siteList.getTaxonCount());
+        int scaler = siteList.getPatternCount();
+//        scaler=
+        int maxPatternCount = siteCount ;//* scaler;
+        pruningThreshold = siteCount -10;
+        patterns = new int[maxPatternCount][];
+        weights = new double[maxPatternCount];
+        Arrays.fill(weights, 1.0);
+        patternCount = siteCount;
+        int site = 0;
+
+        for (int i = from; i <= to; i += every) {
+            int[] pattern = siteList.getSitePattern(i);
+            patterns[i] = pattern;
+            sitePatternIndices[site] = i;
+//            if (!strip || !isInvariant(pattern) ||
+//                    (!isGapped(pattern) &&
+//                            !isAmbiguous(pattern) &&
+//                            !isUnknown(pattern))) {
+//
+//                sitePatternIndices[site] = addPattern(pattern);
+//
+//            }  else {
+//                sitePatternIndices[site] = -1;
+//            }
+            site++;
+        }
+    }
+
+	@Deprecated
 	private void removePatternExt(int[] pattern) {
 //		System.out.print("Remove match at: ");
 		for (int i = 0; i < patternCount; i++) {
@@ -157,6 +203,7 @@ public class SitePatternsExt extends SitePatterns {
 		}
 	}
 
+	@Deprecated
 	private int addPatternExt(int[] pattern) {
 //		System.out.print("add pattern: ");
 		for (int i = 0; i < patternCount; i++) {
@@ -184,7 +231,7 @@ public class SitePatternsExt extends SitePatterns {
 		return index;
 	}
 
-
+	@Deprecated
     private void prunePatterns() {
     	
     	int pruneCount = 0;
@@ -216,6 +263,7 @@ public class SitePatternsExt extends SitePatterns {
 
 	//
 //	
+    @Deprecated
 	public void updateAlignment(Alignment HaplotypeModel, int x){
 
 //        setPatterns(alignment, from, to, every);
@@ -269,8 +317,31 @@ public class SitePatternsExt extends SitePatterns {
             site++;
         }
 	}
+    @Deprecated
+    private int addPattern(int[] pattern) {
+	
+	    for (int i = 0; i < patternCount; i++) {
+	
+	        if (unique && comparePatterns(patterns[i], pattern)) {
+	
+	            weights[i] += 1.0;
+	            return i;
+	        }
+	    }
+	
+	    if (isInvariant(pattern)) {
+	        invariantCount++;
+	    }
+	
+	    int index = patternCount;
+	    patterns[index] = pattern;
+	    weights[index] = 1.0;
+	    patternCount++;
+	
+	    return index;
+	}
 
-    /**
+	/**
      * @return true if the pattern is invariant
      */
     private boolean isGapped(int[] pattern) {
@@ -326,28 +397,6 @@ public class SitePatternsExt extends SitePatterns {
         }
 
         return true;
-    }
-	private int addPattern(int[] pattern) {
-
-        for (int i = 0; i < patternCount; i++) {
-
-            if (unique && comparePatterns(patterns[i], pattern)) {
-
-                weights[i] += 1.0;
-                return i;
-            }
-        }
-
-        if (isInvariant(pattern)) {
-            invariantCount++;
-        }
-
-        int index = patternCount;
-        patterns[index] = pattern;
-        weights[index] = 1.0;
-        patternCount++;
-
-        return index;
     }
 	/**
 	 * 
