@@ -5,11 +5,9 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
-import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
-
 import srp.core.DataImporter;
-import srp.evolution.spectrum.SpectrumAlignmentModel;
+
+import com.google.common.base.Splitter;
 
 public class DeBruijnImporter extends DataImporter {
 
