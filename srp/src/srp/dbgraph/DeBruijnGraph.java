@@ -6,7 +6,6 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 
-
 import srp.haplotypes.Haplotype;
 import srp.haplotypes.HaplotypeModel;
 
@@ -65,9 +64,9 @@ public class DeBruijnGraph {
 		for (CompatibleSet k1CSet : allSets) {
 			int k1 = k1CSet.getNode();
 			ArrayList<Integer> cNodeList = k1CSet.getCNodeList();
-			for (Integer k2 : cNodeList) {
+			for (Integer ik2 : cNodeList) {
+				int k2 = ik2;
 				totalCount += k1CSet.getCNodeCount(k2);
-
 				length_diff[k1][k2] = k1CSet.getCNodeDepth(k2) - k1CSet.getDepth() + allLength.get(k1)+ allLength.get(k2);
 			}
 				
@@ -169,7 +168,7 @@ public class DeBruijnGraph {
 		for (int i = 0; i < haplotypeModel.getHaplotypeCount(); i++) {
 			Haplotype haplotype = haplotypeModel.getHaplotype(i);
 			ArrayList<Integer> path = new ArrayList<Integer>();
-			
+			//path contains series of node??
 			HashSet<Integer> tempSet = new HashSet<>();
 			for (Integer k1 : path) {
 				tempSet.add(k1);
@@ -183,9 +182,14 @@ public class DeBruijnGraph {
 			
 			for (Integer k1 : path) {
 				CompatibleSet compatibleSet = allSets.get(k1);	
-				int nodeIndex = compatibleSet.getNode();
-				if (tempSet.contains(nodeIndex)){
-					d_hashTable[k1][nodeIndex]++;
+//				int nodeIndex = compatibleSet.getNode();
+				ArrayList<Integer> cNodeList = compatibleSet.getCNodeList();
+				for (Integer nodeIndex : cNodeList) {
+					
+				
+					if (tempSet.contains(nodeIndex)){
+						d_hashTable[k1][nodeIndex]++;
+					}
 				}
 			}
 		}

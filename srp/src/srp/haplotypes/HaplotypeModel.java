@@ -65,6 +65,10 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 		return SPSDist.calculeteSPS(this, this);
 	}
 
+	public String getHaplotypeString(int i) {
+		return getHaplotype(i).getSequenceString();
+	}
+
 	public int[] getStoredSitePattern(int siteIndex){
 
 		int n = getHaplotypeCount();
@@ -191,7 +195,7 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 		if (DEBUG) {
 			System.out.println("RestoreState in SpectrumAlignment:\t" + operation);
 		}
-//		System.err.println("zzzzRestore SpectrumAlignment: "+operation);
+		System.out.println("zzzzRestore HaplotypeModel: "+operation);
 		switch (operation) {
 		
 		case NONE:
@@ -433,6 +437,7 @@ System.out.println((time2 - time1) + "\t");
 	private double[][] storedLogqMatrix = new double[4][4];
 
 	@Deprecated AlignmentMapping aMap;
+
 
 	
 }

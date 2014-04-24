@@ -15,16 +15,19 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import srp.core.DataImporter;
+import srp.evolution.shortreads.ShortReadMapping;
 //import srp.evolution.haplotypes.old.OldHaplotype;
 //import srp.evolution.haplotypes.old.OldHaplotypeModel;
 //import srp.evolution.haplotypes.old.OldHaplotypeModelUtils;
-import srp.evolution.shortreads.AlignmentMapping;
+//import srp.evolution.shortreads.AlignmentMapping;
 import srp.haplotypes.AlignmentUtils;
 import srp.haplotypes.Haplotype;
 import srp.haplotypes.HaplotypeModel;
 import srp.haplotypes.SPSDist;
-import srp.operator.haplotypes.old.BaseSingleOperator;
-import srp.operator.haplotypes.old.BasesMultiOperator;
+import srp.operator.haplotypes.BaseSingleOperator;
+import srp.operator.haplotypes.BasesMultiOperator;
+//import srp.operator.haplotypes.old.BaseSingleOperator;
+//import srp.operator.haplotypes.old.BasesMultiOperator;
 import test.TestUtils;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.util.Taxon;
@@ -34,7 +37,7 @@ import dr.inference.operators.MCMCOperator;
 
 public class HaplotypeModelTest {
 
-	private static AlignmentMapping aMap;
+	private static ShortReadMapping aMap;
 	private static Alignment srpAlignment;
 	
 	private static Taxon[] expectedTaxons;
@@ -54,7 +57,7 @@ public class HaplotypeModelTest {
 
 		String dir = System.getProperty("user.dir")+File.separatorChar+"unittest"+File.separator;
 		srpAlignment = DataImporter.importShortReads(dir, "HaplotypeModelTest_10_srp.fasta");
-		aMap = new AlignmentMapping(srpAlignment);
+		aMap = new ShortReadMapping(srpAlignment);
 		
 
 		expectedSequences = new String[]{ 
@@ -150,12 +153,13 @@ public class HaplotypeModelTest {
 	public void testReject() throws Exception {
 		
 		MCMCOperator op;
-		op = new BaseSingleOperator(haplotypeModel, 0);
+		op = new BaseSingleOperator(haplotypeModel);
 		
 		for (int i = 0; i < 1000; i++) {
+			haplotypeModel.storeModelState();
 			op.operate();
 			op.reject();
-			haplotypeModel.reject();
+			haplotypeModel.restoreModelState();
 		}
 		for (int i = 0; i < haplotypeModel.getHaplotypeCount(); i++) {
 			assertEquals(haplotypeModel.getAlignedSequenceString(i), srpAlignment.getAlignedSequenceString(i));
@@ -163,9 +167,10 @@ public class HaplotypeModelTest {
 		
 		op = new BasesMultiOperator(haplotypeModel, 10, null);
 		for (int i = 0; i < 1000; i++) {
+			haplotypeModel.storeModelState();
 			op.operate();
 			op.reject();
-			haplotypeModel.reject();
+			haplotypeModel.restoreModelState();
 		}
 		for (int i = 0; i < haplotypeModel.getHaplotypeCount(); i++) {
 			assertEquals(haplotypeModel.getAlignedSequenceString(i), srpAlignment.getAlignedSequenceString(i));
@@ -177,7 +182,7 @@ public class HaplotypeModelTest {
 	@Test
 	public void testSetupAlignment() throws Exception {
 
-		haplotypeModel = new HaplotypeModel(aMap, 5);
+		haplotypeModel = new HaplotypeModel(5, aMap.getLength());
 		for (int i = 0; i < haplotypeModel.getHaplotypeCount(); i++) {
 			assertNotEquals(haplotypeModel.getHaplotypeString(i), srpAlignment.getAlignedSequenceString(i));
 			assertNotSame(haplotypeModel.getHaplotypeString(i), srpAlignment.getSequence(i));
@@ -190,62 +195,6 @@ public class HaplotypeModelTest {
 		}	
 	}
 
-	@Test
-	public void testHaplotypeGetNextBaseFrequency() throws Exception {
-
-
-		Parameter frequency = new Parameter.Default(new double[]{0.1,0.25,0.60,0.05});
-
-		int[] count = new int['T'+1]; 
-		int ite = 1000;
-    	for (int i = 0; i < ite; i++) {
-    		int[] posChar = haplotypeModel.getNextBaseFrequency(frequency);
-    		count[posChar[1]]++;
-		}
-    	TestUtils.assertExpectationRange(count['A'], frequency.getParameterValue(0)*ite, 0.05*ite);
-    	TestUtils.assertExpectationRange(count['C'], frequency.getParameterValue(1)*ite, 0.05*ite);
-    	TestUtils.assertExpectationRange(count['G'], frequency.getParameterValue(2)*ite, 0.05*ite);
-    	TestUtils.assertExpectationRange(count['T'], frequency.getParameterValue(3)*ite, 0.05*ite);
-
-    	
-    	
-    	double[] logFreq = new double[4];
-    	for (int i = 0; i < logFreq.length; i++) {
-			logFreq[i] = Math.log(frequency.getParameterValue(i));
-		}
-    	for (int i = 0; i < logFreq.length; i++) {
-			for (int j = 0; j < logFreq.length; j++) {
-				double expected = logFreq[i]-logFreq[j];
-				assertEquals(expected, haplotypeModel.getLogqFrequencyStates(i,j), 0);
-			}
-		}
-    	
-    	frequency = new Parameter.Default(new double[]{0.1, 0.2, 0.3, 0.4});
-    	haplotypeModel.getNextBaseFrequency(frequency);
-     	
-    	for (int i = 0; i < logFreq.length; i++) {
-			logFreq[i] = Math.log(frequency.getParameterValue(i));
-		}
-    	for (int i = 0; i < logFreq.length; i++) {
-			for (int j = 0; j < logFreq.length; j++) {
-				double expected = logFreq[i]-logFreq[j];
-				assertEquals(expected, haplotypeModel.getLogqFrequencyStates(i,j), 0);
-			}
-		}
-    	count = new int['T'+1]; 
-    	for (int i = 0; i < ite; i++) {
-    		int[] posChar = haplotypeModel.getNextBaseFrequency(frequency);
-    		count[posChar[1]]++;
-		}
-    	TestUtils.assertExpectationRange(count['A'], frequency.getParameterValue(0)*ite, 0.05*ite);
-    	TestUtils.assertExpectationRange(count['C'], frequency.getParameterValue(1)*ite, 0.05*ite);
-    	TestUtils.assertExpectationRange(count['G'], frequency.getParameterValue(2)*ite, 0.05*ite);
-    	TestUtils.assertExpectationRange(count['T'], frequency.getParameterValue(3)*ite, 0.05*ite);
-
-    	
-    	
-	}
-	
 	
 	@Test
 	public void testCalculateSpsSingle() {
@@ -253,7 +202,7 @@ public class HaplotypeModelTest {
 				"AAAAACCCCCGGGGGTTTT",
 				"AAAACCCCCGGGGGTTTTA"};
 		Alignment alignment = AlignmentUtils.createAlignment(seqs);
-		HaplotypeModel haplotype = new HaplotypeModel(AlignmentUtils.createAlignmentMapping(seqs), alignment);
+		HaplotypeModel haplotype = new HaplotypeModel(alignment);
 		int expected = 4;
 		assertEquals(expected, haplotype.calculateSPS());
 
@@ -263,7 +212,7 @@ public class HaplotypeModelTest {
 				"AAACCCCCGGGGGTTTTAA"
 		};
 		alignment = AlignmentUtils.createAlignment(seqs);
-		haplotype = new HaplotypeModel(AlignmentUtils.createAlignmentMapping(seqs), alignment);
+		haplotype = new HaplotypeModel( alignment);
 		expected = 4+4+8;
 		assertEquals(expected, haplotype.calculateSPS());
 		
@@ -274,7 +223,7 @@ public class HaplotypeModelTest {
 				"ACGTTATTTT",
 		};
 		alignment = AlignmentUtils.createAlignment(seqs);
-		haplotype = new HaplotypeModel(AlignmentUtils.createAlignmentMapping(seqs), alignment);
+		haplotype = new HaplotypeModel(alignment);
 		expected = 0;
 		assertEquals(expected, haplotype.calculateSPS());
 		
@@ -284,7 +233,7 @@ public class HaplotypeModelTest {
 				"GTACTTTATT"
 		};
 		alignment = AlignmentUtils.createAlignment(seqs);
-		haplotype = new HaplotypeModel(AlignmentUtils.createAlignmentMapping(seqs), alignment);
+		haplotype = new HaplotypeModel(alignment);
 		expected = 3+3+3+3+2+2+2;
 		assertEquals(expected, haplotype.calculateSPS());
 	
@@ -303,8 +252,8 @@ public class HaplotypeModelTest {
 				"ACCTTGGA",
 				"CCTTGGAA"
 		};
-		HaplotypeModel h1 = HaplotypeModelUtils.createHaplotypeModel(seq1);
-		HaplotypeModel h2 = HaplotypeModelUtils.createHaplotypeModel(seq2);
+		HaplotypeModel h1 = new HaplotypeModel(seq1);
+		HaplotypeModel h2 = new HaplotypeModel(seq2);
 		int sps = SPSDist.calculeteSPS(h1, h2);
 		int expected = 4+8 + 4+4 + 4+8;
 		assertEquals(expected, sps, 0);
@@ -321,7 +270,7 @@ public class HaplotypeModelTest {
 					"AAGTCCTA", //6+5+6
 					"AACAATGA"	//3+4+7
 				};
-		h2 = HaplotypeModelUtils.createHaplotypeModel(seq2);
+		h2 = new HaplotypeModel(seq2);
 		sps = SPSDist.calculeteSPS(h1, h2);
 		expected = 43;
 		assertEquals(expected, sps);
