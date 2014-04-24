@@ -195,7 +195,7 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 		if (DEBUG) {
 			System.out.println("RestoreState in SpectrumAlignment:\t" + operation);
 		}
-		System.out.println("zzzzRestore HaplotypeModel: "+operation);
+//		System.out.println("zzzzRestore HaplotypeModel: "+operation);
 		switch (operation) {
 		
 		case NONE:

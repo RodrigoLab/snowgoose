@@ -22,8 +22,8 @@ public class DeBruijnImporter extends DataImporter {
 		return dbg;
 	}
 	
-	public ArrayList<CompatibleSet> importCompatibleSet(String fileName) throws Exception {
-		ArrayList<CompatibleSet> allSets = importCompatibleSet(dataDir, fileName);
+	public CompatibleSets importCompatibleSet(String fileName) throws Exception {
+		CompatibleSets allSets = importCompatibleSet(dataDir, fileName);
 		return allSets;
 		
 	}
@@ -62,10 +62,11 @@ public class DeBruijnImporter extends DataImporter {
 	}
 
 	
-	public static ArrayList<CompatibleSet> importCompatibleSet(String dataDir, String fileName) throws Exception{
+	public static CompatibleSets importCompatibleSet(String dataDir, String fileName) throws Exception{
 //		DeBruijnGraph dbg = new DeBruijnGraph();
 //		CompatibleSet compSet = new CompatibleSet();
-		ArrayList<CompatibleSet> allSets = new ArrayList<CompatibleSet>();
+//		ArrayList<CompatibleNode> allSets = new ArrayList<CompatibleNode>();
+		CompatibleSets compatibleSets = new CompatibleSets();
 		BufferedReader inFile  = new BufferedReader(new FileReader(dataDir+fileName));
 		String inline;
 		int length = 0;
@@ -75,17 +76,18 @@ public class DeBruijnImporter extends DataImporter {
 		while((inline = inFile.readLine())!=null){
 			
 			Iterable<String> split = Splitter.on(" ").split(inline.trim());
-			CompatibleSet compSet = null;//new CompatibleSet();
+			CompatibleNode compNode = null;//new CompatibleSet();
 			for (String string : split) {
-				if(compSet == null){
+				if(compNode == null){
 					Iterable<String> split2 = Splitter.on(":").split(string);
-					compSet = new CompatibleSet(split2);
+					compNode = new CompatibleNode(split2);
 				}
 				else{
-					compSet.addCompatibleNode(string);
+					compNode.addCompatibleNode(string);
 				}
 			}
-			allSets.add(compSet);
+			compatibleSets.addCompatibleNode(compNode);
+			
 //			4:30 4:0:4903 18:31:554 30:32:20056 17:61:3745 27:66:28245 41:126:106 55:128:55372 63:405:3356 72:429:218 82:431:3350 
 
 //			11:31 11:0:4060 18:31:462 29:32:97682 
@@ -97,7 +99,7 @@ public class DeBruijnImporter extends DataImporter {
 		}
 		inFile.close();
 		
-		return allSets;
+		return compatibleSets;
 	}
 
 	

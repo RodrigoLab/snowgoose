@@ -6,26 +6,24 @@ import java.util.Iterator;
 
 import com.google.common.base.Splitter;
 
-public class CompatibleSet {
+public class CompatibleNode {
 
-	private int node;
-	private int depth;
+	private int nodeIndex;
+	private int nodeDepth;
 	private ArrayList<Integer> cNodeList;
 	private HashMap<Integer, Integer> cCount;
 	private HashMap<Integer, Integer> cDepth;
 	
-	public CompatibleSet(Iterable<String> split2) {
+	public CompatibleNode(Iterable<String> split2) {
 
-//		for (String string : split2) {
-//			int node = 
-//		}
+
 		Iterator<String> iterator = split2.iterator();
-		node = Integer.parseInt( iterator.next());
-		depth = Integer.parseInt( iterator.next());
+		nodeIndex = Integer.parseInt( iterator.next());
+		nodeDepth = Integer.parseInt( iterator.next());
 		cNodeList = new ArrayList<>();
 		cCount = new HashMap<Integer, Integer>();
 		cDepth= new HashMap<Integer, Integer>();
-		System.out.println(node +"\t"+ depth);
+		System.out.println(nodeIndex +"\t"+ nodeDepth);
 	}
 
 	public void addCompatibleNode(String string) {
@@ -56,12 +54,12 @@ public class CompatibleSet {
 	public ArrayList<Integer> getCNodeList(){
 		return cNodeList;
 	}
-	public int getNode() {
-		return node;
+	public int getNodeIndex() {
+		return nodeIndex;
 	}
 
 	public int getDepth() {
-		return depth;
+		return nodeDepth;
 	}
 	
 }
