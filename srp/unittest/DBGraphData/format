@@ -1,0 +1,13 @@
+two sample compressed graph and compatible sets. 
+
+cond.graph file:
+The format for compressed graph is as follows: It has two parts.. first part is of the form "<node number> <non-branching nucleotides>"
+where node number is an integer, and non-branching nucleotides is the nucleotides to which it corresponds. Each row contains one node number and one non-branching nucleotides. 
+The second part contains two numbers in each row, wherein each row denotes a directed edge in the compressed graph from the first node to the second node. 
+
+comp.txt file:
+This contains the compatible set for each node in the above compressed graph. 
+Each row is of the following format
+<node no>:<depth node> <compatible node>:<node depth>:<count node> <compatible node>:<node depth>:<count node> <compatible node>:<node depth>:<count node>  ...
+
+The first number denotes the first node of the compatible set S_i , the depth of it is its position with respect to the start node. From second triple onwards, the different second nodes S_j's of the compatible sets are listed. The triple contains the number of the compatible node, the depth of the node w.r.t a starting node, and the number of times S_i and S_j are seen together in the read dataset. 

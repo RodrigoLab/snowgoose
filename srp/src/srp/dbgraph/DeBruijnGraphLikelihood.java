@@ -13,28 +13,32 @@ public class DeBruijnGraphLikelihood {
 	
 	private DeBruijnGraph dbGraph;
 	private CompatibleSets compSets;
-	private int maxNodeIndex;
+//	private int maxNodeIndex;
 	private double[][] length_diff;
 	private int totalCount;
+	private int nodeCount;
 	
 	public DeBruijnGraphLikelihood(DeBruijnGraph dbGraph, CompatibleSets compSets) {
 		this.dbGraph = dbGraph;
 		this.compSets = compSets;
-		this.maxNodeIndex = compSets.getMaxNodeIndex();
+		
 		preprocess();
 	}
 	
 	
 	private void preprocess() {
-		HashMap<Integer, Integer> allLength = dbGraph.getAllLength();
+		dbGraph.preprocess();
+		compSets.preprocess();
+		this.nodeCount = dbGraph.getSize();
+		
+		ArrayList<Integer> allLength = dbGraph.getAllLength();
 
-		length_diff = new double[maxNodeIndex][maxNodeIndex];
+		length_diff = new double[nodeCount][nodeCount];
 		totalCount = 0;
 		for (CompatibleNode k1CNode : compSets) {
 			int k1 = k1CNode.getNodeIndex();
-			ArrayList<Integer> cNodeList = k1CNode.getCNodeList();
-			for (Integer ik2 : cNodeList) {
-				int k2 = ik2;
+			int[] cNodeList = k1CNode.getCNodeArray();
+			for (int k2 : cNodeList) {
 				totalCount += k1CNode.getCNodeCount(k2);
 				length_diff[k1][k2] = k1CNode.getCNodeDepth(k2) - k1CNode.getDepth() + allLength.get(k1)+ allLength.get(k2);
 			}
@@ -45,12 +49,12 @@ public class DeBruijnGraphLikelihood {
 
 
 	public void test(){
-		HashMap<Integer, Integer> allEdges = dbGraph.getAllEdges();
-		HashMap<Integer, String> allNodes = dbGraph.getAllNodes();
-		for (int i = 0; i < maxNodeIndex; i++) {
-			System.out.println(i +"\t"+ allEdges.get(i) +"\t"+ allNodes.get(i));
-			
-		}
+//		HashMap<Integer, Integer> allEdges = dbGraph.getAllEdges();
+//		HashMap<Integer, String> allNodes = dbGraph.getAllNodes();
+//		for (int i = 0; i < maxNodeIndex; i++) {
+////			System.out.println(i +"\t"+ allEdges.get(i) +"\t"+ allNodes.get(i));
+//			
+//		}
 	}
 	public double calculateLikelihood(HaplotypeModel haplotypeModel){
 		
@@ -78,17 +82,18 @@ public class DeBruijnGraphLikelihood {
 //				
 //		}
 //}{$v2} = $v2_depth - $v1_depth + $length_ver{$v2} + $length_ver{$v1};
-		for (CompatibleNode k1CSet : compSets) {
-			int k1 = k1CSet.getNodeIndex();
-			ArrayList<Integer> cNodeList = k1CSet.getCNodeList();
-			for (Integer ik2 : cNodeList) {
-				int k2 = ik2;
+		for (CompatibleNode k1CNode : compSets) {
+			int k1 = k1CNode.getNodeIndex();
+			int[] cNodeList = k1CNode.getCNodeArray();
+			for (int k2 : cNodeList) {
+
+
 				if(d_hashTable[k1][k2]>0){
 					
 					double temp0 = d_hashTable[k1][k2]/(Scale-length_diff[k1][k2]);
-					double temp1 = totalCount - k1CSet.getCNodeCount(k2);
+					double temp1 = totalCount - k1CNode.getCNodeCount(k2);
 					double temp2 = 1 - temp0;
-					double val = temp1*Math.log(temp2) + k1CSet.getCNodeCount(k2) * Math.log(temp0);
+					double val = temp1*Math.log(temp2) + k1CNode.getCNodeCount(k2) * Math.log(temp0);
 					likelihood += val;
 				}else				{
 					likelihood += min;
@@ -169,7 +174,7 @@ public class DeBruijnGraphLikelihood {
 
 	private double[][] computeDHashTable(HaplotypeModel haplotypeModel) {
 		
-		double[][] d_hashTable = new double[maxNodeIndex][maxNodeIndex];
+		double[][] d_hashTable = new double[nodeCount][nodeCount];
 		
 		for (int i = 0; i < haplotypeModel.getHaplotypeCount(); i++) {
 			Haplotype haplotype = haplotypeModel.getHaplotype(i);
@@ -189,9 +194,9 @@ public class DeBruijnGraphLikelihood {
 			for (Integer k1 : path) {
 				CompatibleNode compatibleSet = compSets.getCompatibleNode(k1);	
 //				int nodeIndex = compatibleSet.getNode();
-				ArrayList<Integer> cNodeList = compatibleSet.getCNodeList();
-				for (Integer nodeIndex : cNodeList) {
-					
+				int[] cNodeList = compatibleSet.getCNodeArray();
+				for (int nodeIndex : cNodeList) {
+	
 				
 					if (tempSet.contains(nodeIndex)){
 						d_hashTable[k1][nodeIndex]++;

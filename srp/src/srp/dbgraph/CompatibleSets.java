@@ -3,13 +3,12 @@ package srp.dbgraph;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import dr.evolution.util.Taxon;
-import dr.util.Identifiable;
-
 public class CompatibleSets implements Iterable<CompatibleNode>  {
 
 	private ArrayList<CompatibleNode> allSets;
+	private CompatibleNode[] allCNodesArray;
 	private int maxNodeIndex;
+	private int nodeCount;
 	
 	public CompatibleSets() {
 		
@@ -51,10 +50,26 @@ public class CompatibleSets implements Iterable<CompatibleNode>  {
 	}
 
 	protected int getNodeCount() {
-		return allSets.size();
+		return nodeCount;
 	}
 
+//	protected int getNodeCount() {
+//		return allSets.size();
+//	}
+
 	protected CompatibleNode getCompatibleNode(int index) {
-		return allSets.get(index);
+		return allCNodesArray[index];
+	}
+
+	public void preprocess() {
+		for (CompatibleNode cNode : allSets) {
+			cNode.proprocess();
+		}
+		nodeCount = allSets.size();
+		allCNodesArray = new CompatibleNode[nodeCount];
+		for (int i = 0; i < allCNodesArray.length; i++) {
+			allCNodesArray[i] = allSets.get(i);
+		}
+		
 	}
 }

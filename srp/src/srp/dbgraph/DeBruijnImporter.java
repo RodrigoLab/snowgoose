@@ -30,9 +30,9 @@ public class DeBruijnImporter extends DataImporter {
 
 
 	public static DeBruijnGraph importDeBruijnGraph(String dataDir, String fileName) throws Exception{
-		DeBruijnGraph dbg = new DeBruijnGraph();
 		
-
+		
+		DeBruijnGraph dbg = new DeBruijnGraph();
 		BufferedReader inFile  = new BufferedReader(new FileReader(dataDir+fileName));
 		String inline;
 		int length = 0;
