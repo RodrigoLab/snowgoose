@@ -1,13 +1,12 @@
 package srp.dr.ext;
 
 import srp.evolution.OperationRecord;
+import srp.evolution.haplotypes.HaplotypeModel;
 import srp.evolution.haplotypes.old.OldHaplotypeModel;
-import srp.haplotypes.HaplotypeModel;
 import dr.evolution.alignment.PatternList;
 import dr.evolution.tree.NodeRef;
 import dr.evolution.tree.Tree;
 import dr.evolution.util.TaxonList;
-import dr.evolution.util.TaxonList.MissingTaxonException;
 import dr.evomodel.branchratemodel.BranchRateModel;
 import dr.evomodel.sitemodel.SiteModel;
 import dr.evomodel.tree.TreeModel;

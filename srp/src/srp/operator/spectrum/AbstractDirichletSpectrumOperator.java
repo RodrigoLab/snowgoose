@@ -1,7 +1,5 @@
 package srp.operator.spectrum;
 
-import java.util.Arrays;
-
 import srp.evolution.spectrum.SpectraParameter;
 import srp.evolution.spectrum.SpectrumAlignmentModel;
 import dr.inference.operators.CoercionMode;

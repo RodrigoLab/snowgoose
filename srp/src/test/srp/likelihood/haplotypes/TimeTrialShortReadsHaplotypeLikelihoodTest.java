@@ -1,9 +1,6 @@
 package test.srp.likelihood.haplotypes;
 
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-
 import java.util.Arrays;
 
 import org.junit.After;
@@ -13,36 +10,18 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import srp.core.DataImporter;
-import srp.evolution.OperationType;
+import srp.evolution.haplotypes.HaplotypeModel;
 import srp.evolution.shortreads.ShortReadMapping;
-import srp.evolution.spectrum.Spectrum;
-import srp.evolution.spectrum.SpectrumAlignmentModel;
-import srp.haplotypes.AlignmentUtils;
-import srp.haplotypes.HaplotypeModel;
 import srp.likelihood.haplotypes.ShortReadsHaplotypeLikelihood;
-import srp.likelihood.spectrum.ShortReadsSpectrumLikelihood;
-import srp.likelihood.spectrum.AbstractShortReadsSpectrumLikelihood.DistType;
 import srp.operator.haplotypes.AbstractHaplotypeOperator;
 import srp.operator.haplotypes.BaseSingleOperator;
 import srp.operator.haplotypes.BasesMultiOperator;
 import srp.operator.haplotypes.ColumnOperator;
-import srp.operator.haplotypes.HaplotypeRecombinationOperator;
 import srp.operator.haplotypes.HaplotypeSwapSectionOperator;
-import srp.operator.spectrum.AbstractSpectrumOperator;
-import srp.operator.spectrum.DeltaExchangeColumnSpectrumOperator;
-import srp.operator.spectrum.DeltaExchangeMultiSpectrumOperator;
-import srp.operator.spectrum.DirichletSpectrumOperator;
-import srp.operator.spectrum.RecombinationSpectrumOperator;
-import srp.operator.spectrum.RecombineSectionSpectrumOperator;
-import srp.operator.spectrum.SwapMultiSpectrumOperator;
 import dr.evolution.alignment.Alignment;
-import dr.evolution.alignment.SimpleAlignment;
 import dr.inference.markovchain.MarkovChain;
 import dr.inference.operators.CoercionMode;
-import dr.inference.operators.MCMCOperator;
 import dr.inference.operators.OperatorFailedException;
-import dr.inference.operators.OperatorSchedule;
-import dr.inference.operators.SimpleOperatorSchedule;
 import dr.math.MathUtils;
 
 /*

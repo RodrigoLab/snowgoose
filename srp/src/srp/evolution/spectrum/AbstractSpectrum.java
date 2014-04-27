@@ -8,7 +8,6 @@ import dr.evolution.datatype.DataType;
 import dr.evolution.util.Taxon;
 import dr.inference.model.AbstractModel;
 import dr.inference.model.Model;
-import dr.inference.model.Parameter;
 import dr.inference.model.Variable;
 import dr.inference.model.Variable.ChangeType;
 import dr.util.Attributable;

@@ -13,7 +13,6 @@ import srp.evolution.haplotypes.old.OldHapOperation;
 import srp.evolution.haplotypes.old.OldHaplotypeModel;
 import srp.evolution.haplotypes.old.OldHaplotypeModelUtils;
 import srp.evolution.shortreads.AlignmentMapping;
-import srp.haplotypes.SPSDist;
 import srp.likelihood.haplotypes.ShortReadLikelihood;
 import srp.operator.haplotypes.old.AbstractBaseSingleOperator;
 import srp.operator.haplotypes.old.AbstractBasesMultiOperator;

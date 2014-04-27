@@ -1,16 +1,11 @@
 package srp.operator.haplotypes;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.PrintWriter;
-
 import srp.evolution.OperationType;
-import srp.haplotypes.HaplotypeModel;
+import srp.evolution.haplotypes.HaplotypeModel;
 import dr.evolution.datatype.DataType;
 import dr.evolution.datatype.Nucleotides;
 import dr.inference.operators.AbstractCoercableOperator;
 import dr.inference.operators.CoercionMode;
-import dr.inference.operators.SimpleMCMCOperator;
 import dr.math.MathUtils;
 
 public abstract class AbstractHaplotypeOperator extends AbstractCoercableOperator {

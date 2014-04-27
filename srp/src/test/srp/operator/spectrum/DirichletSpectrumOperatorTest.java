@@ -3,10 +3,7 @@ package test.srp.operator.spectrum;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.Arrays;
-
 import org.apache.commons.math3.random.RandomDataGenerator;
-import org.apache.commons.math3.stat.StatUtils;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -14,11 +11,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import srp.evolution.OperationRecord;
-import srp.evolution.shortreads.AlignmentMapping;
 import srp.evolution.spectrum.SpectraParameter;
 import srp.evolution.spectrum.Spectrum;
 import srp.evolution.spectrum.SpectrumAlignmentModel;
-import srp.haplotypes.AlignmentUtils;
 import srp.operator.spectrum.DirichletSpectrumOperator;
 import test.TestUtils;
 import dr.inference.operators.CoercionMode;

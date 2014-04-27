@@ -1,33 +1,19 @@
 package srp.likelihood.spectrum;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.HashSet;
-import java.util.Set;
-
-import javax.swing.text.TabableView;
 
 import org.apache.commons.math3.stat.StatUtils;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
-import srp.dr.evolution.datatype.ShortReads;
-import srp.evolution.OperationType;
 import srp.evolution.OperationRecord;
+import srp.evolution.OperationType;
 import srp.evolution.shortreads.ShortReadMapping;
 import srp.evolution.spectrum.SpectraParameter;
 import srp.evolution.spectrum.Spectrum;
 import srp.evolution.spectrum.SpectrumAlignmentModel;
 import srp.likelihood.LikelihoodScaler;
-
-import com.carrotsearch.hppc.BitSet;
-
-import dr.evolution.datatype.DataType;
-import dr.inference.model.Model;
-import dr.inference.model.Variable;
-import dr.inference.model.Variable.ChangeType;
 //import java.util.BitSet;
 
 

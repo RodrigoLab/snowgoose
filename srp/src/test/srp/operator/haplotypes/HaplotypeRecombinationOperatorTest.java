@@ -1,6 +1,7 @@
 package test.srp.operator.haplotypes;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -9,9 +10,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import srp.evolution.OperationType;
-import srp.haplotypes.HaplotypeModel;
+import srp.evolution.haplotypes.HaplotypeModel;
 import srp.operator.haplotypes.AbstractHaplotypeOperator;
-import srp.operator.haplotypes.BaseSingleOperator;
 import srp.operator.haplotypes.HaplotypeRecombinationOperator;
 
 public class HaplotypeRecombinationOperatorTest {

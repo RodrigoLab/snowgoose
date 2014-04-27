@@ -1,14 +1,9 @@
 package srp.operator.haplotypes;
 
-import srp.evolution.OperationType;
-import srp.evolution.haplotypes.old.OldHaplotype;
-import srp.evolution.haplotypes.old.OldHaplotypeModel;
-import srp.haplotypes.Haplotype;
-import srp.haplotypes.HaplotypeModel;
-import srp.operator.haplotypes.old.AbstractBasesMultiOperator;
+import srp.evolution.haplotypes.Haplotype;
+import srp.evolution.haplotypes.HaplotypeModel;
 import dr.inference.operators.CoercionMode;
 import dr.inference.operators.OperatorFailedException;
-import dr.math.MathUtils;
 
 
 public class HaplotypeSwapSectionOperator extends HaplotypeRecombinationOperator {

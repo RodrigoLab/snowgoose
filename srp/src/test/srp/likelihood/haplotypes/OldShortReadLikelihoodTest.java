@@ -13,10 +13,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import srp.core.DataImporter;
+import srp.evolution.haplotypes.AlignmentUtils;
 import srp.evolution.haplotypes.old.OldHaplotypeModel;
 import srp.evolution.haplotypes.old.OldHaplotypeModelUtils;
 import srp.evolution.shortreads.AlignmentMapping;
-import srp.haplotypes.AlignmentUtils;
 import srp.likelihood.haplotypes.ShortReadLikelihood;
 import srp.operator.haplotypes.old.BaseSingleOperator;
 import dr.evolution.alignment.Alignment;

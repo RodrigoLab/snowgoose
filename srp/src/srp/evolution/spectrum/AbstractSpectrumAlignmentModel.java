@@ -1,12 +1,7 @@
 package srp.evolution.spectrum;
 
 import srp.evolution.AbstractAlignmentModel;
-import srp.evolution.OperationType;
-import srp.evolution.OperationRecord;
-import dr.evolution.alignment.SiteList;
-import dr.evolution.sequence.Sequence;
 import dr.evolution.util.Taxon;
-import dr.evolution.util.TaxonList;
 
 //public abstract class AbstractSpectrumAlignmentModel extends AbstractModel implements TaxonList, SiteList{
 public abstract class AbstractSpectrumAlignmentModel extends AbstractAlignmentModel {

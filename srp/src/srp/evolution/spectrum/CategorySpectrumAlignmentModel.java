@@ -3,17 +3,10 @@ package srp.evolution.spectrum;
 
 import java.util.ArrayList;
 
-import srp.evolution.OperationType;
 import srp.evolution.OperationRecord;
+import srp.evolution.OperationType;
 import srp.evolution.spectrum.CategorySpectraParameter.CategoryType;
-import srp.evolution.spectrum.SpectraParameter.SpectraType;
-import dr.evolution.alignment.Alignment;
-import dr.evolution.datatype.Nucleotides;
-import dr.evolution.sequence.Sequence;
 import dr.evolution.util.Taxon;
-import dr.inference.model.Model;
-import dr.inference.model.Variable;
-import dr.inference.model.Variable.ChangeType;
 import dr.util.NumberFormatter;
 
 

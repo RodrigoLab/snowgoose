@@ -1,10 +1,9 @@
 package test.dr.ext;
 
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.logging.LogManager;
 
 import org.junit.After;
@@ -16,12 +15,9 @@ import org.junit.Test;
 import srp.core.DataImporter;
 import srp.dr.ext.SitePatternsExt;
 import srp.dr.ext.TreeLikelihoodExt;
-import srp.evolution.OperationType;
+import srp.evolution.haplotypes.HaplotypeModel;
 import srp.evolution.shortreads.ShortReadMapping;
-import srp.haplotypes.HaplotypeModel;
-import srp.haplotypes.SPSDist;
 import srp.likelihood.haplotypes.ShortReadsHaplotypeLikelihood;
-import srp.operator.haplotypes.AbstractHaplotypeOperator;
 import srp.operator.haplotypes.BaseSingleOperator;
 import srp.operator.haplotypes.BasesMultiOperator;
 import srp.operator.haplotypes.ColumnOperator;

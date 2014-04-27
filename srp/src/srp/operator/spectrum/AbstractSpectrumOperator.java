@@ -1,22 +1,18 @@
 package srp.operator.spectrum;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
+
+import srp.evolution.OperationType;
+import srp.evolution.spectrum.SpectraParameter;
+import srp.evolution.spectrum.SpectrumAlignmentModel;
 
 import com.google.common.primitives.Ints;
 
-import srp.evolution.OperationType;
-import srp.evolution.shortreads.AlignmentMapping;
-import srp.evolution.spectrum.SpectraParameter;
-import srp.evolution.spectrum.SpectrumAlignmentModel;
-import srp.evolution.spectrum.SpectrumLogger;
 import dr.inference.model.Bounds;
 import dr.inference.operators.AbstractCoercableOperator;
 import dr.inference.operators.CoercionMode;
-import dr.inference.operators.OperatorFailedException;
 import dr.math.MathUtils;
 
 public abstract class AbstractSpectrumOperator extends AbstractCoercableOperator {

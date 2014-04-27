@@ -1,7 +1,5 @@
 package srp.evolution.spectrum;
 
-import java.util.Arrays;
-
 import srp.dr.evolution.datatype.ShortReads;
 import dr.inference.model.Bounds;
 import dr.inference.model.Parameter;

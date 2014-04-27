@@ -1,9 +1,8 @@
 package test.srp.likelihood.stateLikelihood;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.Arrays;
 
 import org.junit.After;
@@ -12,19 +11,14 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import srp.core.DataImporter;
-import srp.evolution.shortreads.AlignmentMapping;
 import srp.evolution.spectrum.SpectraParameter;
-import srp.evolution.spectrum.SpectrumAlignmentModel;
 import srp.evolution.spectrum.SpectraParameter.SpectraType;
-import srp.likelihood.spectrum.ShortReadsSpectrumLikelihood;
 import srp.likelihood.stateLikelihood.BetaMeanStateLikelihood;
 import srp.likelihood.stateLikelihood.BetaModeStateLikelihood;
 import srp.likelihood.stateLikelihood.ChisqStateLikelihood;
 import srp.likelihood.stateLikelihood.GTestStateLikelihood;
 import srp.likelihood.stateLikelihood.ProbabilityStateLikelihood;
 import srp.likelihood.stateLikelihood.StateLikelihood;
-import dr.evolution.alignment.Alignment;
 import dr.inference.markovchain.MarkovChain;
 
 public class StateLikelihoodTest {

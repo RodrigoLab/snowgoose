@@ -1,28 +1,17 @@
 package srp.likelihood;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.carrotsearch.hppc.BitSet;
-
 import srp.dr.evolution.datatype.ShortReads;
-import srp.evolution.AbstractAlignmentModel;
 import srp.evolution.OperationRecord;
 import srp.evolution.OperationType;
 import srp.evolution.shortreads.ShortReadMapping;
-import srp.evolution.spectrum.AbstractSpectrumAlignmentModel;
-import srp.evolution.spectrum.SpectrumAlignmentModel;
-import srp.haplotypes.AbstractHaplotypeModel;
-import srp.likelihood.stateLikelihood.BetaMeanStateLikelihood;
-import srp.likelihood.stateLikelihood.BetaModeStateLikelihood;
-import srp.likelihood.stateLikelihood.ChisqStateLikelihood;
-import srp.likelihood.stateLikelihood.GTestStateLikelihood;
-import srp.likelihood.stateLikelihood.ProbabilityStateLikelihood;
-import srp.likelihood.stateLikelihood.StateLikelihood;
 import dr.evolution.datatype.DataType;
 import dr.inference.model.AbstractModelLikelihood;
 import dr.inference.model.Model;

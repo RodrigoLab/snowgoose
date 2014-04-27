@@ -1,23 +1,13 @@
 package srp.operator.spectrum;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-
-import org.apache.commons.math3.stat.StatUtils;
 import org.apache.commons.math3.util.FastMath;
 
 import srp.evolution.OperationType;
 import srp.evolution.spectrum.SpectraParameter;
 import srp.evolution.spectrum.Spectrum;
 import srp.evolution.spectrum.SpectrumAlignmentModel;
-
-import com.google.common.primitives.Ints;
-import com.sun.org.glassfish.external.statistics.Stats;
-
 import dr.inference.operators.CoercionMode;
 import dr.inference.operators.OperatorFailedException;
-import dr.math.GammaFunction;
 import dr.math.MathUtils;
 
 public class DirichletSpectrumOperator extends AbstractDirichletSpectrumOperator{

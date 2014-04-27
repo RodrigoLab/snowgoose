@@ -1,15 +1,10 @@
 package srp.operator.haplotypes;
 
 import srp.evolution.OperationType;
-import srp.evolution.shortreads.AlignmentMapping;
-import srp.evolution.spectrum.SpectraParameter;
-import srp.haplotypes.Haplotype;
-import srp.haplotypes.HaplotypeModel;
-import dr.inference.model.Parameter;
-import dr.inference.operators.AbstractCoercableOperator;
+import srp.evolution.haplotypes.Haplotype;
+import srp.evolution.haplotypes.HaplotypeModel;
 import dr.inference.operators.CoercionMode;
 import dr.inference.operators.OperatorFailedException;
-import dr.math.MathUtils;
 
 
 public class ColumnOperator extends AbstractHaplotypeOperator {

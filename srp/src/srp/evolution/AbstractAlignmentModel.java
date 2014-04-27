@@ -6,8 +6,6 @@ import java.util.List;
 
 import srp.dr.evolution.datatype.ShortReads;
 import dr.evolution.datatype.DataType;
-import dr.evolution.datatype.Nucleotides;
-import dr.evolution.sequence.Sequence;
 import dr.evolution.util.Taxon;
 import dr.evolution.util.TaxonList;
 import dr.inference.model.AbstractModel;
