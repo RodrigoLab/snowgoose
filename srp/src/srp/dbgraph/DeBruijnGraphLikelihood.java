@@ -1,13 +1,10 @@
 package srp.dbgraph;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.HashSet;
 
-import srp.haplotypes.Haplotype;
-import srp.haplotypes.HaplotypeModel;
+import srp.evolution.haplotypes.Haplotype;
+import srp.evolution.haplotypes.HaplotypeModel;
 
 public class DeBruijnGraphLikelihood {
 	

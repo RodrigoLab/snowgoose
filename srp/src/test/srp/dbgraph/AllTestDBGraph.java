@@ -4,16 +4,12 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
-import srp.evolution.haplotypes.old.OldHaplotype;
-import test.srp.haplotypes.old.OldHaplotypeModelTest;
-import test.srp.shortreads.AlignmentMappingTest;
-import test.srp.shortreads.ShortReadTest;
-
 @RunWith(Suite.class)
 @SuiteClasses({ 
 
 	CompatibleNodeTest.class,
 	CompatibleSetsTest.class,
+	DeBruijnGraphLikelihoodTest.class,
 	DeBruijnGraphTest.class,
 	DeBruijnImporterTest.class
 	
