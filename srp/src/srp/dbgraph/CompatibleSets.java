@@ -28,6 +28,7 @@ public class CompatibleSets implements Iterable<CompatibleNode>  {
 	}
 	
 	@Override
+	@Deprecated
 	public Iterator<CompatibleNode> iterator() {
 	    return new Iterator<CompatibleNode>() {
 	        private int index = -1;
@@ -49,7 +50,7 @@ public class CompatibleSets implements Iterable<CompatibleNode>  {
 	    };
 	}
 
-	protected int getNodeCount() {
+	public int getNodeCount() {
 		return nodeCount;
 	}
 
@@ -57,7 +58,7 @@ public class CompatibleSets implements Iterable<CompatibleNode>  {
 //		return allSets.size();
 //	}
 
-	protected CompatibleNode getCompatibleNode(int index) {
+	public CompatibleNode getCompatibleNode(int index) {
 		return allCNodesArray[index];
 	}
 

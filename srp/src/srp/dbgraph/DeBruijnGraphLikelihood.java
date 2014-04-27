@@ -37,16 +37,20 @@ public class DeBruijnGraphLikelihood {
 		totalCount = 0;
 		for (CompatibleNode k1CNode : compSets) {
 			int k1 = k1CNode.getNodeIndex();
+			int k1LengthMinusDepth = allLength.get(k1) - k1CNode.getNodeDepth();
 			int[] cNodeList = k1CNode.getCNodeArray();
 			for (int k2 : cNodeList) {
 				totalCount += k1CNode.getCNodeCount(k2);
-				length_diff[k1][k2] = k1CNode.getCNodeDepth(k2) - k1CNode.getDepth() + allLength.get(k1)+ allLength.get(k2);
+				length_diff[k1][k2] = k1CNode.getCNodeDepth(k2) + allLength.get(k2) + k1LengthMinusDepth;
 			}
 				
 		}
 		
 	}
 
+	public double[][] getLengthDiff(){
+		return length_diff;
+	}
 
 	public void test(){
 //		HashMap<Integer, Integer> allEdges = dbGraph.getAllEdges();

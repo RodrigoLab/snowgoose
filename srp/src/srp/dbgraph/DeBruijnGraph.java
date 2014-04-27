@@ -1,17 +1,7 @@
 package srp.dbgraph;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.HashSet;
-
-import javax.security.auth.kerberos.KeyTab;
-
-import com.google.common.collect.Collections2;
-
-import srp.haplotypes.Haplotype;
-import srp.haplotypes.HaplotypeModel;
 
 public class DeBruijnGraph {
 //	private OpenIntIntHashMap

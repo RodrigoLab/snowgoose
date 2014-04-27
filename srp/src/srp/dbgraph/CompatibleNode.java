@@ -31,23 +31,45 @@ public class CompatibleNode {
 			
 	
 	public CompatibleNode(Iterable<String> split2) {
-
+		this();
 
 		Iterator<String> iterator = split2.iterator();
 		nodeIndex = Integer.parseInt( iterator.next());
 		nodeDepth = Integer.parseInt( iterator.next());
+		
+//		System.out.println(nodeIndex +"\t"+ nodeDepth);
+	}
+
+	public CompatibleNode(String input) {
+		this();
+		Iterable<String> split = Splitter.on(" ").split(input.trim());
+
+		for (String string : split) {
+			if(nodeIndex == nodeDepth){
+				Iterable<String> split2 = Splitter.on(":").split(string);
+				Iterator<String> iterator = split2.iterator();
+				nodeIndex = Integer.parseInt( iterator.next());
+				nodeDepth = Integer.parseInt( iterator.next());
+				
+			}
+			else{
+				addCompatibleNode(string);
+			}
+		}
+		
+	}
+
+	private CompatibleNode() {
 		cNodeList = new ArrayList<>();
-//		cCount = new HashMap<Integer, Integer>();
-//		cDepth= new HashMap<Integer, Integer>();
 		cCount = new OpenIntIntHashMap();
 		cDepth = new OpenIntIntHashMap();
 		
-		System.out.println(nodeIndex +"\t"+ nodeDepth);
 	}
 
 	public void addCompatibleNode(String string) {
 		Iterable<String> split2 = Splitter.on(":").split(string);
 		Iterator<String> iterator = split2.iterator();
+
 		int cNode = Integer.parseInt( iterator.next());
 		int tempDepth = Integer.parseInt( iterator.next());
 		int tempCount = Integer.parseInt( iterator.next());
@@ -98,7 +120,7 @@ public class CompatibleNode {
 		return nodeIndex;
 	}
 
-	public int getDepth() {
+	public int getNodeDepth() {
 		return nodeDepth;
 	}
 	
