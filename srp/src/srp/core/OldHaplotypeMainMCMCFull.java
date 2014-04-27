@@ -8,8 +8,8 @@ import java.util.HashMap;
 
 import srp.dr.ext.TreeLikelihoodExt;
 //import srp.evolution.haplotypes.old.OldHaplotypeModelUtils;
-import srp.haplotypes.HaplotypeLoggerWithTrueHaplotype;
-import srp.haplotypes.HaplotypeModel;
+import srp.evolution.haplotypes.HaplotypeLoggerWithTrueHaplotype;
+import srp.evolution.haplotypes.HaplotypeModel;
 //import srp.likelihood.haplotypes.ShortReadLikelihood;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.util.TaxonList;

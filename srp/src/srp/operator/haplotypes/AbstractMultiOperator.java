@@ -3,7 +3,7 @@ package srp.operator.haplotypes;
 import org.apache.commons.math3.util.FastMath;
 
 import srp.evolution.OperationType;
-import srp.haplotypes.HaplotypeModel;
+import srp.evolution.haplotypes.HaplotypeModel;
 import dr.inference.operators.CoercionMode;
 import dr.math.MathUtils;
 

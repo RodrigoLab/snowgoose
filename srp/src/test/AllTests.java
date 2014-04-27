@@ -8,11 +8,11 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({ 
 //	test.dr.ext.TreeLikelihoodExtTest.class, //slow
-	test.srp.haplotypes.AAllTestsHaplotypes.class,
+	test.srp.evolution.haplotypes.AAllTestsHaplotypes.class,
 	test.srp.operator.haplotypes.old.AAllTestsHaplotyesOperator.class,
 	test.srp.likelihood.haplotypes.AllTestsLikelihood.class,
-	test.srp.shortreads.AAllTestsShortreads.class,
-	test.srp.spectrum.AAllTestsSpectrum.class,
+	test.srp.evolution.shortreads.AAllTestsShortreads.class,
+	test.srp.evolution.spectrum.AAllTestsSpectrum.class,
 	test.srp.likelihood.spectrum.AllTestsSpectrumLikelihood.class,
 	test.srp.operator.spectrum.AllTestsSpectrumOperator.class,
 

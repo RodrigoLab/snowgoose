@@ -1,6 +1,6 @@
 package srp.likelihood.haplotypes;
 
-import srp.haplotypes.Haplotype;
+import srp.evolution.haplotypes.Haplotype;
 
 
 public class LikelihoodUtils {

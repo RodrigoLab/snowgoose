@@ -13,8 +13,8 @@ import org.junit.Test;
 
 import srp.evolution.OperationRecord;
 import srp.evolution.OperationType;
-import srp.haplotypes.Haplotype;
-import srp.haplotypes.HaplotypeModel;
+import srp.evolution.haplotypes.Haplotype;
+import srp.evolution.haplotypes.HaplotypeModel;
 import srp.operator.haplotypes.AbstractHaplotypeOperator;
 import srp.operator.haplotypes.BaseSingleOperator;
 import test.TestUtils;

@@ -1,8 +1,8 @@
 package srp.operator.haplotypes;
 
 import srp.evolution.OperationType;
-import srp.haplotypes.Haplotype;
-import srp.haplotypes.HaplotypeModel;
+import srp.evolution.haplotypes.Haplotype;
+import srp.evolution.haplotypes.HaplotypeModel;
 import dr.inference.operators.CoercionMode;
 import dr.inference.operators.OperatorFailedException;
 

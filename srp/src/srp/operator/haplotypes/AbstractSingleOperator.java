@@ -1,7 +1,7 @@
 package srp.operator.haplotypes;
 
 import srp.evolution.OperationType;
-import srp.haplotypes.HaplotypeModel;
+import srp.evolution.haplotypes.HaplotypeModel;
 
 public abstract class AbstractSingleOperator extends AbstractHaplotypeOperator {
 

@@ -1,8 +1,8 @@
 package srp.dr.ext;
 
 import srp.evolution.OperationRecord;
+import srp.evolution.haplotypes.HaplotypeModel;
 import srp.evolution.haplotypes.old.OldHaplotypeModel;
-import srp.haplotypes.HaplotypeModel;
 import dr.evolution.alignment.PatternList;
 import dr.evolution.tree.NodeRef;
 import dr.evolution.tree.Tree;

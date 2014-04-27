@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import srp.dr.ext.TreeLikelihoodExt;
-import srp.haplotypes.HaplotypeModel;
+import srp.evolution.haplotypes.HaplotypeModel;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.util.TaxonList;
 import dr.evolution.util.Units;

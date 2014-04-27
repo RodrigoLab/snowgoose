@@ -1,7 +1,7 @@
 package srp.operator.haplotypes;
 
 import srp.evolution.OperationType;
-import srp.haplotypes.HaplotypeModel;
+import srp.evolution.haplotypes.HaplotypeModel;
 import dr.evolution.datatype.DataType;
 import dr.evolution.datatype.Nucleotides;
 import dr.inference.operators.AbstractCoercableOperator;

@@ -3,7 +3,7 @@ package srp.dr.ext;
 import java.util.Arrays;
 
 import srp.evolution.OperationRecord;
-import srp.haplotypes.HaplotypeModel;
+import srp.evolution.haplotypes.HaplotypeModel;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.SiteList;
 import dr.evolution.alignment.SitePatterns;

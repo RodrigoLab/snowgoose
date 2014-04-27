@@ -1,7 +1,7 @@
 package srp.evolution.haplotypes.old;
 
+import srp.evolution.haplotypes.AlignmentUtils;
 import srp.evolution.shortreads.AlignmentMapping;
-import srp.haplotypes.AlignmentUtils;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.SimpleAlignment;
 

@@ -14,11 +14,11 @@ import org.junit.Test;
 
 import srp.core.DataImporter;
 import srp.evolution.OperationType;
+import srp.evolution.haplotypes.AlignmentUtils;
 import srp.evolution.shortreads.ShortReadMapping;
 import srp.evolution.spectrum.SpectraParameter.SpectraType;
 import srp.evolution.spectrum.Spectrum;
 import srp.evolution.spectrum.SpectrumAlignmentModel;
-import srp.haplotypes.AlignmentUtils;
 import srp.likelihood.spectrum.ShortReadsSpectrumLikelihood;
 import srp.operator.spectrum.AbstractSpectrumOperator;
 import srp.operator.spectrum.DeltaExchangeColumnSpectrumOperator;

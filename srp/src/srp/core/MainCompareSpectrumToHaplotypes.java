@@ -4,10 +4,10 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 
+import srp.evolution.haplotypes.SPSDist;
 import srp.evolution.spectrum.AbstractSpectrumAlignmentModel;
 import srp.evolution.spectrum.SpectrumAlignmentUtils;
 import srp.evolution.spectrum.SpectrumAlignmentUtils.Dist;
-import srp.haplotypes.SPSDist;
 import dr.evolution.alignment.Alignment;
 
 public class MainCompareSpectrumToHaplotypes {

@@ -3,10 +3,10 @@ package srp.likelihood.haplotypes;
 import java.util.HashMap;
 
 import srp.evolution.OperationType;
+import srp.evolution.haplotypes.Haplotype;
+import srp.evolution.haplotypes.HaplotypeModel;
 //import srp.evolution.shortreads.AlignmentMapping;
 import srp.evolution.shortreads.ShortReadMapping;
-import srp.haplotypes.Haplotype;
-import srp.haplotypes.HaplotypeModel;
 import srp.likelihood.AbstractShortReadsLikelihood;
 import srp.likelihood.LikelihoodScaler;
 //import srp.likelihood.spectrum.AbstractShortReadsSpectrumLikelihood;

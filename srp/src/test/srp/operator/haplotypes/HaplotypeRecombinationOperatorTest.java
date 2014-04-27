@@ -10,7 +10,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import srp.evolution.OperationType;
-import srp.haplotypes.HaplotypeModel;
+import srp.evolution.haplotypes.HaplotypeModel;
 import srp.operator.haplotypes.AbstractHaplotypeOperator;
 import srp.operator.haplotypes.HaplotypeRecombinationOperator;
 

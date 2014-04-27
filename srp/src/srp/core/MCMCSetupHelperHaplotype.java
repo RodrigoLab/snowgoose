@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import srp.dr.ext.TreeLikelihoodExt;
-import srp.haplotypes.HaplotypeModel;
+import srp.evolution.haplotypes.HaplotypeModel;
 import srp.operator.haplotypes.BaseSingleOperator;
 import srp.operator.haplotypes.BasesMultiOperator;
 import srp.operator.haplotypes.ColumnOperator;
