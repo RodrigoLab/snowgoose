@@ -13,7 +13,6 @@ import srp.evolution.haplotypes.old.OldHapOperation;
 import srp.evolution.haplotypes.old.OldHapSwapInfo;
 import srp.evolution.haplotypes.old.OldHaplotype;
 import srp.evolution.shortreads.AlignmentMapping;
-import srp.haplotypes.AbstractHaplotypeModel;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.datatype.DataType;
 import dr.evolution.datatype.Nucleotides;

@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import srp.likelihood.AbstractShortReadsLikelihood;
-import srp.likelihood.haplotypes.ShortReadsHaplotypeLikelihood;
-import srp.likelihood.spectrum.ShortReadsSpectrumLikelihood;
 import dr.evolution.coalescent.CoalescentSimulator;
 import dr.evolution.coalescent.ConstantPopulation;
 import dr.evolution.datatype.Nucleotides;

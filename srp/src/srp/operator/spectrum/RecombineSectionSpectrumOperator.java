@@ -1,7 +1,5 @@
 package srp.operator.spectrum;
 
-import java.util.Arrays;
-
 import org.apache.commons.math3.util.FastMath;
 
 import srp.evolution.OperationType;
@@ -9,7 +7,6 @@ import srp.evolution.spectrum.SpectraParameter;
 import srp.evolution.spectrum.Spectrum;
 import srp.evolution.spectrum.SpectrumAlignmentModel;
 import dr.inference.operators.CoercionMode;
-import dr.inference.operators.MCMCOperator;
 import dr.inference.operators.OperatorFailedException;
 import dr.math.MathUtils;
 

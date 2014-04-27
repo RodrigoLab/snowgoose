@@ -4,8 +4,6 @@ import java.util.HashMap;
 
 import org.apache.commons.math3.random.RandomDataGenerator;
 
-import srp.dr.ext.TreeLikelihoodExt;
-import srp.evolution.haplotypes.old.OldHaplotypeModel;
 import srp.evolution.spectrum.SpectrumAlignmentModel;
 import srp.likelihood.spectrum.treelikelihood.SpectrumTreeLikelihood;
 import srp.operator.spectrum.DeltaExchangeColumnSpectrumOperator;

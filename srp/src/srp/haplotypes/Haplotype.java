@@ -1,12 +1,5 @@
 package srp.haplotypes;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-
-import srp.evolution.spectrum.Spectrum;
-
-import com.google.common.primitives.Chars;
-
 import dr.evolution.datatype.DataType;
 import dr.evolution.datatype.Nucleotides;
 import dr.evolution.sequence.Sequence;

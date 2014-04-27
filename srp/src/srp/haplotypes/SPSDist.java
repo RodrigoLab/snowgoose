@@ -2,10 +2,7 @@ package srp.haplotypes;
 
 import java.util.Arrays;
 
-import srp.evolution.haplotypes.old.OldHaplotypeModel;
-import srp.evolution.shortreads.AlignmentMapping;
 import dr.evolution.alignment.Alignment;
-import dr.evolution.alignment.SimpleAlignment;
 
 public class SPSDist {
 

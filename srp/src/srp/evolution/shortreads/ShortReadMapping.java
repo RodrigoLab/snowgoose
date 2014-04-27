@@ -2,14 +2,12 @@ package srp.evolution.shortreads;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-//import java.util.BitSet;
-import java.util.Collections;
+import java.util.BitSet;
 import java.util.HashMap;
 import java.util.HashSet;
 
 import cern.colt.bitvector.BitVector;
 
-import com.carrotsearch.hppc.BitSet;
 import com.google.common.primitives.Ints;
 
 import dr.evolution.alignment.Alignment;
@@ -17,7 +15,7 @@ import dr.evolution.datatype.DataType;
 import dr.evolution.datatype.Nucleotides;
 import dr.evolution.sequence.Sequence;
 import dr.evolution.util.Taxon;
-import dr.math.MathUtils;
+//import java.util.BitSet;
 
 
 /*

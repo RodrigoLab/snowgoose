@@ -15,7 +15,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -31,16 +30,13 @@ import org.junit.rules.ExpectedException;
 
 import srp.core.DataImporter;
 import srp.dr.evolution.datatype.ShortReads;
-import srp.evolution.shortreads.AlignmentMapping;
 import srp.evolution.spectrum.AbstractSpectrumAlignmentModel;
 import srp.evolution.spectrum.Spectrum;
 import srp.evolution.spectrum.SpectrumAlignmentModel;
-import srp.evolution.spectrum.SpectraParameter.SpectraType;
 //import srp.haplotypes.Haplotype;
 //import srp.haplotypes.HaplotypeModel;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.SimpleAlignment;
-import dr.evolution.datatype.Nucleotides;
 import dr.evolution.sequence.Sequence;
 import dr.evolution.util.Taxon;
 

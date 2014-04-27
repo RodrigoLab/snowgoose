@@ -1,41 +1,17 @@
 package srp.likelihood.haplotypes;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 
-import javax.swing.text.TabableView;
-
-import org.apache.commons.math3.stat.StatUtils;
-import org.apache.commons.math3.util.ArithmeticUtils;
-
-import srp.evolution.OperationRecord;
 import srp.evolution.OperationType;
-import srp.evolution.shortreads.ShortRead;
 //import srp.evolution.shortreads.AlignmentMapping;
 import srp.evolution.shortreads.ShortReadMapping;
-import srp.evolution.spectrum.SpectrumAlignmentModel;
-import srp.evolution.spectrum.SpectraParameter;
 import srp.haplotypes.Haplotype;
 import srp.haplotypes.HaplotypeModel;
 import srp.likelihood.AbstractShortReadsLikelihood;
 import srp.likelihood.LikelihoodScaler;
 //import srp.likelihood.spectrum.AbstractShortReadsSpectrumLikelihood;
-
-
-
-
-
-
-
-
 import srp.likelihood.stateLikelihood.StateLikelihood;
-
-import com.carrotsearch.hppc.BitSet;
 //import java.util.BitSet;
-import com.google.common.collect.Collections2;
 
 
 

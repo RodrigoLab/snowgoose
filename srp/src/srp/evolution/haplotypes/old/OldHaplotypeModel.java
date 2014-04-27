@@ -5,11 +5,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import jebl.evolution.sequences.Sequence;
 import srp.dr.ext.SeqGenExt;
 import srp.dr.ext.TreeLikelihoodExt;
 import srp.evolution.shortreads.AlignmentMapping;
-import srp.haplotypes.AbstractHaplotypeModel;
-import jebl.evolution.sequences.Sequence;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.datatype.DataType;
 import dr.evolution.datatype.Nucleotides;

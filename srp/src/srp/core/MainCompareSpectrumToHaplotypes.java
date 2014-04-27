@@ -3,11 +3,9 @@ package srp.core;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.PrintWriter;
-import java.util.Arrays;
 
 import srp.evolution.spectrum.AbstractSpectrumAlignmentModel;
 import srp.evolution.spectrum.SpectrumAlignmentUtils;
-import srp.evolution.spectrum.SpectrumLogger;
 import srp.evolution.spectrum.SpectrumAlignmentUtils.Dist;
 import srp.haplotypes.SPSDist;
 import dr.evolution.alignment.Alignment;

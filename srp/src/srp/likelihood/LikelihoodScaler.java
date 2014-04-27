@@ -1,10 +1,6 @@
 package srp.likelihood;
 
-import java.util.ArrayList;
-
 import org.apache.commons.math3.util.FastMath;
-
-import dr.inference.distribution.LogLinearModel;
 
 public class LikelihoodScaler {
 

@@ -1,7 +1,5 @@
 package srp.evolution.haplotypes.old;
 
-import java.util.Arrays;
-
 import srp.evolution.shortreads.AlignmentMapping;
 import srp.haplotypes.AlignmentUtils;
 import dr.evolution.alignment.Alignment;

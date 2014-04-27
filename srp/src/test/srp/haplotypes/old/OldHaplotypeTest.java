@@ -1,8 +1,6 @@
 package test.srp.haplotypes.old;
 
-import static org.junit.Assert.*;
-
-import java.lang.reflect.Method;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -11,9 +9,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import srp.evolution.haplotypes.old.OldHaplotype;
-import srp.haplotypes.Haplotype;
-import dr.evolution.datatype.DataType;
-import dr.evolution.util.Taxon;
 
 public class OldHaplotypeTest {
 	

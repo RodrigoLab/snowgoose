@@ -6,8 +6,6 @@ import srp.evolution.OperationType;
 import srp.evolution.spectrum.SpectraParameter;
 import srp.evolution.spectrum.Spectrum;
 import srp.evolution.spectrum.SpectrumAlignmentModel;
-import dr.inference.model.Bounds;
-import dr.inference.model.Parameter;
 import dr.inference.operators.CoercionMode;
 import dr.inference.operators.OperatorFailedException;
 import dr.math.MathUtils;

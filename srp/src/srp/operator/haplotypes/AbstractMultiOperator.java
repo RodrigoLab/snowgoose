@@ -4,9 +4,6 @@ import org.apache.commons.math3.util.FastMath;
 
 import srp.evolution.OperationType;
 import srp.haplotypes.HaplotypeModel;
-import dr.evolution.datatype.DataType;
-import dr.evolution.datatype.Nucleotides;
-import dr.inference.operators.AbstractCoercableOperator;
 import dr.inference.operators.CoercionMode;
 import dr.math.MathUtils;
 

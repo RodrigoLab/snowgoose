@@ -1,8 +1,5 @@
 package srp.likelihood.spectrum;
 
-import java.util.Set;
-
-import srp.evolution.OperationType;
 import srp.evolution.shortreads.ShortReadMapping;
 import srp.evolution.spectrum.SpectrumAlignmentModel;
 import srp.likelihood.AbstractShortReadsLikelihood;
@@ -12,8 +9,6 @@ import srp.likelihood.stateLikelihood.ChisqStateLikelihood;
 import srp.likelihood.stateLikelihood.GTestStateLikelihood;
 import srp.likelihood.stateLikelihood.ProbabilityStateLikelihood;
 import srp.likelihood.stateLikelihood.StateLikelihood;
-
-import com.carrotsearch.hppc.BitSet;
 
 public abstract class AbstractShortReadsSpectrumLikelihood extends AbstractShortReadsLikelihood {
 

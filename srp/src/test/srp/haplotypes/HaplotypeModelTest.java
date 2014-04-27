@@ -26,13 +26,11 @@ import srp.haplotypes.HaplotypeModel;
 import srp.haplotypes.SPSDist;
 import srp.operator.haplotypes.BaseSingleOperator;
 import srp.operator.haplotypes.BasesMultiOperator;
-//import srp.operator.haplotypes.old.BaseSingleOperator;
-//import srp.operator.haplotypes.old.BasesMultiOperator;
-import test.TestUtils;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.util.Taxon;
-import dr.inference.model.Parameter;
 import dr.inference.operators.MCMCOperator;
+//import srp.operator.haplotypes.old.BaseSingleOperator;
+//import srp.operator.haplotypes.old.BasesMultiOperator;
 
 
 public class HaplotypeModelTest {

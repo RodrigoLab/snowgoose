@@ -1,6 +1,7 @@
 package test.srp.spectrum;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.util.Arrays;
@@ -12,11 +13,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import srp.core.DataImporter;
-import srp.evolution.shortreads.AlignmentMapping;
 import srp.evolution.spectrum.SpectraParameter;
+import srp.evolution.spectrum.SpectraParameter.SpectraType;
 import srp.evolution.spectrum.Spectrum;
 import srp.evolution.spectrum.SpectrumAlignmentModel;
-import srp.evolution.spectrum.SpectraParameter.SpectraType;
 //import srp.spectrum.AbstractSpectra;
 //import srp.spectrum.AbstractSpectrum;
 import dr.evolution.alignment.Alignment;

@@ -1,7 +1,5 @@
 package srp.operator.haplotypes;
 
-import java.util.Arrays;
-
 import srp.evolution.OperationType;
 import srp.haplotypes.Haplotype;
 import srp.haplotypes.HaplotypeModel;

@@ -1,12 +1,9 @@
 package srp.evolution.spectrum;
 
-import java.text.NumberFormat;
 import java.util.ArrayList;
 
 import srp.evolution.spectrum.SpectraParameter.SpectraType;
 import dr.evolution.sequence.Sequence;
-import dr.evolution.util.Taxon;
-import dr.util.Attributable;
 
 //public class Spectrum implements Identifiable, Attributable{// extends AbstractModel{
 public class Spectrum extends AbstractSpectrum {

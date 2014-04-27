@@ -5,7 +5,6 @@ import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.PatternList;
 import dr.evolution.sequence.Sequence;
 import dr.evolution.util.Taxon;
-import dr.math.distributions.HalfTDistribution;
 
 public abstract class AbstractHaplotypeModel extends AbstractAlignmentModel implements Alignment {
 

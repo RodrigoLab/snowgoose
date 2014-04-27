@@ -1,5 +1,6 @@
 package srp.likelihood.spectrum;
 
+import java.util.BitSet;
 import java.util.Set;
 
 import srp.dr.evolution.datatype.ShortReads;
@@ -8,9 +9,6 @@ import srp.evolution.spectrum.CategorySpectrumAlignmentModel;
 import srp.evolution.spectrum.SpectraParameter;
 import srp.likelihood.LikelihoodScaler;
 import srp.likelihood.stateLikelihood.StateLikelihood;
-
-import com.carrotsearch.hppc.BitSet;
-
 import dr.evolution.datatype.DataType;
 import dr.inference.model.Model;
 import dr.inference.model.Variable;

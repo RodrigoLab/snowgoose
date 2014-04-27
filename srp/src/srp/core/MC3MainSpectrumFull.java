@@ -1,23 +1,15 @@
 package srp.core;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import srp.evolution.shortreads.AlignmentMapping;
 import srp.evolution.shortreads.ShortReadMapping;
-import srp.evolution.spectrum.SpectrumAlignmentModel;
-import srp.evolution.spectrum.SpectrumLogger;
 import srp.evolution.spectrum.SpectraParameter.SpectraType;
-import srp.likelihood.spectrum.ShortReadsSpectrumLikelihood;
+import srp.evolution.spectrum.SpectrumAlignmentModel;
 import srp.likelihood.spectrum.AbstractShortReadsSpectrumLikelihood.DistType;
+import srp.likelihood.spectrum.ShortReadsSpectrumLikelihood;
 import srp.likelihood.spectrum.treelikelihood.SpectrumTreeLikelihood;
-import dr.app.beast.BeastParser;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.tree.Tree;
 import dr.evolution.util.TaxonList;
@@ -25,7 +17,6 @@ import dr.evolution.util.Units;
 import dr.evomodel.branchratemodel.StrictClockBranchRates;
 import dr.evomodel.coalescent.CoalescentLikelihood;
 import dr.evomodel.coalescent.ConstantPopulationModel;
-import dr.evomodel.tree.TreeLogger;
 import dr.evomodel.tree.TreeModel;
 import dr.evomodelxml.coalescent.ConstantPopulationModelParser;
 import dr.inference.loggers.MCLogger;

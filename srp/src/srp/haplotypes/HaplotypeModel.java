@@ -1,7 +1,6 @@
 package srp.haplotypes;
 
 
-import java.util.Arrays;
 import java.util.List;
 
 import jebl.evolution.sequences.Sequence;
@@ -9,7 +8,6 @@ import srp.dr.ext.SeqGenExt;
 import srp.dr.ext.TreeLikelihoodExt;
 import srp.evolution.OperationType;
 import srp.evolution.shortreads.AlignmentMapping;
-import srp.evolution.spectrum.Spectrum;
 import srp.evolution.spectrum.SpectrumAlignmentModel;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.datatype.Nucleotides;

@@ -10,7 +10,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import srp.evolution.spectrum.Spectrum;
-import srp.evolution.spectrum.SpectraParameter.SpectraType;
 
 public class SpectrumTest {
 

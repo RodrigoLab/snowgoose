@@ -4,7 +4,6 @@ package test.srp.likelihood.spectrum;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
-import java.lang.reflect.Method;
 import java.util.Arrays;
 
 import org.junit.After;
@@ -15,11 +14,10 @@ import org.junit.Test;
 
 import srp.core.DataImporter;
 import srp.evolution.OperationType;
-import srp.evolution.shortreads.AlignmentMapping;
 import srp.evolution.shortreads.ShortReadMapping;
+import srp.evolution.spectrum.SpectraParameter.SpectraType;
 import srp.evolution.spectrum.Spectrum;
 import srp.evolution.spectrum.SpectrumAlignmentModel;
-import srp.evolution.spectrum.SpectraParameter.SpectraType;
 import srp.haplotypes.AlignmentUtils;
 import srp.likelihood.spectrum.ShortReadsSpectrumLikelihood;
 import srp.operator.spectrum.AbstractSpectrumOperator;

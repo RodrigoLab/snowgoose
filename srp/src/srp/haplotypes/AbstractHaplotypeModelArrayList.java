@@ -1,17 +1,12 @@
 package srp.haplotypes;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 import srp.evolution.AbstractAlignmentModel;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.PatternList;
-import dr.evolution.datatype.DataType;
 import dr.evolution.sequence.Sequence;
 import dr.evolution.util.Taxon;
-import dr.inference.model.AbstractModel;
-import dr.util.Attributable;
 
 public abstract class AbstractHaplotypeModelArrayList extends AbstractAlignmentModel implements Alignment {
 

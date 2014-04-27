@@ -19,7 +19,6 @@ import srp.dr.rj.SSHaplotypeModel;
 import srp.evolution.haplotypes.old.OldHapOperation;
 import srp.evolution.haplotypes.old.OldHaplotype;
 import srp.evolution.shortreads.AlignmentMapping;
-import srp.haplotypes.AbstractHaplotypeModel;
 import test.TestUtils;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.datatype.DataType;

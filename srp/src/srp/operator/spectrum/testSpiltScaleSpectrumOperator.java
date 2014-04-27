@@ -1,8 +1,5 @@
 package srp.operator.spectrum;
 
-import java.util.Arrays;
-
-import org.apache.commons.math3.distribution.BetaDistribution;
 import org.apache.commons.math3.util.FastMath;
 
 import srp.evolution.OperationType;

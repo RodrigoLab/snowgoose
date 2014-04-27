@@ -1,7 +1,5 @@
 package srp.likelihood.stateLikelihood;
 
-import java.util.Arrays;
-
 import srp.dr.evolution.datatype.ShortReads;
 import srp.evolution.spectrum.SpectraParameter;
 import srp.likelihood.spectrum.ShortReadsSpectrumLikelihood;

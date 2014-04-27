@@ -1,6 +1,5 @@
 package srp.core;
 
-import dr.inference.distribution.BetaDistributionModel;
 
 
 

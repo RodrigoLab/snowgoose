@@ -1,6 +1,6 @@
 package test.srp.spectrum;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -10,11 +10,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import dr.inference.model.Bounds;
-import dr.inference.model.Parameter.DefaultBounds;
 import srp.evolution.spectrum.AbstractSpectra;
 import srp.evolution.spectrum.SpectraParameter;
 import srp.evolution.spectrum.SpectraParameter.SpectraType;
+import dr.inference.model.Bounds;
+import dr.inference.model.Parameter.DefaultBounds;
 
 public class AbstractSpectraTest {
 

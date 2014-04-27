@@ -1,13 +1,10 @@
 package srp.operator.haplotypes;
 
 import srp.evolution.OperationType;
-import srp.evolution.haplotypes.old.OldHaplotype;
 import srp.haplotypes.Haplotype;
 import srp.haplotypes.HaplotypeModel;
 import dr.inference.operators.CoercionMode;
 import dr.inference.operators.OperatorFailedException;
-import dr.inference.operators.SimpleMCMCOperator;
-import dr.math.MathUtils;
 
 public class HaplotypeRecombinationOperator extends AbstractMultiOperator {
 
