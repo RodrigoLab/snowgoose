@@ -2,6 +2,7 @@ package srp.dbgraph;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 
 import srp.evolution.haplotypes.Haplotype;
@@ -45,7 +46,49 @@ public class DeBruijnGraphLikelihood {
 			}
 				
 		}
+		pairComplementNodes();
+	}
+
+
+	
+	private void pairComplementNodes() {
+		boolean[] temp_hash2 = new boolean[nodeCount]; 
+		HashMap temp_hash = new HashMap();
+		HashMap inverse_hash = new HashMap();
+//		for $k( keys %cond_ver) {
+		ArrayList<String> allNodes = dbGraph.getAllNodes();
+		for (int i = 0; i < nodeCount; i++) {
+			
 		
+//		for (String string : allNodes) {
+//			
+//		}
+			int nodeIndex = i;//cNode.getNodeIndex();
+			temp_hash.put(i, 0);
+			temp_hash2[i] = true;
+			inverse_hash.put(allNodes.get(i), i);
+//		}
+//			temp_hash{$k} = 0;
+//			$inverse_hash{$cond_ver{$k}} = $k;
+		} 
+//		#Link nodes which are reverse complements of each other. 
+		for (int i = 0; i < nodeCount; i++) {
+			if(temp_hash2[i]){
+//			if($temp_hash{$k}==0) {
+				String revComp;
+				
+				int revIndex;
+				temp_hash2[i] = false;
+				temp_hash2[revIndex] = false;
+				my($temp) = revcomplement($cond_ver{$k}); //get revComp
+				$paired_nodes{$k} = $inverse_hash{$temp}; //get nodeIndex and paired them
+				$paired_nodes{$inverse_hash{$temp}} = $k ; 
+//				$temp_hash{$k} = 1; 						//true
+//				$temp_hash{$inverse_hash{$temp}} = 1;
+			}
+		}
+//		undef %inverse_hash;
+//		undef %temp_hash;
 	}
 
 	public double[][] getLengthDiff(){
@@ -67,7 +110,7 @@ public class DeBruijnGraphLikelihood {
 		double[][] d_hashTable = computeDHashTable(pathSet);
 		//		
 ////		#print "In compute set \n";
-////		my($llik) = 0; my($min) = 0; my($max) = -9**9**9; 
+////		my($llik) = 0; my($min) = 0; my($max) = -9**9	**9; 
 		double min = 0;
 		int pathCount = pathSet.getPathCount();
 		double Scale = pathCount*1200;
@@ -90,15 +133,15 @@ public class DeBruijnGraphLikelihood {
 		for (CompatibleNode k1CNode : compSets) {
 			int k1 = k1CNode.getNodeIndex();
 			int[] cNodeList = k1CNode.getCNodeArray();
+
 			for (int k2 : cNodeList) {
-
-
+			
 				if(d_hashTable[k1][k2]>0){
-					
+					int cNodeCount = k1CNode.getCNodeCount(k2);
 					double temp0 = d_hashTable[k1][k2]/(Scale-length_diff[k1][k2]);
-					double temp1 = totalCount - k1CNode.getCNodeCount(k2);
+					double temp1 = totalCount - cNodeCount;
 					double temp2 = 1 - temp0;
-					double val = temp1*Math.log(temp2) + k1CNode.getCNodeCount(k2) * Math.log(temp0);
+					double val = temp1*Math.log(temp2) + cNodeCount * Math.log(temp0);
 					likelihood += val;
 					System.out.println(k1 +"\t"+ k2 +"\t"+ temp0 +"\t"+ temp1 +"\t"+ temp2 +"\t"+ val);
 				}else				{
@@ -127,6 +170,8 @@ public class DeBruijnGraphLikelihood {
 		
 		return likelihood;
 	}
+	
+	
 /*	
 	sub compute_paired_likelihood
 	{
