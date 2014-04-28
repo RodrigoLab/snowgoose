@@ -1442,23 +1442,23 @@ public class SuperBeastTreeModel extends AbstractModel implements MutableTree {
     /**
      * list of internal nodes (including root)
      */
-    private Node[] nodes = null;
-    private Node[] storedNodes = null;
+    protected Node[] nodes = null; //XXX: Change to protected
+    protected Node[] storedNodes = null;//XXX: Change to protected
 
     /**
      * number of nodes (including root and tips)
      */
-    private final int nodeCount;
+    protected int nodeCount;//XXX: Change to protected and remove final
 
     /**
      * number of external nodes
      */
-    private final int externalNodeCount;
+    protected int externalNodeCount;//XXX: Change to protected and remove final
 
     /**
      * number of internal nodes (including root)
      */
-    private final int internalNodeCount;
+    protected int internalNodeCount;//XXX: Change to protected and remove final
 
     /**
      * holds the units of the trees branches.
