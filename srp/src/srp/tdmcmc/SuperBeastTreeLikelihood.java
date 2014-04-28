@@ -1,3 +1,5 @@
+package srp.tdmcmc;
+
 /*
  * TreeLikelihood.java
  *
@@ -23,7 +25,7 @@
  * Boston, MA  02110-1301  USA
  */
 
-package srp.rj;
+
 
 import java.util.logging.Logger;
 
@@ -40,6 +42,7 @@ import dr.evomodel.branchratemodel.DefaultBranchRateModel;
 import dr.evomodel.sitemodel.SiteModel;
 import dr.evomodel.substmodel.FrequencyModel;
 import dr.evomodel.tree.TreeModel;
+import dr.evomodel.treelikelihood.AbstractTreeLikelihood;
 import dr.evomodel.treelikelihood.AminoAcidLikelihoodCore;
 import dr.evomodel.treelikelihood.GeneralLikelihoodCore;
 import dr.evomodel.treelikelihood.LikelihoodCore;
@@ -60,16 +63,20 @@ import dr.inference.model.Statistic;
  * @version $Id: TreeLikelihood.java,v 1.31 2006/08/30 16:02:42 rambaut Exp $
  */
 
-public class RJTreeLikelihood extends AbstractRJTreeLikelihood {
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = -6174728174341577959L;
+public class SuperBeastTreeLikelihood extends AbstractTreeLikelihood {
 
-	/**
+	//
+	// Aim for 95+% identical to original to BEAST TreeLikelihood.
+	// Maybe can get away with exttends TreeLikelihood
+	//
+
+
+	private static final boolean DEBUG = false;
+
+    /**
      * Constructor.
      */
-    public RJTreeLikelihood(PatternList patternList,
+    public SuperBeastTreeLikelihood(PatternList patternList,
                           TreeModel treeModel,
                           SiteModel siteModel,
                           BranchRateModel branchRateModel,
@@ -144,18 +151,17 @@ public class RJTreeLikelihood extends AbstractRJTreeLikelihood {
             } else {
                 likelihoodCore = new GeneralLikelihoodCore(patternList.getStateCount());
             }
-//TODO add/remove/change/surpress later            
-//            {
-//              final String id = getId();
-//              logger.info("TreeLikelihood(" + ((id != null) ? id : treeModel.getId()) + ") using " + coreName + " likelihood core");
-//
-//              logger.info("  " + (useAmbiguities ? "Using" : "Ignoring") + " ambiguities in tree likelihood.");
-//              logger.info("  With " + patternList.getPatternCount() + " unique site patterns.");
-//            }
+            {
+              final String id = getId();
+              logger.info("TreeLikelihood(" + ((id != null) ? id : treeModel.getId()) + ") using " + coreName + " likelihood core");
+
+              logger.info("  " + (useAmbiguities ? "Using" : "Ignoring") + " ambiguities in tree likelihood.");
+              logger.info("  With " + patternList.getPatternCount() + " unique site patterns.");
+            }
 
             if (branchRateModel != null) {
                 this.branchRateModel = branchRateModel;
-//                logger.info("Branch rate model used: " + branchRateModel.getModelName());
+                logger.info("Branch rate model used: " + branchRateModel.getModelName());
             } else {
                 this.branchRateModel = new DefaultBranchRateModel();
             }
@@ -188,7 +194,6 @@ public class RJTreeLikelihood extends AbstractRJTreeLikelihood {
                 }
 
                 addModel(tipStatesModel);
-                //useAmbiguities = true;
             } else {
                 for (int i = 0; i < extNodeCount; i++) {
                     // Find the id of tip i in the patternList
@@ -241,8 +246,7 @@ public class RJTreeLikelihood extends AbstractRJTreeLikelihood {
     /**
      * Handles model changed events from the submodels.
      */
-    @Override
-	protected void handleModelChangedEvent(Model model, Object object, int index) {
+    protected void handleModelChangedEvent(Model model, Object object, int index) {
 
         if (model == treeModel) {
             if (object instanceof TreeModel.TreeChangedEvent) {
@@ -268,6 +272,11 @@ public class RJTreeLikelihood extends AbstractRJTreeLikelihood {
             if (index == -1) {
                 updateAllNodes();
             } else {
+                if (DEBUG) {
+                if (index >= treeModel.getNodeCount()) {
+                    throw new IllegalArgumentException("Node index out of bounds");
+                }
+                }
                 updateNode(treeModel.getNode(index));
             }
 
@@ -303,8 +312,7 @@ public class RJTreeLikelihood extends AbstractRJTreeLikelihood {
     /**
      * Stores the additional state other than model components
      */
-    @Override
-	protected void storeState() {
+    protected void storeState() {
 
         if (storePartials) {
             likelihoodCore.storeState();
@@ -316,8 +324,7 @@ public class RJTreeLikelihood extends AbstractRJTreeLikelihood {
     /**
      * Restore the additional stored state
      */
-    @Override
-	protected void restoreState() {
+    protected void restoreState() {
 
         if (storePartials) {
             likelihoodCore.restoreState();
@@ -338,13 +345,12 @@ public class RJTreeLikelihood extends AbstractRJTreeLikelihood {
      *
      * @return the log likelihood.
      */
-    @Override
-	protected double calculateLogLikelihood() {
+    protected double calculateLogLikelihood() {
 
         if (patternLogLikelihoods == null) {
             patternLogLikelihoods = new double[patternCount];
         }
-        
+
         if (!integrateAcrossCategories) {
             if (siteCategories == null) {
                 siteCategories = new int[patternCount];
@@ -363,19 +369,16 @@ public class RJTreeLikelihood extends AbstractRJTreeLikelihood {
                     likelihoodCore.setCurrentNodePartials(index, tipPartials);
                 }
             }
-
         }
+
 
         final NodeRef root = treeModel.getRoot();
         traverse(treeModel, root);
 
         double logL = 0.0;
         double ascertainmentCorrection = getAscertainmentCorrection(patternLogLikelihoods);
-//        System.out.println("Correc\t"+ ascertainmentCorrection);
         for (int i = 0; i < patternCount; i++) {
             logL += (patternLogLikelihoods[i] - ascertainmentCorrection) * patternWeights[i];
-//            System.out.println(patternLogLikelihoods[i] +"\t"+  logL +"\t"+ patternWeights[i]);
-            
         }
 
         if (logL == Double.NEGATIVE_INFINITY) {
@@ -403,7 +406,6 @@ public class RJTreeLikelihood extends AbstractRJTreeLikelihood {
             updateNode[i] = false;
         }
         //********************************************************************
-//        System.out.println("Evalute TreeLikelihood"+"\t"+ logL);//TODO REMOVE
 
         return logL;
     }
@@ -566,24 +568,14 @@ public class RJTreeLikelihood extends AbstractRJTreeLikelihood {
      * use getRootPartials() instead).
      */
     private double[] rootPartials = null;
-    
-    public void resetRootPartials(){
-    	rootPartials= null;
-    }
-    
+
     public class SiteLikelihoodsStatistic extends Statistic.Abstract {
 
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 5444513933699432671L;
-
-		public SiteLikelihoodsStatistic() {
+        public SiteLikelihoodsStatistic() {
             super("siteLikelihoods");
         }
 
-        @Override
-		public int getDimension() {
+        public int getDimension() {
             if (patternList instanceof SitePatterns) {
                 return ((SitePatterns)patternList).getSiteCount();
             } else {
@@ -591,13 +583,11 @@ public class RJTreeLikelihood extends AbstractRJTreeLikelihood {
             }
         }
 
-        @Override
-		public String getDimensionName(int dim) {
+        public String getDimensionName(int dim) {
             return getTreeModel().getId() + "site-" + dim;
         }
 
-        @Override
-		public double getStatisticValue(int i) {
+        public double getStatisticValue(int i) {
 
             if (patternList instanceof SitePatterns) {
                 int index = ((SitePatterns)patternList).getPatternIndex(i);

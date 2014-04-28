@@ -1,4 +1,4 @@
-package test.srp.rj;
+package test.srp.tdmcmc;
 
 
 import org.junit.After;
@@ -8,8 +8,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import srp.core.DataImporter;
+import srp.evolution.haplotypes.HaplotypeModel;
 import srp.evolution.haplotypes.old.OldHaplotypeModel;
-import srp.rj.RJTreeModel;
+import srp.tdmcmc.evolution.TransdimensionalTreeModel;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.coalescent.CoalescentSimulator;
 import dr.evolution.coalescent.ConstantPopulation;
@@ -19,22 +20,22 @@ import dr.evomodel.coalescent.ConstantPopulationModel;
 import dr.evomodelxml.coalescent.ConstantPopulationModelParser;
 import dr.inference.model.Parameter;
 
-public class RJTreeModelTest {
+public class TransdimensionalTreeModelTest {
 
 	private static Tree tree;
-	private RJTreeModel treeModel;
+	private TransdimensionalTreeModel treeModel;
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 
-		String dataDir = "/home/sw167/workspaceSrp/ABI/unittest/";
+		String dataDir = "/home/sw167/workspaceSrp/snowgoose/srp/unittest/";
 		int noOfRecoveredHaplotype=6;
 		String shortReadFile = "H6_srp.fasta";
 
 		DataImporter dataImporter = new DataImporter(dataDir);
-		Alignment shortReads = dataImporter.importAlignment(shortReadFile);
+//		Alignment shortReads = dataImporter.importAlignment(shortReadFile);
 		
-		OldHaplotypeModel haplotypeModel = new OldHaplotypeModel(shortReads, noOfRecoveredHaplotype);
+		HaplotypeModel haplotypeModel = new HaplotypeModel(noOfRecoveredHaplotype, 1000);
 		
 		// coalescent
 		Parameter popSize = new Parameter.Default(ConstantPopulationModelParser.POPULATION_SIZE, 3000.0, 100, 100000.0);
@@ -53,7 +54,7 @@ public class RJTreeModelTest {
 
 	@Before
 	public void setUp() throws Exception {
-		treeModel = new RJTreeModel(tree);// treeModel
+		treeModel = new TransdimensionalTreeModel(tree);// treeModel
 	}
 
 	@After
