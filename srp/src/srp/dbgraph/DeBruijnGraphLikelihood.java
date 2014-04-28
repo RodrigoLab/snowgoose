@@ -1,13 +1,10 @@
 package srp.dbgraph;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.HashSet;
 
-import srp.haplotypes.Haplotype;
-import srp.haplotypes.HaplotypeModel;
+import srp.evolution.haplotypes.Haplotype;
+import srp.evolution.haplotypes.HaplotypeModel;
 
 public class DeBruijnGraphLikelihood {
 	
@@ -40,8 +37,10 @@ public class DeBruijnGraphLikelihood {
 			int k1LengthMinusDepth = allLength.get(k1) - k1CNode.getNodeDepth();
 			int[] cNodeList = k1CNode.getCNodeArray();
 			for (int k2 : cNodeList) {
-				totalCount += k1CNode.getCNodeCount(k2);
-				length_diff[k1][k2] = k1CNode.getCNodeDepth(k2) + allLength.get(k2) + k1LengthMinusDepth;
+				if(k1 != k2){
+					totalCount += k1CNode.getCNodeCount(k2);
+					length_diff[k1][k2] = k1CNode.getCNodeDepth(k2) + allLength.get(k2) + k1LengthMinusDepth;
+				}
 			}
 				
 		}
@@ -231,5 +230,10 @@ public class DeBruijnGraphLikelihood {
 //			}
 //		}
 		return null;
+	}
+
+
+	public int getTotalCount() {
+		return totalCount;
 	}
 }
