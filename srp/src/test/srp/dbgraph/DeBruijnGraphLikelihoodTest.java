@@ -2,6 +2,9 @@ package test.srp.dbgraph;
 
 import static org.junit.Assert.*;
 
+import java.util.Arrays;
+
+import org.apache.commons.math3.stat.StatUtils;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -12,6 +15,8 @@ import srp.dbgraph.CompatibleSets;
 import srp.dbgraph.DeBruijnGraph;
 import srp.dbgraph.DeBruijnGraphLikelihood;
 import srp.dbgraph.DeBruijnImporter;
+import srp.dbgraph.Path;
+import srp.dbgraph.PathSet;
 
 public class DeBruijnGraphLikelihoodTest {
 
@@ -90,6 +95,39 @@ public class DeBruijnGraphLikelihoodTest {
 	
 	@Test
 	public void testLikelihood() throws Exception {
+		
+		DeBruijnImporter dbi = new DeBruijnImporter(dataDir);
+		DeBruijnGraph dbGraph = dbi.importDeBruijnGraph("H7_50-Paired.bfast.60.cond.graph");
+		CompatibleSets compSets = dbi.importCompatibleSet("H7_50-Paired.bfast.60.comp.txt");
+		PathSet allPaths = dbi.importPathSets("H7_50.60.pathsc.txt", true);
+//				H7_50.60.like.txt    H7_50-Paired.bfast.60.comp.txt
+//				H7_50.60.pathsc.txt  H7_50-Paired.bfast.60.cond.graph
+		for (int i = 1; i < allPaths.getPathCount(); i++) {
+			
+			Path path = allPaths.getPath(i);
+//			System.out.println(path.getNodeList());
+		}
+		DeBruijnGraphLikelihood dbgLikelihood= new DeBruijnGraphLikelihood(dbGraph, compSets);
+//		double ln = dbgLikelihood.calculateLikelihood(allPaths);
+//		System.out.println(ln);
+		
+		
+		int[] nodeList = new int[]{63,26,119,30,27,25,28,75,14,92,24,31,78,121,22,106,13,23,29,6,3,36,51,34,37,62};
+		PathSet subPaths = new PathSet(false);
+		for (int i : nodeList) {
+			Path path = allPaths.getPath(i);
+//			System.out.println(i +"\t"+ path.getNodeList());
+			subPaths.addPath(path);
+		}
+		double ln = dbgLikelihood.calculateLikelihood(subPaths);
+		System.out.println(ln);
+		
+		double[][] computeDHashTable = dbgLikelihood.computeDHashTable(subPaths);
+		for (int i = 0; i < computeDHashTable.length; i++) {
+//			System.out.println(Arrays.toString(computeDHashTable[i]));
+//			double sum = StatUtils.sum(computeDHashTable[i]);
+//			System.out.println(i +"\t"+ sum);
+		}
 		
 	}
 }

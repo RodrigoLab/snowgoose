@@ -1,6 +1,7 @@
 package srp.dbgraph;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 
 import srp.evolution.haplotypes.Haplotype;
@@ -59,16 +60,17 @@ public class DeBruijnGraphLikelihood {
 //			
 //		}
 	}
-	public double calculateLikelihood(HaplotypeModel haplotypeModel){
+	public double calculateLikelihood(PathSet pathSet){
 		
 		
 		double likelihood = 0;
-		double[][] d_hashTable = computeDHashTable(haplotypeModel);
+		double[][] d_hashTable = computeDHashTable(pathSet);
 		//		
 ////		#print "In compute set \n";
 ////		my($llik) = 0; my($min) = 0; my($max) = -9**9**9; 
 		double min = 0;
-		double Scale = haplotypeModel.getHaplotypeCount() * haplotypeModel.getHaplotypeLength();
+		int pathCount = pathSet.getPathCount();
+		double Scale = pathCount*1200;
 //		
 //		HashMap<Integer, Integer> allLength = dbGraph.getAllLength();
 
@@ -98,6 +100,7 @@ public class DeBruijnGraphLikelihood {
 					double temp2 = 1 - temp0;
 					double val = temp1*Math.log(temp2) + k1CNode.getCNodeCount(k2) * Math.log(temp0);
 					likelihood += val;
+					System.out.println(k1 +"\t"+ k2 +"\t"+ temp0 +"\t"+ temp1 +"\t"+ temp2 +"\t"+ val);
 				}else				{
 					likelihood += min;
 				}
@@ -175,16 +178,22 @@ public class DeBruijnGraphLikelihood {
 	}
 	*/
 
-	private double[][] computeDHashTable(HaplotypeModel haplotypeModel) {
+	public double[][] computeDHashTable(PathSet pathSet) {
 		
 		double[][] d_hashTable = new double[nodeCount][nodeCount];
-		
-		for (int i = 0; i < haplotypeModel.getHaplotypeCount(); i++) {
-			Haplotype haplotype = haplotypeModel.getHaplotype(i);
-			ArrayList<Integer> path = new ArrayList<Integer>();
+		boolean offSet = pathSet.getOffSet();
+		int i = 0;
+		if(offSet){
+			i=1;
+		}
+		for (; i < pathSet.getPathCount(); i++) {
+			Path path = pathSet.getPath(i);
+//			ArrayList<Integer> path = new ArrayList<Integer>();
 			//path contains series of node??
 			HashSet<Integer> tempSet = new HashSet<>();
-			for (Integer k1 : path) {
+			ArrayList<Integer> nodeList = path.getNodeList();
+			
+			for (Integer k1 : nodeList) {
 				tempSet.add(k1);
 				//TODO: redo this part, need create PATH class
 //				my(%temp_set) = ();
@@ -193,19 +202,22 @@ public class DeBruijnGraphLikelihood {
 //					$temp_set{$k} = 1;
 //				}
 			}
-			
-			for (Integer k1 : path) {
+			System.out.println(tempSet);
+			for (Integer k1 : nodeList) {
 				CompatibleNode compatibleSet = compSets.getCompatibleNode(k1);	
 //				int nodeIndex = compatibleSet.getNode();
 				int[] cNodeList = compatibleSet.getCNodeArray();
+//				System.out.println(Arrays.toString(cNodeList));
 				for (int nodeIndex : cNodeList) {
 	
 				
 					if (tempSet.contains(nodeIndex)){
+//						System.out.println(k1 +"\t"+ nodeIndex);
 						d_hashTable[k1][nodeIndex]++;
 					}
 				}
 			}
+//			System.out.println();
 		}
 //			for $n1( keys %set_paths ) 
 //			{
@@ -229,7 +241,7 @@ public class DeBruijnGraphLikelihood {
 //				}
 //			}
 //		}
-		return null;
+		return d_hashTable;
 	}
 
 
