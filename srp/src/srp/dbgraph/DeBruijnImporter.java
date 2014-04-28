@@ -2,7 +2,6 @@ package srp.dbgraph;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 import srp.core.DataImporter;
@@ -42,7 +41,7 @@ public class DeBruijnImporter extends DataImporter {
 		while((inline = inFile.readLine())!=null){
 			StringTokenizer st = new StringTokenizer(inline);
 			if(inline.matches(regex)){
-				System.out.println("Secnod half\t"+inline);
+//				System.out.println("Secnod half\t"+inline);
 //				StringTokenizer st = new StringTokenizer(inline);
 				int node1 = Integer.parseInt(st.nextToken());
 				int node2 = Integer.parseInt(st.nextToken());
@@ -102,6 +101,25 @@ public class DeBruijnImporter extends DataImporter {
 		return compatibleSets;
 	}
 
-	
-	
+	public static PathSet importPathSets(String dataDir, String fileName, boolean offSet) throws Exception{
+
+		BufferedReader inFile  = new BufferedReader(new FileReader(dataDir+fileName));
+		PathSet pathSet = new PathSet(offSet);
+		String inline;
+		
+		while((inline = inFile.readLine())!=null){
+			if(!inline.startsWith(">")){
+				Path p = new Path(inline);
+				pathSet.addPath(p);
+			}
+		}
+		inFile.close();
+		return pathSet;
+	}
+
+
+	public PathSet importPathSets(String fileName, boolean b) throws Exception {
+		
+		return importPathSets(dataDir, fileName, b);
+	}
 }

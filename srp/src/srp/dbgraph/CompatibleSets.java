@@ -1,6 +1,7 @@
 package srp.dbgraph;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 
 public class CompatibleSets implements Iterable<CompatibleNode>  {
