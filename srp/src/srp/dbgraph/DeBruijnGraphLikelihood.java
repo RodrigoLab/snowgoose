@@ -19,7 +19,7 @@ public class DeBruijnGraphLikelihood {
 	private int nodeCount;
 	private int[] pairedNode;
 	
-	HashMap<Character, Character> DNAComplement; 
+	char[] DNAComplement; 
 	
 	public DeBruijnGraphLikelihood(DeBruijnGraph dbGraph, CompatibleSets compSets) {
 		this.dbGraph = dbGraph;
@@ -50,13 +50,13 @@ public class DeBruijnGraphLikelihood {
 			}
 				
 		}
+		System.out.println("total count: "+totalCount);
+		DNAComplement = new char['Z'];
 
-		DNAComplement = new HashMap<>();
-
-		DNAComplement.put('A', 'T');
-		DNAComplement.put('T', 'A');
-		DNAComplement.put('C', 'G');
-		DNAComplement.put('G', 'C');
+		DNAComplement['A'] = 'T';
+		DNAComplement['T'] = 'A';
+		DNAComplement['C'] = 'G';
+		DNAComplement['G'] = 'C';
 		
 
 
@@ -116,7 +116,7 @@ public class DeBruijnGraphLikelihood {
 		int l = string.length();
 		char[] revString = new char[l];
 		for (int i = 0; i < l; i++) {
-			revString[l-i-1] = (char) DNAComplement.get( string.charAt(i) );
+			revString[l-i-1] = DNAComplement[string.charAt(i)];
 		}
 		
 		return String.valueOf(revString);
@@ -146,6 +146,7 @@ public class DeBruijnGraphLikelihood {
 ////		my($llik) = 0; my($min) = 0; my($max) = -9**9	**9; 
 		double min = 0;
 		int pathCount = pathSet.getPathCount();
+		System.out.println("path count: "+pathCount);
 		double Scale = pathCount*1200;
 //		
 //		HashMap<Integer, Integer> allLength = dbGraph.getAllLength();
@@ -168,7 +169,7 @@ public class DeBruijnGraphLikelihood {
 			int[] cNodeList = k1CNode.getCNodeArray();
 
 			for (int k2 : cNodeList) {
-			
+//				System.out.println(visited[k1][k2]);
 				if(d_hashTable[k1][k2]>0){
 					
 					if(!visited[k1][k2]){
@@ -178,13 +179,23 @@ public class DeBruijnGraphLikelihood {
 						double temp2 = 1 - temp0;
 						double val = temp1*Math.log(temp2) + cNodeCount * Math.log(temp0);
 						likelihood += val;
-						System.out.println(k1 +"\t"+ k2 +"\t"+ temp0 +"\t"+ temp1 +"\t"+ temp2 +"\t"+ val);
+//						$temp0 = $d_hashtable{$k1}{$k2}/($Scale-$length_diff{$k1}{$k2});
+//						$temp1 = $total_count - $compatible_set{$k1}{$k2};
+//						$temp2 = 1 - ($d_hashtable{$k1}{$k2}/($Scale-$length_diff{$k1}{$k2}));
+//						$val = $temp1*log($temp2) + $compatible_set{$k1}{$k2} * log($temp0);
+
+//						System.out.println(k1 +"\t"+ k2 +"\t"+ temp0 +"\t"+ temp1 +"\t"+ temp2 +"\t"+ val);
 						visited[k1][k2] = true;
 						visited[pairedNode[k2]][pairedNode[k1]] = true;
-						
+						System.out.println(k1 +"\t"+ k2 +"\t"+ pairedNode[k2]+"\t"+ pairedNode[k1]);
+//						visited[pairedNode[k1]][pairedNode[k2]] = true;
 					}
+//					else{
+//						System.out.println("skip revcom\t"+k1 +"\t"+ k2);
+//					}
 				}else				{
-					likelihood += min;
+//					System.out.println(k1 +"\t"+ k2);
+//					return 0;
 				}
 			}
 		}
@@ -276,9 +287,10 @@ public class DeBruijnGraphLikelihood {
 			//path contains series of node??
 			HashSet<Integer> tempSet = new HashSet<>();
 			ArrayList<Integer> nodeList = path.getNodeList();
-			
+			System.out.println("dHashTable on node:"+i +"\t"+ nodeList.size());
 			for (Integer k1 : nodeList) {
 				tempSet.add(k1);
+//				System.out.println(k1);
 				//TODO: redo this part, need create PATH class
 //				my(%temp_set) = ();
 //				for $k(@one_path) 
@@ -286,17 +298,18 @@ public class DeBruijnGraphLikelihood {
 //					$temp_set{$k} = 1;
 //				}
 			}
-			System.out.println(tempSet);
+//			System.out.println(tempSet);
 			for (Integer k1 : nodeList) {
 				CompatibleNode compatibleSet = compSets.getCompatibleNode(k1);	
 //				int nodeIndex = compatibleSet.getNode();
 				int[] cNodeList = compatibleSet.getCNodeArray();
-//				System.out.println(Arrays.toString(cNodeList));
+				System.out.println(k1 +"\t"+ Arrays.toString(cNodeList));
+//				System.out.println(compatibleSet.getNodeIndex() +"\t"+ compatibleSet.getNodeDepth());
 				for (int nodeIndex : cNodeList) {
-	
+//					System.out.println(k1 +"\t"+ nodeIndex);
 				
-					if (tempSet.contains(nodeIndex)){
-//						System.out.println(k1 +"\t"+ nodeIndex);
+					if (tempSet.contains(nodeIndex) & (k1!=nodeIndex)){
+						System.out.println("add\t"+k1 +"\t"+ nodeIndex);
 						d_hashTable[k1][nodeIndex]++;
 					}
 				}
