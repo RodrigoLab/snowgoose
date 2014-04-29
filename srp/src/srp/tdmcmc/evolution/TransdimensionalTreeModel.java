@@ -71,7 +71,7 @@ public class TransdimensionalTreeModel extends SuperBeastTreeModel{
 		if(noSpareNode==0){
 			noSpareNode = doubleTheTree();
 		}
-		
+		trueNodeCount = externalNodeCount;
 		Node parentNode;
 		Node childNode;
 		do {
