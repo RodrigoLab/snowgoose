@@ -16,6 +16,9 @@ public class DeBruijnGraphLikelihood {
 	private double[][] length_diff;
 	private int totalCount;
 	private int nodeCount;
+	private int[] pairedNode;
+	
+	HashMap<Character, Character> DNAComplement; 
 	
 	public DeBruijnGraphLikelihood(DeBruijnGraph dbGraph, CompatibleSets compSets) {
 		this.dbGraph = dbGraph;
@@ -31,7 +34,7 @@ public class DeBruijnGraphLikelihood {
 		this.nodeCount = dbGraph.getSize();
 		
 		ArrayList<Integer> allLength = dbGraph.getAllLength();
-
+		pairedNode = new int[nodeCount];
 		length_diff = new double[nodeCount][nodeCount];
 		totalCount = 0;
 		for (CompatibleNode k1CNode : compSets) {
@@ -46,15 +49,26 @@ public class DeBruijnGraphLikelihood {
 			}
 				
 		}
+
+		DNAComplement = new HashMap<>();
+
+		DNAComplement.put('A', 'T');
+		DNAComplement.put('T', 'A');
+		DNAComplement.put('C', 'G');
+		DNAComplement.put('G', 'C');
+		
+
+
 		pairComplementNodes();
+		
 	}
 
 
 	
 	private void pairComplementNodes() {
 		boolean[] temp_hash2 = new boolean[nodeCount]; 
-		HashMap temp_hash = new HashMap();
-		HashMap inverse_hash = new HashMap();
+		HashMap<Integer, Integer> temp_hash = new HashMap<Integer, Integer>();
+		HashMap<String, Integer> inverse_hash = new HashMap<String, Integer>();
 //		for $k( keys %cond_ver) {
 		ArrayList<String> allNodes = dbGraph.getAllNodes();
 		for (int i = 0; i < nodeCount; i++) {
@@ -71,18 +85,24 @@ public class DeBruijnGraphLikelihood {
 //			temp_hash{$k} = 0;
 //			$inverse_hash{$cond_ver{$k}} = $k;
 		} 
+		
 //		#Link nodes which are reverse complements of each other. 
 		for (int i = 0; i < nodeCount; i++) {
 			if(temp_hash2[i]){
 //			if($temp_hash{$k}==0) {
-				String revComp;
-				
-				int revIndex;
-				temp_hash2[i] = false;
-				temp_hash2[revIndex] = false;
-				my($temp) = revcomplement($cond_ver{$k}); //get revComp
-				$paired_nodes{$k} = $inverse_hash{$temp}; //get nodeIndex and paired them
-				$paired_nodes{$inverse_hash{$temp}} = $k ; 
+				String revComp = revcomplement(allNodes.get(i));
+				inverse_hash.get(revComp);
+//				System.out.println("aoeu\t"+inverse_hash.get(revComp));
+				Integer revIndex = inverse_hash.get(revComp);
+				if(revIndex!= null){
+					temp_hash2[i] = false;
+					temp_hash2[revIndex] = false;
+					pairedNode[i] = revIndex;
+					pairedNode[revIndex] = i;
+				}
+//				my($temp) = revcomplement($cond_ver{$k}); //get revComp
+//				$paired_nodes{$k} = $inverse_hash{$temp}; //get nodeIndex and paired them
+//				$paired_nodes{$inverse_hash{$temp}} = $k ; 
 //				$temp_hash{$k} = 1; 						//true
 //				$temp_hash{$inverse_hash{$temp}} = 1;
 			}
@@ -90,6 +110,17 @@ public class DeBruijnGraphLikelihood {
 //		undef %inverse_hash;
 //		undef %temp_hash;
 	}
+	private String revcomplement(String string) {
+
+		int l = string.length();
+		char[] revString = new char[l];
+		for (int i = 0; i < l; i++) {
+			revString[l-i-1] = (char) DNAComplement.get( string.charAt(i) );
+		}
+		
+		return String.valueOf(revString);
+	}
+
 
 	public double[][] getLengthDiff(){
 		return length_diff;
@@ -108,6 +139,7 @@ public class DeBruijnGraphLikelihood {
 		
 		double likelihood = 0;
 		double[][] d_hashTable = computeDHashTable(pathSet);
+		boolean[][] visited = new boolean[nodeCount][nodeCount];
 		//		
 ////		#print "In compute set \n";
 ////		my($llik) = 0; my($min) = 0; my($max) = -9**9	**9; 
@@ -137,13 +169,19 @@ public class DeBruijnGraphLikelihood {
 			for (int k2 : cNodeList) {
 			
 				if(d_hashTable[k1][k2]>0){
-					int cNodeCount = k1CNode.getCNodeCount(k2);
-					double temp0 = d_hashTable[k1][k2]/(Scale-length_diff[k1][k2]);
-					double temp1 = totalCount - cNodeCount;
-					double temp2 = 1 - temp0;
-					double val = temp1*Math.log(temp2) + cNodeCount * Math.log(temp0);
-					likelihood += val;
-					System.out.println(k1 +"\t"+ k2 +"\t"+ temp0 +"\t"+ temp1 +"\t"+ temp2 +"\t"+ val);
+					
+					if(!visited[k1][k2]){
+						int cNodeCount = k1CNode.getCNodeCount(k2);
+						double temp0 = d_hashTable[k1][k2]/(Scale-length_diff[k1][k2]);
+						double temp1 = totalCount - cNodeCount;
+						double temp2 = 1 - temp0;
+						double val = temp1*Math.log(temp2) + cNodeCount * Math.log(temp0);
+						likelihood += val;
+						System.out.println(k1 +"\t"+ k2 +"\t"+ temp0 +"\t"+ temp1 +"\t"+ temp2 +"\t"+ val);
+						visited[k1][k2] = true;
+						visited[pairedNode[k2]][pairedNode[k1]] = true;
+						
+					}
 				}else				{
 					likelihood += min;
 				}
