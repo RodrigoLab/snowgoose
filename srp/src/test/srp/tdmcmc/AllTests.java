@@ -6,8 +6,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({ 
-	SSHaplotypeModelTest.class, 
-	SSTreeModelTest.class
+	TransdimensionalTreeModelTest.class,
 	})
 public class AllTests {
 

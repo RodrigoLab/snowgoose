@@ -1,11 +1,9 @@
 package srp.dbgraph;
 
 import java.util.ArrayList;
-<<<<<<< HEAD
-=======
 import java.util.Arrays;
 import java.util.HashMap;
->>>>>>> developSW
+
 import java.util.HashSet;
 
 import srp.evolution.haplotypes.Haplotype;
