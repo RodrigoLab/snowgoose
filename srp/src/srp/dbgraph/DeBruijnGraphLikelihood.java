@@ -33,6 +33,8 @@ public class DeBruijnGraphLikelihood {
 		dbGraph.preprocess();
 		compSets.preprocess();
 		this.nodeCount = dbGraph.getSize();
+
+		pairComplementNodes();
 		
 		ArrayList<Integer> allLength = dbGraph.getAllLength();
 		pairedNode = new int[nodeCount];
@@ -60,7 +62,7 @@ public class DeBruijnGraphLikelihood {
 		
 
 
-		pairComplementNodes();
+		
 		
 	}
 
@@ -184,15 +186,39 @@ public class DeBruijnGraphLikelihood {
 //						$temp2 = 1 - ($d_hashtable{$k1}{$k2}/($Scale-$length_diff{$k1}{$k2}));
 //						$val = $temp1*log($temp2) + $compatible_set{$k1}{$k2} * log($temp0);
 
-//						System.out.println(k1 +"\t"+ k2 +"\t"+ temp0 +"\t"+ temp1 +"\t"+ temp2 +"\t"+ val);
+						System.out.println(k1 + "\t" + k2 + "\t"
+								+ pairedNode[k2] + "\t" + pairedNode[k1] + "\t"
+								+ cNodeCount + "\t" + temp0 + "\t" + temp1
+								+ "\t" + temp2 + "\t" + val);
 						visited[k1][k2] = true;
 						visited[pairedNode[k2]][pairedNode[k1]] = true;
-						System.out.println(k1 +"\t"+ k2 +"\t"+ pairedNode[k2]+"\t"+ pairedNode[k1]);
+//						System.out.println(k1 +"\t"+ k2 +"\t"+ pairedNode[k2]+"\t"+ pairedNode[k1]);
 //						visited[pairedNode[k1]][pairedNode[k2]] = true;
 					}
-//					else{
-//						System.out.println("skip revcom\t"+k1 +"\t"+ k2);
-//					}
+					else{
+//						System.out.println("skip revcom\t"+k1 +"\t"+ k2 +"\t"+  pairedNode[k2]+"\t"+ pairedNode[k1]);
+						int cNodeCount = k1CNode.getCNodeCount(k2);
+						double temp0 = d_hashTable[k1][k2]/(Scale-length_diff[k1][k2]);
+						double temp1 = totalCount - cNodeCount;
+						double temp2 = 1 - temp0;
+						double val = temp1*Math.log(temp2) + cNodeCount * Math.log(temp0);
+						
+						CompatibleNode compatibleNode = compSets.getCompatibleNode(pairedNode[k2]);
+						int cNodeCount2 = compatibleNode.getCNodeCount(pairedNode[k1]);
+						double temp02 = d_hashTable[pairedNode[k2]][pairedNode[k1]]/(Scale-length_diff[pairedNode[k2]][pairedNode[k1]]);
+						double temp12 = totalCount - cNodeCount2;
+						double temp22 = 1 - temp02;
+						double val2 = temp12*Math.log(temp22) + cNodeCount2 * Math.log(temp02);
+						if(val!=val2){
+							System.out.println("skip revcom\t"+k1 +"\t"+ k2 +"\t"+  pairedNode[k2]+"\t"+ pairedNode[k1]);
+							System.out.println(d_hashTable[pairedNode[k2]][pairedNode[k1]] +"\t"+ d_hashTable[k1][k2] +"\t"+ (Scale-length_diff[k1][k2]) +"\t"+ (Scale-length_diff[pairedNode[k2]][pairedNode[k1]]));
+							System.out.println((temp0==temp02)+"\t"+ temp0 +"\t"+ temp02);
+							System.out.println((temp1==temp12)+"\t"+ temp1 +"\t"+ temp12);
+							System.out.println((temp2==temp22)+"\t"+ temp2 +"\t"+ temp22);
+							System.out.println((val==val2)+"\t"+ val +"\t"+ val2);
+						}
+						
+					}
 				}else				{
 //					System.out.println(k1 +"\t"+ k2);
 //					return 0;
@@ -311,6 +337,7 @@ public class DeBruijnGraphLikelihood {
 					if (tempSet.contains(nodeIndex) & (k1!=nodeIndex)){
 						System.out.println("add\t"+k1 +"\t"+ nodeIndex);
 						d_hashTable[k1][nodeIndex]++;
+//						d_hashTable[pairedNode[nodeIndex]][pairedNode[k1]]++;
 					}
 				}
 			}

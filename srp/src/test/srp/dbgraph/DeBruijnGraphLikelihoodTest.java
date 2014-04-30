@@ -97,6 +97,42 @@ public class DeBruijnGraphLikelihoodTest {
 	
 	
 	@Test
+	public void testComputeDHashTable() throws Exception {
+
+		DeBruijnImporter dbi = new DeBruijnImporter(dataDir);
+		DeBruijnGraph dbg = dbi.importDeBruijnGraph("N10_cond.graph");
+		CompatibleSets cSets = dbi.importCompatibleSet("N10_comp.txt");
+		
+		DeBruijnGraphLikelihood dbgLikelihood = new DeBruijnGraphLikelihood(dbg, cSets);
+		double[][] expecteds = new double[15][15];
+		
+		PathSet subPaths = new PathSet(false);
+		Path path = new Path("1:1 2:9 3:10 4:13"); 
+		subPaths.addPath(path);
+		expecteds[1][9]++;
+		expecteds[9][10]++;
+		expecteds[13][10]++;
+		double[][] computeDHashTable = dbgLikelihood.computeDHashTable(subPaths);
+		for (int i = 0; i < computeDHashTable.length; i++) {
+			System.out.println(Arrays.toString(computeDHashTable[i]));
+			assertArrayEquals(expecteds[i], computeDHashTable[i], 0);
+		}
+		
+		path = new Path("1:3 2:9 3:10 4:12 5:11 6:13"); 
+		subPaths.addPath(path);
+		
+		expecteds[3][11]++;
+		expecteds[9][10]++;
+		expecteds[11][12]++;
+		expecteds[12][13]++;
+		expecteds[13][10]++;
+		computeDHashTable = dbgLikelihood.computeDHashTable(subPaths);
+		for (int i = 0; i < computeDHashTable.length; i++) {
+			System.out.println(Arrays.toString(computeDHashTable[i]));
+			assertArrayEquals(expecteds[i], computeDHashTable[i], 0);
+		}
+	}
+	@Test
 	public void testLikelihood() throws Exception {
 		
 		DeBruijnImporter dbi = new DeBruijnImporter(dataDir);
@@ -134,7 +170,7 @@ public class DeBruijnGraphLikelihoodTest {
 //		assertEquals(expected, ln, 1e-8);
 		
 		
-		nodeList = new int[]{106,119,13,22,24,25,27,29,30,36,37,6,63,75};
+		nodeList = new int[]{63,119,30,27,25,75,24,22,106,13,29,6,36,37};
 //		Arrays.sort(nodeList);
 //		ArrayUtils.reverse(nodeList);
 		subPaths = new PathSet(false);
@@ -152,7 +188,7 @@ public class DeBruijnGraphLikelihoodTest {
 			
 		double[][] computeDHashTable = dbgLikelihood.computeDHashTable(subPaths);
 		for (int i = 0; i < computeDHashTable.length; i++) {
-//			System.out.println(Arrays.toString(computeDHashTable[i]));
+			System.out.println(Arrays.toString(computeDHashTable[i]));
 //			double sum = StatUtils.sum(computeDHashTable[i]);
 //			System.out.println(i +"\t"+ sum);
 		}
