@@ -16,6 +16,6 @@ import test.srp.likelihood.LikelihoodScalerTest;
 	ShortReadsHaplotypeLikelihoodTest.class,
 //	TimeTrialShortReadsHaplotypeLikelihoodTest.class
 })
-public class AllTestsLikelihood {
+public class AllTestsLikelihoodHaplotypes {
 
 }

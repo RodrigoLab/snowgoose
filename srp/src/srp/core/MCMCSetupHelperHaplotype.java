@@ -215,12 +215,12 @@ public class MCMCSetupHelperHaplotype extends MCMCSetupHelper {
 				
 				operator = new BasesMultiOperator(haplotypeModel, 3, CoercionMode.COERCION_ON);
 				operator.setWeight(opLarge/10.0);
-				schedule.addOperator(operator);
-//				
-				operator = new HaplotypeSwapSectionOperator(haplotypeModel, 5, CoercionMode.COERCION_ON);
+//				schedule.addOperator(operator);
+				
+				operator = new HaplotypeSwapSectionOperator(haplotypeModel, 5, CoercionMode.COERCION_OFF);
 				operator.setWeight(opLarge);
 				schedule.addOperator(operator);
-//				
+//	
 				operator = new ColumnOperator(haplotypeModel, 7, CoercionMode.COERCION_OFF);
 				operator.setWeight(opLarge);
 				schedule.addOperator(operator);

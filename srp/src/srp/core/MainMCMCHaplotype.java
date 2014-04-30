@@ -8,6 +8,9 @@ import java.util.HashMap;
 
 import srp.dr.ext.TreeLikelihoodExt;
 import srp.evolution.haplotypes.HaplotypeModel;
+import srp.evolution.shortreads.ShortReadMapping;
+import srp.likelihood.AbstractShortReadsLikelihood;
+import srp.likelihood.haplotypes.ShortReadsHaplotypeLikelihood;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.util.TaxonList;
 import dr.evolution.util.Units;
@@ -77,7 +80,7 @@ public class MainMCMCHaplotype {
 			dataDir += "H7_"+runIndex+"/";
 			
 			totalSamples = 100	;
-			logInterval = 1000 ;
+			logInterval = 10000 ;
 			
 			randomTree = true;
 //			randomTree = false;
@@ -101,7 +104,7 @@ public class MainMCMCHaplotype {
 		DataImporter dataImporter = new DataImporter(dataDir);
 
 		Alignment shortReads = dataImporter.importShortReads(shortReadFile);
-//		ShortReadMapping srpMap = new ShortReadMapping(shortReads);
+		ShortReadMapping srpMap = new ShortReadMapping(shortReads);
 		System.out.println(shortReads.getSiteCount());
 		HaplotypeModel haplotypeModel = new HaplotypeModel(noOfRecoveredHaplotype, 1200);
 
@@ -130,29 +133,23 @@ public class MainMCMCHaplotype {
 		TreeLikelihoodExt treeLikelihood = (TreeLikelihoodExt) parameterList.get("treeLikelihood");
 		
 		// ShortReadLikelihood
-//		ShortReadsHaplotypeLikelihood srpLikelihood = new ShortReadsHaplotypeLikelihood(haplotypeModel, srpMap);
+		ShortReadsHaplotypeLikelihood srpLikelihood = new ShortReadsHaplotypeLikelihood(haplotypeModel, srpMap);
 				
 		// CompoundLikelihood
-		HashMap<String, Likelihood> compoundlikelihoods = MCMCSetupHelperHaplotype.setupCompoundLikelihood(
-				popSize, kappa, coalescent, treeLikelihood, null);
+		HashMap<String, Likelihood> compoundlikelihoods = MCMCSetupHelperHaplotype
+				.setupCompoundLikelihood(popSize, kappa, coalescent,
+						treeLikelihood, srpLikelihood);
 		Likelihood prior = compoundlikelihoods.get(CompoundLikelihoodParser.PRIOR);
 		Likelihood likelihood = compoundlikelihoods.get(CompoundLikelihoodParser.LIKELIHOOD);
-//		Likelihood shortReadLikelihood = compoundlikelihoods.get(AbstractShortReadsLikelihood.SHORT_READ_LIKELIHOOD);
+		Likelihood shortReadLikelihood = compoundlikelihoods.get(AbstractShortReadsLikelihood.SHORT_READ_LIKELIHOOD);
 		Likelihood posterior = compoundlikelihoods.get(CompoundLikelihoodParser.POSTERIOR);
 		
 		// Operators
 		OperatorSchedule schedule = new SimpleOperatorSchedule();
-//		ArrayList<MCMCOperator> defalutOperatorsList = 
-//		schedule.addOperators(MCMCSetupHelperHaplotype.defalutOperators(haplotypeModel, freqs, popSize, kappa));
-//		schedule.addOperators(MCMCSetupHelperHaplotype.defalutTreeOperators(treeModel));
 		MCMCSetupHelperHaplotype.defalutOperators(schedule, haplotypeModel, freqs, popSize, kappa);
-//		MCMCSetupHelperHaplotype.defalutTreeOperators(schedule, treeModel);
+		MCMCSetupHelperHaplotype.defalutTreeOperators(schedule, treeModel);
 				
-		
-//		MCMCOperator operator;
-//		operator = new RJTreeOperator(haplotypeModel, treeModel);
-//		operator.setWeight(100);
-//		schedule.addOperator(operator);
+
 		
 		Parameter rootHeight = treeModel.getRootHeightParameter();
 		rootHeight.setId("rootHeight");
@@ -171,7 +168,7 @@ public class MainMCMCHaplotype {
 		loggers[0] = new MCLogger(logTracerName, logInterval, false, 0);
 		MCMCSetupHelperHaplotype.addToLogger(loggers[0], 
 				posterior, prior, likelihood, 
-				//shortReadLikelihood,
+				shortReadLikelihood,
 				rootHeight, 
 				//rateParameter,
 				popSize, kappa, coalescent,
@@ -182,7 +179,7 @@ public class MainMCMCHaplotype {
 		MCMCSetupHelperHaplotype.addToLogger(loggers[1],
 //				freqs
 				posterior, prior, likelihood, 
-//				shortReadLikelihood,
+				shortReadLikelihood,
 				popSize, kappa, coalescent, rootHeight
 				);
 		// log Tree

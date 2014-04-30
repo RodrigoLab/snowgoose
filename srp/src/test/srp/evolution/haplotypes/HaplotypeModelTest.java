@@ -201,7 +201,7 @@ public class HaplotypeModelTest {
 				"AAAACCCCCGGGGGTTTTA"};
 		Alignment alignment = AlignmentUtils.createAlignment(seqs);
 		HaplotypeModel haplotype = new HaplotypeModel(alignment);
-		int expected = 4;
+		int expected = 4*2;
 		assertEquals(expected, haplotype.calculateSPS());
 
 		seqs = new String[]{

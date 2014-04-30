@@ -34,7 +34,6 @@ public class DeBruijnGraphLikelihood {
 		compSets.preprocess();
 		this.nodeCount = dbGraph.getSize();
 
-		pairComplementNodes();
 		
 		ArrayList<Integer> allLength = dbGraph.getAllLength();
 		pairedNode = new int[nodeCount];
@@ -42,12 +41,12 @@ public class DeBruijnGraphLikelihood {
 		totalCount = 0;
 		for (CompatibleNode k1CNode : compSets) {
 			int k1 = k1CNode.getNodeIndex();
-			int k1LengthMinusDepth = allLength.get(k1) - k1CNode.getNodeDepth();
+//			int k1LengthMinusDepth = allLength.get(k1) - k1CNode.getNodeDepth();
 			int[] cNodeList = k1CNode.getCNodeArray();
 			for (int k2 : cNodeList) {
 				if(k1 != k2){
 					totalCount += k1CNode.getCNodeCount(k2);
-					length_diff[k1][k2] = k1CNode.getCNodeDepth(k2) + allLength.get(k2) + k1LengthMinusDepth;
+					length_diff[k1][k2] = k1CNode.getCNodeDepth(k2) + allLength.get(k2) - k1CNode.getNodeDepth();;
 				}
 			}
 				
@@ -60,6 +59,7 @@ public class DeBruijnGraphLikelihood {
 		DNAComplement['C'] = 'G';
 		DNAComplement['G'] = 'C';
 		
+		pairComplementNodes();
 
 
 		

@@ -100,8 +100,7 @@ public class MCMCSetupHelper {
 	
 		// ShortReadLikelihood
 		likelihoods.clear();
-	
-//		likelihoods.add(srpLikelihood);
+		likelihoods.add(srpLikelihood);
 		Likelihood shortReadlikelihood = new CompoundLikelihood(-1, likelihoods);
 		shortReadlikelihood.setId(AbstractShortReadsLikelihood.SHORT_READ_LIKELIHOOD);
 		compoundLikelihoods.put(AbstractShortReadsLikelihood.SHORT_READ_LIKELIHOOD, shortReadlikelihood);
@@ -110,7 +109,7 @@ public class MCMCSetupHelper {
 		likelihoods.clear();
 		likelihoods.add(prior);
 		likelihoods.add(likelihood);
-//		likelihoods.add(srpLikelihood);
+		likelihoods.add(srpLikelihood);
 		Likelihood posterior = new CompoundLikelihood(0, likelihoods);
 		posterior.setId(CompoundLikelihoodParser.POSTERIOR);
 		compoundLikelihoods.put(CompoundLikelihoodParser.POSTERIOR, posterior);

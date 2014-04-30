@@ -24,7 +24,7 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 //    public static final String SHORT_READ_LIKELIHOOD = "ShortReadHaplotypeLikelihood";
 	public static final String NAME = "ShortReadHaplotypeLikelihood";
 
-	private final double MIN_LOG_LIKELIHOOD;
+//	private final double MIN_LOG_LIKELIHOOD;
 
 	
 
@@ -57,7 +57,7 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 //		type = MultiType.All;
 //		distTypeCode = "flat";//"betaMean"  "betaMode" "gTest"
 //		setDistType(distType);
-		MIN_LOG_LIKELIHOOD = 0;//stateLikelihood.caluclateStateLogLikelihood(SpectraParameter.MIN_FREQ);
+//		MIN_LOG_LIKELIHOOD = 0;//stateLikelihood.caluclateStateLogLikelihood(SpectraParameter.MIN_FREQ);
 		
 		
 

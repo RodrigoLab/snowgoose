@@ -180,10 +180,10 @@ public class DeBruijnGraphLikelihoodTest {
 			subPaths.addPath(path);
 		}
 		
-		expected = -725722248.160968;
+		expected = -726374315.319293;
 		ln = dbgLikelihood.calculateLikelihood(subPaths);
 		System.out.println(ln);
-		assertEquals(expected, ln, 1e-8);
+		assertEquals(expected, ln, 1e-6);
 		
 			
 		double[][] computeDHashTable = dbgLikelihood.computeDHashTable(subPaths);
