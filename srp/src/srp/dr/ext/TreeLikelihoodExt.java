@@ -62,14 +62,10 @@ public class TreeLikelihoodExt extends TreeLikelihood {
 //    	System.out.println("handleModelChangedEvent in TreeLikelihoodExt\t"+model.getModelName());
     	if (model == haplotypeModel){
 
-    		sitePatternExt.updateAlignment(haplotypeModel);
+    		
     		updatePatternListExt();
-    		likelihoodKnown = false;
-    	}
-    	else if (model == oldHaplotypeModel){ //REMOVE: Remove OldHaplotype
-    		System.out.println("BAD! using oldHaplotypeModel");
-//    		sitePatternExt.updateAlignment(oldHaplotypeModel);
-//    		updatePatternListExt(sitePatternExt);
+//    		sitePatternExt.updateAlignment(haplotypeModel, 0);
+//    		updatePatternListExt(haplotypeModel);
     		likelihoodKnown = false;
     	}
     	else{
@@ -78,7 +74,8 @@ public class TreeLikelihoodExt extends TreeLikelihood {
     }
     @Override
 	protected void restoreState() {
-//    	System.out.println("restore state");
+    	//TODO: implement store/restore sitePatterns, might require refactoring the data structure somewhere 
+
 //        if (storePartials) {
 //            likelihoodCore.restoreState();
 //        } else {
@@ -86,13 +83,36 @@ public class TreeLikelihoodExt extends TreeLikelihood {
 //        }
 //    	sitePatternExt.updateAlignment(haplotypeModel);
 //		updatePatternListExt(sitePatternExt);
+    	sitePatternExt.restoreState(haplotypeModel);
+//    	updatePatternListExt();
+    	OperationRecord record = haplotypeModel.getOperationRecord();
+		int haplotypeIndex = record.getSpectrumIndex();
+        String taxonId = haplotypeModel.getTaxonId(haplotypeIndex);
+		int updateExternalNodeIndex = treeModel.getTaxonIndex(taxonId);
+
+		int site;
+        likelihoodCoreA.getNodeStates(updateExternalNodeIndex, tempstates);
+
+		switch (record.getOperation()) {
+		case SINGLE:
+			site = record.getSingleIndex();
+//			System.out.println(patternList.getPatternState(haplotypeIndex, site));
+//			System.out
+//					.println(haplotypeModel.getState(haplotypeIndex, site));;
+//					System.out.println();
+//			System.out.println(tempstates.length);
+			tempstates[site] = patternList.getPatternState(haplotypeIndex, site);
+			likelihoodCore.setNodeStates(updateExternalNodeIndex, tempstates);
+			break;
+		}
         super.restoreState();
 
     }
     
     @Override
     protected void storeState(){
-//    	System.out.println("storeState");
+
+//    	sitePatternExt.storeState();
     	super.storeState();
     }
 
@@ -101,6 +121,7 @@ public class TreeLikelihoodExt extends TreeLikelihood {
 
 //        this.patternList = sitePatternExt;
 //patternList
+		sitePatternExt.updateAlignment(haplotypeModel);
         OperationRecord record = haplotypeModel.getOperationRecord();
 		int haplotypeIndex = record.getSpectrumIndex();
         String taxonId = haplotypeModel.getTaxonId(haplotypeIndex);
@@ -116,6 +137,11 @@ public class TreeLikelihoodExt extends TreeLikelihood {
 		switch (record.getOperation()) {
 		case SINGLE:
 			site = record.getSingleIndex();
+//			System.out.println(patternList.getPatternState(haplotypeIndex, site));
+//			System.out
+//					.println(haplotypeModel.getState(haplotypeIndex, site));;
+//					System.out.println();
+//			System.out.println(tempstates.length);
 			tempstates[site] = patternList.getPatternState(haplotypeIndex, site);
 			likelihoodCore.setNodeStates(updateExternalNodeIndex, tempstates);
 			break;
@@ -266,13 +292,13 @@ public class TreeLikelihoodExt extends TreeLikelihood {
                 update = true;
             }
         }
- else{
-        	
-        	if(nodeNum == updateExternalNodeIndex){
-//        		System.out.println("update:"+updateExternalNodeIndex);
-        		update = true;
-        	}
-        }
+// else{
+//        	
+//        	if(nodeNum == updateExternalNodeIndex){
+////        		System.out.println("update:"+updateExternalNodeIndex);
+//        		update = true;
+//        	}
+//        }
 //System.out.println();
         return update;
 
@@ -457,5 +483,9 @@ public class TreeLikelihoodExt extends TreeLikelihood {
 		this.sitePatternExt = (SitePatternsExt) getPatternList(); 
 		this.oldHaplotypeModel = haplotypeModel;
 		addModel(this.oldHaplotypeModel);
+	}
+	public BranchRateModel getBranchRateModel() {
+		
+		return branchRateModel;
 	}
 }

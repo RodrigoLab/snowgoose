@@ -113,7 +113,7 @@ public class TreeLikelihoodExtTest {
 	}
 
 	@Test
-	public void testUpdatePatternList() throws Exception {
+	public void testUpdatePatternListOld() throws Exception {
 		
 		HaplotypeModel haplotypeModel = new HaplotypeModel(trueAlignment);
 		
@@ -297,7 +297,7 @@ public class TreeLikelihoodExtTest {
         
         
         int thinning = 1000;
-        SitePatternsExt patternsExt = new SitePatternsExt(haplotypeModel, null, 0, -1, 1, true);
+//        SitePatternsExt patternsExt = new SitePatternsExt(haplotypeModel, null, 0, -1, 1, true);
         TreeLikelihoodExt treeLikelihoodExt = new TreeLikelihoodExt(haplotypeModel, treeModel, siteModel, branchRateModel, null,
     			false, false, false, false, false);
         
@@ -309,7 +309,7 @@ public class TreeLikelihoodExtTest {
         for (int i = 0; i < 100; i++) {
         	op.doOperation();
 //			alignment = haplotypeModel.getAlignment();
-			patternsExt.updateAlignment(haplotypeModel);
+//			patternsExt.updateAlignment(haplotypeModel);
 			treeLikelihoodExt.updatePatternListExt();
 		}
 		
@@ -392,7 +392,7 @@ public class TreeLikelihoodExtTest {
 		}
 
 	@Test
-	public void testUpdateHaplotypeModel() throws Exception {
+	public void testUpdateHaplotypeModelTimeTrial() throws Exception {
 		
 		HaplotypeModel haplotypeModel = new HaplotypeModel(trueAlignment);
 		
@@ -468,7 +468,7 @@ public class TreeLikelihoodExtTest {
 		schedule.addOperator(op);
 
 		double ite = 1e3;
-        for (int i = 0; i < ite; i++) {
+        for (int i = 0; i < ite;i++) {
 			
 			boolean operatorSucceeded = true;
             boolean accept = false;
@@ -477,6 +477,7 @@ public class TreeLikelihoodExtTest {
             final MCMCOperator mcmcOperator = schedule.getOperator(opIndex);
             
             try{
+            	treeLikelihoodExt.storeModelState();
             	mcmcOperator.operate();
             }
 			catch (OperatorFailedException e) {
@@ -508,7 +509,7 @@ public class TreeLikelihoodExtTest {
         
         ite = 1e5;
         for (int i = 0; i < ite; i++) {
-			
+			System.out.println(i);
 			boolean operatorSucceeded = true;
             boolean accept = false;
             

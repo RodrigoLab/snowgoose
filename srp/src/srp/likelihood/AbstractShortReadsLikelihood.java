@@ -27,7 +27,7 @@ public abstract class AbstractShortReadsLikelihood extends
 	public static final double LOG_ERROR_RATE = Math.log(ERROR_RATE);
 	public static final double LOG_NOT_ERROR_RATE = Math.log(NOT_ERROR_RATE);
 	public static final double LOG_ONE_MINUS_ERROR_RATE = Math.log(1-ERROR_RATE);
-	public static final double C = 1e-300;
+	public static final double C = 1e-200;
 	public static final double LOG_C = Math.log(C);
 
 	public static final DataType DATA_TYPE = ShortReads.INSTANCE;
@@ -120,7 +120,6 @@ public abstract class AbstractShortReadsLikelihood extends
 		}
 		switch (operation) {
 		case NONE:
-//			logLikelihood = calculateSrpLikelihoodFull();
 			logLikelihood = calculateSrpLikelihoodFull();
 			break;
 		case FULL:
@@ -128,6 +127,7 @@ public abstract class AbstractShortReadsLikelihood extends
 			break;
 		case SINGLE:
 			logLikelihood = calculateSrpLikelihoodSingle();
+//			logLikelihood = calculateSrpLikelihoodFull();
 			break;
 		case COLUMN:
 			logLikelihood = calculateSrpLikelihoodColumn();

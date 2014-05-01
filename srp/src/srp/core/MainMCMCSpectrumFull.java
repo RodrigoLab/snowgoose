@@ -258,8 +258,7 @@ public class MainMCMCSpectrumFull {
 		
 		mcmc.init(options, posterior, schedule, loggers);
 		mcmc.run();
-		System.out.println(mcmc.getTimer().toString());
-
+		
 		
 	}
 

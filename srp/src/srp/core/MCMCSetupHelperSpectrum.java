@@ -47,11 +47,6 @@ import dr.inference.operators.UpDownOperator;
 
 public class MCMCSetupHelperSpectrum extends MCMCSetupHelper {
 
-	private static final double opTiny = 0.1;
-	private static final double opSmall = 3;
-	private static final double opMed = 15;
-	private static final double opLarge = 20;
-	private static final double opSpectrum =90;//150 works for beta and related, might be a bit too high?
 	
 	public static HashMap<String, Object> setupSpectrumTreeLikelihoodSpectrumModel(
 				TreeModel treeModel, SpectrumAlignmentModel spectrumModel) {

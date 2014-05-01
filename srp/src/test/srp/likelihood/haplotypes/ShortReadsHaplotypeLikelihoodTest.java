@@ -357,7 +357,7 @@ public class ShortReadsHaplotypeLikelihoodTest {
 		
 		boolean DEBUG = true;
 
-		int ite = (int) 1e4;
+		int ite = (int) 1e6;
 		
 		ShortReadsHaplotypeLikelihood likelihood = new ShortReadsHaplotypeLikelihood(haplotypeModel, srpMap);
 		double logLikelihoodOperator = 0;
@@ -376,27 +376,27 @@ public class ShortReadsHaplotypeLikelihoodTest {
             
             try{
             	mcmcOperator.operate();
-            	
             }
 			catch (OperatorFailedException e) {
                 operatorSucceeded = false;
 			}
-            
-            OperationType expectedSpectrumOperation = ((AbstractHaplotypeOperator) mcmcOperator).getOperationType();
-			
+	        	
 			if(operatorSucceeded){
+			    OperationType expectedSpectrumOperation = ((AbstractHaplotypeOperator) mcmcOperator).getOperationType();
 				logLikelihoodOperator = likelihood.getLogLikelihood();
 				assertEquals(expectedSpectrumOperation, likelihood.getOperation());
-				
-				HaplotypeModel haplotypeModelFull = HaplotypeModel.duplicateHaplotypeModel(haplotypeModel);
-				ShortReadsHaplotypeLikelihood likelihoodFull = new ShortReadsHaplotypeLikelihood(haplotypeModelFull, srpMap);
-				logLikelihoodFull = likelihoodFull.getLogLikelihood();
-//				logLikelihoodMaster = likelihood.calculateSrpLikelihoodFullMaster();
-				assertEquals(OperationType.NONE, likelihoodFull.getOperation());
-				assertEquals(logLikelihoodFull, logLikelihoodOperator, THRESHOLD*100);
+	            if(i<1000){
+					HaplotypeModel haplotypeModelFull = HaplotypeModel.duplicateHaplotypeModel(haplotypeModel);
+					ShortReadsHaplotypeLikelihood likelihoodFull = new ShortReadsHaplotypeLikelihood(haplotypeModelFull, srpMap);
+					logLikelihoodFull = likelihoodFull.getLogLikelihood();
+	//				logLikelihoodMaster = likelihood.calculateSrpLikelihoodFullMaster();
+					assertEquals(OperationType.NONE, likelihoodFull.getOperation());
+					assertEquals(logLikelihoodFull, logLikelihoodOperator, THRESHOLD);
+	            }
 				double rand = MathUtils.nextDouble();
 				accept = rand>0.5;
 			}
+
 			if(accept){
 				mcmcOperator.accept(0);
 				likelihood.acceptModelState();
@@ -415,6 +415,7 @@ public class ShortReadsHaplotypeLikelihoodTest {
 		HaplotypeModel haplotypeModelFull = HaplotypeModel.duplicateHaplotypeModel(haplotypeModel);
 		ShortReadsHaplotypeLikelihood likelihoodFull = new ShortReadsHaplotypeLikelihood(haplotypeModelFull, srpMap);
 		logLikelihoodFull = likelihoodFull.getLogLikelihood();
+		
 		assertEquals(logLikelihoodFull, logLikelihoodOperator, THRESHOLD);
 	}
 
@@ -445,7 +446,7 @@ public class ShortReadsHaplotypeLikelihoodTest {
 		
 		op = new HaplotypeRecombinationOperator(haplotypeModel, 0);
 		schedule.addOperator(op);
-		op.setWeight(1);
+		op.setWeight(0.1);
 		
 		op = new HaplotypeSwapSectionOperator(haplotypeModel, 10, null);
 		schedule.addOperator(op);
@@ -468,7 +469,7 @@ public class ShortReadsHaplotypeLikelihoodTest {
 
 
 	@Test
-	public void testFullvsColumnStoreRestore() throws Exception {
+	public void testFullvsColumn() throws Exception {
 
 		OperatorSchedule schedule = new SimpleOperatorSchedule();
 		MCMCOperator op; 
@@ -476,6 +477,29 @@ public class ShortReadsHaplotypeLikelihoodTest {
 		op = new ColumnOperator(haplotypeModel, haplotypeModel.getHaplotypeCount(), null);
 //		op = new DeltaExchangeColumnSpectrumOperator(
 //				haplotypeModel, 0.1, null);
+		schedule.addOperator(op);
+		
+		assertLikelihoodOperator(haplotypeModel, schedule);
+
+	}
+	
+	@Test
+	public void testFullvsEverything() throws Exception {
+
+		OperatorSchedule schedule = new SimpleOperatorSchedule();
+		MCMCOperator op; 
+
+		op = new BaseSingleOperator(haplotypeModel);
+		schedule.addOperator(op);
+
+
+		op = new BasesMultiOperator(haplotypeModel, 5, null);
+		schedule.addOperator(op);
+		
+		op = new HaplotypeSwapSectionOperator(haplotypeModel, 10, null);
+		schedule.addOperator(op);
+		
+		op = new ColumnOperator(haplotypeModel, haplotypeModel.getHaplotypeCount(), null);
 		schedule.addOperator(op);
 		
 		assertLikelihoodOperator(haplotypeModel, schedule);

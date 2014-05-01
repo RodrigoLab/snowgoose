@@ -193,9 +193,11 @@ public class Haplotype extends Sequence {
 
 	public void storeState(int index) {
 		storedHaplotype[index] = haplotype[index];
+//		storeState();
 	}
 	public void restoreState(int index) {
 		haplotype[index] = storedHaplotype[index];
+//		restoreState();
 	}
 	
 	public void storeState() {

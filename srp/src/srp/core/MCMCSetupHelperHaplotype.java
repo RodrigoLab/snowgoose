@@ -80,12 +80,6 @@ public class MCMCSetupHelperHaplotype extends MCMCSetupHelper {
 		return parameterList;
 	}
 
-	private static final double opTiny = 0.1;
-	private static final double opSmall = 3;
-	private static final double opMed = 10;
-	private static final double opLarge = 30;
-	private static final double opHuge = 100;
-	
 	public static TreeLikelihoodExt setupTreeLikelihood(Parameter kappa,
 			Parameter freqs, HaplotypeModel haplotypeModel,
 			TreeModel treeModel, StrictClockBranchRates branchRateModel) {
@@ -118,160 +112,124 @@ public class MCMCSetupHelperHaplotype extends MCMCSetupHelper {
 		return treeLikelihood;
 	}
 
-	public static List<MCMCOperator> defalutTreeOperators(OperatorSchedule schedule,
-			TreeModel treeModel) {
-	
-			MCMCOperator operator;
-//			List<MCMCOperator> OperatorList = new ArrayList<MCMCOperator>();
-			
-			
-			Parameter allInternalHeights = treeModel.createNodeHeightsParameter(true, true, false);
-			operator = new UpDownOperator(
-					null,// new Scalable[] { new Scalable.Default(rateParameter) },
-					new Scalable[] { new Scalable.Default(allInternalHeights) },
-					0.75, 3.0, CoercionMode.COERCION_ON);
-			operator.setWeight(opSmall);
-			schedule.addOperator(operator);
-	
-			Parameter rootHeight = treeModel.getRootHeightParameter();
-			rootHeight.setId("TREE_HEIGHT");
-			operator = new ScaleOperator(rootHeight, 0.75);
-			operator.setWeight(opSmall);
-//			schedule.addOperator(operator);
-	
-			Parameter internalHeights = treeModel.createNodeHeightsParameter(false, true, false);
-			operator = new UniformOperator(internalHeights, 30.0);
-			operator.setWeight(opMed);
-			schedule.addOperator(operator);
-	
-			operator = new SubtreeSlideOperator(treeModel, 15.0, 1.0, true, false,
-					false, false, CoercionMode.COERCION_ON);
-			operator.setWeight(opMed);
-//			schedule.addOperator(operator);
-	
-			operator = new ExchangeOperator(ExchangeOperator.NARROW, treeModel, 15.0);
-			operator.setWeight(opMed);
-//			schedule.addOperator(operator);
-	
-			operator = new ExchangeOperator(ExchangeOperator.WIDE, treeModel, 3.0);
-			operator.setWeight(opSmall);
-//			schedule.addOperator(operator);
-	
-			operator = new WilsonBalding(treeModel, 3.0);
-			operator.setWeight(opSmall);
-//			schedule.addOperator(operator);
-	
-			return null;
-		}
+	public static List<MCMCOperator> defalutTreeOperators(
+			OperatorSchedule schedule, TreeModel treeModel) {
+
+		MCMCOperator operator;
+		// List<MCMCOperator> OperatorList = new ArrayList<MCMCOperator>();
+
+		Parameter allInternalHeights = treeModel.createNodeHeightsParameter(
+				true, true, false);
+		operator = new UpDownOperator(
+				null,// new Scalable[] { new Scalable.Default(rateParameter) },
+				new Scalable[] { new Scalable.Default(allInternalHeights) },
+				0.75, 3.0, CoercionMode.COERCION_ON);
+		operator.setWeight(opSmall);
+		schedule.addOperator(operator);
+
+		Parameter rootHeight = treeModel.getRootHeightParameter();
+		rootHeight.setId("TREE_HEIGHT");
+		operator = new ScaleOperator(rootHeight, 0.75);
+		operator.setWeight(opSmall);
+		schedule.addOperator(operator);
+
+		Parameter internalHeights = treeModel.createNodeHeightsParameter(false,
+				true, false);
+		operator = new UniformOperator(internalHeights, 30.0);
+		operator.setWeight(opMed);
+		schedule.addOperator(operator);
+
+		operator = new SubtreeSlideOperator(treeModel, 15.0, 1.0, true, false,
+				false, false, CoercionMode.COERCION_ON);
+		operator.setWeight(opMed);
+		schedule.addOperator(operator);
+
+		operator = new ExchangeOperator(ExchangeOperator.NARROW, treeModel,
+				15.0);
+		operator.setWeight(opMed);
+		schedule.addOperator(operator);
+
+		operator = new ExchangeOperator(ExchangeOperator.WIDE, treeModel, 3.0);
+		operator.setWeight(opSmall);
+		schedule.addOperator(operator);
+
+		operator = new WilsonBalding(treeModel, 3.0);
+		operator.setWeight(opSmall);
+		schedule.addOperator(operator);
+
+		return null;
+	}
 
 	public static ArrayList<MCMCOperator> defalutOperators(OperatorSchedule schedule,
 				HaplotypeModel haplotypeModel,
 					Parameter... parameters) {
+
+		MCMCOperator operator;
+//			ArrayList<MCMCOperator> OperatorList = new ArrayList<MCMCOperator>();
+
+		operator = new BaseSingleOperator(haplotypeModel);
+		operator.setWeight(opLarge);
+		schedule.addOperator(operator);
 		
-				MCMCOperator operator;
-	//			ArrayList<MCMCOperator> OperatorList = new ArrayList<MCMCOperator>();
-		
-		//		operator = new SingleBaseOperator(haplotypeModel, 0);
-		//		operator.setWeight(opSmall);
-		//		schedule.addOperator(operator);
-		//
-		//		operator = new SingleBaseUniformOperator(haplotypeModel, 0);
-		//		operator.setWeight(opSmall);
-		//		schedule.addOperator(operator);
-		
-		//		operator = new SingleBaseEmpiricalOperator(haplotypeModel, 0);
-		//		operator.setWeight(opLarge);
-		//		schedule.addOperator(operator);
-		
-		//		operator = new SwapBasesMultiOperator(haplotypeModel, 12, CoercionMode.COERCION_ON);
-		//		operator.setWeight(opLarge);
-		//		schedule.addOperator(operator);
-		//
-		//		operator = new SwapBasesUniformOperator(haplotypeModel, 12, CoercionMode.COERCION_ON);
-		//		operator.setWeight(opLarge);
-		//		schedule.addOperator(operator);
-		//
-		//		operator = new SwapBasesEmpiricalOperator(haplotypeModel, 1, CoercionMode.COERCION_OFF);
-		//		operator.setWeight(opLarge);
-		//		schedule.addOperator(operator);
-		
-		//		operator = new SwapBasesEmpiricalOperator(haplotypeModel, 2, CoercionMode.COERCION_OFF);
-		//		operator.setWeight(opLarge);
-		//		schedule.addOperator(operator);
-		//		operator = new SwapBasesEmpiricalOperator(haplotypeModel, 5, CoercionMode.COERCION_OFF);
-		//		operator.setWeight(opLarge);
-		//		schedule.addOperator(operator);
-		//		operator = new SwapBasesEmpiricalOperator(haplotypeModel, 5, CoercionMode.COERCION_ON);
-		//		operator.setWeight(opLarge);
-		//		schedule.addOperator(operator);
-		
-//				operator = new HaplotypeRecombinationOperator(haplotypeModel, 12);
-//				operator.setWeight(3.0);
-		//		schedule.addOperator(operator);
-		
-				operator = new BaseSingleOperator(haplotypeModel);
-				operator.setWeight(opLarge);
-				schedule.addOperator(operator);
-				
-				operator = new BasesMultiOperator(haplotypeModel, 3, CoercionMode.COERCION_ON);
-				operator.setWeight(opLarge/10.0);
+		operator = new BasesMultiOperator(haplotypeModel, 3, CoercionMode.COERCION_ON);
+		operator.setWeight(opLarge/10.0);
 //				schedule.addOperator(operator);
-				
-				operator = new HaplotypeSwapSectionOperator(haplotypeModel, 5, CoercionMode.COERCION_OFF);
-				operator.setWeight(opLarge);
-				schedule.addOperator(operator);
-//	
-				operator = new ColumnOperator(haplotypeModel, 7, CoercionMode.COERCION_OFF);
-				operator.setWeight(opLarge);
-				schedule.addOperator(operator);
-				
-				
-				for (Parameter parameter : parameters) {
 		
-					String parameterName = parameter.getParameterName();
-					
-					if("kappa".equals(parameterName)){
-						operator = new ScaleOperator(parameter, 0.75);
-						operator.setWeight(opTiny);
-						schedule.addOperator(operator);
-					}
-					else if("frequency".equals(parameterName)){
-						operator = new DeltaExchangeOperator(parameter, new int[] { 1,
-								1, 1, 1 }, 0.01, 0.1, false, CoercionMode.COERCION_ON);
-						operator.setWeight(opTiny);
-		//				operator.setWeight(opHuge);
-						schedule.addOperator(operator);
-						
+		operator = new HaplotypeSwapSectionOperator(haplotypeModel, 5, CoercionMode.COERCION_OFF);
+		operator.setWeight(opLarge);
+//				schedule.addOperator(operator);
+//	
+		operator = new ColumnOperator(haplotypeModel, 7, CoercionMode.COERCION_OFF);
+		operator.setWeight(opLarge);
+//				schedule.addOperator(operator);
+		
+		
+		for (Parameter parameter : parameters) {
+
+			String parameterName = parameter.getParameterName();
+			
+			if("kappa".equals(parameterName)){
+				operator = new ScaleOperator(parameter, 0.75);
+				operator.setWeight(opTiny);
+//						schedule.addOperator(operator);
+			}
+			else if("frequency".equals(parameterName)){
+				operator = new DeltaExchangeOperator(parameter, new int[] { 1,
+						1, 1, 1 }, 0.01, 0.1, false, CoercionMode.COERCION_ON);
+				operator.setWeight(opTiny);
+//				operator.setWeight(opHuge);
+//						schedule.addOperator(operator);
+				
 //						operator = new BaseSingleFrequencyOperator(haplotypeModel, parameter);
 //						operator.setWeight(opMed);
 //						schedule.addOperator(operator);
 //						
 
-						
+				
 //						operator = new SwitchBaseFrequencyOperator(haplotypeModel, 0.8, 
 //								parameter, CoercionMode.COERCION_ON);
 //						operator.setWeight(opMed);
 //						schedule.addOperator(operator);
-						
-						//good seq: low (switch) prob, most accepted with same posterior
-						//			high switchProb, low accept, but with diff posterior
-						//bad seq: high (switchProb), accept with different posterior
-						//			low switch,  accept with same post
-						
-		//				operator = new SingleBaseFrequencyOperator(haplotypeModel, parameter);
-		//				operator.setWeight(opMed);
-		////				schedule.addOperator(operator);
-					}
-					else if("populationSize".equals(parameterName)){
-						operator = new ScaleOperator(parameter, 0.75);
-						operator.setWeight(opTiny);
-						schedule.addOperator(operator);
-					}
-					
-				}
 				
-				return null;
+				//good seq: low (switch) prob, most accepted with same posterior
+				//			high switchProb, low accept, but with diff posterior
+				//bad seq: high (switchProb), accept with different posterior
+				//			low switch,  accept with same post
+				
+//				operator = new SingleBaseFrequencyOperator(haplotypeModel, parameter);
+//				operator.setWeight(opMed);
+////				schedule.addOperator(operator);
 			}
+			else if("populationSize".equals(parameterName)){
+				operator = new ScaleOperator(parameter, 0.75);
+				operator.setWeight(opTiny);
+				schedule.addOperator(operator);
+			}
+			
+		}
+		
+		return null;
+	}
 
-	
+
 }

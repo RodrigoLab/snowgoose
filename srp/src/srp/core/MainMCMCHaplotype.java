@@ -7,11 +7,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import srp.dr.ext.TreeLikelihoodExt;
+import srp.evolution.haplotypes.HaplotypeLoggerWithTrueHaplotype;
 import srp.evolution.haplotypes.HaplotypeModel;
 import srp.evolution.shortreads.ShortReadMapping;
 import srp.likelihood.AbstractShortReadsLikelihood;
 import srp.likelihood.haplotypes.ShortReadsHaplotypeLikelihood;
 import dr.evolution.alignment.Alignment;
+import dr.evolution.tree.Tree;
 import dr.evolution.util.TaxonList;
 import dr.evolution.util.Units;
 import dr.evomodel.branchratemodel.StrictClockBranchRates;
@@ -19,6 +21,7 @@ import dr.evomodel.coalescent.CoalescentLikelihood;
 import dr.evomodel.coalescent.ConstantPopulationModel;
 import dr.evomodel.tree.TreeLogger;
 import dr.evomodel.tree.TreeModel;
+import dr.evomodel.treelikelihood.TreeLikelihood;
 import dr.evomodelxml.coalescent.ConstantPopulationModelParser;
 import dr.inference.loggers.MCLogger;
 import dr.inference.loggers.TabDelimitedFormatter;
@@ -58,7 +61,7 @@ public class MainMCMCHaplotype {
 		int noOfTrueHaplotype;
 		int noOfRecoveredHaplotype;
 		boolean randomTree = true;
-		boolean randomSpectrum = true;
+		boolean randomHaplotype = true;
 
 		
 //		boolean commandLine = true;
@@ -76,16 +79,14 @@ public class MainMCMCHaplotype {
 		else{	
 			System.out.println("local parameters");
 			dataDir = "/home/sw167/workspaceSrp/snowgoose/srp/unittest/testData/";
-			runIndex = 51;
+			runIndex = 154;
 			dataDir += "H7_"+runIndex+"/";
 			
-			totalSamples = 100	;
+			totalSamples = 200	;
 			logInterval = 10000 ;
 			
 			randomTree = true;
-//			randomTree = false;
-			
-			randomSpectrum = true;
+			randomHaplotype = true;
 
 			noOfTrueHaplotype = 7;
 			noOfRecoveredHaplotype=7;
@@ -98,27 +99,48 @@ public class MainMCMCHaplotype {
 		String prefix = dataDir+"FullTree_"+hapRunIndex;
 		String logTracerName = prefix+".log";
 		String logTreeName = prefix+".trees";
-		String logHaplotypeName = prefix+".haplatype";
+		String logHaplotypeName = prefix+".haplotype";
 		String operatorAnalysisFile = prefix+"_operatorAnalysisFile.txt";
 		
+		
+//		
 		DataImporter dataImporter = new DataImporter(dataDir);
 
 		Alignment shortReads = dataImporter.importShortReads(shortReadFile);
 		ShortReadMapping srpMap = new ShortReadMapping(shortReads);
-		System.out.println(shortReads.getSiteCount());
-		HaplotypeModel haplotypeModel = new HaplotypeModel(noOfRecoveredHaplotype, 1200);
 
-//		Alignment trueAlignment = dataImporter.importAlignment(trueHaplotypeFile);
-//		haplotypeModel = new HaplotypeModel(alignmentMapping, trueAlignment);
-//		ShortReadLikelihood shortReadLikelihood  = new ShortReadLikelihood(haplotypeModel);
+
+		
+		HaplotypeModel haplotypeModel = null;
+		
+		if(randomHaplotype){
+			haplotypeModel = new HaplotypeModel(noOfRecoveredHaplotype, shortReads.getSiteCount());
+		}
+		else{
+			String partialHaplotypeName = prefix+".haplotypepartial";
+			
+//			haplotypeModel = dataImporter.importPartialSpectrumFile(partialHaplotypeName);
+		}
+
+		// ShortReadLikelihood
+		ShortReadsHaplotypeLikelihood srpLikelihood = new ShortReadsHaplotypeLikelihood(haplotypeModel, srpMap);
+
 		
 		// coalescent
 		Parameter popSize = new Parameter.Default(ConstantPopulationModelParser.POPULATION_SIZE, 3000.0, 100, 100000.0);
 
 		// Random treeModel
 		ConstantPopulationModel popModel = new ConstantPopulationModel(popSize, Units.Type.YEARS);
-		TreeModel treeModel = MCMCSetupHelperHaplotype.setupRandomTreeModel(popModel, haplotypeModel, Units.Type.YEARS);
-		
+//		TreeModel treeModel = MCMCSetupHelperHaplotype.setupRandomTreeModel(popModel, haplotypeModel, Units.Type.YEARS);
+		TreeModel treeModel;
+		if(randomTree){
+			treeModel = MCMCSetupHelperHaplotype.setupRandomTreeModel(popModel, haplotypeModel, Units.Type.YEARS);
+		}
+		else{
+			String partialTreeName = prefix+".treespartial";
+			Tree partialPhylogeny = dataImporter.importTree(partialTreeName);
+			treeModel = new TreeModel(TreeModel.TREE_MODEL, partialPhylogeny, false);
+		}
 		
 		// Coalescent likelihood
 		CoalescentLikelihood coalescent = new CoalescentLikelihood(treeModel,null, new ArrayList<TaxonList>(), popModel);
@@ -131,9 +153,6 @@ public class MainMCMCHaplotype {
 		Parameter freqs = (Parameter) parameterList.get("freqs");
 		StrictClockBranchRates branchRateModel = (StrictClockBranchRates) parameterList.get("branchRateModel");
 		TreeLikelihoodExt treeLikelihood = (TreeLikelihoodExt) parameterList.get("treeLikelihood");
-		
-		// ShortReadLikelihood
-		ShortReadsHaplotypeLikelihood srpLikelihood = new ShortReadsHaplotypeLikelihood(haplotypeModel, srpMap);
 				
 		// CompoundLikelihood
 		HashMap<String, Likelihood> compoundlikelihoods = MCMCSetupHelperHaplotype
@@ -147,7 +166,7 @@ public class MainMCMCHaplotype {
 		// Operators
 		OperatorSchedule schedule = new SimpleOperatorSchedule();
 		MCMCSetupHelperHaplotype.defalutOperators(schedule, haplotypeModel, freqs, popSize, kappa);
-		MCMCSetupHelperHaplotype.defalutTreeOperators(schedule, treeModel);
+//		MCMCSetupHelperHaplotype.defalutTreeOperators(schedule, treeModel);
 				
 
 		
@@ -190,16 +209,21 @@ public class MainMCMCHaplotype {
 				treeFormatter, logInterval, true, true, true, null, null);
 
 		// log Haplotype
-//		Alignment trueAlignment = dataImporter.importAlignment(trueHaplotypeFile);
+		Alignment trueAlignment = dataImporter.importAlignment(trueHaplotypeFile);
+		HaplotypeModel trueHaplotypeModel = new HaplotypeModel(trueAlignment);
+		ShortReadsHaplotypeLikelihood trueSrp = new ShortReadsHaplotypeLikelihood(trueHaplotypeModel, srpMap);
+		System.out.println(trueSrp.getLogLikelihood());
 //		AlignmentMapping alignmentMapping = new AlignmentMapping(shortReads);
 //		ShortReadsHaplotypeLikelihood trueSrp = new ShortReadsHaplotypeLikelihood(HaplotypeModel.factory(shortReads, trueAlignment), srpMap);
 //		System.err.println("\'trueShortReadLikelihood\': "+trueSrp.getLogLikelihood());
-//		loggers[3] = new HaplotypeLoggerWithTrueHaplotype(haplotypeModel, trueAlignment, logHaplotypeName, logInterval*10);
-		loggers[3] = new TreeLogger(treeModel, branchRateModel, null, null,
-				treeFormatter, logInterval, true, true, true, null, null);
+		loggers[3] = new HaplotypeLoggerWithTrueHaplotype(haplotypeModel,
+				trueAlignment, logHaplotypeName, (int) (logInterval
+						* totalSamples * 0.1));
+		// loggers[3] = new TreeLogger(treeModel, branchRateModel, null, null,
+//				treeFormatter, logInterval, true, true, true, null, null);
 		
 		// MCMC
-		MCMCOptions options = MCMCSetupHelperHaplotype.setMCMCOptions(logInterval, totalSamples);
+		MCMCOptions options = MCMCSetupHelper.setMCMCOptions(logInterval, totalSamples);
 		
 		MCMC mcmc = new MCMC("mcmc1");
 		mcmc.setShowOperatorAnalysis(true);
@@ -210,7 +234,15 @@ public class MainMCMCHaplotype {
 
 		
 		System.out.println(mcmc.getTimer().toString());
-		
+		System.out.println("True Likelihood: "+trueSrp.getLogLikelihood());
+		srpLikelihood.makeDirty();
+		System.out.println(srpLikelihood.getLogLikelihood());
+//		treeModel
+		TreeLikelihood reCalTreeLikelihood = new TreeLikelihood(
+				haplotypeModel, treeModel, treeLikelihood.getSiteModel(), treeLikelihood.getBranchRateModel(), null,
+				false, false, true, false, false);
+		System.out.println(reCalTreeLikelihood.getLogLikelihood());
+	
 	}
 
 

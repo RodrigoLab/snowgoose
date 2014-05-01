@@ -52,7 +52,7 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 	public HaplotypeModel(Alignment trueAlignment) {
 		this(trueAlignment.getSequenceCount(), trueAlignment.getSiteCount());
 
-		for (int i = 0; i < trueAlignment.getSequenceCount(); i++) {
+		for (int i = 0; i < sequenceCount; i++) {
 			Haplotype haplotype = new Haplotype(trueAlignment.getSequence(i));
 			setHaplotype(i, haplotype);
 		}
@@ -67,6 +67,7 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 		return getHaplotype(i).getSequenceString();
 	}
 
+	
 	public int[] getStoredSitePattern(int siteIndex){
 
 		int n = getHaplotypeCount();
@@ -84,6 +85,7 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 
 	}
 	
+	@Deprecated
 	public int getStoredSitePattern(int hapIndex, int site) {
 		Haplotype hap = getHaplotype(hapIndex);
 		int state = hap.getStoredState(site);
@@ -122,16 +124,16 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 	protected void storeState() {
 
 		OperationType operation = operationRecord.getOperation();
-		int spectrumIndex;
+		int haplotypeIndex;
 		int siteIndex;
 		int[] siteIndexs;
 		Haplotype haplotype;
 		if (DEBUG) {
-			System.out.println("StoreState in SpectrumAlignment:\t"+ operation);
+			System.out.println("StoreState in HaplotypeModel:\t"+ operation);
 		}
 		switch (operation) {
 		case NONE:
-			
+			System.out.println("Init HaplotypeModel StoreState()");
 			break;
 		case FULL:
 			for (int i = 0; i < getHaplotypeCount(); i++) {
@@ -141,16 +143,16 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 			break;
 
 		case SINGLE:
-			spectrumIndex = operationRecord.getSpectrumIndex();
+			haplotypeIndex = operationRecord.getSpectrumIndex();
 			siteIndex = operationRecord.getSingleIndex();
-			haplotype = getHaplotype(spectrumIndex);
+			haplotype = getHaplotype(haplotypeIndex);
 			haplotype.storeState(siteIndex);
 			break;
 
 		case MULTI:
-			spectrumIndex = operationRecord.getSpectrumIndex();
+			haplotypeIndex = operationRecord.getSpectrumIndex();
 			siteIndexs = operationRecord.getAllSiteIndexs();
-			haplotype = getHaplotype(spectrumIndex);
+			haplotype = getHaplotype(haplotypeIndex);
 			for (int s: siteIndexs){
 				haplotype.storeState(s);
 			}
@@ -191,7 +193,7 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 		Haplotype haplotype;
 		int[] siteIndexs;
 		if (DEBUG) {
-			System.out.println("RestoreState in SpectrumAlignment:\t" + operation);
+			System.out.println("RestoreState in HaplotypeModel:\t" + operation);
 		}
 //		System.out.println("zzzzRestore HaplotypeModel: "+operation);
 		switch (operation) {

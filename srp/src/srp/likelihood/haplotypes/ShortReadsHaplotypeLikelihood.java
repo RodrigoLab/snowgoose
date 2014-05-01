@@ -1,6 +1,11 @@
 package srp.likelihood.haplotypes;
 
+import java.util.Arrays;
 import java.util.HashMap;
+
+import javax.swing.text.TabableView;
+
+import org.apache.commons.math3.util.ArithmeticUtils;
 
 import srp.evolution.OperationType;
 import srp.evolution.haplotypes.Haplotype;
@@ -143,20 +148,33 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 		int maxDist=0;
 		for (int s = 0; s < srpCount; s++) {
 			int srLength = srpMap.getSrpLength(s);//ength();//srp.length();
-			int srLength1 = srLength+1;
+			int srLengthPlusOne = srLength+1;
 //			maxDist = Math.max(maxDist, srLength1);
-			double[] logBinomD = new double[srLength1];
-			double[] scaledBinomD = new double[srLength1];
+			double[] logBinomD = new double[srLengthPlusOne];
+			double[] scaledBinomD = new double[srLengthPlusOne];
+			double sum=0;
 			for (int i = 0; i < logBinomD.length; i++) {
 	
 				logBinomD[i] = i*LOG_ERROR_RATE+(srLength-i)*LOG_ONE_MINUS_ERROR_RATE;
+//				logBinomD[i] = (i*LOG_ERROR_RATE+(srLength-i)*LOG_ONE_MINUS_ERROR_RATE) /10;
 //				logBinomD[i] = ArithmeticUtils.binomialCoefficientLog(srLength, i)+i*LOG_ERROR_RATE+(srLength-i)*LOG_ONE_MINUS_ERROR_RATE;
-	//			logBinomD[i] = i*LOG_ERROR_RATE+(srLength-i)*LOG_ONE_MINUS_ERROR_RATE;
-				scaledBinomD[i] = liS.scale(logBinomD[i]);
+//				sum += Math.exp(logBinomD[i]);
+//				logBinomD[i] = i*LOG_ERROR_RATE+(srLength-i)*LOG_ONE_MINUS_ERROR_RATE;
+				
 //				System.out.println(logBinomD[i] +"\t"+ scaledBinomD[i]);
 //				scaledBinomD[i] = i/100000.0;
 //				scaledBinomD[i] = Math.pow(LOG_ERROR_RATE, i)*Math.pow(LOG_ONE_MINUS_ERROR_RATE, (srLength-i));
+				
+				scaledBinomD[i] = liS.scale(logBinomD[i]);
 			}
+//			double logSum = Math.log(sum);
+//			double sum2 = 0;
+//			for (int i = 0; i < logBinomD.length; i++) {
+////				logBinomD[i] = logBinomD[i] -logSum;
+//				sum2 += Math.exp(logBinomD[i]);
+//				scaledBinomD[i] = liS.scale(logBinomD[i]);
+//			}
+//			System.out.println(srLength +"\t"+ sum2 +"\t"+ Arrays.toString(logBinomD)) ;
 	//		System.out.println(Arrays.toString(logBinomD));
 //			logBinomialDesnity.put(srLength, logBinomD);
 			scaledLogBinomialDesnity.put(srLength, scaledBinomD);
@@ -197,6 +215,15 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 		return logLikelihood;
 	}
 
+	static String cheat[] = new String[]{
+		"AGTTAAGAGGCACAACTTTGGTGGATGTCAGTTGAGGTTGCTACTACACAAAAAGTACATACCTTACGGAACGTTCTCAATCACTGTGAGACGTTTGCCATGGTACACTCTGCGTCCACT",
+		"AGTTAAGAGGCACAACTTTGGTGGATGTCAGTTGAGGTTGCTACTACACAAAAAGTACATACCTTACGGCACGTTCTCAATCACTGTGAGACGTTTGCCATGGTACACTCTGCGTCCACT",
+		"AGTTAAGAGGCACAACTTTGGTGGATGTCAGTTGAGGTTGCTACTACACAAAAAGTACATACCTTACGGAACGTTCTCAATCACTGTGAGACGTTTGCCATGGTACACTCTGCGTCCACT",
+		"AGCTAAGAGACACAACTATGGTGGATGTCAGTCAAGCCTGCAACTACATAGAAAGTGAATAAGTTACTGAATGCTCTCATTCACTGAGAGACGTTTACCATAATATACTAGGCGTCGACG",
+		"AGCTAAGAGACACAACTATGGTGGATGTCAGTCAAGCCTGCAACTACATAGAAAGTGAATAAGCTACTGAATGCTCTCATTCACTGAGAGACGTTTACCATAATATACTAGGCGTCGACG",
+		"AGCTAAGAGACACAACTATGGTGGATGTCAGTCAAGCCTGCAACTACATAGAAAGTGAATAAGTTACTGAATGCTCTCATTCACTGAGAGACGTTTACCATAATATACTTGGCGTCGACG",
+		"AGCTAAGAGACACAACTATGGTGGATGTCAGTCAAGCCTCCTACTACATAGAAAGTGAATAAGTTACTGAATGCTCTCATTCACTGAGAGACGTTTGCCTTAATAGACTTGGCGTCGACG",
+	};
 
 	protected double calculateSrpLikelihoodSingle() {
 
@@ -207,20 +234,31 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 		Haplotype haplotype = alignmentModel.getHaplotype(j);
 		char oldChar = haplotype.getStoredChar(k);
 		char newChar = haplotype.getChar(k);
-	
+		System.out.print("\t"+ currentLogLikelihood +"\t" );
 		if(newChar!= oldChar){ 
 			for (int i : mapToSrpArray[k]){
 				char srpChar = allSrpChar2D[i][k];
 				int deltaDist = calculateDeltaDist(srpChar, newChar, oldChar);
-
+				
 				if (deltaDist != 0) {
 					allDists[i][j] += deltaDist;
-					currentLogLikelihood = updateEachSrpAtI(i, currentLogLikelihood);
+					if(deltaDist == -1){
+						System.out.println(deltaDist +"\t"+  srpChar +"\t"+ newChar +"\t"+ oldChar +"\t"+ cheat[j].charAt(k));
+						System.out.println(currentLogLikelihood +"\t"+ eachSrpLogLikelihood[i]);
+					}
+					currentLogLikelihood = updateEachSrpAtI(i, currentLogLikelihood, (allDists[i][j]-deltaDist), (allDists[i][j]));
+					if(deltaDist == -1){
+						int srpLength = srpMap.getSrpLength(i);
+						double[] logPD = scaledLogBinomialDesnity.get(srpLength);
+						System.out.println(allDists[i][j] +"\t"+  logPD[allDists[i][j]] +"\t"+ logPD[ (allDists[i][j]-deltaDist  )]);
+						System.out.println(sumScaledSrpLogLikelihood[i] +"\t"+  storedSumScaledSrpLogLikelihood[i]);
+						System.out.println(currentLogLikelihood +"\t"+ eachSrpLogLikelihood[i]);
+					}
 				}
 				
 			}
 		}
-
+		System.out.println(currentLogLikelihood);
 		return currentLogLikelihood;
 	}
 	
@@ -764,22 +802,28 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 
 
 
-	private double updateEachSrpAtI(int i, double currentLogLikelihood) {
+	private double updateEachSrpAtI(int i, double currentLogLikelihood, int... dists) {
 		
+		int oldDist = dists[0];
+		int newDist = dists[0];
 		int srpLength = srpMap.getSrpLength(i);
 		double[] logPD = scaledLogBinomialDesnity.get(srpLength);
 		
 		double srpSum = 0;//~60 vs 90 for multi
+		liS.reset();	
 		for (int hj = 0; hj < sequenceCount; hj++) {
 //			System.out.println(i +"\t"+ allDists[i][hj]);
+//			System.out.println(i +"\t"+ hj +"\t"+ allDists[i][hj]);
 			srpSum += logPD[allDists[i][hj]];
+			liS.add(logPD[allDists[i][hj]]);
 //			srpSum += logPD[hj];
 		}
-//		sumScaledSrpLogLikelihood[i] = storedSumScaledSrpLogLikelihood[i] - logPD[oldDist] + logPD[newDist];
-//		srpSum = sumScaledSrpLogLikelihood[i];
+		sumScaledSrpLogLikelihood[i] = storedSumScaledSrpLogLikelihood[i] - logPD[oldDist] + logPD[newDist];
+		srpSum = sumScaledSrpLogLikelihood[i];
 		
 		currentLogLikelihood -= eachSrpLogLikelihood[i];
 		eachSrpLogLikelihood[i] = LikelihoodScaler.getLogLikelihood(srpSum, LOG_C);
+		eachSrpLogLikelihood[i] = liS.getLogLikelihood();
 		currentLogLikelihood += eachSrpLogLikelihood[i];
 		return currentLogLikelihood;
 		

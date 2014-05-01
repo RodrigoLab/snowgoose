@@ -399,6 +399,23 @@ public class SitePatternsExt extends SitePatterns {
 	private boolean prune;
 	private int pruningThreshold;
 
+	public void restoreState(HaplotypeModel haplotypeModel) {
+
+		OperationRecord record = haplotypeModel.getOperationRecord();
+		int hapIndex = record.getSpectrumIndex();
+		int[] siteIndex = record.getAllSiteIndexs();
+		int[] pattern;
+		switch (record.getOperation()) {
+		case SINGLE:
+		case COLUMN:
+			int site = record.getSingleIndex();
+			pattern = haplotypeModel.getStoredSitePattern(site);
+			patterns[site] = pattern;
+
+			break;
+		
+		}
+	}
 //	SitePatterns patterns2 = new SitePatterns(alignment, null, 0, -1, 1, true);
 	
 }
