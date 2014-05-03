@@ -27,7 +27,7 @@ public abstract class AbstractShortReadsLikelihood extends
 	public static final double LOG_ERROR_RATE = Math.log(ERROR_RATE);
 	public static final double LOG_NOT_ERROR_RATE = Math.log(NOT_ERROR_RATE);
 	public static final double LOG_ONE_MINUS_ERROR_RATE = Math.log(1-ERROR_RATE);
-	public static final double C = 1e-200;
+	public static final double C = 1e-100;
 	public static final double LOG_C = Math.log(C);
 
 	public static final DataType DATA_TYPE = ShortReads.INSTANCE;

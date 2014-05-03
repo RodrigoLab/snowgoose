@@ -82,7 +82,7 @@ public class MainMCMCHaplotype {
 			runIndex = 154;
 			dataDir += "H7_"+runIndex+"/";
 			
-			totalSamples = 200	;
+			totalSamples = 1000	;
 			logInterval = 10000 ;
 			
 			randomTree = true;

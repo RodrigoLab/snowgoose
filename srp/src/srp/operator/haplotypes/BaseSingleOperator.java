@@ -46,15 +46,17 @@ public class BaseSingleOperator extends AbstractSingleOperator {
 		Haplotype haplotype = haplotypeModel.getHaplotype(hapIndex);
 		int oldState = haplotype.getState(siteIndex);
 		char newChar = getNextDiffBase(oldState);
-		newChar = getNextBase();
-		if(MathUtils.nextDouble()< 0.5){
-			newChar = cheat[hapIndex].charAt(siteIndex);
-		}
+//		newChar = getNextBase();
+//		if(MathUtils.nextDouble()< 0.5){
+//			newChar = cheat[hapIndex].charAt(siteIndex);
+//		}
 		haplotype.setCharAt(siteIndex, newChar);
 		haplotypeModel.setOperationRecord(OP, hapIndex, siteIndex);
-System.out.print( (ShortReads.NUCLEOTIDE_CHARS[oldState]) +"\t"+ newChar +"\ttrue"+ cheat[hapIndex].charAt(siteIndex)
-		+"\t"+ (cheat[hapIndex].charAt(siteIndex)==newChar) +"\t"
-		);
+
+//		System.out.print( (ShortReads.NUCLEOTIDE_CHARS[oldState]) +"\t"+ newChar +"\ttrue"+ cheat[hapIndex].charAt(siteIndex)
+//		+"\t"+ (cheat[hapIndex].charAt(siteIndex)==newChar) +"\t"
+//		);
+		
 		haplotypeModel.endAlignmentModelOperation();
 
 		return 0.0;

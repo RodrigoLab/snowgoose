@@ -104,6 +104,16 @@ public class TreeLikelihoodExt extends TreeLikelihood {
 			tempstates[site] = patternList.getPatternState(haplotypeIndex, site);
 			likelihoodCore.setNodeStates(updateExternalNodeIndex, tempstates);
 			break;
+		case MULTI:
+			int[] sites = record.getAllSiteIndexs();
+			for (int s : sites) {
+				tempstates[s] = patternList.getPatternState(haplotypeIndex, s);
+			}
+			likelihoodCore.setNodeStates(updateExternalNodeIndex, tempstates);
+			break;
+		default:
+			throw new IllegalArgumentException("Invalid operation type:"+record.getOperation());
+		
 		}
         super.restoreState();
 
