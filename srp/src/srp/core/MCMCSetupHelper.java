@@ -52,7 +52,7 @@ public class MCMCSetupHelper {
 	//		options.setFullEvaluationCount((int) (logInterval*0.01));
 		
 		int coercionDelay = logInterval * totalSamples /100;
-		long fullEvaluationCount = 100; //TODO Change fullEvaCount
+		long fullEvaluationCount = 1; //TODO Change fullEvaCount
 		MCMCOptions options = new MCMCOptions(logInterval * totalSamples, fullEvaluationCount,
 				0, MarkovChain.EVALUATION_TEST_THRESHOLD, false, coercionDelay, 1.0);
 			//		MCMCOptions(long chainLength, 

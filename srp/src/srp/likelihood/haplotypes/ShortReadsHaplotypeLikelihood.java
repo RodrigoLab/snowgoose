@@ -1,6 +1,7 @@
 package srp.likelihood.haplotypes;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -11,6 +12,9 @@ import org.apache.commons.math3.util.ArithmeticUtils;
 
 import com.sun.org.glassfish.external.statistics.Stats;
 
+import dr.math.BigDecimalUtils;
+import dr.math.Polynomial;
+import dr.math.Polynomial.BigDouble;
 import dr.math.distributions.NormalDistribution;
 import srp.core.BigFunctions;
 import srp.evolution.OperationType;
@@ -53,6 +57,9 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 	private int[][] storedAllDists;
 	
 	@Deprecated protected StateLikelihood stateLikelihood;
+
+	private BigDecimal[] sumBigDecSrp;
+	private BigDecimal[] storedSumBigDecSrp;
 
 
 	
@@ -143,7 +150,8 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 //		
 //		
 //		bitSet = new BitSet(srpCount);
-		
+		sumBigDecSrp = new BigDecimal[srpCount];
+		storedSumBigDecSrp = new BigDecimal[srpCount];
 		
 		scaledLogBinomialDesnity = new HashMap<Integer, double[]>();
 		bigDecBinomialDesnity = new HashMap<Integer, BigDecimal[]>();
@@ -177,20 +185,27 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 //				logBinomD[i] = (i*LOG_ERROR_RATE+(srLength-i)*LOG_ONE_MINUS_ERROR_RATE) /10;
 //				logBinomD[i] = ArithmeticUtils.binomialCoefficientLog(srLength, i)+i*LOG_ERROR_RATE+(srLength-i)*LOG_ONE_MINUS_ERROR_RATE;
 //				System.out.println( (binomD[i]==Math.exp(logBinomD[i])) +"\t"+ binomD[i] +"\t"+ Math.exp(logBinomD[i]) +"\t"+ Math.log(binomD[i]) +"\t"+ logBinomD[i] );
-				
-				BigDecimal bigbd = BigE.pow(i).multiply(BigN.pow(srLength-i)); // better than bigdb2 and bigdb3
+				bigBinom[i] = new BigDecimal("0");
+//				bigBinom[i].setScale(1000);
+				BigDecimal temp = BigE.pow(i).multiply(BigN.pow(srLength-i));
+//				System.out.println(bigBinom[i].scale() +"\t"+ bigBinom[i].toPlainString());
+				bigBinom[i] = bigBinom[i].add(temp);
+//				BigDecimal temp2 = temp.add(bigBinom[i]);
+//				System.out.println(temp2.doubleValue() +"\t"+ bigBinom[i].toPlainString());
+//				bigBinom[i] = new BigDecimal(multiply.toPlainString()); // better than bigdb2 and bigdb3
 //				BigDecimal bigbd2 = BigFunctions.exp(new BigDecimal(Double.toString(logBinomD[i])), 500);
 //				BigDecimal bigbd3 = BigFunctions.exp(t5, 500);
 				sum += Math.exp(logBinomD[i]);
-				binomD[i] = Math.exp(logBinomD[i]);
-				if(min > binomD[i]){
-					min = binomD[i];
-				}
-				bigBinom[i] = bigbd;//BigDecimal.valueOf(binomD[i]);
+//				binomD[i] = Math.exp(logBinomD[i]);
+//				if(min > binomD[i]){
+//					min = binomD[i];
+//				}
+//				bigBinom[i] = bigbd;//BigDecimal.valueOf(binomD[i]);
 //				bigBinom[i].setScale(50);
 //				System.out.println(srLength +"\t"+ i);
 //				System.out.println(binomD[i] +"\n"+ bigBinom[i].toPlainString());
 //				bigbd = bigbd.setScale(50, BigDecimal.ROUND_HALF_EVEN);
+//				System.out.println(bigBinom[i].scale() +"\t"+  bigBinom[i].toPlainString());
 //				System.out.println(bigbd.scale() +"\t"+  bigbd.toPlainString());
 //				System.out.println(bigbd2.scale() +"\t"+  bigbd2.toPlainString());
 //				System.out.println(bigbd3.scale() +"\t"+  bigbd3.toPlainString());
@@ -219,7 +234,7 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 			scaledLogBinomialDesnity.put(srLength, scaledBinomD);
 			bigDecBinomialDesnity.put(srLength, bigBinom);
 		}
-		System.out.println(min);
+//		System.out.println(min);
 	}
 
 
@@ -235,21 +250,26 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 			int end = srpMap.getSrpEnd(i);
 			
 			double[] logPD = scaledLogBinomialDesnity.get(srpMap.getSrpLength(i));
-
+			BigDecimal[] bigDec = bigDecBinomialDesnity.get(srpMap.getSrpLength(i));
 			liS.reset();
 			sumScaledSrpLogLikelihood[i] = 0;
+			sumBigDecSrp[i] = new BigDecimal("0");
 			for (int j = 0; j < sequenceCount; j++) {
 
 				int dist = LikelihoodUtils.Dist(start, end, srp, alignmentModel.getHaplotype(j));
 				allDists[i][j]=dist;
 				liS.add(logPD[dist]);
+				sumBigDecSrp[i] = sumBigDecSrp[i].add(bigDec[dist]);
+//				System.out.println(sumBigDecSrp[i]);
 //				sumScaledSrpLogLikelihood[i] += logPD[allDists[i][j]];
 //				storedAllLog2D[i][j] = logPD[dist];
 //				liS.scaleLogProb(logPD[dist]);
 			}	
 			sumScaledSrpLogLikelihood[i] = liS.getSumScaledLikelihood();
 			eachSrpLogLikelihood[i] = liS.getLogLikelihood() ;
-//			System.out.println(sumScaledSrpLogLikelihood[i] +"\t"+ eachSrpLogLikelihood[i]);
+			eachSrpLogLikelihood[i] = BigFunctions.ln(sumBigDecSrp[i], 300).doubleValue();
+//			System.out.println(eachSrpLogLikelihood[i] +"\t"+ sumBigDecSrp[i].toPlainString());
+//			System.out.println("inFull: "+sumScaledSrpLogLikelihood[i] +"\t"+ eachSrpLogLikelihood[i]);
 			logLikelihood += eachSrpLogLikelihood[i];
 		}
 		return logLikelihood;
@@ -264,8 +284,98 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 		"AGCTAAGAGACACAACTATGGTGGATGTCAGTCAAGCCTGCAACTACATAGAAAGTGAATAAGTTACTGAATGCTCTCATTCACTGAGAGACGTTTACCATAATATACTTGGCGTCGACG",
 		"AGCTAAGAGACACAACTATGGTGGATGTCAGTCAAGCCTCCTACTACATAGAAAGTGAATAAGTTACTGAATGCTCTCATTCACTGAGAGACGTTTGCCTTAATAGACTTGGCGTCGACG",
 	};
-
+	
 	protected double calculateSrpLikelihoodSingle() {
+
+		int j = operationRecord.getSpectrumIndex(); 
+		int k = operationRecord.getSingleIndex();//AllSiteIndexs()[0];
+		
+		double currentLogLikelihood = getStoredLogLikelihood();
+
+		Haplotype haplotype = alignmentModel.getHaplotype(j);
+		char oldChar = haplotype.getStoredChar(k);
+		char newChar = haplotype.getChar(k);
+		
+//		System.out.print("\t"+ currentLogLikelihood +"\t" );
+		if(newChar!= oldChar){ 
+			for (int i : mapToSrpArray[k]){
+				char srpChar = allSrpChar2D[i][k];
+				int deltaDist = calculateDeltaDist(srpChar, newChar, oldChar);
+				
+				if (deltaDist != 0) {
+					int srpLength = srpMap.getSrpLength(i);
+					BigDecimal[] tempBD = bigDecBinomialDesnity.get(srpLength);
+					double[] logPD = scaledLogBinomialDesnity.get(srpLength);
+					
+					double sum = 0;
+					
+//					double sum = 0;
+//					BigDecimal bd = new BigDecimal("0");
+//					bd.setScale(100);
+					for (int l = 0; l < sequenceCount; l++) {
+						sum += logPD[allDists[i][l]];
+//						bd = bd.add(BigDecimal.valueOf( logPD[allDists[i][l]] ));
+					}
+					if(deltaDist == -1){
+						System.out.println(deltaDist +"\t"+  srpChar +"\t"+ newChar +"\t"+ oldChar +"\t"+ cheat[j].charAt(k));
+						System.out.println(currentLogLikelihood +"\t"+ eachSrpLogLikelihood[i] +"\t"+ LikelihoodScaler.getLogLikelihood(sum, LOG_C) +"\t"+ sumBigDecSrp[i].doubleValue() +"\t"+  sumBigDecSrp[i].toPlainString());
+					}
+					sumBigDecSrp[i] = sumBigDecSrp[i].subtract(tempBD[allDists[i][j]]);
+					
+					allDists[i][j] += deltaDist;
+					
+					sumBigDecSrp[i] = sumBigDecSrp[i].add(tempBD[allDists[i][j]]);
+					sum = 0;
+					for (int l = 0; l < sequenceCount; l++) {
+						sum += logPD[allDists[i][l]];
+//						bd = bd.add(BigDecimal.valueOf( logPD[allDists[i][l]] ));
+					}
+					currentLogLikelihood -= eachSrpLogLikelihood[i];
+					BigDecimal bd = BigFunctions.ln(sumBigDecSrp[i], sumBigDecSrp[i].scale());
+					eachSrpLogLikelihood[i] = bd.doubleValue();
+//					eachSrpLogLikelihood[i] = liS.getLogLikelihood();//LiS
+					currentLogLikelihood += eachSrpLogLikelihood[i];
+					
+//					currentLogLikelihood = updateEachSrpAtI(i, currentLogLikelihood, (allDists[i][j]-deltaDist), (allDists[i][j]));
+					if(deltaDist == -1){
+//						double newSum = 0;
+//						double allLogSum = 0;
+//						BigDecimal newBd = new BigDecimal("0");
+//						newBd.setScale(100);
+////						int srpLength = srpMap.getSrpLength(i);
+////						double[] logPD = scaledLogBinomialDesnity.get(srpLength);
+//						for (int l = 0; l < sequenceCount; l++) {
+////							newSum += allDists[i][l];
+//							newSum += logPD[allDists[i][l]];
+//							BigDecimal tempB = BigDecimal.valueOf( logPD[allDists[i][l]] );
+//							
+//							newBd = newBd.add(tempB);
+//							
+//						}
+						System.out.println(currentLogLikelihood +"\t"+ eachSrpLogLikelihood[i] +"\t"+ LikelihoodScaler.getLogLikelihood(sum, LOG_C) +"\t"+ sumBigDecSrp[i].doubleValue() +"\t"+  sumBigDecSrp[i].toPlainString());
+						System.out.println(LikelihoodScaler.getLogLikelihood(sum, LOG_C) +"\t"+ bd.doubleValue() +"\t"+ bd.toPlainString());
+//						System.out.println("===\t"+ newBd.doubleValue());
+//						double log2 = newSum*LOG_ERROR_RATE+(srpLength*sequenceCount-newSum)*LOG_ONE_MINUS_ERROR_RATE;
+//						System.out.println(sum +"\t"+ bd.toString() +"\n"+ newSum +"\t"+ newBd.toString() );  
+//						System.out.println(liS.getLogLikelihood(bd.doubleValue(), LOG_C) +"\t"+ liS.getLogLikelihood(newBd.doubleValue(), LOG_C) );
+//						System.out.println(liS.getLogLikelihood(Double.valueOf(bd.toPlainString()), LOG_C) +"\t"+ liS.getLogLikelihood(Double.valueOf(newBd.toPlainString()), LOG_C) );
+//						System.out.println(BigFunctions.ln(bd, 100).toPlainString() +"\n"+ BigFunctions.ln(newBd, 100).toPlainString());
+//						System.out.println((BigFunctions.ln(bd, 100).doubleValue())-LOG_C +"\n"+ (BigFunctions.ln(newBd, 100).doubleValue()-LOG_C));
+//						System.out.println(allDists[i][j] +"\t"+  logPD[allDists[i][j]] +"\t"+ logPD[ (allDists[i][j]-deltaDist  )]);
+						System.out.println(sumScaledSrpLogLikelihood[i] +"\t"+  storedSumScaledSrpLogLikelihood[i]);
+						
+						System.out.println();
+//						System.out.println(LOG_C);
+					}
+				}
+
+			}
+		}
+//		System.out.println(currentLogLikelihood);
+		return currentLogLikelihood;
+	}
+
+	protected double calculateSrpLikelihoodSingle3() {
 
 		int j = operationRecord.getSpectrumIndex(); 
 		int k = operationRecord.getSingleIndex();//AllSiteIndexs()[0];
@@ -1100,7 +1210,7 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 	private void storeI(int i) {
 		storedEachSrpLogLikelihood[i] = eachSrpLogLikelihood[i];
 		storedSumScaledSrpLogLikelihood[i] = sumScaledSrpLogLikelihood[i];
-		
+		storedSumBigDecSrp[i] = sumBigDecSrp[i];
 	}
 
 
@@ -1120,6 +1230,7 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 
 		System.arraycopy(eachSrpLogLikelihood, 0, storedEachSrpLogLikelihood, 0, eachSrpLogLikelihood.length);
 		System.arraycopy(sumScaledSrpLogLikelihood, 0, storedSumScaledSrpLogLikelihood, 0, sumScaledSrpLogLikelihood.length);
+		System.arraycopy(sumBigDecSrp, 0, storedSumBigDecSrp, 0, sumBigDecSrp.length);
 		for (int i = 0; i < allDists.length; i++) {
 			System.arraycopy(allDists[i], 0, storedAllDists[i], 0, sequenceCount);
 		}
@@ -1152,7 +1263,7 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 			
 			break;
 		case FULL:
-			
+//			System.out.println("Ever call this? restoreEverything??");
 			restoreEverything();
 			break;
 		case COLUMN:
@@ -1286,6 +1397,7 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 	private void restoreI(int i) {
 		eachSrpLogLikelihood[i] = storedEachSrpLogLikelihood[i];
 		sumScaledSrpLogLikelihood[i] = storedSumScaledSrpLogLikelihood[i]; 
+		sumBigDecSrp[i] = storedSumBigDecSrp[i];
 	}
 
 
@@ -1299,7 +1411,7 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 		
 		System.arraycopy(storedEachSrpLogLikelihood, 0, eachSrpLogLikelihood, 0, eachSrpLogLikelihood.length);
 		System.arraycopy(storedSumScaledSrpLogLikelihood, 0, sumScaledSrpLogLikelihood, 0, sumScaledSrpLogLikelihood.length);
-
+		System.arraycopy(storedSumBigDecSrp, 0, sumBigDecSrp, 0, sumBigDecSrp.length);
 		for (int i = 0; i < allDists.length; i++) {
 			System.arraycopy(storedAllDists[i], 0, allDists[i], 0, sequenceCount);
 		}
