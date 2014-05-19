@@ -81,9 +81,9 @@ public class MainMCMCHaplotype {
 			dataDir = "/home/sw167/workspaceSrp/snowgoose/srp/unittest/testData/";
 			runIndex = 154;
 			dataDir += "H7_"+runIndex+"/";
-			
-			totalSamples = 1000	;
-			logInterval = 10000 ;
+			//TODO: local control
+			totalSamples = 100	;
+			logInterval  = 5000 ;
 			
 			randomTree = true;
 			randomHaplotype = true;
@@ -118,6 +118,8 @@ public class MainMCMCHaplotype {
 		}
 		else{
 			String partialHaplotypeName = prefix+".haplotypepartial";
+			Alignment trueAlignment = dataImporter.importAlignment(trueHaplotypeFile);
+			haplotypeModel = new HaplotypeModel(trueAlignment);
 			
 //			haplotypeModel = dataImporter.importPartialSpectrumFile(partialHaplotypeName);
 		}
@@ -166,7 +168,7 @@ public class MainMCMCHaplotype {
 		// Operators
 		OperatorSchedule schedule = new SimpleOperatorSchedule();
 		MCMCSetupHelperHaplotype.defalutOperators(schedule, haplotypeModel, freqs, popSize, kappa);
-//		MCMCSetupHelperHaplotype.defalutTreeOperators(schedule, treeModel);
+		MCMCSetupHelperHaplotype.defalutTreeOperators(schedule, treeModel);
 				
 
 		
@@ -234,14 +236,14 @@ public class MainMCMCHaplotype {
 
 		
 		System.out.println(mcmc.getTimer().toString());
-		System.out.println("True Likelihood: "+trueSrp.getLogLikelihood());
+		System.out.println("True srp Likelihood: "+trueSrp.getLogLikelihood());
 		srpLikelihood.makeDirty();
 		System.out.println(srpLikelihood.getLogLikelihood());
 //		treeModel
 		TreeLikelihood reCalTreeLikelihood = new TreeLikelihood(
 				haplotypeModel, treeModel, treeLikelihood.getSiteModel(), treeLikelihood.getBranchRateModel(), null,
 				false, false, true, false, false);
-		System.out.println(reCalTreeLikelihood.getLogLikelihood());
+		System.out.println("Tree treeLikelihood: "+reCalTreeLikelihood.getLogLikelihood());
 	
 	}
 

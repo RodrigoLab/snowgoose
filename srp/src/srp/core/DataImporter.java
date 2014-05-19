@@ -52,8 +52,13 @@ public class DataImporter {
 	}
 	
 	public Tree importTree(String fileName) throws Exception{
-		
-		Tree tree =  importTree(dataDir, fileName);
+		Tree tree;
+		if(fileName.indexOf(dataDir)==-1){
+			tree =  importTree("", fileName);
+		}
+		else{
+			tree =  importTree(dataDir, fileName);
+		}
 		return tree;
 	}
 

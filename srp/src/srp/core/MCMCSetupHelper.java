@@ -52,7 +52,7 @@ public class MCMCSetupHelper {
 	//		options.setFullEvaluationCount((int) (logInterval*0.01));
 		
 		int coercionDelay = logInterval * totalSamples /100;
-		long fullEvaluationCount = 1; //TODO Change fullEvaCount
+		long fullEvaluationCount = 0; //TODO Change fullEvaCount
 		MCMCOptions options = new MCMCOptions(logInterval * totalSamples, fullEvaluationCount,
 				0, MarkovChain.EVALUATION_TEST_THRESHOLD, false, coercionDelay, 1.0);
 			//		MCMCOptions(long chainLength, 
@@ -116,9 +116,8 @@ public class MCMCSetupHelper {
 	
 		// Posterior
 		likelihoods.clear();
-//		likelihoods.add(prior);
-//		likelihoods.add(likelihood);
-		//TODO: add these back changeBack;
+		likelihoods.add(prior);
+		likelihoods.add(likelihood);
 		likelihoods.add(srpLikelihood);
 		Likelihood posterior = new CompoundLikelihood(0, likelihoods);
 		posterior.setId(CompoundLikelihoodParser.POSTERIOR);

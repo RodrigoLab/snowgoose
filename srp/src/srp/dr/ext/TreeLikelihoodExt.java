@@ -11,6 +11,7 @@ import dr.evomodel.branchratemodel.BranchRateModel;
 import dr.evomodel.sitemodel.SiteModel;
 import dr.evomodel.tree.TreeModel;
 import dr.evomodel.treelikelihood.AbstractLikelihoodCore;
+import dr.evomodel.treelikelihood.NativeNucleotideLikelihoodCore;
 import dr.evomodel.treelikelihood.TipStatesModel;
 import dr.evomodel.treelikelihood.TreeLikelihood;
 import dr.inference.model.Model;
@@ -19,9 +20,12 @@ public class TreeLikelihoodExt extends TreeLikelihood {
 
 	private HaplotypeModel haplotypeModel;
 	private SitePatternsExt sitePatternExt;
-	private int updateExternalNodeIndex;
-	private int[] tempstates;
+//	private int updateExternalNodeIndex;
+//	private int[] tempstates;
 	private AbstractLikelihoodCore likelihoodCoreA;
+	private int[] treeTaxonIndex;
+//	private NativeNucleotideLikelihoodCore likelihoodCoreExt;
+//	private NativeNucleotideLikelihoodCoreExt likelihoodCoreExt2;
 	
 	public TreeLikelihoodExt(HaplotypeModel haplotypeModel, TreeModel treeModel,
 			SiteModel siteModel, BranchRateModel branchRateModel,
@@ -38,12 +42,36 @@ public class TreeLikelihoodExt extends TreeLikelihood {
 		this.sitePatternExt = (SitePatternsExt) getPatternList(); 
 		this.haplotypeModel = haplotypeModel;
 		addModel(this.haplotypeModel);
-		tempstates = new int[patternCount];
+//		tempstates = new int[patternCount];
 		likelihoodCoreA = (AbstractLikelihoodCore)likelihoodCore;
+//		likelihoodCoreExt = (NativeNucleotideLikelihoodCore) likelihoodCore;
+//		likelihoodCoreExt2 = (NativeNucleotideLikelihoodCoreExt) likelihoodCoreA;
+		states = new int[nodeCount][];
+	    storedStates = new int[nodeCount][];
+        for (int i = 0; i < nodeCount; i++) {
+            
+            states[i] = new int[patternCount];
+            storedStates[i] = new int[patternCount];
+        }
 //		LogManager.getLogManager().reset();
 //		final Logger logger = Logger.getLogger("dr.evomodel");
 //        logger.setLevel(Level.OFF);
-        
+        treeTaxonIndex = new int[haplotypeModel.getHaplotypeCount()];
+    	for (int i = 0; i < treeTaxonIndex.length; i++) {
+    		String taxonId = haplotypeModel.getTaxonId(i);
+			treeTaxonIndex[i] = treeModel.getTaxonIndex(taxonId);
+
+    	}
+    	
+		for (int i = 0; i < haplotypeModel.getHaplotypeCount(); i++) {
+    		String taxonId = haplotypeModel.getTaxonId(i);
+			int updateExternalNodeIndex = treeModel.getTaxonIndex(taxonId);
+//	        int updateExternalNodeIndex2 = treeTaxonIndex[i];
+
+    		likelihoodCoreA.getNodeStates(updateExternalNodeIndex, states[updateExternalNodeIndex]);
+//    		likelihoodCore.setNodeStates(updateExternalNodeIndex, states[i]);
+    		
+		}
 	}
 
 	/**
@@ -72,26 +100,26 @@ public class TreeLikelihoodExt extends TreeLikelihood {
     		super.handleModelChangedEvent(model, object, index);
     	}
     }
+    
+    protected int[][] states;
+    protected int[][] storedStates;
+    
     @Override
 	protected void restoreState() {
-    	//TODO: implement store/restore sitePatterns, might require refactoring the data structure somewhere 
-
-//        if (storePartials) {
-//            likelihoodCore.restoreState();
-//        } else {
-//            updateAllNodes();
-//        }
-//    	sitePatternExt.updateAlignment(haplotypeModel);
-//		updatePatternListExt(sitePatternExt);
-    	sitePatternExt.restoreState(haplotypeModel);
+    	
 //    	updatePatternListExt();
-    	OperationRecord record = haplotypeModel.getOperationRecord();
+		sitePatternExt.updateAlignment(haplotypeModel);
+		
+        OperationRecord record = haplotypeModel.getOperationRecord();
 		int haplotypeIndex = record.getSpectrumIndex();
-        String taxonId = haplotypeModel.getTaxonId(haplotypeIndex);
-		int updateExternalNodeIndex = treeModel.getTaxonIndex(taxonId);
-
-		int site;
-        likelihoodCoreA.getNodeStates(updateExternalNodeIndex, tempstates);
+        int updateExternalNodeIndex = treeTaxonIndex[haplotypeIndex];
+        int site;
+//		updateNode[updateExternalNodeIndex] = true;
+//		int site;
+//        for (int i = 0; i < nodeCount; i++) {
+//            updateNode[i] = true;
+//        }
+//		likelihoodCoreA.getNodeStates(updateExternalNodeIndex, tempstates);
 
 		switch (record.getOperation()) {
 		case SINGLE:
@@ -101,21 +129,71 @@ public class TreeLikelihoodExt extends TreeLikelihood {
 //					.println(haplotypeModel.getState(haplotypeIndex, site));;
 //					System.out.println();
 //			System.out.println(tempstates.length);
-			tempstates[site] = patternList.getPatternState(haplotypeIndex, site);
-			likelihoodCore.setNodeStates(updateExternalNodeIndex, tempstates);
+//			tempstates[site] = patternList.getPatternState(haplotypeIndex, site);
+			states[updateExternalNodeIndex][site] = storedStates[updateExternalNodeIndex][site];
+			likelihoodCore.setNodeStates(updateExternalNodeIndex, storedStates[updateExternalNodeIndex]);
+//			setStates(likelihoodCore, patternList, haplotypeIndex, updateExternalNodeIndex);
 			break;
 		case MULTI:
 			int[] sites = record.getAllSiteIndexs();
-			for (int s : sites) {
-				tempstates[s] = patternList.getPatternState(haplotypeIndex, s);
+			for (int s  : sites) {
+				states[updateExternalNodeIndex][s] = storedStates[updateExternalNodeIndex][s];
+//				System.arraycopy(storedStates[i], 0, states[i], 0, patternCount);
 			}
-			likelihoodCore.setNodeStates(updateExternalNodeIndex, tempstates);
+//			likelihoodCore.setNodeStates(updateExternalNodeIndex, tempstates);
+			likelihoodCore.setNodeStates(updateExternalNodeIndex, storedStates[updateExternalNodeIndex]);
+//			System.arraycopy(storedStates[i], 0, states[i], 0, patternCount);
+//			setStates(likelihoodCore, patternList, haplotypeIndex, updateExternalNodeIndex);
+			break;
+		case COLUMN:
+			site = record.getSingleIndex();
+			for (int h = 0; h < treeTaxonIndex.length; h++) {
+				updateExternalNodeIndex = treeTaxonIndex[h];
+				likelihoodCore.setNodeStates(updateExternalNodeIndex, storedStates[updateExternalNodeIndex]);
+				states[updateExternalNodeIndex][site] = storedStates[updateExternalNodeIndex][site];
+			}
+			
+			
+			break;
+		case RECOMBINATION:
+			int[] twoPositions = record.getRecombinationPositionIndex();
+			int[] twoHapIndexs = record.getRecombinationSpectrumIndex();
+			for (int h : twoHapIndexs) {
+				updateExternalNodeIndex = treeTaxonIndex[h];
+				likelihoodCore.setNodeStates(updateExternalNodeIndex, storedStates[updateExternalNodeIndex]);
+//				states[updateExternalNodeIndex][site] = storedStates[updateExternalNodeIndex][site];
+//		        updateExternalNodeIndex = treeTaxonIndex[h];
+//				updateNode[updateExternalNodeIndex] = true;
+//				likelihoodCoreA.getNodeStates(updateExternalNodeIndex, tempstates);
+//			
+				for (int s = twoPositions[0]; s < twoPositions[1]; s++) {
+					states[updateExternalNodeIndex][s] = storedStates[updateExternalNodeIndex][s];
+				}
+//				likelihoodCore.setNodeStates(updateExternalNodeIndex, tempstates);
+
+			}
+			break;
+		case FULL:
+//			System.out.println("restoreState updatePatternListExt() Full");
+//			updatePatternListExt(sitePatternExt);
+//			for (int i = 0; i < states.length; i++) {
+//				
+//				
+//			}
+			for (int h = 0; h < treeTaxonIndex.length; h++) {
+				updateExternalNodeIndex = treeTaxonIndex[h];
+				System.arraycopy(storedStates[updateExternalNodeIndex], 0, states[updateExternalNodeIndex], 0, patternCount);
+				likelihoodCore.setNodeStates(updateExternalNodeIndex, storedStates[updateExternalNodeIndex]);
+
+			}
+
 			break;
 		default:
+//			break;
 			throw new IllegalArgumentException("Invalid operation type:"+record.getOperation());
-		
 		}
-        super.restoreState();
+
+    	super.restoreState();
 
     }
     
@@ -123,6 +201,73 @@ public class TreeLikelihoodExt extends TreeLikelihood {
     protected void storeState(){
 
 //    	sitePatternExt.storeState();
+    	
+    	
+        OperationRecord record = haplotypeModel.getOperationRecord();
+		int haplotypeIndex = record.getSpectrumIndex();
+        int updateExternalNodeIndex = treeTaxonIndex[haplotypeIndex];
+
+//		updateNode[updateExternalNodeIndex] = true;
+		int site;
+
+		switch (record.getOperation()) {
+		case NONE:
+			break;
+		case SINGLE:
+			site = record.getSingleIndex();
+			storedStates[updateExternalNodeIndex][site] = states[updateExternalNodeIndex][site];
+//			likelihoodCoreA.getNodeStates(updateExternalNodeIndex, states[updateExternalNodeIndex]);
+			break;
+		case MULTI:
+			int[] sites = record.getAllSiteIndexs();
+			for (int s : sites) {
+				storedStates[updateExternalNodeIndex][s] = states[updateExternalNodeIndex][s];
+			}
+
+			break;
+		case COLUMN:
+			site = record.getSingleIndex();
+			for (int h = 0; h < haplotypeModel.getHaplotypeCount(); h++) {
+				updateExternalNodeIndex = treeTaxonIndex[h];
+				storedStates[updateExternalNodeIndex][site] = states[updateExternalNodeIndex][site];
+			}
+			
+			
+			break;
+		case RECOMBINATION:
+			int[] twoPositions = record.getRecombinationPositionIndex();
+			int[] twoHapIndexs = record.getRecombinationSpectrumIndex();
+			for (int h : twoHapIndexs) {
+				updateExternalNodeIndex = treeTaxonIndex[h];
+				for (int s = twoPositions[0]; s < twoPositions[1]; s++) {
+					storedStates[updateExternalNodeIndex][s] = states[updateExternalNodeIndex][s];
+				}
+				
+
+			}
+			break;
+		case FULL:
+//			System.out.println("storeState updatePatternListExt() Full");
+//			updatePatternListExt(sitePatternExt);
+//			for (int i = 0; i < haplotypeModel.getHaplotypeCount(); i++) {
+//	    		String taxonId = haplotypeModel.getTaxonId(i);
+//				updateExternalNodeIndex = treeModel.getTaxonIndex(taxonId);
+////		        int updateExternalNodeIndex2 = treeTaxonIndex[i];
+//
+//	    		likelihoodCoreA.getNodeStates(updateExternalNodeIndex, states[updateExternalNodeIndex]);
+////	    		likelihoodCore.setNodeStates(updateExternalNodeIndex, states[i]);
+//	    		
+//			}
+			for (int i = 0; i < states.length; i++) {
+				System.arraycopy(states[i], 0, storedStates[i], 0, patternCount);
+				
+			}
+			break;
+		default:
+//			break;
+			throw new IllegalArgumentException("Invalid operation type:"+record.getOperation());
+		}
+//    	
     	super.storeState();
     }
 
@@ -132,17 +277,15 @@ public class TreeLikelihoodExt extends TreeLikelihood {
 //        this.patternList = sitePatternExt;
 //patternList
 		sitePatternExt.updateAlignment(haplotypeModel);
+		
         OperationRecord record = haplotypeModel.getOperationRecord();
 		int haplotypeIndex = record.getSpectrumIndex();
-        String taxonId = haplotypeModel.getTaxonId(haplotypeIndex);
-		updateExternalNodeIndex = treeModel.getTaxonIndex(taxonId);
+		int updateExternalNodeIndex = treeTaxonIndex[haplotypeIndex];
 
 		updateNode[updateExternalNodeIndex] = true;
 		int site;
-//        for (int i = 0; i < nodeCount; i++) {
-//            updateNode[i] = true;
-//        }
-		likelihoodCoreA.getNodeStates(updateExternalNodeIndex, tempstates);
+
+		likelihoodCoreA.getNodeStates(updateExternalNodeIndex, states[updateExternalNodeIndex]);
 
 		switch (record.getOperation()) {
 		case SINGLE:
@@ -152,27 +295,30 @@ public class TreeLikelihoodExt extends TreeLikelihood {
 //					.println(haplotypeModel.getState(haplotypeIndex, site));;
 //					System.out.println();
 //			System.out.println(tempstates.length);
-			tempstates[site] = patternList.getPatternState(haplotypeIndex, site);
-			likelihoodCore.setNodeStates(updateExternalNodeIndex, tempstates);
+			states[updateExternalNodeIndex][site] = patternList.getPatternState(haplotypeIndex, site);
+			likelihoodCore.setNodeStates(updateExternalNodeIndex, states[updateExternalNodeIndex]);
+//			likelihoodCoreExt2.setNodeStatesSite(updateExternalNodeIndex, states[updateExternalNodeIndex], site);
+
 			break;
 		case MULTI:
 			int[] sites = record.getAllSiteIndexs();
 			for (int s : sites) {
-				tempstates[s] = patternList.getPatternState(haplotypeIndex, s);
+				states[updateExternalNodeIndex][s] = patternList.getPatternState(haplotypeIndex, s);
+//				likelihoodCoreExt2.setNodeStatesSite(updateExternalNodeIndex, states[updateExternalNodeIndex], s);
 			}
-			likelihoodCore.setNodeStates(updateExternalNodeIndex, tempstates);
+			likelihoodCore.setNodeStates(updateExternalNodeIndex, states[updateExternalNodeIndex]);
+			
+//			setStates(likelihoodCore, patternList, haplotypeIndex, updateExternalNodeIndex);
 			break;
 		case COLUMN:
 			site = record.getSingleIndex();
 			for (int h = 0; h < haplotypeModel.getHaplotypeCount(); h++) {
-				haplotypeIndex = h;
-		        taxonId = haplotypeModel.getTaxonId(haplotypeIndex);
-				updateExternalNodeIndex = treeModel.getTaxonIndex(taxonId);
-
+				updateExternalNodeIndex = treeTaxonIndex[h];
+//				likelihoodCoreA.
 				updateNode[updateExternalNodeIndex] = true;
-				likelihoodCoreA.getNodeStates(updateExternalNodeIndex, tempstates);
-				tempstates[site] = patternList.getPatternState(haplotypeIndex, site);
-				likelihoodCore.setNodeStates(updateExternalNodeIndex, tempstates);
+				likelihoodCoreA.getNodeStates(updateExternalNodeIndex, states[updateExternalNodeIndex]);
+				states[updateExternalNodeIndex][site] = patternList.getPatternState(h, site);
+				likelihoodCore.setNodeStates(updateExternalNodeIndex, states[updateExternalNodeIndex]);
 
 			}
 			
@@ -182,19 +328,22 @@ public class TreeLikelihoodExt extends TreeLikelihood {
 			int[] twoPositions = record.getRecombinationPositionIndex();
 			int[] twoHapIndexs = record.getRecombinationSpectrumIndex();
 			for (int h : twoHapIndexs) {
-				haplotypeIndex = h;
-		        taxonId = haplotypeModel.getTaxonId(haplotypeIndex);
-				updateExternalNodeIndex = treeModel.getTaxonIndex(taxonId);
+
+		        updateExternalNodeIndex = treeTaxonIndex[h];
 
 				updateNode[updateExternalNodeIndex] = true;
-				likelihoodCoreA.getNodeStates(updateExternalNodeIndex, tempstates);
+				likelihoodCoreA.getNodeStates(updateExternalNodeIndex, states[updateExternalNodeIndex]);
 			
 				for (int s = twoPositions[0]; s < twoPositions[1]; s++) {
-					tempstates[s] = patternList.getPatternState(haplotypeIndex, s);
+					states[updateExternalNodeIndex][s] = patternList.getPatternState(h, s);
 				}
-				likelihoodCore.setNodeStates(updateExternalNodeIndex, tempstates);
+				likelihoodCore.setNodeStates(updateExternalNodeIndex, states[updateExternalNodeIndex]);
 
 			}
+			break;
+		case FULL:
+			System.out.println("updatePatternListExt() Full");
+			updatePatternListExt(sitePatternExt);
 			break;
 		default:
 //			break;
@@ -222,11 +371,6 @@ public class TreeLikelihoodExt extends TreeLikelihood {
 ////		sitePatternExt.updateAlignment(haplotypeModel);
 //		updatePatternListExt(haplotypeModel);
 //	}
-
-	public SiteModel getSiteModel(){
-		return siteModel;
-	}
-	
 
 	@Override
 	protected boolean traverse(Tree tree, NodeRef node) {
@@ -494,6 +638,24 @@ public class TreeLikelihoodExt extends TreeLikelihood {
 		this.oldHaplotypeModel = haplotypeModel;
 		addModel(this.oldHaplotypeModel);
 	}
+	//	public void updatePatternList(SitePatternsExt patterns, OldHaplotypeModel haplotypeModel) {
+	////		TODO: more test required
+	////		Alignment alignment = haplotypeModel.getAlignment();
+	//        
+	//		patterns.updateAlignment(haplotypeModel);
+	//		updatePatternListExt(patterns);
+	//	}
+	//
+	//	public void updatePatternList(OldHaplotypeModel haplotypeModel) {
+	////		TODO: more test required
+	////		sitePatternExt.updateAlignment(haplotypeModel);
+	//		updatePatternListExt(haplotypeModel);
+	//	}
+	
+	public SiteModel getSiteModel(){
+		return siteModel;
+	}
+	
 	public BranchRateModel getBranchRateModel() {
 		
 		return branchRateModel;
