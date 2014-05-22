@@ -38,9 +38,11 @@ public abstract class AbstractHaplotypeOperator extends AbstractCoercableOperato
 	}
 
 	public int getNextSiteIndex() {
-		return MathUtils.nextInt(haplotypeLength);
+		return getNextSiteIndex(haplotypeLength);
 	}
-	
+	public int getNextSiteIndex(int length){
+		return MathUtils.nextInt(length);
+	}
 	
 	public abstract OperationType getOperationType();
 
