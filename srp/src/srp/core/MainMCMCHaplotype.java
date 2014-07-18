@@ -79,11 +79,11 @@ public class MainMCMCHaplotype {
 		else{	
 			System.out.println("local parameters");
 			dataDir = "/home/sw167/workspaceSrp/snowgoose/srp/unittest/testData/";
-			runIndex = 154;
+			runIndex = 55;
 			dataDir += "H7_"+runIndex+"/";
 			//TODO: local control
 			totalSamples = 100	;
-			logInterval  = 5000 ;
+			logInterval  = 10000 ;
 			
 			randomTree = true;
 			randomHaplotype = true;
@@ -114,7 +114,8 @@ public class MainMCMCHaplotype {
 		HaplotypeModel haplotypeModel = null;
 		
 		if(randomHaplotype){
-			haplotypeModel = new HaplotypeModel(noOfRecoveredHaplotype, shortReads.getSiteCount());
+//			haplotypeModel = new HaplotypeModel(noOfRecoveredHaplotype, shortReads.getSiteCount());
+			haplotypeModel = new HaplotypeModel(noOfRecoveredHaplotype, srpMap);
 		}
 		else{
 			String partialHaplotypeName = prefix+".haplotypepartial";
@@ -149,7 +150,7 @@ public class MainMCMCHaplotype {
 		coalescent.setId("coalescent");
 
 		// Simulate haplotypes, treeLikelihood
-		HashMap<String, Object> parameterList = MCMCSetupHelperHaplotype.setupTreeLikelihoodHaplotypeModel(treeModel, haplotypeModel);
+		HashMap<String, Object> parameterList = MCMCSetupHelperHaplotype.setupTreeLikelihoodHaplotypeModel(treeModel, haplotypeModel, srpMap);
 
 		Parameter kappa = (Parameter) parameterList.get("kappa");
 		Parameter freqs = (Parameter) parameterList.get("freqs");
@@ -167,17 +168,25 @@ public class MainMCMCHaplotype {
 		
 		// Operators
 		OperatorSchedule schedule = new SimpleOperatorSchedule();
-		MCMCSetupHelperHaplotype.defalutOperators(schedule, haplotypeModel, freqs, popSize, kappa);
+
 		MCMCSetupHelperHaplotype.defalutTreeOperators(schedule, treeModel);
-				
+		double total = 0;
+		for (int i = 0; i < schedule.getOperatorCount(); i++) {
+			MCMCOperator op= schedule.getOperator(i);
+			
+			total += op.getWeight() ;
+		}
+		System.out.println("total Tree Weight: "+total);
+		MCMCSetupHelperHaplotype.defalutOperators(schedule, haplotypeModel, freqs, popSize, kappa);
 
 		
 		Parameter rootHeight = treeModel.getRootHeightParameter();
 		rootHeight.setId("rootHeight");
 		
-		double total = 0;
+		total = 0;
 		for (int i = 0; i < schedule.getOperatorCount(); i++) {
 			MCMCOperator op= schedule.getOperator(i);
+			System.out.println(op.getOperatorName());
 			total += op.getWeight() ;
 		}
 		System.out.println("totalWeight: "+total);

@@ -8,6 +8,7 @@ import srp.dr.ext.SeqGenExt;
 import srp.dr.ext.TreeLikelihoodExt;
 import srp.evolution.OperationType;
 import srp.evolution.shortreads.AlignmentMapping;
+import srp.evolution.shortreads.ShortReadMapping;
 import srp.evolution.spectrum.SpectrumAlignmentModel;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.datatype.Nucleotides;
@@ -58,6 +59,32 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 		}
 	}
 	
+	
+//	public HaplotypeModel(int noOfRecoveredHaplotype, ShortReadMapping srpMap) {
+//		this(noOfRecoveredHaplotype, srpMap.getLength());
+//		for (int i = 0; i < sequenceCount; i++) {
+//			Haplotype haplotype = getHaplotype(i);
+//			for (int s = 0; s < sequenceLength; s++) {
+//				char newChar = srpMap.getBaseAt(s);
+//				haplotype.setCharAt(s, newChar);
+//			}
+//			
+//		}
+//	}
+
+	
+	public HaplotypeModel(int noOfRecoveredHaplotype, ShortReadMapping srpMap) {
+		this(noOfRecoveredHaplotype, srpMap.getLength());
+		for (int i = 0; i < sequenceCount; i++) {
+			Haplotype haplotype = getHaplotype(i);
+			char[] randHap = srpMap.getSemiRandHaplotype();
+			for (int s = 0; s < sequenceLength; s++) {
+				haplotype.setCharAt(s, randHap[s]);
+			}
+			
+		}
+	}
+
 	
 	public int calculateSPS(){//TODO test this
 		return SPSDist.calculeteSPS(this, this);
@@ -292,7 +319,7 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 	}
 
 	public void simulateSequence(double errorRate, SiteModel siteModel, SubstitutionModel substitutionModel,
-			TreeModel treeModel) {
+			TreeModel treeModel, ShortReadMapping srpMap) {
 
         double substitutionRate = errorRate/(getHaplotypeCount()*getHaplotypeLength()) ;
         System.err.println(substitutionRate);
@@ -300,7 +327,7 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 //        SiteModel siteModel = treeLikelihood.getSiteModel();
 //        SubstitutionModel substitutionModel = siteModel.getSubstitutionModel();
         
-        int[] initialSequence = aMap.getConsensusSequenceState();
+        int[] initialSequence = srpMap.getConsensusSequenceState();
         StringBuffer buffer = new StringBuffer();
         for (int i = 0; i < initialSequence.length; i++) {
             buffer.append(Nucleotides.INSTANCE.getChar(    initialSequence[i] ));

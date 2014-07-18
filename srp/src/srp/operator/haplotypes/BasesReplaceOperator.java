@@ -52,12 +52,19 @@ public class BasesReplaceOperator extends AbstractMultiOperator {
 		haplotypeModel.setOperationRecord(OP, hapIndex, siteIndexs);
 		
 		haplotypeModel.endAlignmentModelOperation();
+		//TODO FIXME is this correct??
+		double xNewToOld = 1.0 / Math.pow(4, basesCount);
+		double xOldToNew = 1.0 / (haplotypeCount-1);
+		double logq = Math.log( xNewToOld / xOldToNew  );
+		
+		return logq;//TODO This might be wrong!! should not equal for the reverse step
+		
 /*
 
 AAAA
 CCCC
 GGGG
-TTTT
+TTTT*
 ACGT	
 
 to
@@ -65,7 +72,7 @@ to
 AAAA
 CCCC
 GGGG
-ACGT
+ACGT*
 ACGT
 
 1/7
@@ -86,7 +93,7 @@ T -> T 1/4
 		
 		
 		
-		return 0.0;//TODO This might be wrong!! should not equal for the reverse step
+//TODO This might be wrong!! should not equal for the reverse step
 	}
 
 

@@ -15,6 +15,7 @@ import dr.evolution.datatype.DataType;
 import dr.evolution.datatype.Nucleotides;
 import dr.evolution.sequence.Sequence;
 import dr.evolution.util.Taxon;
+import dr.math.MathUtils;
 //import java.util.BitSet;
 
 
@@ -61,6 +62,7 @@ public class ShortReadMapping {
 	private BitSet[] bitSetArray;
 	private BitVector[] bitVectorArray;
 	private int[] srpLength;
+	private char[][] srpChar2D;
 	
 	private void init(int l) {
 		fullHaplotypeLength = l;
@@ -103,6 +105,7 @@ public class ShortReadMapping {
 		createSrpArray();
 		createMapToSrpArray();
 		createBitSetArray();
+		createSrpChar2DArray();
 		//calculated listOfAvailableChar(2)
 		calculateListOfAvailableChar(setsOfAvailableChar);
 		calculateCumFreq();
@@ -147,21 +150,23 @@ public class ShortReadMapping {
 	}
 
 	public char[][] getSrpChar2DArray() {
-			String[] srpArray = getSrpArray();
-			char[][] srpChar2D = new char[srpArray.length][fullHaplotypeLength];
-		
-			for (int i = 0; i < srpArray.length; i++) {
-				String srp = srpArray[i];
-				for (int j = 0; j < fullHaplotypeLength; j++) {
-	//				allSrpState2D[i][j] = getStateAtK(srp, j);
-					srpChar2D[i][j] = srp.charAt(j);
-				}
+		return srpChar2D;
+	}
+	
+	private void createSrpChar2DArray(){
+	
+		String[] srpArray = getSrpArray();
+		srpChar2D = new char[srpArray.length][fullHaplotypeLength];
+	
+		for (int i = 0; i < srpArray.length; i++) {
+			String srp = srpArray[i];
+			for (int j = 0; j < fullHaplotypeLength; j++) {
+//				allSrpState2D[i][j] = getStateAtK(srp, j);
+				srpChar2D[i][j] = srp.charAt(j);
 			}
-			
-			
-		
-			return srpChar2D;
 		}
+		
+	}
 
 	public int[][] getMapToSrpArray(){
 		return mapToSrpArray;
@@ -357,6 +362,66 @@ public class ShortReadMapping {
 
 	public String getSrpName(int i) {
 		return shortReads.get(i).getName();
+	}
+
+	public char getBaseAt(int s) {
+		int[] srpList = mapToSrpArray[s];
+//		System.out.println(s +"\t"+ Arrays.toString(srpList));
+		int state = 999;
+		char newChar;
+		do{
+			int srpIndex = srpList[MathUtils.nextInt(srpList.length)];
+			newChar = srpChar2D[srpIndex][s];
+			state = Nucleotides.INSTANCE.getState(newChar);
+			System.out.println(s +"\t"+ newChar +"\t"+ state);
+		}while(state>3);
+		
+		return newChar;
+	}
+
+	public char[] getSemiRandHaplotype() {
+//		System.out.println("SemiRandHap");
+		double switchSrpProb = 0.1;
+		char[] randChar = new char[fullHaplotypeLength];
+		
+		int[] srpList = mapToSrpArray[0];
+		int state = 999;
+		int srpIndex = srpList[MathUtils.nextInt(srpList.length)];
+
+		char newChar = srpChar2D[srpIndex][0];
+		randChar[0] = newChar;
+		
+		
+		for (int s = 1; s < randChar.length; s++) {
+		
+			if(MathUtils.nextDouble() < switchSrpProb){
+					
+					srpList = mapToSrpArray[s];
+					srpIndex = srpList[MathUtils.nextInt(srpList.length)];
+//					state = 999;
+//					System.out.println(s +"\tnewSrp Prob: "+ srpIndex);
+			}
+			
+			do{
+				if(state>3){
+					
+					srpList = mapToSrpArray[s];
+					srpIndex = srpList[MathUtils.nextInt(srpList.length)];
+					
+//					System.out.println(s +"\tnewSrp: "+ srpIndex);
+				}
+				newChar = srpChar2D[srpIndex][s];
+				state = Nucleotides.INSTANCE.getState(newChar);
+				
+			}
+			while(state>3);
+			randChar[s] = newChar;
+			
+			
+			
+		}
+		
+		return randChar;
 	}
 
 //

@@ -6,12 +6,18 @@ import java.util.List;
 
 import srp.dr.ext.TreeLikelihoodExt;
 import srp.evolution.haplotypes.HaplotypeModel;
+import srp.evolution.shortreads.ShortReadMapping;
 import srp.operator.haplotypes.BaseSingleOperator;
 import srp.operator.haplotypes.BasesConsecutiveOperator;
 import srp.operator.haplotypes.BasesMultiOperator;
 import srp.operator.haplotypes.BasesReplaceOperator;
+import srp.operator.haplotypes.BasesTransitionOperator;
 import srp.operator.haplotypes.ColumnOperator;
+import srp.operator.haplotypes.HaplotypeRecombinationOperator;
+import srp.operator.haplotypes.HaplotypeReplaceSectionOperator;
 import srp.operator.haplotypes.HaplotypeSwapSectionOperator;
+import srp.operator.haplotypes.NonUniqueBasesMultiOperator;
+import srp.operator.haplotypes.ParsimonyInformativeBasesMultiOperator;
 import dr.evolution.datatype.Nucleotides;
 import dr.evomodel.branchratemodel.StrictClockBranchRates;
 import dr.evomodel.operators.ExchangeOperator;
@@ -37,9 +43,9 @@ import dr.inference.operators.UpDownOperator;
 public class MCMCSetupHelperHaplotype extends MCMCSetupHelper {
 
 	public static HashMap<String, Object> setupTreeLikelihoodHaplotypeModel(TreeModel treeModel,
-			HaplotypeModel haplotypeModel) {
+			HaplotypeModel haplotypeModel, ShortReadMapping srpMap) {
 		
-		double errorRate = 0;
+		double errorRate = 0;//1e-5*3000*2;//FIXME: What should we set this ??
 		
 		// clock model
 		Parameter rateParameter = new Parameter.Default(StrictClockBranchRates.RATE, 1e-5, 0, 1);
@@ -60,7 +66,7 @@ public class MCMCSetupHelperHaplotype extends MCMCSetupHelper {
 
 		// Simulate halotypes
 		if(errorRate>0){
-			haplotypeModel.simulateSequence(errorRate, siteModel, hky, treeModel);
+			haplotypeModel.simulateSequence(errorRate, siteModel, hky, treeModel, srpMap);
 		}
 		
 		// treeLikelihood
@@ -171,30 +177,48 @@ public class MCMCSetupHelperHaplotype extends MCMCSetupHelper {
 
 		operator = new BaseSingleOperator(haplotypeModel);
 		operator.setWeight(opLarge/10.0);
-		schedule.addOperator(operator);
+//		schedule.addOperator(operator);
 		
-		operator = new BasesMultiOperator(haplotypeModel, 3, CoercionMode.COERCION_OFF);
+		operator = new BasesMultiOperator(haplotypeModel, 4, CoercionMode.COERCION_OFF);
+		operator.setWeight(opLarge/10.0);
+//		schedule.addOperator(operator);
+		
+		operator = new BasesMultiOperator(haplotypeModel, 2, CoercionMode.COERCION_OFF);
 		operator.setWeight(opLarge/10.0);
 //		schedule.addOperator(operator);
 		
 		operator = new BasesConsecutiveOperator(haplotypeModel, 3, CoercionMode.COERCION_OFF);
+		operator.setWeight(opLarge/2);
+		schedule.addOperator(operator);
+		
+		operator = new BasesTransitionOperator(haplotypeModel, 3, CoercionMode.COERCION_OFF);
+		operator.setWeight(opLarge/5);
+//		schedule.addOperator(operator);
+		
+
+		
+		operator = new BasesReplaceOperator(haplotypeModel, 6, CoercionMode.COERCION_OFF);
+		operator.setWeight(opLarge);
+//		schedule.addOperator(operator);
+		
+		operator = new NonUniqueBasesMultiOperator(haplotypeModel, 4, CoercionMode.COERCION_OFF);
 		operator.setWeight(opLarge);
 		schedule.addOperator(operator);
 		
-		operator = new BasesMultiOperator(haplotypeModel, 6, CoercionMode.COERCION_OFF);
+		operator = new ParsimonyInformativeBasesMultiOperator(haplotypeModel, 5, CoercionMode.COERCION_OFF);
 		operator.setWeight(opLarge);
-//		schedule.addOperator(operator);
+		schedule.addOperator(operator);
 		
-		operator = new BasesMultiOperator(haplotypeModel, 12, CoercionMode.COERCION_OFF);
-		operator.setWeight(opLarge);
-//		schedule.addOperator(operator);
+		operator = new HaplotypeSwapSectionOperator(haplotypeModel, 12, CoercionMode.COERCION_OFF);
+		operator.setWeight(opLarge/2);
+		schedule.addOperator(operator);
 		
-		operator = new BasesReplaceOperator(haplotypeModel, 12, CoercionMode.COERCION_OFF);
-		operator.setWeight(opLarge);
-//		schedule.addOperator(operator);
+		operator = new HaplotypeReplaceSectionOperator(haplotypeModel, 3, CoercionMode.COERCION_OFF);
+		operator.setWeight(opLarge/2);
+		schedule.addOperator(operator);
 		
-		operator = new HaplotypeSwapSectionOperator(haplotypeModel, 3, CoercionMode.COERCION_OFF);
-		operator.setWeight(opLarge);
+		operator = new HaplotypeRecombinationOperator(haplotypeModel, 3, CoercionMode.COERCION_OFF);
+		operator.setWeight(opLarge/2);
 		schedule.addOperator(operator);
 //	
 		operator = new ColumnOperator(haplotypeModel, 7, CoercionMode.COERCION_OFF);
