@@ -79,10 +79,10 @@ public class MainMCMCHaplotype {
 		else{	
 			System.out.println("local parameters");
 			dataDir = "/home/sw167/workspaceSrp/snowgoose/srp/unittest/testData/";
-			runIndex = 55;
+			runIndex = 51;
 			dataDir += "H7_"+runIndex+"/";
 			//TODO: local control
-			totalSamples = 100	;
+			totalSamples = 200	;
 			logInterval  = 10000 ;
 			
 			randomTree = true;
@@ -127,7 +127,7 @@ public class MainMCMCHaplotype {
 
 		// ShortReadLikelihood
 		ShortReadsHaplotypeLikelihood srpLikelihood = new ShortReadsHaplotypeLikelihood(haplotypeModel, srpMap);
-
+		System.out.println("Error rate: "+srpLikelihood.ERROR_RATE);
 		
 		// coalescent
 		Parameter popSize = new Parameter.Default(ConstantPopulationModelParser.POPULATION_SIZE, 3000.0, 100, 100000.0);
@@ -165,6 +165,7 @@ public class MainMCMCHaplotype {
 		Likelihood likelihood = compoundlikelihoods.get(CompoundLikelihoodParser.LIKELIHOOD);
 		Likelihood shortReadLikelihood = compoundlikelihoods.get(AbstractShortReadsLikelihood.SHORT_READ_LIKELIHOOD);
 		Likelihood posterior = compoundlikelihoods.get(CompoundLikelihoodParser.POSTERIOR);
+		
 		
 		// Operators
 		OperatorSchedule schedule = new SimpleOperatorSchedule();

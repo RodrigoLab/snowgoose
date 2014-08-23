@@ -1,23 +1,28 @@
 package srp.likelihood.haplotypes;
 
-import java.math.BigDecimal;
+//import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.Arrays;
 import java.util.HashMap;
 
 import javax.swing.text.TabableView;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.math3.distribution.BinomialDistribution;
+import org.apache.commons.math3.stat.StatUtils;
 import org.apache.commons.math3.util.ArithmeticUtils;
 
 import com.sun.org.glassfish.external.statistics.Stats;
 
-import dr.math.BigDecimalUtils;
+
+
+
+//import dr.math.BigDecimalUtils;
 import dr.math.MathUtils;
 import dr.math.Polynomial;
-import dr.math.Polynomial.BigDouble;
+//import dr.math.Polynomial.BigDouble;
 import dr.math.distributions.NormalDistribution;
-import srp.core.BigFunctions;
+//import srp.core.BigFunctions;
 import srp.evolution.OperationType;
 import srp.evolution.haplotypes.Haplotype;
 import srp.evolution.haplotypes.HaplotypeModel;
@@ -40,6 +45,11 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 //    public static final String SHORT_READ_LIKELIHOOD = "ShortReadHaplotypeLikelihood";
 	public static final String NAME = "ShortReadHaplotypeLikelihood";
 
+	public static final double decayRate = 0.49;
+	private static final double LOG_DecayRate = Math.log(decayRate);
+	private static final double LOG_ONE_MINUS_DecayRate = Math.log(1-decayRate);;
+	
+
 //	private final double MIN_LOG_LIKELIHOOD;
 
 	
@@ -53,7 +63,7 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 //	protected HaplotypeModel haplotypeModel;
 	
 	private HashMap<Integer, double[]> scaledLogBinomialDesnity;
-	private HashMap<Integer, BigDecimal[]> bigDecBinomialDesnity;
+//	private HashMap<Integer, BigDecimal[]> bigDecBinomialDesnity;
 	private int[][] allDists;
 	private int[][] storedAllDists;
 	
@@ -162,7 +172,7 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 		
 		
 		scaledLogBinomialDesnity = new HashMap<Integer, double[]>();
-		bigDecBinomialDesnity = new HashMap<Integer, BigDecimal[]>();
+//		bigDecBinomialDesnity = new HashMap<Integer, BigDecimal[]>();
 //		scaledLogBinomialDesnity = new double[]
 		allDists = new int[srpCount][sequenceCount];
 		storedAllDists = new int[srpCount][sequenceCount];
@@ -172,15 +182,146 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 			logFractorial[i] = ArithmeticUtils.factorialLog(i);
 		}
 		
-		double min = 100;
-		BigDecimal BigE = new BigDecimal("0.107");
-		BigDecimal BigN = new BigDecimal("0.893");
+//		initScaledLikelihoodBinomial();
+		initScaledLikelihoodTri();
+		initScaledLikelihoodNorm();
+	}
+
+
+	private void initScaledLikelihoodTri() {
+
+
 		for (int s = 0; s < srpCount; s++) {
 			int srLength = srpMap.getSrpLength(s);//ength();//srp.length();
 			int srLengthPlusOne = srLength+1;
 //			maxDist = Math.max(maxDist, srLength1);
 			double[] binomD = new double[srLengthPlusOne];
-			BigDecimal[] bigBinom = new BigDecimal[srLengthPlusOne];
+//			BigDecimal[] bigBinom = new BigDecimal[srLengthPlusOne];
+			double[] logBinomD = new double[srLengthPlusOne];
+			double[] scaledBinomD = new double[srLengthPlusOne];
+			double sum=0;
+			
+			
+//			double lambda = srLength * ERROR_RATE;
+//			double logLambda = Math.log(lambda);
+			int maxIndex = 	(int) Math.floor(srLength*ERROR_RATE);
+//			System.out.println(maxIndex +"\t"+ srLength +"\t"+ ERROR_RATE);
+			for (int i = 0; i < logBinomD.length; i++) {
+				int correctedError;
+				if(i < maxIndex){
+					correctedError = maxIndex-i;
+				}
+				else{
+					correctedError = i-maxIndex;
+				}
+				correctedError = correctedError*correctedError;
+//				System.out.println(i +"\t"+ correctedError);
+//				logBinomD[i] = correctedError*LOG_ERROR_RATE+(srLength-correctedError)*LOG_ONE_MINUS_ERROR_RATE;
+				logBinomD[i] = correctedError*LOG_DecayRate+(srLength-correctedError)*LOG_ONE_MINUS_DecayRate;
+//				logBinomD[i] = i* logLambda - logFractorial[i] - lambda;
+//				System.out.println(i +"\t"+  srLength + "\t"+ lambda +"\t"+ logBinomD[i]);
+//				logBinomD[i] = (i*LOG_ERROR_RATE+(srLength-i)*LOG_ONE_MINUS_ERROR_RATE) /10;
+				sum += Math.exp(logBinomD[i]);
+				scaledBinomD[i] = liS.scale(logBinomD[i]);
+			}
+//			System.out.println(Arrays.toString(logBinomD));
+			double logSum = Math.log(sum);
+			double sum2 = 0;
+			for (int i = 0; i < logBinomD.length; i++) {
+				logBinomD[i] = logBinomD[i] -logSum;
+				sum2 += Math.exp(logBinomD[i]);
+				scaledBinomD[i] = liS.scale(logBinomD[i]);
+			}
+			System.out.println(sum +"\t"+ sum2);
+//			logBinomialDesnity.put(srLength, logBinomD);
+			
+			double maxValue = StatUtils.max(logBinomD);
+			
+			int indexOf = ArrayUtils.indexOf(logBinomD, maxValue);
+//			System.out.println(maxValue +"\t"+ indexOf +"\t"+ srLength*ERROR_RATE +"\t"+  
+//					(Math.floor(srLength*ERROR_RATE)==indexOf)  );
+			
+			scaledLogBinomialDesnity.put(srLength, scaledBinomD);
+//			System.out.println(Arrays.toString(logBinomD));
+//			System.exit(3);
+		}
+	}
+
+
+
+
+	private void initScaledLikelihoodNorm() {
+
+
+		for (int s = 0; s < srpCount; s++) {
+			int srLength = srpMap.getSrpLength(s);//ength();//srp.length();
+			int srLengthPlusOne = srLength+1;
+//			maxDist = Math.max(maxDist, srLength1);
+			double[] binomD = new double[srLengthPlusOne];
+//			BigDecimal[] bigBinom = new BigDecimal[srLengthPlusOne];
+			double[] logBinomD = new double[srLengthPlusOne];
+			double[] scaledBinomD = new double[srLengthPlusOne];
+			double sum=0;
+			
+			
+//			double lambda = srLength * ERROR_RATE;
+//			double logLambda = Math.log(lambda);
+			int maxIndex = 	(int) Math.floor(srLength*ERROR_RATE);
+//			System.out.println(maxIndex +"\t"+ srLength +"\t"+ ERROR_RATE);
+			for (int i = 0; i < logBinomD.length; i++) {
+				int correctedError;
+				if(i < maxIndex){
+					correctedError = maxIndex-i;
+				}
+				else{
+					correctedError = i-maxIndex;
+				}
+				correctedError = correctedError*correctedError;
+//				System.out.println(i +"\t"+ correctedError);
+//				logBinomD[i] = correctedError*LOG_ERROR_RATE+(srLength-correctedError)*LOG_ONE_MINUS_ERROR_RATE;
+				logBinomD[i] = correctedError*LOG_DecayRate+(srLength-correctedError)*LOG_ONE_MINUS_DecayRate;
+//				logBinomD[i] = i* logLambda - logFractorial[i] - lambda;
+//				System.out.println(i +"\t"+  srLength + "\t"+ lambda +"\t"+ logBinomD[i]);
+//				logBinomD[i] = (i*LOG_ERROR_RATE+(srLength-i)*LOG_ONE_MINUS_ERROR_RATE) /10;
+				
+				logBinomD[i] = NormalDistribution.logPdf(i, maxIndex, 10);
+				sum += Math.exp(logBinomD[i]);
+				scaledBinomD[i] = liS.scale(logBinomD[i]);
+			}
+//			System.out.println(Arrays.toString(logBinomD));
+			double logSum = Math.log(sum);
+			double sum2 = 0;
+			for (int i = 0; i < logBinomD.length; i++) {
+				logBinomD[i] = logBinomD[i] -logSum;
+				sum2 += Math.exp(logBinomD[i]);
+				scaledBinomD[i] = liS.scale(logBinomD[i]);
+			}
+			System.out.println(sum +"\t"+ sum2);
+//			logBinomialDesnity.put(srLength, logBinomD);
+			
+			double maxValue = StatUtils.max(logBinomD);
+			
+			int indexOf = ArrayUtils.indexOf(logBinomD, maxValue);
+//			System.out.println(maxValue +"\t"+ indexOf +"\t"+ srLength*ERROR_RATE +"\t"+  
+//					(Math.floor(srLength*ERROR_RATE)==indexOf)  );
+			
+			scaledLogBinomialDesnity.put(srLength, scaledBinomD);
+//			System.out.println(Arrays.toString(logBinomD));
+//			System.exit(3);
+		}
+	}
+
+
+
+	private void initScaledLikelihoodCat() {
+
+
+		for (int s = 0; s < srpCount; s++) {
+			int srLength = srpMap.getSrpLength(s);//ength();//srp.length();
+			int srLengthPlusOne = srLength+1;
+//			maxDist = Math.max(maxDist, srLength1);
+			double[] binomD = new double[srLengthPlusOne];
+//			BigDecimal[] bigBinom = new BigDecimal[srLengthPlusOne];
 			double[] logBinomD = new double[srLengthPlusOne];
 			double[] scaledBinomD = new double[srLengthPlusOne];
 			double sum=0;
@@ -189,53 +330,13 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 			double lambda = srLength * ERROR_RATE;
 			double logLambda = Math.log(lambda);
 			for (int i = 0; i < logBinomD.length; i++) {
-//				BigDecimal t1 = new BigDecimal(String.valueOf(i));
-//				BigDecimal t2 = new BigDecimal(String.valueOf(LOG_ERROR_RATE));
-//				BigDecimal t3 = new BigDecimal(String.valueOf(srLength-i));
-//				BigDecimal t4 = new BigDecimal(String.valueOf(LOG_ONE_MINUS_ERROR_RATE));
-//				BigDecimal t5 = t1.multiply(t2).add(t3.multiply(t4));
-////				*LOG_ERROR_RATE+(srLength-i)*LOG_ONE_MINUS_ERROR_RATE)
+
 				logBinomD[i] = i*LOG_ERROR_RATE+(srLength-i)*LOG_ONE_MINUS_ERROR_RATE;
 				
 //				logBinomD[i] = i* logLambda - logFractorial[i] - lambda;
 //				System.out.println(i +"\t"+  srLength + "\t"+ lambda +"\t"+ logBinomD[i]);
 //				logBinomD[i] = (i*LOG_ERROR_RATE+(srLength-i)*LOG_ONE_MINUS_ERROR_RATE) /10;
-				logBinomD[i] = ArithmeticUtils.binomialCoefficientLog(srLength, i)+i*LOG_ERROR_RATE+(srLength-i)*LOG_ONE_MINUS_ERROR_RATE;
-//				System.out.println( (binomD[i]==Math.exp(logBinomD[i])) +"\t"+ binomD[i] +"\t"+ Math.exp(logBinomD[i]) +"\t"+ Math.log(binomD[i]) +"\t"+ logBinomD[i] );
-				bigBinom[i] = new BigDecimal("0");
-//				bigBinom[i].setScale(1000);
-				BigDecimal temp = BigE.pow(i).multiply(BigN.pow(srLength-i));
-//				System.out.println(bigBinom[i].scale() +"\t"+ bigBinom[i].toPlainString());
-				bigBinom[i] = bigBinom[i].add(temp);
-//				BigDecimal temp2 = temp.add(bigBinom[i]);
-//				System.out.println(temp2.doubleValue() +"\t"+ bigBinom[i].toPlainString());
-//				bigBinom[i] = new BigDecimal(multiply.toPlainString()); // better than bigdb2 and bigdb3
-//				BigDecimal bigbd2 = BigFunctions.exp(new BigDecimal(Double.toString(logBinomD[i])), 500);
-//				BigDecimal bigbd3 = BigFunctions.exp(t5, 500);
 				sum += Math.exp(logBinomD[i]);
-//				binomD[i] = Math.exp(logBinomD[i]);
-//				if(min > binomD[i]){
-//					min = binomD[i];
-//				}
-//				bigBinom[i] = bigbd;//BigDecimal.valueOf(binomD[i]);
-//				bigBinom[i].setScale(50);
-//				System.out.println(srLength +"\t"+ i);
-//				System.out.println(binomD[i] +"\n"+ bigBinom[i].toPlainString());
-//				bigbd = bigbd.setScale(50, BigDecimal.ROUND_HALF_EVEN);
-//				System.out.println(bigBinom[i].scale() +"\t"+  bigBinom[i].toPlainString());
-//				System.out.println(bigbd.scale() +"\t"+  bigbd.toPlainString());
-//				System.out.println(bigbd2.scale() +"\t"+  bigbd2.toPlainString());
-//				System.out.println(bigbd3.scale() +"\t"+  bigbd3.toPlainString());
-//				System.out.println();
-//				bigbd.s
-//				BinomialDistribution
-//				NormalDistribution
-//				logBinomD[i] = i*LOG_ERROR_RATE+(srLength-i)*LOG_ONE_MINUS_ERROR_RATE;
-				
-//				System.out.println(logBinomD[i] +"\t"+ scaledBinomD[i]);
-//				scaledBinomD[i] = i/100000.0;
-//				scaledBinomD[i] = Math.pow(LOG_ERROR_RATE, i)*Math.pow(LOG_ONE_MINUS_ERROR_RATE, (srLength-i));
-				
 				scaledBinomD[i] = liS.scale(logBinomD[i]);
 			}
 			double logSum = Math.log(sum);
@@ -245,13 +346,51 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 //				sum2 += Math.exp(logBinomD[i]);
 				scaledBinomD[i] = liS.scale(logBinomD[i]);
 			}
-//			System.out.println(srLength +"\t"+ sum2 +"\t"+ Arrays.toString(logBinomD)) ;
-	//		System.out.println(Arrays.toString(logBinomD));
+//			System.out.println(sum +"\t"+ sum2);
 //			logBinomialDesnity.put(srLength, logBinomD);
 			scaledLogBinomialDesnity.put(srLength, scaledBinomD);
-			bigDecBinomialDesnity.put(srLength, bigBinom);
 		}
-//		System.out.println(min);
+	}
+
+
+
+	private void initScaledLikelihoodBinomial() {
+		double min = 100;
+//		BigDecimal BigE = new BigDecimal("0.107");
+//		BigDecimal BigN = new BigDecimal("0.893");
+		for (int s = 0; s < srpCount; s++) {
+			int srLength = srpMap.getSrpLength(s);//ength();//srp.length();
+			int srLengthPlusOne = srLength+1;
+//			maxDist = Math.max(maxDist, srLength1);
+			double[] binomD = new double[srLengthPlusOne];
+//			BigDecimal[] bigBinom = new BigDecimal[srLengthPlusOne];
+			double[] logBinomD = new double[srLengthPlusOne];
+			double[] scaledBinomD = new double[srLengthPlusOne];
+			double sum=0;
+			
+			
+			double lambda = srLength * ERROR_RATE;
+			double logLambda = Math.log(lambda);
+			for (int i = 0; i < logBinomD.length; i++) {
+				logBinomD[i] = ArithmeticUtils.binomialCoefficientLog(srLength, i)+i*LOG_ERROR_RATE+(srLength-i)*LOG_ONE_MINUS_ERROR_RATE;
+				scaledBinomD[i] = liS.scale(logBinomD[i]);
+			}
+//
+////			double logSum = Math.log(sum);
+//			double sum2 = 0;
+//			for (int i = 0; i < logBinomD.length; i++) {
+////				logBinomD[i] = logBinomD[i] -logSum;
+//				sum2 += Math.exp(logBinomD[i]);
+////				scaledBinomD[i] = liS.scale(logBinomD[i]);
+//			}
+//			System.out.println(sum +"\t"+ sum2);
+			double maxValue = StatUtils.max(logBinomD);
+			
+			int indexOf = ArrayUtils.indexOf(logBinomD, maxValue);
+//			System.out.println(maxValue +"\t"+ indexOf +"\t"+ srLength*ERROR_RATE +"\t"+  
+//					(Math.floor(srLength*ERROR_RATE)==indexOf)  );
+			scaledLogBinomialDesnity.put(srLength, scaledBinomD);
+		}
 	}
 
 
@@ -443,11 +582,11 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 					double[] logPD = scaledLogBinomialDesnity.get(srpLength);
 					
 					double sum = 0;
-					BigDecimal bd = new BigDecimal("0");
-					bd.setScale(100);
+//					BigDecimal bd = new BigDecimal("0");
+//					bd.setScale(100);
 					for (int l = 0; l < sequenceCount; l++) {
 						sum += logPD[allDists[i][l]];
-						bd = bd.add(BigDecimal.valueOf( logPD[allDists[i][l]] ));
+//						bd = bd.add(BigDecimal.valueOf( logPD[allDists[i][l]] ));
 					}
 					
 					allDists[i][j] += deltaDist;
@@ -459,25 +598,25 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 					if(deltaDist == -1){
 						double newSum = 0;
 						double allLogSum = 0;
-						BigDecimal newBd = new BigDecimal("0");
-						newBd.setScale(100);
+//						BigDecimal newBd = new BigDecimal("0");
+//						newBd.setScale(100);
 //						int srpLength = srpMap.getSrpLength(i);
 //						double[] logPD = scaledLogBinomialDesnity.get(srpLength);
 						for (int l = 0; l < sequenceCount; l++) {
 //							newSum += allDists[i][l];
 							newSum += logPD[allDists[i][l]];
-							BigDecimal tempB = BigDecimal.valueOf( logPD[allDists[i][l]] );
+//							BigDecimal tempB = BigDecimal.valueOf( logPD[allDists[i][l]] );
 							
-							newBd = newBd.add(tempB);
+//							newBd = newBd.add(tempB);
 							
 						}
 //						System.out.println("===\t"+ newBd.doubleValue());
 //						double log2 = newSum*LOG_ERROR_RATE+(srpLength*sequenceCount-newSum)*LOG_ONE_MINUS_ERROR_RATE;
-						System.out.println(sum +"\t"+ bd.toString() +"\n"+ newSum +"\t"+ newBd.toString() );  
-						System.out.println(liS.getLogLikelihood(bd.doubleValue(), LOG_C) +"\t"+ liS.getLogLikelihood(newBd.doubleValue(), LOG_C) );
-						System.out.println(liS.getLogLikelihood(Double.valueOf(bd.toPlainString()), LOG_C) +"\t"+ liS.getLogLikelihood(Double.valueOf(newBd.toPlainString()), LOG_C) );
-						System.out.println(BigFunctions.ln(bd, 100).toPlainString() +"\n"+ BigFunctions.ln(newBd, 100).toPlainString());
-						System.out.println((BigFunctions.ln(bd, 100).doubleValue())-LOG_C +"\n"+ (BigFunctions.ln(newBd, 100).doubleValue()-LOG_C));
+//						System.out.println(sum +"\t"+ bd.toString() +"\n"+ newSum +"\t"+ newBd.toString() );  
+//						System.out.println(liS.getLogLikelihood(bd.doubleValue(), LOG_C) +"\t"+ liS.getLogLikelihood(newBd.doubleValue(), LOG_C) );
+//						System.out.println(liS.getLogLikelihood(Double.valueOf(bd.toPlainString()), LOG_C) +"\t"+ liS.getLogLikelihood(Double.valueOf(newBd.toPlainString()), LOG_C) );
+//						System.out.println(BigFunctions.ln(bd, 100).toPlainString() +"\n"+ BigFunctions.ln(newBd, 100).toPlainString());
+//						System.out.println((BigFunctions.ln(bd, 100).doubleValue())-LOG_C +"\n"+ (BigFunctions.ln(newBd, 100).doubleValue()-LOG_C));
 						System.out.println(allDists[i][j] +"\t"+  logPD[allDists[i][j]] +"\t"+ logPD[ (allDists[i][j]-deltaDist  )]);
 						System.out.println(sumScaledSrpLogLikelihood[i] +"\t"+  storedSumScaledSrpLogLikelihood[i]);
 						System.out.println(currentLogLikelihood +"\t"+ eachSrpLogLikelihood[i]);

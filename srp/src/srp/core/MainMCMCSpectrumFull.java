@@ -74,11 +74,11 @@ public class MainMCMCSpectrumFull {
 		
 		else{	
 			dataDir = "/home/sw167/workspaceSrp/snowgoose/srp/unittest/testData/";
-			runIndex = 51;
+			runIndex = 54;
 			dataDir += "H7_"+runIndex+"/";
 			
 			totalSamples = 100	;
-			logInterval = 100000 ;
+			logInterval = 1000 ;
 			
 			randomTree = true;
 //			randomTree = false;

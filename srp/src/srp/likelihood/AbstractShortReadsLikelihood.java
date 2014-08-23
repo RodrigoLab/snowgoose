@@ -22,7 +22,7 @@ public abstract class AbstractShortReadsLikelihood extends
 		AbstractModelLikelihood {
 
 	private static final long serialVersionUID = 2079474866153379297L;
-	public static final double ERROR_RATE = 0.0107;
+	public static final double ERROR_RATE = 0.020;
 	public static final double NOT_ERROR_RATE = 1-ERROR_RATE;
 	public static final double LOG_ERROR_RATE = Math.log(ERROR_RATE);
 	public static final double LOG_NOT_ERROR_RATE = Math.log(NOT_ERROR_RATE);

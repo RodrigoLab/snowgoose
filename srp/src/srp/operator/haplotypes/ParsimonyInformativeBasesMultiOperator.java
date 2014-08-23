@@ -94,9 +94,9 @@ public class ParsimonyInformativeBasesMultiOperator extends AbstractMultiOperato
 		for (int i = 0; i < siteIndexs.length; i++) {
 			hs.add(siteIndexs[i]);
 		}
-		if(hs.size() < (basesCount-1) ){
-			System.out.println("REPEAT:"+Arrays.toString(siteIndexs));
-		}
+//		if(hs.size() < (basesCount-1) ){
+//			System.out.println("REPEAT:"+Arrays.toString(siteIndexs));
+//		}
 		
 //		System.out.println("SITE:"+Arrays.toString(siteIndexs) +"\t"+ count);
         // symmetrical move so return a zero hasting ratio
