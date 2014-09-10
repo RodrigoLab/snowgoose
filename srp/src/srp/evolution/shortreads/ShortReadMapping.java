@@ -63,6 +63,7 @@ public class ShortReadMapping {
 	private BitVector[] bitVectorArray;
 	private int[] srpLength;
 	private char[][] srpChar2D;
+	private Integer[] allSrpLengthInteger;
 	
 	private void init(int l) {
 		fullHaplotypeLength = l;
@@ -168,6 +169,10 @@ public class ShortReadMapping {
 		
 	}
 
+	public Integer[] getAllSrpLengthInteger() {
+		return allSrpLengthInteger;
+	}
+
 	public int[][] getMapToSrpArray(){
 		return mapToSrpArray;
 	}
@@ -179,11 +184,14 @@ public class ShortReadMapping {
 	private void createSrpArray() {
 		srpArray = new String[srpCount];
 		srpLength = new int[srpCount];
+		allSrpLengthInteger = new Integer[srpCount];
 		for (int i = 0; i < srpArray.length; i++) {
 			ShortRead shortRead = shortReads.get(i);
 			srpArray[i] = shortRead.getFullSrp();
 			srpLength[i] = shortRead.getLength();
+			allSrpLengthInteger[i] = (Integer) shortRead.getLength();
 		}
+		
 		
 	}
 	private void createMapToSrpArray(){

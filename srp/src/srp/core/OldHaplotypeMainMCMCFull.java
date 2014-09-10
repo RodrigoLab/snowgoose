@@ -10,6 +10,7 @@ import srp.dr.ext.TreeLikelihoodExt;
 //import srp.evolution.haplotypes.old.OldHaplotypeModelUtils;
 import srp.evolution.haplotypes.HaplotypeLoggerWithTrueHaplotype;
 import srp.evolution.haplotypes.HaplotypeModel;
+import srp.evolution.shortreads.ShortReadMapping;
 //import srp.likelihood.haplotypes.ShortReadLikelihood;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.util.TaxonList;
@@ -81,7 +82,8 @@ public class OldHaplotypeMainMCMCFull {
 		coalescent.setId("coalescent");
 
 		// Simulate haplotypes, treeLikelihood
-		HashMap<String, Object> parameterList = MCMCSetupHelperHaplotype.setupTreeLikelihoodHaplotypeModel(treeModel, haplotypeModel);
+		ShortReadMapping srpMap = null;
+		HashMap<String, Object> parameterList = MCMCSetupHelperHaplotype.setupTreeLikelihoodHaplotypeModel(treeModel, haplotypeModel, srpMap);
 		Parameter kappa = (Parameter) parameterList.get("kappa");
 		Parameter freqs = (Parameter) parameterList.get("freqs");
 		StrictClockBranchRates branchRateModel = (StrictClockBranchRates) parameterList.get("branchRateModel");
