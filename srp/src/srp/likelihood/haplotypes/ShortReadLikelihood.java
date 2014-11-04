@@ -17,6 +17,7 @@ import srp.evolution.haplotypes.old.OldHaplotypeModel;
 import srp.evolution.shortreads.AlignmentMapping;
 import srp.evolution.shortreads.ShortRead;
 import srp.likelihood.LikelihoodScaler;
+import srp.likelihood.LikelihoodUtils;
 import dr.inference.model.AbstractModelLikelihood;
 import dr.inference.model.Model;
 import dr.inference.model.Variable;

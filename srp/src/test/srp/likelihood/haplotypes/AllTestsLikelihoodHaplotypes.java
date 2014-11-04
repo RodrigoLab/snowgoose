@@ -5,6 +5,7 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 import test.srp.likelihood.LikelihoodScalerTest;
+import test.srp.likelihood.LikelihoodUtilsTest;
 
 @RunWith(Suite.class)
 @SuiteClasses({ 

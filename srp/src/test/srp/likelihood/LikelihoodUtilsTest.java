@@ -1,4 +1,4 @@
-package test.srp.likelihood.haplotypes;
+package test.srp.likelihood;
 
 import static org.junit.Assert.assertEquals;
 
@@ -8,7 +8,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import srp.likelihood.haplotypes.LikelihoodUtils;
+import srp.likelihood.LikelihoodUtils;
 
 public class LikelihoodUtilsTest {
 

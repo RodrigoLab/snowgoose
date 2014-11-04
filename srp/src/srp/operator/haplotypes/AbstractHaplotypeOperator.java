@@ -60,4 +60,72 @@ public abstract class AbstractHaplotypeOperator extends AbstractCoercableOperato
 		return DNA_CHARS[i];
 	}
 
+
+	protected char transition(char oldChar){
+		char newChar = oldChar;
+		switch (oldChar){
+		case 'A':
+			newChar = 'G';
+			break;
+		case 'G':
+			newChar = 'A';
+			break;
+		case 'C':
+			newChar = 'T';
+			break;
+		case 'T':
+			newChar = 'C';
+			break;
+		default:
+			throw new IllegalArgumentException("Invalid char: "+oldChar);
+		}
+		
+		
+		return newChar;
+	}
+	
+	char[] tr_AG = {'C', 'T'};
+	char[] tr_CT = {'A', 'G'};
+	
+	protected char transversion(char oldChar) {
+		int i = MathUtils.nextInt(2);
+		char newChar = oldChar;
+		switch (oldChar){
+		case 'A':
+		case 'G':
+			newChar = tr_AG[i];
+			break;
+//		case 'G':
+//			newChar = 'A';
+//			break;
+		case 'C':
+		case 'T':
+			newChar = tr_CT[i];
+			break;
+//		case 'T':
+//			newChar = 'C';
+//			break;
+		default:
+			throw new IllegalArgumentException("Invalid char: "+oldChar);
+		}
+		
+		
+		return newChar;
+	}
+
+	protected boolean checkUnique(int i) {
+		
+		char baseChar = haplotypeModel.getHaplotype(0).getChar(i);
+		for (int j = 1; j < haplotypeCount; j++) {
+			char charJ = haplotypeModel.getHaplotype(j).getChar(i);
+			if(charJ != baseChar){
+				return true;
+			}
+		}
+		return false;
+	}
+
+
+	
+	
 }

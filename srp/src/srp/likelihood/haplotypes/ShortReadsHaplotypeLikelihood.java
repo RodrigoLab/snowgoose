@@ -20,6 +20,7 @@ import com.sun.org.glassfish.external.statistics.Stats;
 
 
 
+
 //import dr.math.BigDecimalUtils;
 import dr.math.MathUtils;
 import dr.math.Polynomial;
@@ -33,6 +34,7 @@ import srp.evolution.haplotypes.HaplotypeModel;
 import srp.evolution.shortreads.ShortReadMapping;
 import srp.likelihood.AbstractShortReadsLikelihood;
 import srp.likelihood.LikelihoodScaler;
+import srp.likelihood.LikelihoodUtils;
 //import srp.likelihood.spectrum.AbstractShortReadsSpectrumLikelihood;
 import srp.likelihood.stateLikelihood.StateLikelihood;
 //import java.util.BitSet;
@@ -189,11 +191,13 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 			double sum=0;
 			
 			
-			for (int i = 0; i < logBinomD.length; i++) {
+			for (int i = 0; i < logBinomD.length; i++) { // i is the number of mismatches (error) E^i 
 				logBinomD[i] = ArithmeticUtils.binomialCoefficientLog(srLength, i)+i*LOG_ERROR_RATE+(srLength-i)*LOG_ONE_MINUS_ERROR_RATE;
 				scaledBinomD[i] = liS.scale(logBinomD[i]);
+				
+//				sum += Math.exp(logBinomD[i]);
 			}
-			
+//			System.out.println(s +"\t"+ sum);
 			scaledLogBinomialDesnity.put(srLength, scaledBinomD);
 		}
 		

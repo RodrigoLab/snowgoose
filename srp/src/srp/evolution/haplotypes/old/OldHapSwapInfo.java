@@ -61,7 +61,9 @@ public class OldHapSwapInfo {
 	}
 	*/
 	
-	
+	public void storeOperation(OldHapOperation op){
+		storeOperation(op, null);
+	}
 	public void storeOperation(OldHapOperation op, int[]... swapRecord){
 		
 		operation = op;

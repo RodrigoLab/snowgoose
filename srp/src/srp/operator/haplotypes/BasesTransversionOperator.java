@@ -6,16 +6,16 @@ import srp.evolution.haplotypes.HaplotypeModel;
 import dr.inference.operators.CoercionMode;
 import dr.inference.operators.OperatorFailedException;
 
-public class BasesTransitionOperator extends AbstractMultiOperator {
+public class BasesTransversionOperator extends AbstractMultiOperator {
 
 
-	public static final String OPERATOR_NAME = BasesTransitionOperator.class.getSimpleName();
+	public static final String OPERATOR_NAME = BasesTransversionOperator.class.getSimpleName();
 	public static final OperationType OP = OperationType.MULTI;
 	private int maxLength;
 	
 
 	
-	public BasesTransitionOperator(HaplotypeModel haplotypeModel, int length, CoercionMode mode) {
+	public BasesTransversionOperator(HaplotypeModel haplotypeModel, int length, CoercionMode mode) {
 		super(haplotypeModel, length, mode);
 		maxLength = haplotypeLength-basesCount;
 	}
@@ -40,9 +40,9 @@ public class BasesTransitionOperator extends AbstractMultiOperator {
 //			SpectraParameter spectra = spectrum.getSpectra(siteIndexs[i]);
 //			swapFrequency(spectra);
 			
-			char oldState = haplotype.getChar(i);
-			char newChar = transition(oldState);
-			
+			char oldChar = haplotype.getChar(i);
+			char newChar = transversion(oldChar);
+					
 			haplotype.setCharAt(i, newChar);
 			
 		}
@@ -56,6 +56,7 @@ public class BasesTransitionOperator extends AbstractMultiOperator {
 	}
 
 
+	
 	@Override
 	public String getOperatorName() {
 	

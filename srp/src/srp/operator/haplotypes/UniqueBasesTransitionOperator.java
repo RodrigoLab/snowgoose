@@ -8,16 +8,17 @@ import srp.evolution.haplotypes.HaplotypeModel;
 import dr.inference.operators.CoercionMode;
 import dr.inference.operators.OperatorFailedException;
 import dr.math.MathUtils;
+import srp.operator.haplotypes.BasesTransitionOperator;
 
-public class NonUniqueBasesMultiOperator extends AbstractMultiOperator {
+public class UniqueBasesTransitionOperator extends AbstractMultiOperator {
 
 
-	public static final String OPERATOR_NAME = NonUniqueBasesMultiOperator.class.getSimpleName();
+	public static final String OPERATOR_NAME = UniqueBasesTransitionOperator.class.getSimpleName();
 	public static final OperationType OP = OperationType.MULTI;
 	
 
 	
-	public NonUniqueBasesMultiOperator(HaplotypeModel haplotypeModel, int length, CoercionMode mode) {
+	public UniqueBasesTransitionOperator(HaplotypeModel haplotypeModel, int length, CoercionMode mode) {
 		super(haplotypeModel, length, mode);
 		
 	}
@@ -47,16 +48,21 @@ public class NonUniqueBasesMultiOperator extends AbstractMultiOperator {
 				}
 					
 					
-				boolean isNotUnique = checkUnique(site);
+				boolean isNotUnique = !checkUnique(site);
 				if(isNotUnique){
 
 //					System.out.println(Arrays.toString(haplotypeModel.getSitePattern(i)));
 					siteIndexs[count] = site;
 					count++;
-					int oldState = haplotype.getState(site);
-					char newChar = getNextDiffBase(oldState);
-//					newChar = getNextBase();
+//					int oldState = haplotype.getState(site);
+//					char newChar = getNextDiffBase(oldState);
+////					newChar = getNextBase();
+//					haplotype.setCharAt(site, newChar);
+					char oldState = haplotype.getChar(site);
+					char newChar = transition(oldState);
+					
 					haplotype.setCharAt(site, newChar);
+					
 				}
 //				else{
 //					System.out.println("=====\t"+Arrays.toString(haplotypeModel.getSitePattern(i)));

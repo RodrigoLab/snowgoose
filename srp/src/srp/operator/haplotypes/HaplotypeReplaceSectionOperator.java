@@ -44,11 +44,12 @@ public class HaplotypeReplaceSectionOperator extends HaplotypeRecombinationOpera
 		do{
 			twoHaplotypeIndex[1] = getNextHapIndex();
 		} while(twoHaplotypeIndex[0]==twoHaplotypeIndex[1]);
-//FIXME fix index -negative index
+//
 		Haplotype h1 = haplotypeModel.getHaplotype(twoHaplotypeIndex[0]);
 		Haplotype h2 = haplotypeModel.getHaplotype(twoHaplotypeIndex[1]);
 		
-		twoPositionIndex[0] = getNextSiteIndex();
+		int maxStartingPos = haplotypeLength - basesCount;
+		twoPositionIndex[0] = getNextSiteIndex(maxStartingPos);
 		twoPositionIndex[1]= twoPositionIndex[0]+ basesCount;
 		if(twoPositionIndex[1]>haplotypeLength){
 			twoPositionIndex[1] = twoPositionIndex[0];
