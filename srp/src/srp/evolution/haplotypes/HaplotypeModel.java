@@ -160,7 +160,7 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 		}
 		switch (operation) {
 		case NONE:
-			System.out.println("Init HaplotypeModel StoreState()");
+//			System.out.println("Init HaplotypeModel StoreState()");//FIXME: maybe not the best default option
 			break;
 		case FULL:
 			for (int i = 0; i < getHaplotypeCount(); i++) {

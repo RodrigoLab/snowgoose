@@ -87,12 +87,16 @@ public class MainMCMCHaplotype {
 			runIndex = 51;
 			dataDir += "H7_"+runIndex+"/";
 			//TODO: local control
-			totalSamples = 10	;
+			totalSamples = 100	;
 			logInterval  = 10000 ;
 			
 			randomTree = true;
 			randomHaplotype = true;
-
+			
+//			randomTree = false;
+//			randomHaplotype = false;
+			
+			
 			noOfTrueHaplotype = 7;
 			noOfRecoveredHaplotype=7;
 		}
@@ -108,8 +112,8 @@ public class MainMCMCHaplotype {
 		String logHaplotypeName = prefix+".haplotype";
 		String operatorAnalysisFile = prefix+"_operatorAnalysisFile.txt";
 		
-		
 //		
+		
 		DataImporter dataImporter = new DataImporter(dataDir);
 
 		Alignment shortReads = dataImporter.importShortReads(shortReadFile);
@@ -255,6 +259,8 @@ public class MainMCMCHaplotype {
 
 		
 		System.out.println(mcmc.getTimer().toString());
+		System.out.println(srpLikelihood.globalCounter);
+		System.out.println(srpLikelihood.globalCounter2);
 		System.out.println("True srp Likelihood: "+trueSrp.getLogLikelihood());
 		srpLikelihood.makeDirty();
 		System.out.println(srpLikelihood.getLogLikelihood());

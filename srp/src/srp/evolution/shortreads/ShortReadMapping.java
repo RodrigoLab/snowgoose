@@ -202,6 +202,7 @@ public class ShortReadMapping {
 //			temp = arrayList.toArray(new double[arrayList.size()]);
 			arrayList.toArray(temp);
 			mapToSrpArray[i] = Ints.toArray(arrayList);
+			
 			String s1 = arrayList.toString();
 			String s2 = Arrays.toString(mapToSrpArray[i]);
 			if(!s1.equals(s2)){
@@ -393,32 +394,55 @@ public class ShortReadMapping {
 		char[] randChar = new char[fullHaplotypeLength];
 		
 		int[] srpList = mapToSrpArray[0];
-		int state = 999;
-		int srpIndex = srpList[MathUtils.nextInt(srpList.length)];
+		
 
-		char newChar = srpChar2D[srpIndex][0];
+		int state = 999;
+		char newChar ='-';
+		int srpIndex = 0;
+		
+		if(srpList.length==0){
+			newChar = 'A';//FIXME: later, only accept ACGT no N at moment
+		}
+		else{
+			srpIndex = srpList[MathUtils.nextInt(srpList.length)];
+			newChar = srpChar2D[srpIndex][0];
+		}
 		randChar[0] = newChar;
 		
-		
+		//FIXME: not very smart loop, just get things working
 		for (int s = 1; s < randChar.length; s++) {
-		
+			int count = 0;
 			if(MathUtils.nextDouble() < switchSrpProb){
 					
 					srpList = mapToSrpArray[s];
-					srpIndex = srpList[MathUtils.nextInt(srpList.length)];
+					if(srpList.length!=0){
+						srpIndex = srpList[MathUtils.nextInt(srpList.length)];
+					}
 //					state = 999;
 //					System.out.println(s +"\tnewSrp Prob: "+ srpIndex);
 			}
 			
 			do{
 				if(state>3){
-					
-					srpList = mapToSrpArray[s];
-					srpIndex = srpList[MathUtils.nextInt(srpList.length)];
-					
+					if(count==10){
+						newChar = 'A';
+					}
+					else{
+						srpList = mapToSrpArray[s];
+						if(srpList.length==0){
+							newChar = 'A';//FIX later, only accept ACGT no N at moment
+						}
+						else{
+							srpIndex = srpList[MathUtils.nextInt(srpList.length)];
+							newChar = srpChar2D[srpIndex][s];
+							count++;
+						}
+					}
 //					System.out.println(s +"\tnewSrp: "+ srpIndex);
 				}
-				newChar = srpChar2D[srpIndex][s];
+				else{
+					newChar = srpChar2D[srpIndex][s];
+				}
 				state = Nucleotides.INSTANCE.getState(newChar);
 				
 			}

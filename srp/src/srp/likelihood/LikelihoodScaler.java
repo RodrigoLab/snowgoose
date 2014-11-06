@@ -37,8 +37,10 @@ public class LikelihoodScaler {
 
 
 	public static double getLogLikelihood(double sumScaledLikelihood, double logScaler){
-		
+		//TODO: test FastMath properly. About the same for 100,000 ite 
+//		double logLikelihood = FastMath.log(sumScaledLikelihood) + logScaler;
 		double logLikelihood = Math.log(sumScaledLikelihood) + logScaler;
+//		System.out.println((logLikelihood - logLikelihood2) +"\t"+ logLikelihood +"\t"+ logLikelihood2 +"\t"+ sumScaledLikelihood );
 		return logLikelihood;
 	}
 

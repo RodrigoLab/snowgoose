@@ -298,7 +298,7 @@ public class TreeLikelihoodExt extends TreeLikelihood {
 			states[updateExternalNodeIndex][site] = patternList.getPatternState(haplotypeIndex, site);
 			likelihoodCore.setNodeStates(updateExternalNodeIndex, states[updateExternalNodeIndex]);
 //			likelihoodCoreExt2.setNodeStatesSite(updateExternalNodeIndex, states[updateExternalNodeIndex], site);
-
+			
 			break;
 		case MULTI:
 			int[] sites = record.getAllSiteIndexs();

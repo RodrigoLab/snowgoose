@@ -28,24 +28,16 @@ public class BaseSingleOperator extends AbstractSingleOperator {
 
 		int hapIndex = getNextHapIndex();
 		int siteIndex = getNextSiteIndex();
-		
-//		if(hap== (haplotypeCount-1)){
-//			hap =0;
-////			System.out.println(hap +"a\ta"+ site);
-//		}
-//		if(site==(haplotypeLength-1)){
-//			site = 0;
-//			hap++;
-////			System.out.println(hap +"\t"+ site);
-//		}
-//		site++;
-////		System.out.println(hap +"\t"+ site);
-//		hapIndex = hap;
-//		siteIndex = site;
+//		int hapIndex = 1;
+//		int siteIndex = 1;
+
 
 		Haplotype haplotype = haplotypeModel.getHaplotype(hapIndex);
 		int oldState = haplotype.getState(siteIndex);
 		char newChar = getNextDiffBase(oldState);
+//		char newChar = 'A';
+		
+		
 //		newChar = getNextBase();
 //		if(MathUtils.nextDouble()< 0.5){
 //			newChar = cheat[hapIndex].charAt(siteIndex);

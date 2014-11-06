@@ -40,7 +40,7 @@ public class MCMCSetupHelper {
 	protected static final double opMed = 15; //BEAST Tree Default
 	protected static final double opLarge = 30; //BEAST Tree Default
 	protected static final double opHuge = 60;
-	protected static final double opSpectrum =90;//150 works for beta and related, might be a bit too high?
+	protected static final double opSpectrum =120;//150 works for beta and related, might be a bit too high?
 
 
 	public static MCMCOptions setMCMCOptions(int logInterval, int totalSamples) {
@@ -52,10 +52,13 @@ public class MCMCSetupHelper {
 	//		options.setFullEvaluationCount((int) (logInterval*0.01));
 		
 		int coercionDelay = logInterval * totalSamples /100;
-		long fullEvaluationCount = 100; //TODO Change fullEvaCount
-		MCMCOptions options = new MCMCOptions(logInterval * totalSamples, fullEvaluationCount,
-				1, MarkovChain.EVALUATION_TEST_THRESHOLD, false, coercionDelay, 1.0);
-			//		MCMCOptions(long chainLength, 
+		long fullEvaluationCount = 0; //TODO Change fullEvaCount >100
+		int minOperatorCountForFullEvaluation = 0;//TODO Change to >1
+		MCMCOptions options = new MCMCOptions(logInterval * totalSamples,
+				fullEvaluationCount, minOperatorCountForFullEvaluation,
+				MarkovChain.EVALUATION_TEST_THRESHOLD, false, coercionDelay,
+				1.0);
+	//		MCMCOptions(long chainLength, 
 	//				long fullEvaluationCount, //2000
 	//				int minOperatorCountForFullEvaluation, //1 
 	//				double evaluationTestThreshold, 

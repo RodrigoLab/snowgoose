@@ -37,7 +37,7 @@ public class BasesMultiOperator extends AbstractMultiOperator {
 //			swapFrequency(spectra);
 			int oldState = haplotype.getState(i);
 			char newChar = getNextDiffBase(oldState);
-			newChar = getNextBase();
+//			newChar = getNextBase();
 			haplotype.setCharAt(i, newChar);
 //	        System.out.println(hapIndex +"\t"+ i +"\t from "+oldState +" to new "+ newChar);
 		}

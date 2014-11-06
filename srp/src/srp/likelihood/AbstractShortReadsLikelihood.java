@@ -136,12 +136,14 @@ public abstract class AbstractShortReadsLikelihood extends
 			break;
 		case MULTI:
 			logLikelihood = calculateSrpLikelihoodMulti();
+//			logLikelihood = calculateSrpLikelihoodFull();
 			break;
 		case SWAP_SUBCOLUMN:
 			logLikelihood = calculateSrpLikelihoodSubColumn();
 			break;
 		case RECOMBINATION:
-			logLikelihood = calculateSrpLikelihoodRecombination();
+//			logLikelihood = calculateSrpLikelihoodRecombination();
+			logLikelihood = calculateSrpLikelihoodFull();
 			break;
 		// case MASTER:
 		// logLikelihood = calculateSrpLikelihoodFullMaster()

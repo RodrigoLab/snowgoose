@@ -78,7 +78,7 @@ public class MainMCMCSpectrumFull {
 			dataDir += "H7_"+runIndex+"/";
 			
 			totalSamples = 100	;
-			logInterval = 1000 ;
+			logInterval = 100 ;
 			
 			randomTree = true;
 //			randomTree = false;
