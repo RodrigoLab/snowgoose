@@ -7,7 +7,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({ 
-//	test.dr.ext.TreeLikelihoodExtTest.class, //slow
+	test.dr.ext.TreeLikelihoodExtTest.class, //slow
 	test.srp.evolution.haplotypes.AAllTestsHaplotypes.class,
 	test.srp.evolution.shortreads.AAllTestsShortreads.class,
 	test.srp.evolution.spectrum.AAllTestsSpectrum.class,

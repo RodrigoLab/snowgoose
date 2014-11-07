@@ -14,6 +14,7 @@ import org.junit.Test;
 import srp.core.DataImporter;
 import srp.evolution.shortreads.ShortRead;
 import srp.evolution.shortreads.ShortReadMapping;
+import test.TestUtils;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.sequence.Sequence;
 import dr.evolution.util.Taxon;
@@ -27,7 +28,7 @@ public class ShortReadMappingTest {
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		
-		String dir = System.getProperty("user.dir")+File.separatorChar+"unittest"+File.separator;
+		String dir = TestUtils.getUnittestDir();
 		String srpFileName = "AlignmentMappingTest_4_srp.fasta";
 		shortReads = DataImporter.importShortReads(dir, srpFileName);
 	}

@@ -69,7 +69,7 @@ public class MainMCMCHaplotype {
 		boolean randomHaplotype = true;
 
 		
-//		boolean commandLine = true;
+		boolean isLocal = false;
 //		commandLine = false;
 		
 		if(args.length ==6){
@@ -83,18 +83,19 @@ public class MainMCMCHaplotype {
 		
 		else{	
 			System.out.println("local parameters");
+			isLocal = true;
 			dataDir = "/home/steven/workspaceSrp/snowgoose/srp/unittest/testData/";
 			runIndex = 51;
 			dataDir += "H7_"+runIndex+"/";
 			//TODO: local control
-			totalSamples = 100	;
-			logInterval  = 10000 ;
+			totalSamples = 1000	;
+			logInterval  = 2000 ;
 			
 			randomTree = true;
 			randomHaplotype = true;
 			
 //			randomTree = false;
-//			randomHaplotype = false;
+			randomHaplotype = false;
 			
 			
 			noOfTrueHaplotype = 7;
@@ -129,7 +130,8 @@ public class MainMCMCHaplotype {
 		}
 		else{
 			String partialHaplotypeName = prefix+".haplotypepartial";
-			Alignment trueAlignment = dataImporter.importAlignment(trueHaplotypeFile);
+//			Alignment trueAlignment = dataImporter.importAlignment(trueHaplotypeFile);
+			Alignment trueAlignment = dataImporter.importAlignment(partialHaplotypeName);
 			haplotypeModel = new HaplotypeModel(trueAlignment);
 			
 //			haplotypeModel = dataImporter.importPartialSpectrumFile(partialHaplotypeName);
@@ -248,7 +250,13 @@ public class MainMCMCHaplotype {
 //				treeFormatter, logInterval, true, true, true, null, null);
 		
 		// MCMC
-		MCMCOptions options = MCMCSetupHelper.setMCMCOptions(logInterval, totalSamples);
+		MCMCOptions options;
+		if(isLocal ){
+			options = MCMCSetupHelper.setMCMCOptions(logInterval, totalSamples, 0, 0);
+		}
+		else{
+			options = MCMCSetupHelper.setMCMCOptions(logInterval, totalSamples);
+		}
 		
 		MCMC mcmc = new MCMC("mcmc1");
 		mcmc.setShowOperatorAnalysis(true);

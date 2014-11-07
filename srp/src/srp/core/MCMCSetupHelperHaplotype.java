@@ -181,7 +181,7 @@ public class MCMCSetupHelperHaplotype extends MCMCSetupHelper {
 //			ArrayList<MCMCOperator> OperatorList = new ArrayList<MCMCOperator>();
 
 		operator = new BaseSingleOperator(haplotypeModel);
-		operator.setWeight(opSpectrum);
+		operator.setWeight(opHuge);
 		schedule.addOperator(operator);
 		
 		operator = new BasesMultiOperator(haplotypeModel, 6, CoercionMode.COERCION_OFF);
@@ -205,11 +205,11 @@ public class MCMCSetupHelperHaplotype extends MCMCSetupHelper {
 //		schedule.addOperator(operator);
 		
 		operator = new BasesTransitionOperator(haplotypeModel, 1, CoercionMode.COERCION_OFF);
-		operator.setWeight(opLarge/3.0);
+		operator.setWeight(opLarge);
 //		schedule.addOperator(operator);
 		
 		operator = new BasesTransversionOperator(haplotypeModel, 1, CoercionMode.COERCION_OFF);
-		operator.setWeight(opLarge/3.0);
+		operator.setWeight(opLarge);
 //		schedule.addOperator(operator);
 		
 		
@@ -218,12 +218,12 @@ public class MCMCSetupHelperHaplotype extends MCMCSetupHelper {
 //		schedule.addOperator(operator);
 		
 		operator = new NonUniqueBasesTransitionOperator(haplotypeModel, 1, CoercionMode.COERCION_OFF);
-		operator.setWeight(opLarge);
-//		schedule.addOperator(operator);
+		operator.setWeight(opSpectrum);
+		schedule.addOperator(operator);
 		
 		operator = new NonUniqueBasesTransversionOperator(haplotypeModel, 1, CoercionMode.COERCION_OFF);
-		operator.setWeight(opLarge);
-//		schedule.addOperator(operator);
+		operator.setWeight(opSpectrum);
+		schedule.addOperator(operator);
 		
 
 //		operator = new UniqueBasesTransitionOperator(haplotypeModel, 1, CoercionMode.COERCION_OFF);
@@ -267,7 +267,7 @@ public class MCMCSetupHelperHaplotype extends MCMCSetupHelper {
 		
 		operator = new HaplotypeRecombinationOperator(haplotypeModel, 0, CoercionMode.COERCION_OFF);
 		operator.setWeight(opSmall);
-//		schedule.addOperator(operator);
+		schedule.addOperator(operator);
 
 //		operator = new ColumnOperator(haplotypeModel, 7, CoercionMode.COERCION_OFF);
 //		operator.setWeight(opLarge);

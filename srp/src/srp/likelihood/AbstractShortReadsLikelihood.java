@@ -1,5 +1,7 @@
 package srp.likelihood;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashSet;
@@ -134,20 +136,23 @@ public abstract class AbstractShortReadsLikelihood extends
 		case COLUMN:
 			logLikelihood = calculateSrpLikelihoodColumn();
 			break;
+//		case MULTI:
+//			throw new IllegalArgumentException("Deal with multi later, not going to use it now\n");
+			
 		case MULTI:
 			logLikelihood = calculateSrpLikelihoodMulti();
-//			logLikelihood = calculateSrpLikelihoodFull();
 			break;
+			
 		case SWAP_SUBCOLUMN:
 			logLikelihood = calculateSrpLikelihoodSubColumn();
 			break;
 		case RECOMBINATION:
-//			logLikelihood = calculateSrpLikelihoodRecombination();
-			logLikelihood = calculateSrpLikelihoodFull();
+			logLikelihood = calculateSrpLikelihoodRecombination();
 			break;
 		// case MASTER:
 		// logLikelihood = calculateSrpLikelihoodFullMaster()
 		// break;
+			
 		default:
 			throw new IllegalArgumentException("Unknown operation type: "
 					+ operation);

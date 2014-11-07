@@ -258,12 +258,13 @@ public abstract class AbstractModel implements Model, ModelListener, VariableLis
 
     public final void restoreModelState() {
         if (!isValidState) {
-            //System.out.println("RESTORE MODEL: " + getModelName() + "/" + getId());
+//            System.out.println("RESTORE MODEL: " + getModelName() + "/" + getId());
 
             for (Variable variable : variables) {
                 variable.restoreVariableValues();
             }
             for (Model m : models) {
+//            	System.out.println("\tCall:"+m.getModelName() +"\tfrom "+ getModelName());
                 m.restoreModelState();
             }
 

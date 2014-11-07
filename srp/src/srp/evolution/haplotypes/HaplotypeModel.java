@@ -48,6 +48,7 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 	public HaplotypeModel(int hapCount, int hapLength) {
 		super(MODEL_NAME, hapCount, hapLength);
 		initHaplotypes();
+//		storeEverything();
 	}
 	
 	public HaplotypeModel(Alignment trueAlignment) {
@@ -57,6 +58,7 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 			Haplotype haplotype = new Haplotype(trueAlignment.getSequence(i));
 			setHaplotype(i, haplotype);
 		}
+//		storeEverything();
 	}
 	
 	
@@ -83,6 +85,7 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 			}
 			
 		}
+//		storeEverything();
 	}
 
 	
@@ -146,7 +149,13 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
     
 		
 	}
-
+	protected void storeEverything(){
+		for (int i = 0; i < getHaplotypeCount(); i++) {
+			Haplotype haplotype = getHaplotype(i);
+			haplotype.storeState();
+		}
+		
+	}
 	@Override
 	protected void storeState() {
 
@@ -163,10 +172,7 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 //			System.out.println("Init HaplotypeModel StoreState()");//FIXME: maybe not the best default option
 			break;
 		case FULL:
-			for (int i = 0; i < getHaplotypeCount(); i++) {
-				haplotype = getHaplotype(i);
-				haplotype.storeState();
-			}
+			storeEverything();
 			break;
 
 		case SINGLE:
@@ -222,7 +228,6 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 		if (DEBUG) {
 			System.out.println("RestoreState in HaplotypeModel:\t" + operation);
 		}
-//		System.out.println("zzzzRestore HaplotypeModel: "+operation);
 		switch (operation) {
 		
 		case NONE:
@@ -237,6 +242,7 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 		case SINGLE:
 			hapIndex = operationRecord.getSpectrumIndex();
 			siteIndex = operationRecord.getSingleIndex();
+//			System.out.println(hapIndex +"\t"+ siteIndex);
 			haplotype = getHaplotype(hapIndex);
 			haplotype.restoreState(siteIndex);
 			break;

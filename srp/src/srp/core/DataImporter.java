@@ -30,7 +30,8 @@ public class DataImporter {
 	protected String dataDir;
 	
 	public DataImporter(String dataDir){
-		if(dataDir.lastIndexOf(File.separator)!= dataDir.length()){
+
+		if(dataDir.lastIndexOf(File.separator)!= (dataDir.length()-1) ){
 			dataDir += File.separator;
 		}
 		this.dataDir = dataDir;
@@ -47,13 +48,20 @@ public class DataImporter {
 	
 	public Alignment importAlignment(String fileName) throws Exception{
 		
-		Alignment alignment = importAlignment(dataDir, fileName);
+		Alignment alignment;
+		if(fileName.indexOf(dataDir)!=-1){
+			alignment = importAlignment("", fileName);
+		}
+		else{
+			alignment = importAlignment(dataDir, fileName);
+		}
+		
 		return alignment;
 	}
 	
 	public Tree importTree(String fileName) throws Exception{
 		Tree tree;
-		if(fileName.indexOf(dataDir)==-1){
+		if(fileName.indexOf(dataDir)!=-1){
 			tree =  importTree("", fileName);
 		}
 		else{

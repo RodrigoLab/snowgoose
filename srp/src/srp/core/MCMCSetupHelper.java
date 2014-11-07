@@ -42,8 +42,11 @@ public class MCMCSetupHelper {
 	protected static final double opHuge = 60;
 	protected static final double opSpectrum =120;//150 works for beta and related, might be a bit too high?
 
+	public static MCMCOptions setMCMCOptions(int logInterval, int totalSamples){ 
+		return setMCMCOptions(logInterval, totalSamples, 1000, 1);
+	}
 
-	public static MCMCOptions setMCMCOptions(int logInterval, int totalSamples) {
+	public static MCMCOptions setMCMCOptions(int logInterval, int totalSamples, long fullEvaluationCount, int minOperatorCountForFullEvaluation) {
 	//		MCMCOptions options = new MCMCOptions();
 	//		options.setChainLength(logInterval * totalSamples);
 	//		options.setUseCoercion(false); // autoOptimize = true
@@ -52,8 +55,8 @@ public class MCMCSetupHelper {
 	//		options.setFullEvaluationCount((int) (logInterval*0.01));
 		
 		int coercionDelay = logInterval * totalSamples /100;
-		long fullEvaluationCount = 0; //TODO Change fullEvaCount >100
-		int minOperatorCountForFullEvaluation = 0;//TODO Change to >1
+//		long fullEvaluationCount = 0; //TODO Change fullEvaCount >100
+//		int minOperatorCountForFullEvaluation = 0;//TODO Change to >1
 		MCMCOptions options = new MCMCOptions(logInterval * totalSamples,
 				fullEvaluationCount, minOperatorCountForFullEvaluation,
 				MarkovChain.EVALUATION_TEST_THRESHOLD, false, coercionDelay,

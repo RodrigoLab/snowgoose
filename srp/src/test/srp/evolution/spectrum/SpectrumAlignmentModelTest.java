@@ -17,6 +17,7 @@ import srp.evolution.spectrum.SpectraParameter;
 import srp.evolution.spectrum.SpectraParameter.SpectraType;
 import srp.evolution.spectrum.Spectrum;
 import srp.evolution.spectrum.SpectrumAlignmentModel;
+import test.TestUtils;
 //import srp.spectrum.AbstractSpectra;
 //import srp.spectrum.AbstractSpectrum;
 import dr.evolution.alignment.Alignment;
@@ -28,7 +29,7 @@ public class SpectrumAlignmentModelTest {
 	@Before
 	public void createSpectrumAlignmentModel() throws Exception {
 
-		String dir = System.getProperty("user.dir")+File.separatorChar+"unittest"+File.separator;
+		String dir = TestUtils.getUnittestDir();
 		Alignment srpAlignment = DataImporter.importShortReads(dir, "HaplotypeModelTest_10_srp.fasta");
 
 		expectedSequences = new String[]{ 

@@ -33,6 +33,7 @@ import srp.dr.evolution.datatype.ShortReads;
 import srp.evolution.spectrum.AbstractSpectrumAlignmentModel;
 import srp.evolution.spectrum.Spectrum;
 import srp.evolution.spectrum.SpectrumAlignmentModel;
+import test.TestUtils;
 //import srp.haplotypes.Haplotype;
 //import srp.haplotypes.HaplotypeModel;
 import dr.evolution.alignment.Alignment;
@@ -62,7 +63,7 @@ public class AbstractSpectrumAlignmentModelTest {
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 
-		String dir = System.getProperty("user.dir")+File.separatorChar+"unittest"+File.separator;
+		String dir = TestUtils.getUnittestDir();
 		srpAlignment = DataImporter.importShortReads(dir, "HaplotypeModelTest_10_srp.fasta");
 
 		
