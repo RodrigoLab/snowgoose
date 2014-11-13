@@ -198,14 +198,15 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 			for (int i = 0; i < logBinomD.length; i++) { // i is the number of mismatches (error) E^i 
 				logBinomD[i] = ArithmeticUtils.binomialCoefficientLog(srLength, i)+i*LOG_ERROR_RATE+(srLength-i)*LOG_ONE_MINUS_ERROR_RATE;
 				
-//				binomD[i] = Math.exp(logBinomD[i])*20.0;
+//				binomD[i] = Math.exp(logBinomD[i])/sequenceCount;
+//				System.out.println(i +"\t"+ logBinomD[i] +"\t"+ Math.log(binomD[i]) +"\t"+ (logBinomD[i] - Math.log(sequenceCount)) );
 //				logBinomD[i] = Math.log(binomD[i]);
 //				System.out.println(i +"\t"+ logBinomD[i] +"\t"+ Math.exp(logBinomD[i]) );
+
 				scaledBinomD[i] = liS.scale(logBinomD[i]);
-				
 				sum += Math.exp(logBinomD[i]);
 			}
-//			System.out.println(s +"\t"+ sum);
+			System.out.println(s +"\t"+ sum);
 			scaledLogBinomialDesnity.put(srLength, scaledBinomD);
 		}
 		
