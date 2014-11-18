@@ -5,6 +5,8 @@ import java.math.MathContext;
 import java.util.Arrays;
 import java.util.HashMap;
 
+import javafx.scene.shape.CullFace;
+
 import javax.swing.text.TabableView;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -13,6 +15,7 @@ import org.apache.commons.math3.stat.StatUtils;
 import org.apache.commons.math3.util.ArithmeticUtils;
 
 import com.sun.org.glassfish.external.statistics.Stats;
+
 
 
 
@@ -79,8 +82,10 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 	@Deprecated protected StateLikelihood stateLikelihood;
 
 	public int globalCounter = 0;
-
 	public int globalCounter2 = 0;
+	public int globalCounter3 = 0;
+
+	public int globalCounter4 = 0;
 
 //	private BigDecimal[] sumBigDecSrp;
 //	private BigDecimal[] storedSumBigDecSrp;
@@ -307,13 +312,14 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 		int k = operationRecord.getSingleIndex();//AllSiteIndexs()[0];
 		
 		double currentLogLikelihood = getStoredLogLikelihood();
-
+		double currentLogLikelihoodBackup = currentLogLikelihood;
+		
 		Haplotype haplotype = alignmentModel.getHaplotype(j);
 		char oldChar = haplotype.getStoredChar(k);
 		char newChar = haplotype.getChar(k);
 		
 //		System.out.println(currentLogLikelihood +"\t" +globalCounter);
-
+globalCounter ++;
 		if(newChar!= oldChar){ 
 //		if(false){
 			for (int i : mapToSrpArray[k]){
@@ -321,69 +327,37 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 				int deltaDist = calculateDeltaDist(srpChar, newChar, oldChar);
 				
 				if (deltaDist != 0) {
-//					globalCounter ++;
+					
 					allDists[i][j] += deltaDist;
 					currentLogLikelihood = updateEachSrpAtIFull(i, currentLogLikelihood);
 				}
-//				if (deltaDist != 0) {
-//					Integer srpLength = allSrpLengthInteger[i];
-//					double[] logPD = scaledLogBinomialDesnity.get(srpLength);
-					
-//					allDists[i][j] += deltaDist;
-					
-//					sum = 0;
-//					for (int l = 0; l < sequenceCount; l++) {
-//						sum += logPD[allDists[i][l]];
-//					}
-//					currentLogLikelihood -= eachSrpLogLikelihood[i];
-//					eachSrpLogLikelihood[i] = LikelihoodScaler.getLogLikelihood(sum, LOG_C);
-//					
-////					eachSrpLogLikelihood[i] = liS.getLogLikelihood();//LiS
-//					currentLogLikelihood += eachSrpLogLikelihood[i];
-//					
-//					currentLogLikelihood = updateEachSrpAtI(i, currentLogLikelihood, (allDists[i][j]-deltaDist), (allDists[i][j]));
-//					currentLogLikelihood = updateEachSrpAtIFull(i, currentLogLikelihood);
-//					if (Double.isNaN(currentLogLikelihood)){
-//						System.out.println(allDists[i][j] +"\t"+ deltaDist);
-//						
-////						System.out.println(allDists[i][j] +"\t"+ deltaDist);
-////					}
-//					if(deltaDist == -1  && debug){
-//						double newSum = 0;
-//						double allLogSum = 0;
-////						BigDecimal newBd = new BigDecimal("0");
-////						newBd.setScale(100);
-////						Integer srpLength = allSrpLengthInteger[i];
-////						double[] logPD = scaledLogBinomialDesnity.get(srpLength);
-//						for (int l = 0; l < sequenceCount; l++) {
-////							newSum += allDists[i][l];
-//							newSum += logPD[allDists[i][l]];
-////							BigDecimal tempB = BigDecimal.valueOf( logPD[allDists[i][l]] );
-////							
-////							newBd = newBd.add(tempB);
-////							
-//						}
-//						System.out.println("new\t"+currentLogLikelihood +"\t"+ eachSrpLogLikelihood[i] ); 
-////						System.out.println(LikelihoodScaler.getLogLikelihood(sum, LOG_C) +"\t"+ bigDecEachSrpLogLikelihood[i].doubleValue() +"\t"+ bigDecEachSrpLogLikelihood[i].toPlainString());
-////						System.out.println(currentLogLikelihood +"\t"+ bigDecLikelihood.doubleValue() +"\t"+ bigDecLikelihood.toPlainString());
-////						System.out.println("===\t"+ newBd.doubleValue());
-//						double log2 = newSum*LOG_ERROR_RATE+(srpLength*sequenceCount-newSum)*LOG_ONE_MINUS_ERROR_RATE;
-////						System.out.println(liS.getLogLikelihood(bd.doubleValue(), LOG_C) +"\t"+ liS.getLogLikelihood(newBd.doubleValue(), LOG_C) );
-////						System.out.println(liS.getLogLikelihood(Double.valueOf(bd.toPlainString()), LOG_C) +"\t"+ liS.getLogLikelihood(Double.valueOf(newBd.toPlainString()), LOG_C) );
-//						System.out.println(allDists[i][j] +"\t"+  logPD[allDists[i][j]] +"\t"+ logPD[ (allDists[i][j]-deltaDist  )]);
-//						System.out.println(sumScaledSrpLogLikelihood[i] +"\t"+  storedSumScaledSrpLogLikelihood[i] +"\t");//storedBigDecLikelihood.toPlainString());
-//						
-//						System.out.println();
-//						System.out.println(LOG_C);
-//						System.exit(-1);
-//					}
 				
-//				}
-
+					
 			}
 		}
 		else{
+			
+		}
+		if (currentLogLikelihoodBackup != currentLogLikelihood ) 
+		{
+			double delta = (currentLogLikelihoodBackup - currentLogLikelihood);
+			double sum = 0;
 			globalCounter2 ++;
+			if(delta>0){
+				globalCounter3++;
+			}
+			else{
+				globalCounter4++;
+			}
+			for (int i : mapToSrpArray[k]){
+				char srpChar = allSrpChar2D[i][k];
+				int deltaDist = calculateDeltaDist(srpChar, newChar, oldChar);
+				sum += deltaDist;
+//				System.out.print(srpChar  +"\t");
+			}
+//			System.out.println("NOT Identical Likelihood " +"\t"+ oldChar +"\t"+ newChar +"\t"+ globalCounter2 +"/"+ globalCounter +"\t"+  delta );
+//			System.out.println(sum +"\n"+ globalCounter2 +"\t"+ globalCounter3 +"\t"+ globalCounter4);
+
 		}
 //		currentLogLikelihood = bigDecLikelihood.doubleValue();
 //		System.out.println(currentLogLikelihood);

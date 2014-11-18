@@ -7,22 +7,18 @@ import java.util.List;
 import srp.dr.ext.TreeLikelihoodExt;
 import srp.evolution.haplotypes.HaplotypeModel;
 import srp.evolution.shortreads.ShortReadMapping;
+import srp.operator.haplotypes.BaseSingleDataOperator;
 import srp.operator.haplotypes.BaseSingleOperator;
 import srp.operator.haplotypes.BasesConsecutiveOperator;
 import srp.operator.haplotypes.BasesMultiOperator;
-import srp.operator.haplotypes.BasesReplaceOperator;
 import srp.operator.haplotypes.BasesTransitionOperator;
 import srp.operator.haplotypes.BasesTransversionOperator;
-import srp.operator.haplotypes.ColumnOperator;
 import srp.operator.haplotypes.HaplotypeRecombinationOperator;
 import srp.operator.haplotypes.HaplotypeReplaceSectionOperator;
 import srp.operator.haplotypes.HaplotypeSwapSectionOperator;
 import srp.operator.haplotypes.NonUniqueBasesMultiOperator;
 import srp.operator.haplotypes.NonUniqueBasesTransitionOperator;
 import srp.operator.haplotypes.NonUniqueBasesTransversionOperator;
-import srp.operator.haplotypes.ParsimonyInformativeBasesMultiOperator;
-import srp.operator.haplotypes.UniqueBasesTransitionOperator;
-import srp.operator.haplotypes.UniqueBasesTransversionOperator;
 import dr.evolution.datatype.Nucleotides;
 import dr.evomodel.branchratemodel.StrictClockBranchRates;
 import dr.evomodel.operators.ExchangeOperator;
@@ -182,7 +178,12 @@ public class MCMCSetupHelperHaplotype extends MCMCSetupHelper {
 
 		operator = new BaseSingleOperator(haplotypeModel);
 		operator.setWeight(opHuge);
+//		schedule.addOperator(operator);
+		
+		operator = new BaseSingleDataOperator(haplotypeModel);
+		operator.setWeight(opHuge);
 		schedule.addOperator(operator);
+		
 		
 		operator = new BasesMultiOperator(haplotypeModel, 6, CoercionMode.COERCION_OFF);
 		operator.setWeight(opLarge/6.0);

@@ -6,9 +6,11 @@ import java.util.BitSet;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import srp.operator.haplotypes.AbstractHaplotypeOperator;
 import cern.colt.bitvector.BitVector;
 
 import com.google.common.primitives.Ints;
+import com.sun.org.apache.bcel.internal.generic.DNEG;
 
 import dr.evolution.alignment.Alignment;
 import dr.evolution.datatype.DataType;
@@ -39,7 +41,7 @@ public class ShortReadMapping {
 
 	private static final int GAP = '-';
 	private static final DataType DATA_TYPE = Nucleotides.INSTANCE;
-
+	public static final char[] DNA_CHARS = AbstractHaplotypeOperator.DNA_CHARS;
 	private static final double[] EQUAL_FREQ = new double[]{0.25, 0.5, 0.75, 1};
 	
 	private ArrayList<Integer>[] mapToSrp; // each [] = position, each ArrayList map to which read
@@ -108,7 +110,7 @@ public class ShortReadMapping {
 		createBitSetArray();
 		createSrpChar2DArray();
 		//calculated listOfAvailableChar(2)
-		calculateListOfAvailableChar(setsOfAvailableChar);
+		createListOfAvailableChar(setsOfAvailableChar);
 		calculateCumFreq();
 		//TODO removed these cause old unit test to fail
 
@@ -229,8 +231,8 @@ public class ShortReadMapping {
 		
 	}
 
-	@Deprecated
-	private void calculateListOfAvailableChar(HashSet<Character>[] setsOfAvailableChar) {
+//	@Deprecated
+	private void createListOfAvailableChar(HashSet<Character>[] setsOfAvailableChar) {
 		for (int i = 0; i < fullHaplotypeLength; i++) {
 			listOfAvailableChar[i] = new ArrayList<Character>(setsOfAvailableChar[i]);
 
@@ -372,20 +374,57 @@ public class ShortReadMapping {
 	public String getSrpName(int i) {
 		return shortReads.get(i).getName();
 	}
-
+	
 	public char getBaseAt(int s) {
-		int[] srpList = mapToSrpArray[s];
-//		System.out.println(s +"\t"+ Arrays.toString(srpList));
-		int state = 999;
+//		posChar[0] = MathUtils.nextInt(haplotypeLength);
+		int[] chars = listOfAvailableChar2.get(  s );
+		int size = chars.length;
+//		System.out.println(posChar[0] +"\t"+ Arrays.toString(chars) +"\t"+ size +"\t"+ posChar[1]);
+//		switch (size) {
+//		case 0:
+//			posChar[1] = GAP;
+//			break;
+//		case 1:
+//			posChar[1] = chars[0];
+//			break;
+//		case 2:
+//			boolean index = MathUtils.nextBoolean();
+//			if(index){
+//				posChar[1] = chars[0];
+//			}
+//			else{
+//				posChar[1] = chars[1];
+//			}
+//			break;
+//			
+//		default:
+//			posChar[1] = chars[ MathUtils.nextInt(size) ];
+//			break;
+//		}	
 		char newChar;
-		do{
-			int srpIndex = srpList[MathUtils.nextInt(srpList.length)];
-			newChar = srpChar2D[srpIndex][s];
-			state = Nucleotides.INSTANCE.getState(newChar);
-			System.out.println(s +"\t"+ newChar +"\t"+ state);
-		}while(state>3);
+		if (size != 0) {
+			
+			newChar = (char) chars[ MathUtils.nextInt(size) ];
+//			System.out.println(newChar +"\t"+ size +"\t"+ Arrays.toString(chars));
+//			newChar= DNA_CHARS[ chars[ MathUtils.nextInt(size) ] ];
+		}
+		else{
+			newChar = DNA_CHARS[ MathUtils.nextInt(4) ];
+		}
 		
 		return newChar;
+//		int[] srpList = mapToSrpArray[s];
+////		System.out.println(s +"\t"+ Arrays.toString(srpList));
+//		int state = 999;
+//		char newChar;
+//		do{
+//			int srpIndex = srpList[MathUtils.nextInt(srpList.length)];
+//			newChar = srpChar2D[srpIndex][s];
+//			state = Nucleotides.INSTANCE.getState(newChar);
+//			System.out.println(s +"\t"+ newChar +"\t"+ state);
+//		}while(state>3);
+//		
+//		return newChar;
 	}
 
 	public char[] getSemiRandHaplotype() {

@@ -29,6 +29,8 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 	private static final int STATE_COUTN = DATA_TYPE.getStateCount();
 
 	private static final boolean DEBUG = false;
+
+	private ShortReadMapping srpMap;
 //	private boolean DEBUG = true;
 
 	private void initHaplotypes() {
@@ -74,7 +76,10 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 //		}
 //	}
 
-	
+	public char getNextBaseFromSrpMap(int s){
+		char baseAt = srpMap.getBaseAt(s);
+		return baseAt;
+	}
 	public HaplotypeModel(int noOfRecoveredHaplotype, ShortReadMapping srpMap) {
 		this(noOfRecoveredHaplotype, srpMap.getLength());
 		for (int i = 0; i < sequenceCount; i++) {
@@ -85,6 +90,7 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 			}
 			
 		}
+		this.srpMap = srpMap;
 //		storeEverything();
 	}
 
