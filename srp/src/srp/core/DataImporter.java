@@ -14,6 +14,7 @@ import dr.evolution.alignment.Alignment;
 import dr.evolution.datatype.Nucleotides;
 import dr.evolution.io.FastaImporter;
 import dr.evolution.io.NewickImporter;
+import dr.evolution.io.NexusImporter;
 //import dr.evolution.io.Importer.ImportException;
 import dr.evolution.sequence.Sequence;
 import dr.evolution.sequence.SequenceList;
@@ -229,6 +230,7 @@ public class DataImporter {
 
 		BufferedReader in = new BufferedReader(new FileReader(filePath));
 		NewickImporter importer = new NewickImporter(in);
+//		NexusImporter importer = new NexusImporter(in);
 		Tree tree = importer.importTree(null);
 
 		return tree;

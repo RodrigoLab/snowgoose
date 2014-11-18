@@ -50,7 +50,7 @@ public class MCMCSetupHelperHaplotype extends MCMCSetupHelper {
 	public static HashMap<String, Object> setupTreeLikelihoodHaplotypeModel(TreeModel treeModel,
 			HaplotypeModel haplotypeModel, ShortReadMapping srpMap) {
 		
-		double errorRate = 0;//1e-5*3000*2;//FIXME: What should we set this ??
+		double errorRate = 0;//1e-5*1200*10;//FIXME: What should we set this ??
 		
 		// clock model
 		Parameter rateParameter = new Parameter.Default(StrictClockBranchRates.RATE, 1e-5, 0, 1);
@@ -219,11 +219,11 @@ public class MCMCSetupHelperHaplotype extends MCMCSetupHelper {
 		
 		operator = new NonUniqueBasesTransitionOperator(haplotypeModel, 1, CoercionMode.COERCION_OFF);
 		operator.setWeight(opSpectrum);
-		schedule.addOperator(operator);
+//		schedule.addOperator(operator);
 		
 		operator = new NonUniqueBasesTransversionOperator(haplotypeModel, 1, CoercionMode.COERCION_OFF);
 		operator.setWeight(opSpectrum);
-		schedule.addOperator(operator);
+//		schedule.addOperator(operator);
 		
 
 //		operator = new UniqueBasesTransitionOperator(haplotypeModel, 1, CoercionMode.COERCION_OFF);
@@ -246,7 +246,7 @@ public class MCMCSetupHelperHaplotype extends MCMCSetupHelper {
 		
 		operator = new HaplotypeSwapSectionOperator(haplotypeModel, 12, CoercionMode.COERCION_ON);
 		operator.setWeight(opMed);
-		schedule.addOperator(operator);
+//		schedule.addOperator(operator);
 		
 //		operator = new HaplotypeSwapSectionOperator(haplotypeModel, 60, CoercionMode.COERCION_OFF);
 //		operator.setWeight(opLarge/10);
@@ -267,13 +267,13 @@ public class MCMCSetupHelperHaplotype extends MCMCSetupHelper {
 		
 		operator = new HaplotypeRecombinationOperator(haplotypeModel, 0, CoercionMode.COERCION_OFF);
 		operator.setWeight(opSmall);
-		schedule.addOperator(operator);
+//		schedule.addOperator(operator);
 
 //		operator = new ColumnOperator(haplotypeModel, 7, CoercionMode.COERCION_OFF);
 //		operator.setWeight(opLarge);
 //		schedule.addOperator(operator);
-		
-		
+		boolean addOtherOps = false;
+		if(addOtherOps){
 		for (Parameter parameter : parameters) {
 
 			String parameterName = parameter.getParameterName();
@@ -289,25 +289,6 @@ public class MCMCSetupHelperHaplotype extends MCMCSetupHelper {
 				operator.setWeight(opTiny);
 				schedule.addOperator(operator);
 				
-//						operator = new BaseSingleFrequencyOperator(haplotypeModel, parameter);
-//						operator.setWeight(opMed);
-//						schedule.addOperator(operator);
-//						
-
-				
-//						operator = new SwitchBaseFrequencyOperator(haplotypeModel, 0.8, 
-//								parameter, CoercionMode.COERCION_ON);
-//						operator.setWeight(opMed);
-//						schedule.addOperator(operator);
-				
-				//good seq: low (switch) prob, most accepted with same posterior
-				//			high switchProb, low accept, but with diff posterior
-				//bad seq: high (switchProb), accept with different posterior
-				//			low switch,  accept with same post
-				
-//				operator = new SingleBaseFrequencyOperator(haplotypeModel, parameter);
-//				operator.setWeight(opMed);
-////				schedule.addOperator(operator);
 			}
 			else if("populationSize".equals(parameterName)){
 				operator = new ScaleOperator(parameter, 0.75);
@@ -316,7 +297,7 @@ public class MCMCSetupHelperHaplotype extends MCMCSetupHelper {
 			}
 			
 		}
-		
+		}
 		return null;
 	}
 

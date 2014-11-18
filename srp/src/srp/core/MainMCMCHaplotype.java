@@ -65,56 +65,63 @@ public class MainMCMCHaplotype {
 		int logInterval;
 		int noOfTrueHaplotype;
 		int noOfRecoveredHaplotype;
-		boolean randomTree = true;
+		boolean randomTree = false;
 		boolean randomHaplotype = true;
-
+		String inputReadSuffix = "";
 		
 		boolean isLocal = false;
 //		commandLine = false;
 		
-		if(args.length ==6){
+		if(args.length == 7){
 			dataDir = args[0];
 			runIndex = Integer.parseInt(args[1]);
 			totalSamples = Integer.parseInt(args[2]);
 			logInterval = Integer.parseInt(args[3]);
 			noOfTrueHaplotype = Integer.parseInt(args[4]);
 			noOfRecoveredHaplotype= Integer.parseInt(args[5]);
+			inputReadSuffix= (args[6]);
+			if(!inputReadSuffix.equals("ART") && !inputReadSuffix.equals("ART_errFree") && !inputReadSuffix.equals("Shrimp") ){
+				System.out.println("Invalid input: InputSuffix should be one of [ART|ART_errFree|Shrimp]");
+				System.exit(-3);
+			}
 		}
 		
 		else{	
 			System.out.println("local parameters");
 			isLocal = true;
 			dataDir = "/home/steven/workspaceSrp/snowgoose/srp/unittest/testData/";
-			runIndex = 51;
-			dataDir += "H7_"+runIndex+"/";
+			runIndex = 0;
+//			dataDir += "H10_"+runIndex+"/";
+			dataDir += "H10_"+runIndex+"/";
 			//TODO: local control
-			totalSamples = 1000	;
-			logInterval  = 2000 ;
+			totalSamples = 100	;
+			logInterval  = 10000 ;
 			
-			randomTree = true;
+			randomTree = false;
 			randomHaplotype = true;
 			
 //			randomTree = false;
-			randomHaplotype = false;
+//			randomHaplotype = false;
 			
-			
-			noOfTrueHaplotype = 7;
-			noOfRecoveredHaplotype=7;
+			inputReadSuffix = "ART";
+			noOfTrueHaplotype = 10;
+			noOfRecoveredHaplotype=10;
 		}
 		
 		String hapRunIndex = "H"+noOfTrueHaplotype+"_"+runIndex;
-		String shortReadFile = hapRunIndex +"_Srp.fasta";
-		String trueHaplotypeFile = hapRunIndex +"_Srp_fullHaplotype.fasta";
+//		String shortReadFile = hapRunIndex +"_Srp.fasta";
+		String shortReadFile = hapRunIndex +"_ShortRead_"+inputReadSuffix+".fasta";
+		String trueHaplotypeFile = hapRunIndex +"_FullHaplotype.fasta";
 //		shortReadFile = trueHaplotypeFile;//TODO Remove later. Full test on this later
 		
-		String prefix = dataDir+"FullTree_"+hapRunIndex;
+		String prefix = dataDir+"Result_"+hapRunIndex;
 		String logTracerName = prefix+".log";
 		String logTreeName = prefix+".trees";
 		String logHaplotypeName = prefix+".haplotype";
 		String operatorAnalysisFile = prefix+"_operatorAnalysisFile.txt";
 		
 //		
-		
+		System.out.println("Input reads file: "+shortReadFile);
 		DataImporter dataImporter = new DataImporter(dataDir);
 
 		Alignment shortReads = dataImporter.importShortReads(shortReadFile);
@@ -129,7 +136,8 @@ public class MainMCMCHaplotype {
 			haplotypeModel = new HaplotypeModel(noOfRecoveredHaplotype, srpMap);
 		}
 		else{
-			String partialHaplotypeName = prefix+".haplotypepartial";
+//			String partialHaplotypeName = prefix+".haplotypepartial";
+			String partialHaplotypeName ="H10_0_FullHaplotype.fasta";
 //			Alignment trueAlignment = dataImporter.importAlignment(trueHaplotypeFile);
 			Alignment trueAlignment = dataImporter.importAlignment(partialHaplotypeName);
 			haplotypeModel = new HaplotypeModel(trueAlignment);
@@ -154,7 +162,8 @@ public class MainMCMCHaplotype {
 		else{
 			
 //			String partialTreeName = prefix+".treespartial";
-			String partialTreeName = prefix+".tree";
+//			String partialTreeName = prefix+".trees";
+			String partialTreeName = "H10_0_FullTree.tree";
 			System.out.println("load tree: "+ partialTreeName);
 			Tree partialPhylogeny = dataImporter.importTree(partialTreeName);
 			treeModel = new TreeModel(TreeModel.TREE_MODEL, partialPhylogeny, false);
@@ -171,7 +180,8 @@ public class MainMCMCHaplotype {
 		Parameter freqs = (Parameter) parameterList.get("freqs");
 		StrictClockBranchRates branchRateModel = (StrictClockBranchRates) parameterList.get("branchRateModel");
 		TreeLikelihoodExt treeLikelihood = (TreeLikelihoodExt) parameterList.get("treeLikelihood");
-				
+//		TreeLikelihoodExt treeLikelihood = null; 
+
 		// CompoundLikelihood
 		HashMap<String, Likelihood> compoundlikelihoods = MCMCSetupHelperHaplotype
 				.setupCompoundLikelihood(popSize, kappa, coalescent,
@@ -180,13 +190,14 @@ public class MainMCMCHaplotype {
 		Likelihood likelihood = compoundlikelihoods.get(CompoundLikelihoodParser.LIKELIHOOD);
 		Likelihood shortReadLikelihood = compoundlikelihoods.get(AbstractShortReadsLikelihood.SHORT_READ_LIKELIHOOD);
 		Likelihood posterior = compoundlikelihoods.get(CompoundLikelihoodParser.POSTERIOR);
+
 		
 		Parameter rootHeight = treeModel.getRootHeightParameter();
 		rootHeight.setId("rootHeight");
 		// Operators
 		OperatorSchedule schedule = new SimpleOperatorSchedule();
 		if(randomTree){
-			MCMCSetupHelperHaplotype.defalutTreeOperators(schedule, treeModel);
+//			MCMCSetupHelperHaplotype.defalutTreeOperators(schedule, treeModel);
 		}
 		
 		double total = 0;
@@ -213,7 +224,8 @@ public class MainMCMCHaplotype {
 		// log tracer
 		loggers[0] = new MCLogger(logTracerName, logInterval, false, 0);
 		MCMCSetupHelperHaplotype.addToLogger(loggers[0], 
-				posterior, prior, likelihood, 
+				posterior, prior, 
+				likelihood, 
 				shortReadLikelihood,
 				rootHeight, 
 				//rateParameter,
@@ -224,7 +236,8 @@ public class MainMCMCHaplotype {
 		loggers[1] = new MCLogger(new TabDelimitedFormatter(System.out), logInterval, true, logInterval*2);
 		MCMCSetupHelperHaplotype.addToLogger(loggers[1],
 //				freqs
-				posterior, prior, likelihood, 
+				posterior, prior,
+				likelihood, 
 				shortReadLikelihood,
 				popSize, kappa, coalescent, rootHeight
 				);
