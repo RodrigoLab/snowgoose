@@ -45,9 +45,9 @@ public class HaplotypeLoggerWithTrueHaplotype extends HaplotypeLogger{
 						.append(alignment.getAlignedSequenceString(i))
 						.append("\n");
 			}
-//			buffer.append(SPSDist.calculeteSPSArrayString(alignment, trueAlignment));
-//			buffer.append("\n");
-//			buffer.append(SPSDist.calculeteSPSArrayString(alignment, alignment));
+			buffer.append(SPSDist.calculeteSPSArrayString(alignment, trueAlignment));
+			buffer.append("\n");
+			buffer.append(SPSDist.calculeteSPSArrayString(alignment, alignment));
 			buffer.append("[DoubleMatrix]\n");
 			buffer.append(SPSDist.calculeteSPSArrayStringFormat(doubleAlignment, doubleAlignment));
 			logLine(buffer.toString());

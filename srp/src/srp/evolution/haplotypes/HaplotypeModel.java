@@ -477,6 +477,11 @@ System.out.println((time2 - time1) + "\t");
 
 	@Deprecated AlignmentMapping aMap;
 
+	public void addShortReadMap(ShortReadMapping srpMap) {
+		this.srpMap = srpMap;
+		
+	}
+
 
 	
 }
