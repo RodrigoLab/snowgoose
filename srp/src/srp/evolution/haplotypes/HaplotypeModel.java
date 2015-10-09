@@ -1,6 +1,7 @@
 package srp.evolution.haplotypes;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import jebl.evolution.sequences.Sequence;
@@ -75,26 +76,32 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 //			
 //		}
 //	}
+	
+	public HaplotypeModel(int noOfRecoveredHaplotype, ShortReadMapping srpMap) {
+			this(noOfRecoveredHaplotype, srpMap.getLength());
+			for (int i = 0; i < sequenceCount; i++) {
+				Haplotype haplotype = getHaplotype(i);
+				char[] randHap = srpMap.getSemiRandHaplotype();
+				for (int s = 0; s < sequenceLength; s++) {
+					haplotype.setCharAt(s, randHap[s]);
+				}
+				
+			}
+			this.srpMap = srpMap;
+	//		storeEverything();
+		}
 
+	public  ArrayList<Integer> getGetMapToSrpAt(int pos){
+		return srpMap.getMapToSrp(pos);
+	}
+	
+	public ArrayList<int[]> getListOfAvailableChar2(){
+		return srpMap.getListOfAvailableChar2();
+	}
 	public char getNextBaseFromSrpMap(int s){
 		char baseAt = srpMap.getBaseAt(s);
 		return baseAt;
 	}
-	public HaplotypeModel(int noOfRecoveredHaplotype, ShortReadMapping srpMap) {
-		this(noOfRecoveredHaplotype, srpMap.getLength());
-		for (int i = 0; i < sequenceCount; i++) {
-			Haplotype haplotype = getHaplotype(i);
-			char[] randHap = srpMap.getSemiRandHaplotype();
-			for (int s = 0; s < sequenceLength; s++) {
-				haplotype.setCharAt(s, randHap[s]);
-			}
-			
-		}
-		this.srpMap = srpMap;
-//		storeEverything();
-	}
-
-	
 	public int calculateSPS(){//TODO test this
 		return SPSDist.calculeteSPS(this, this);
 	}
@@ -378,6 +385,7 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 		return haplotypeModel;
 
 	}	
+	
 //XXX not used after this
 	public double getLogqFrequency(int oldChar, int newChar){
 		return storedLogqMatrix[NUCLEOTIDE_STATES[oldChar]][NUCLEOTIDE_STATES[newChar]];
@@ -476,10 +484,16 @@ System.out.println((time2 - time1) + "\t");
 	private double[][] storedLogqMatrix = new double[4][4];
 
 	@Deprecated AlignmentMapping aMap;
-
+	
+	@Deprecated
 	public void addShortReadMap(ShortReadMapping srpMap) {
 		this.srpMap = srpMap;
 		
+	}
+
+	public ShortReadMapping getShortReadMapping() {
+		
+		return srpMap;
 	}
 
 

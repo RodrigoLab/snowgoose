@@ -135,7 +135,6 @@ public class MCMCSetupHelper {
 
 	public static MCLogger addToLogger(MCLogger mcLogger, Loggable... loggableParameter) {
 		for (Loggable loggable : loggableParameter) {
-			System.out.println(loggable);
 			mcLogger.add(loggable);
 		}
 		return mcLogger;

@@ -273,7 +273,7 @@ public class MCMCSetupHelperHaplotype extends MCMCSetupHelper {
 //		operator = new ColumnOperator(haplotypeModel, 7, CoercionMode.COERCION_OFF);
 //		operator.setWeight(opLarge);
 //		schedule.addOperator(operator);
-		boolean addOtherOps = false;
+		boolean addOtherOps = true;
 		if(addOtherOps){
 		for (Parameter parameter : parameters) {
 

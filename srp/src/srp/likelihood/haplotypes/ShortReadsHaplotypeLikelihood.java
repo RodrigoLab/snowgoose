@@ -215,7 +215,7 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 //							* LOG_RANDOM_RATE
 //							+ (srLength - i)
 //							* LOG_ONE_MINUS_RANDOM_RATE;
-					
+//					
 //					logBinomD[i] = Math.log( Math.exp(logBinomD[i])*1/10 + Math.exp(temp)*9/10);
 //					binomD[i] = Math.exp(logBinomD[i])/sequenceCount;
 //					logBinomD[i] = Math.log(binomD[i]);
@@ -287,8 +287,8 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 //			bigDecLikelihood = bigDecLikelihood.add(bigDecEachSrpLogLikelihood[i]);
 			logLikelihood += eachSrpLogLikelihood[i];
 		}
-		System.out.println(logLikelihood );
-		System.out.println(overallSumDist +"\t"+ srpCount +"\t");
+		System.out.println("LogLikelihood: "+logLikelihood );
+//		System.out.println(overallSumDist +"\t"+ srpCount +"\t");
 		
 		return logLikelihood;
 	}

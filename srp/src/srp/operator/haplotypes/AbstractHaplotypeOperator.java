@@ -2,6 +2,7 @@ package srp.operator.haplotypes;
 
 import srp.evolution.OperationType;
 import srp.evolution.haplotypes.HaplotypeModel;
+import srp.evolution.shortreads.ShortReadMapping;
 import dr.evolution.datatype.DataType;
 import dr.evolution.datatype.Nucleotides;
 import dr.inference.operators.AbstractCoercableOperator;
@@ -17,12 +18,13 @@ public abstract class AbstractHaplotypeOperator extends AbstractCoercableOperato
 	public final int haplotypeCount;
 	public final int haplotypeLength;
 	protected HaplotypeModel haplotypeModel;
-
+	protected ShortReadMapping srpMap;
+	
 	public AbstractHaplotypeOperator(HaplotypeModel haplotypeModel) {
-		super(CoercionMode.COERCION_OFF);
-		this.haplotypeModel = haplotypeModel;
-		haplotypeCount = this.haplotypeModel.getHaplotypeCount();
-		haplotypeLength = this.haplotypeModel.getHaplotypeLength();
+		this(haplotypeModel, CoercionMode.COERCION_OFF);
+//		this.haplotypeModel = haplotypeModel;
+//		haplotypeCount = this.haplotypeModel.getHaplotypeCount();
+//		haplotypeLength = this.haplotypeModel.getHaplotypeLength();
 	}
 
 	public AbstractHaplotypeOperator(HaplotypeModel haplotypeModel,
@@ -31,6 +33,7 @@ public abstract class AbstractHaplotypeOperator extends AbstractCoercableOperato
 		this.haplotypeModel = haplotypeModel;
 		haplotypeCount = this.haplotypeModel.getHaplotypeCount();
 		haplotypeLength = this.haplotypeModel.getHaplotypeLength();
+		srpMap = this.haplotypeModel.getShortReadMapping();
 	}
 
 	public int getNextHapIndex() {

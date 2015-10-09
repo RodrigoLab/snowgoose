@@ -66,7 +66,7 @@ public class MainMCMCHaplotype {
 		int noOfTrueHaplotype;
 		int noOfRecoveredHaplotype;
 		boolean randomTree = false;
-		boolean randomHaplotype = true;
+		boolean randomHaplotype = false;
 		String inputReadSuffix = "";
 		
 		boolean isLocal = false;
@@ -95,13 +95,13 @@ public class MainMCMCHaplotype {
 			dataDir += "H10_"+runIndex+"/";
 			//TODO: local control
 			totalSamples = 500	;
-			logInterval  = 1000 ;
+			logInterval  = 10000 ;
 			
 			randomTree = false;
 			randomHaplotype = true;
 			
 //			randomTree = false;
-//			randomHaplotype = false;
+			randomHaplotype = false;
 			
 			inputReadSuffix = "ART";
 			noOfTrueHaplotype = 10;
@@ -120,22 +120,26 @@ public class MainMCMCHaplotype {
 		String logHaplotypeName = prefix+".haplotype";
 		String operatorAnalysisFile = prefix+"_operatorAnalysisFile.txt";
 		
-//		
+		
 		System.out.println("Input reads file: "+shortReadFile);
 		DataImporter dataImporter = new DataImporter(dataDir);
 
 		Alignment shortReads = dataImporter.importShortReads(shortReadFile);
 		ShortReadMapping srpMap = new ShortReadMapping(shortReads);
 
-
+//		srpMap.summary();
+//		for (int i = 0; i < 10; i++) {
+//			System.out.println((char)srpMap.nextBaseAt(100));
+//		}
+//		System.exit(10);
 		
 		HaplotypeModel haplotypeModel = null;
 		
 		if(randomHaplotype){
 //			haplotypeModel = new HaplotypeModel(noOfRecoveredHaplotype, shortReads.getSiteCount());
 			haplotypeModel = new HaplotypeModel(noOfRecoveredHaplotype, srpMap);
-			haplotypeModel = new HaplotypeModel(noOfRecoveredHaplotype, shortReads.getSiteCount());
-			haplotypeModel.addShortReadMap(srpMap);
+//			haplotypeModel = new HaplotypeModel(noOfRecoveredHaplotype, shortReads.getSiteCount());
+//			haplotypeModel.addShortReadMap(srpMap);
 		}
 		else{
 //			String partialHaplotypeName = prefix+".haplotypepartial";
@@ -143,7 +147,7 @@ public class MainMCMCHaplotype {
 //			Alignment trueAlignment = dataImporter.importAlignment(trueHaplotypeFile);
 			Alignment trueAlignment = dataImporter.importAlignment(partialHaplotypeName);
 			haplotypeModel = new HaplotypeModel(trueAlignment);
-			
+			haplotypeModel.addShortReadMap(srpMap);
 //			haplotypeModel = dataImporter.importPartialSpectrumFile(partialHaplotypeName);
 		}
 

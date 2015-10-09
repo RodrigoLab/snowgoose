@@ -1,5 +1,10 @@
 package srp.operator.haplotypes;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
+import javax.swing.plaf.synth.SynthSeparatorUI;
+
 import srp.dr.evolution.datatype.ShortReads;
 import srp.evolution.OperationType;
 import srp.evolution.haplotypes.Haplotype;
@@ -27,22 +32,47 @@ public class BaseSingleDataOperator extends AbstractSingleOperator {
 		haplotypeModel.startAlignmentModelOperation();
 
 		int hapIndex = getNextHapIndex();
-		int siteIndex = getNextSiteIndex();
-//		int hapIndex = 1;
-//		int siteIndex = 1;
-
-
 		Haplotype haplotype = haplotypeModel.getHaplotype(hapIndex);
-		int oldState = haplotype.getState(siteIndex);
+		
+		ArrayList<int[]> listOfAvailableChar2 = haplotypeModel.getListOfAvailableChar2();
+		
+
+		
+//	
+		int siteIndex;
+		char newChar = '-';
+//		siteIndex = getNextSiteIndex();
+		boolean notFound = true;
+		do{
+			siteIndex = getNextSiteIndex();
+			int oldState = haplotype.getState(siteIndex);
+			int[] chars = listOfAvailableChar2.get(  siteIndex );
+			int size = chars.length;
+			
+			if(size > 1){
+				newChar = (char) chars[ MathUtils.nextInt(size) ];
+				if(newChar != DNA_CHARS[oldState]){
+					notFound = false;
+				}
+			}
+//		else{
+//			newChar = DNA_CHARS[ MathUtils.nextInt(4) ];
+//		}
+		
+		
 //		char newChar = getNextDiffBase(oldState);
 //		char newChar = 'A';
-		char newChar = haplotypeModel.getNextBaseFromSrpMap(siteIndex);
-		
+		} while(notFound);
 		
 //		newChar = getNextBase();
 //		if(MathUtils.nextDouble()< 0.5){
 //			newChar = cheat[hapIndex].charAt(siteIndex);
 //		}
+		
+//		haplotypeModel.getGetMapToSrpAt(siteIndex);
+//		newChar = (char) srpMap.nextBaseAt(siteIndex);
+		newChar = srpMap.nextBaseFreqAt(siteIndex);
+//		System.out.println(newChar);
 		haplotype.setCharAt(siteIndex, newChar);
 		haplotypeModel.setOperationRecord(OP, hapIndex, siteIndex);
 

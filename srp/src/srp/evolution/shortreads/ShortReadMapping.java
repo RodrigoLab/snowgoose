@@ -67,6 +67,12 @@ public class ShortReadMapping {
 	private char[][] srpChar2D;
 	private Integer[] allSrpLengthInteger;
 	
+	private double[][] srpCumFreqArray;
+	
+	private boolean isMinProp = true;
+	private double minPercentage = 1; 
+	
+	
 	private void init(int l) {
 		fullHaplotypeLength = l;
 		srpCount = 0;
@@ -97,7 +103,8 @@ public class ShortReadMapping {
 		
         int[][] frequencies = new int[fullHaplotypeLength][DATA_TYPE.getAmbiguousStateCount()];
 
-
+        srpCumFreqArray = new double[fullHaplotypeLength]['U'];
+        
 		for (int i = 0; i < srpAlignment.getSequenceCount(); i++) {
 			Sequence s = srpAlignment.getSequence(i);
 			addSequence(s, setsOfAvailableChar, frequencies);
@@ -112,10 +119,64 @@ public class ShortReadMapping {
 		//calculated listOfAvailableChar(2)
 		createListOfAvailableChar(setsOfAvailableChar);
 		calculateCumFreq();
+		createCumFreqArray();
 		//TODO removed these cause old unit test to fail
 
 	}
 	
+	private void createCumFreqArray() {
+
+//		String[] srpArray = getSrpArray();
+//		srpCumFreqArray = new double[fullHaplotypeLength][4];
+//		for
+		
+		for (int i = 0; i < srpCumFreqArray.length; i++) {
+			srpCumFreqArray[i]  = new double[] {
+					srpCumFreqArray[i]['A'], srpCumFreqArray[i]['C'], 
+					srpCumFreqArray[i]['G'], srpCumFreqArray[i]['T'] };
+			
+			if(isMinProp){
+				
+				int numZero = 0;
+				double sum = 0;
+				for (int j = 0; j < srpCumFreqArray[i].length; j++) {
+					sum += srpCumFreqArray[i][j];
+					if( srpCumFreqArray[i][j] == 0 ){
+						numZero++;
+					}
+				}
+				
+				double zeroModifier = minPercentage *sum / (100-numZero*minPercentage ); 
+				sum += (zeroModifier* numZero);
+				for (int j = 0; j < srpCumFreqArray[i].length; j++) {
+					if( srpCumFreqArray[i][j] == 0 ){
+						srpCumFreqArray[i][j] = zeroModifier;
+					}
+					srpCumFreqArray[i][j] /= sum;
+				}
+				for (int j = 1; j < srpCumFreqArray[i].length; j++) {
+					srpCumFreqArray[i][j] = srpCumFreqArray[i][j] + srpCumFreqArray[i][j-1];
+				}
+//				srpCumFreqArray[i][3]=1;
+			}
+			else{
+				
+				for (int j = 1; j < srpCumFreqArray[i].length; j++) {
+					srpCumFreqArray[i][j] = srpCumFreqArray[i][j] + srpCumFreqArray[i][j-1];
+				}
+				double sum = srpCumFreqArray[i][3];
+				
+				for (int j = 0; j < srpCumFreqArray[i].length; j++) {
+					srpCumFreqArray[i][j] /= sum;  
+				}
+			}
+			System.out.println(Arrays.toString(srpCumFreqArray[i]));
+
+		}
+		
+	
+	}
+
 	private void createBitSetArray() {
 		bitSetArray = new BitSet[mapToSrp.length];
 		bitVectorArray = new BitVector[mapToSrp.length];
@@ -298,6 +359,7 @@ public class ShortReadMapping {
 					setsOfAvailableChar[j].add(c);
 					frequencies[j][state] += 1;
 					cumFreq[c]++;
+					srpCumFreqArray[j][c]++;
 				}
 			}
 			srpCount++;
@@ -374,34 +436,20 @@ public class ShortReadMapping {
 	public String getSrpName(int i) {
 		return shortReads.get(i).getName();
 	}
+	public ArrayList<int[]> getListOfAvailableChar2(){
+		return listOfAvailableChar2;
+	}
 	
 	public char getBaseAt(int s) {
 //		posChar[0] = MathUtils.nextInt(haplotypeLength);
 		int[] chars = listOfAvailableChar2.get(  s );
 		int size = chars.length;
 //		System.out.println(posChar[0] +"\t"+ Arrays.toString(chars) +"\t"+ size +"\t"+ posChar[1]);
-//		switch (size) {
-//		case 0:
-//			posChar[1] = GAP;
-//			break;
-//		case 1:
-//			posChar[1] = chars[0];
-//			break;
-//		case 2:
-//			boolean index = MathUtils.nextBoolean();
-//			if(index){
-//				posChar[1] = chars[0];
-//			}
-//			else{
-//				posChar[1] = chars[1];
-//			}
-//			break;
-//			
-//		default:
-//			posChar[1] = chars[ MathUtils.nextInt(size) ];
-//			break;
-//		}	
 		char newChar;
+//		if(size < 2){
+//			return '-';
+//		}
+		
 		if (size != 0) {
 			
 			newChar = (char) chars[ MathUtils.nextInt(size) ];
@@ -495,8 +543,37 @@ public class ShortReadMapping {
 		return randChar;
 	}
 
+	public void summary() {
+//		System.out.println(toString());
+		System.out.println(Arrays.toString(cumFreq));
+//		System.out.println(Arrays.toString(consensus));
+//		System.out.println(Arrays.toString(srpArray));
+//		System.out.println(Arrays.toString(mapToSrpArray[0]));
+		System.out.println(Arrays.toString(srpChar2D[0]));
+		Integer[] x = new Integer[100];
+		ArrayList<Character> aa = listOfAvailableChar[100];
+		for (Character character : aa) {
+			System.out.println(character);
+		}
+//		System.out.println(Arrays.toString(x));
+		
+		int[] aa2 = listOfAvailableChar2.get(100);
+		System.out.println(Arrays.toString(aa2));
+		
+	}
+
 //
-//	protected int nextBaseAt(int pos){
+	public int nextBaseAt(int pos){
+		int newChar = GAP;
+		int size = mapToSrp[pos].size();
+		if (size != 0) {
+			int srpIndex = mapToSrp[pos].get(MathUtils.nextInt(size));
+			newChar = getShortReadCharAt(srpIndex, pos);
+		}
+		
+		return newChar;
+	}
+	public char nextBaseFreqAt(int pos){
 //		int newChar = GAP;
 //		int size = mapToSrp[pos].size();
 //		if (size != 0) {
@@ -504,9 +581,17 @@ public class ShortReadMapping {
 //			newChar = getShortReadCharAt(srpIndex, pos);
 //		}
 //		
-//		return newChar;
-//	}
+		double d = MathUtils.nextDouble();
+		for (int i = 0; i < 3; i++) {
+			if (d <= srpCumFreqArray[pos][i]) {
+				return DNA_CHARS[i];
+//				return DATA_TYPE.getChar(i); //TODO: test
+			}
+		}
+		return DNA_CHARS[3];
 
+		//		return newChar;
+	}
 //
 //	public int[] getNextBase() {
 //
