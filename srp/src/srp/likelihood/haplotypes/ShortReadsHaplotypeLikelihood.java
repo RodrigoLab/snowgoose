@@ -201,7 +201,7 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 			double[] binomD = new double[srLengthPlusOne];
 			double[] logBinomD = new double[srLengthPlusOne];
 			double[] scaledBinomD = new double[srLengthPlusOne];
-			double sum=0;
+//			double sum=0;
 			
 			if(!scaledLogBinomialDesnity.containsKey(srLength))
 			{
@@ -225,11 +225,11 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 //					logBinomD[i] = Math.log(binomD[i]);
 //					System.out.println(i +"\t"+ logBinomD[i] +"\t"+ Math.log(binomD[i]) +"\t"+ (logBinomD[i] - Math.log(sequenceCount)) );
 //				logBinomD[i] = Math.log(binomD[i]);
-					
+				
 	
 					scaledBinomD[i] = liS.scale(logBinomD[i]);
 //					System.out.println(i +"\t"+ srLength +"\t"+ logBinomD.length +"\t"+ logBinomD[i] +"\t"+ Math.exp(logBinomD[i]) +"\t"+ scaledBinomD[i]);
-					sum += Math.exp(logBinomD[i]);
+//					sum += Math.exp(logBinomD[i]);
 				}
 			
 			
@@ -245,7 +245,7 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
     
 	protected double calculateSrpLikelihoodFull() {
 
-		System.out.println("calculateSrpLikelihood_Full");
+//		System.out.println("calculateSrpLikelihood_Full");
 		double logLikelihood = 0;
 //		bigDecLikelihood = new BigDecimal("0");
 		double overallSumDist = 0;
@@ -287,7 +287,7 @@ public class ShortReadsHaplotypeLikelihood  extends AbstractShortReadsLikelihood
 //			bigDecLikelihood = bigDecLikelihood.add(bigDecEachSrpLogLikelihood[i]);
 			logLikelihood += eachSrpLogLikelihood[i];
 		}
-		System.out.println("LogLikelihood: "+logLikelihood );
+//		System.out.println("LogLikelihood: "+logLikelihood );
 //		System.out.println(overallSumDist +"\t"+ srpCount +"\t");
 		
 		return logLikelihood;

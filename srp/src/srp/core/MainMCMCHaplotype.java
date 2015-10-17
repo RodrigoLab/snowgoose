@@ -65,8 +65,8 @@ public class MainMCMCHaplotype {
 		int logInterval;
 		int noOfTrueHaplotype;
 		int noOfRecoveredHaplotype;
-		boolean randomTree = false;
-		boolean randomHaplotype = false;
+		boolean randomTree = true;
+		boolean randomHaplotype = true;
 		String inputReadSuffix = "";
 		
 		boolean isLocal = false;
@@ -97,11 +97,11 @@ public class MainMCMCHaplotype {
 			totalSamples = 500	;
 			logInterval  = 10000 ;
 			
-			randomTree = false;
+			randomTree = true;
 			randomHaplotype = true;
 			
 //			randomTree = false;
-			randomHaplotype = false;
+//			randomHaplotype = false;
 			
 			inputReadSuffix = "ART";
 			noOfTrueHaplotype = 10;
@@ -114,7 +114,7 @@ public class MainMCMCHaplotype {
 		String trueHaplotypeFile = hapRunIndex +"_FullHaplotype.fasta";
 //		shortReadFile = trueHaplotypeFile;//TODO Remove later. Full test on this later
 		
-		String prefix = dataDir+"Result_"+hapRunIndex;
+		String prefix = dataDir+"_Result_"+hapRunIndex;
 		String logTracerName = prefix+".log";
 		String logTreeName = prefix+".trees";
 		String logHaplotypeName = prefix+".haplotype";
@@ -203,9 +203,9 @@ public class MainMCMCHaplotype {
 		// Operators
 		OperatorSchedule schedule = new SimpleOperatorSchedule();
 		if(randomTree){
-//			MCMCSetupHelperHaplotype.defalutTreeOperators(schedule, treeModel);
+			MCMCSetupHelperHaplotype.defalutTreeOperators(schedule, treeModel);
 		}
-		MCMCSetupHelperHaplotype.defalutTreeOperators(schedule, treeModel);
+//		MCMCSetupHelperHaplotype.defalutTreeOperators(schedule, treeModel);
 		
 		double total = 0;
 		for (int i = 0; i < schedule.getOperatorCount(); i++) {
