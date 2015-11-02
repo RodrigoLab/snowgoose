@@ -45,15 +45,15 @@ public class BaseSingleDataOperator extends AbstractSingleOperator {
 		boolean notFound = true;
 		do{
 			siteIndex = getNextSiteIndex();
-			int oldState = haplotype.getState(siteIndex);
+//			int oldState = haplotype.getState(siteIndex);
 			int[] chars = listOfAvailableChar2.get(  siteIndex );
 			int size = chars.length;
 			
 			if(size > 1){
 				newChar = (char) chars[ MathUtils.nextInt(size) ];
-				if(newChar != DNA_CHARS[oldState]){
-					notFound = false;
-				}
+//				if(newChar != DNA_CHARS[oldState]){
+//					notFound = false;
+//				}
 			}
 //		else{
 //			newChar = DNA_CHARS[ MathUtils.nextInt(4) ];

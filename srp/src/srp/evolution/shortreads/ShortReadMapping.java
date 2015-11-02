@@ -6,7 +6,10 @@ import java.util.BitSet;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import org.apache.commons.math3.util.ArithmeticUtils;
+
 import srp.operator.haplotypes.AbstractHaplotypeOperator;
+import srp.likelihood.AbstractShortReadsLikelihood;
 import cern.colt.bitvector.BitVector;
 
 import com.google.common.primitives.Ints;
@@ -44,6 +47,9 @@ public class ShortReadMapping {
 	public static final char[] DNA_CHARS = AbstractHaplotypeOperator.DNA_CHARS;
 	private static final double[] EQUAL_FREQ = new double[]{0.25, 0.5, 0.75, 1};
 	
+	public static final double LOG_ERROR_RATE = AbstractShortReadsLikelihood.LOG_ERROR_RATE;
+	public static final double LOG_ONE_MINUS_ERROR_RATE = AbstractShortReadsLikelihood.LOG_ONE_MINUS_ERROR_RATE;
+	
 	private ArrayList<Integer>[] mapToSrp; // each [] = position, each ArrayList map to which read
 	
 	private HashMap<String, Integer> seqNameToSeqID; // map sequence_name >xxxto int
@@ -68,6 +74,7 @@ public class ShortReadMapping {
 	private Integer[] allSrpLengthInteger;
 	
 	private double[][] srpCumFreqArray;
+	private int[][] srpCountArray;
 	
 	private boolean isMinProp = true;
 	private double minPercentage = 1; 
@@ -103,7 +110,8 @@ public class ShortReadMapping {
 		
         int[][] frequencies = new int[fullHaplotypeLength][DATA_TYPE.getAmbiguousStateCount()];
 
-        srpCumFreqArray = new double[fullHaplotypeLength]['U'];
+        srpCountArray = new int[fullHaplotypeLength]['U'];
+        srpCumFreqArray = new double[fullHaplotypeLength][4];
         
 		for (int i = 0; i < srpAlignment.getSequenceCount(); i++) {
 			Sequence s = srpAlignment.getSequence(i);
@@ -120,10 +128,60 @@ public class ShortReadMapping {
 		createListOfAvailableChar(setsOfAvailableChar);
 		calculateCumFreq();
 		createCumFreqArray();
+		createProbForEachBase();
 		//TODO removed these cause old unit test to fail
 
 	}
-	
+	private void createProbForEachBase(){
+		
+		for (int i = 0; i < srpCumFreqArray.length; i++) {
+			
+//			srpCumFreqArray[i]['A'], srpCumFreqArray[i]['C'], 
+//			srpCumFreqArray[i]['G'], srpCumFreqArray[i]['T'] 
+			double[] probBases = new double[4];
+			int sum = 	srpCountArray[i]['A'] + srpCountArray[i]['C'] + 
+					srpCountArray[i]['G'] + srpCountArray[i]['T'] ;
+					System.out.println(sum);
+			probBases[0] = ArithmeticUtils.binomialCoefficientLog(sum, srpCountArray[i]['A'])+
+					srpCountArray[i]['A']*LOG_ERROR_RATE+(sum-srpCountArray[i]['A'])*LOG_ONE_MINUS_ERROR_RATE;
+			
+			probBases[1]  = ArithmeticUtils.binomialCoefficientLog(sum, srpCountArray[i]['C'])+
+					srpCountArray[i]['C']*LOG_ERROR_RATE+(sum-srpCountArray[i]['C'])*LOG_ONE_MINUS_ERROR_RATE;
+					
+			probBases[2] = ArithmeticUtils.binomialCoefficientLog(sum, srpCountArray[i]['G'])+
+					srpCountArray[i]['G']*LOG_ERROR_RATE+(sum-srpCountArray[i]['G'])*LOG_ONE_MINUS_ERROR_RATE;
+					
+			probBases[3] = ArithmeticUtils.binomialCoefficientLog(sum, srpCountArray[i]['T'])+
+					srpCountArray[i]['T']*LOG_ERROR_RATE+(sum-srpCountArray[i]['T'])*LOG_ONE_MINUS_ERROR_RATE;
+			
+			double sumProb = 0;
+			for (int j = 0; j < probBases.length; j++) {
+				probBases[j] = Math.exp(probBases[j]);
+				sumProb += probBases[j];
+			}
+			for (int j = 0; j < probBases.length; j++) {
+				probBases[j] /= sumProb;
+				
+			}
+			srpCumFreqArray[i][0] = probBases[0];
+			for (int j = 1; j < probBases.length; j++) {
+				srpCumFreqArray[i][j] = probBases[j];
+				srpCumFreqArray[i][j] = srpCumFreqArray[i][j] + srpCumFreqArray[i][j-1];
+			}
+			if(srpCumFreqArray[i][3]!= 1){
+				System.out.println(srpCountArray[i]['A'] +"\t"+ srpCountArray[i]['C'] +"\t"+ 
+						srpCountArray[i]['G'] +"\t"+ srpCountArray[i]['T']);
+				System.out.println(Arrays.toString(probBases));
+				System.out.println(Arrays.toString(srpCumFreqArray[i]));
+				srpCumFreqArray[i][3] = 1;
+				
+			}
+			
+//			
+		}
+//		System.exit(12);
+		
+	}
 	private void createCumFreqArray() {
 
 //		String[] srpArray = getSrpArray();
@@ -132,8 +190,8 @@ public class ShortReadMapping {
 		
 		for (int i = 0; i < srpCumFreqArray.length; i++) {
 			srpCumFreqArray[i]  = new double[] {
-					srpCumFreqArray[i]['A'], srpCumFreqArray[i]['C'], 
-					srpCumFreqArray[i]['G'], srpCumFreqArray[i]['T'] };
+					srpCountArray[i]['A'], srpCountArray[i]['C'], 
+					srpCountArray[i]['G'], srpCountArray[i]['T'] };
 			
 			if(isMinProp){
 				
@@ -359,7 +417,7 @@ public class ShortReadMapping {
 					setsOfAvailableChar[j].add(c);
 					frequencies[j][state] += 1;
 					cumFreq[c]++;
-					srpCumFreqArray[j][c]++;
+					srpCountArray[j][c]++;
 				}
 			}
 			srpCount++;
