@@ -7,7 +7,7 @@ import java.util.List;
 import srp.dr.ext.TreeLikelihoodExt;
 import srp.evolution.haplotypes.HaplotypeModel;
 import srp.evolution.shortreads.ShortReadMapping;
-import srp.operator.haplotypes.BaseSingleDataOperator;
+import srp.operator.haplotypes.BaseDataSingleOperator;
 import srp.operator.haplotypes.BaseSingleOperator;
 import srp.operator.haplotypes.BasesConsecutiveOperator;
 import srp.operator.haplotypes.BasesMultiOperator;
@@ -180,7 +180,7 @@ public class MCMCSetupHelperHaplotype extends MCMCSetupHelper {
 		operator.setWeight(opHuge);
 //		schedule.addOperator(operator);
 		
-		operator = new BaseSingleDataOperator(haplotypeModel);
+		operator = new BaseDataSingleOperator(haplotypeModel);
 		operator.setWeight(opHuge);
 		schedule.addOperator(operator);
 		

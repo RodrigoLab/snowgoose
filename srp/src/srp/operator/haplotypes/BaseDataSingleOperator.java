@@ -12,12 +12,12 @@ import srp.evolution.haplotypes.HaplotypeModel;
 import dr.inference.operators.OperatorFailedException;
 import dr.math.MathUtils;
 
-public class BaseSingleDataOperator extends AbstractSingleOperator {
+public class BaseDataSingleOperator extends AbstractSingleOperator {
 
-	public static final String OPERATOR_NAME = BaseSingleDataOperator.class.getSimpleName();
+	public static final String OPERATOR_NAME = BaseDataSingleOperator.class.getSimpleName();
 	public static final OperationType OP = OperationType.SINGLE;
 	
-	public BaseSingleDataOperator(HaplotypeModel haplotypeModel) {
+	public BaseDataSingleOperator(HaplotypeModel haplotypeModel) {
 		super(haplotypeModel);
 		
 		site = 0;
@@ -52,7 +52,7 @@ public class BaseSingleDataOperator extends AbstractSingleOperator {
 			if(size > 1){
 				newChar = (char) chars[ MathUtils.nextInt(size) ];
 //				if(newChar != DNA_CHARS[oldState]){
-//					notFound = false;
+					notFound = false;
 //				}
 			}
 //		else{
