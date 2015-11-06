@@ -10,6 +10,7 @@ import srp.evolution.shortreads.ShortReadMapping;
 import srp.operator.haplotypes.BaseDataSingleOperator;
 import srp.operator.haplotypes.BaseSingleOperator;
 import srp.operator.haplotypes.BasesConsecutiveOperator;
+import srp.operator.haplotypes.BasesDataMultiOperator;
 import srp.operator.haplotypes.BasesMultiOperator;
 import srp.operator.haplotypes.BasesTransitionOperator;
 import srp.operator.haplotypes.BasesTransversionOperator;
@@ -182,6 +183,11 @@ public class MCMCSetupHelperHaplotype extends MCMCSetupHelper {
 		
 		operator = new BaseDataSingleOperator(haplotypeModel);
 		operator.setWeight(opHuge);
+		schedule.addOperator(operator);
+		
+		
+		operator = new BasesDataMultiOperator(haplotypeModel, 6, CoercionMode.COERCION_OFF);
+		operator.setWeight(opLarge);
 		schedule.addOperator(operator);
 		
 		

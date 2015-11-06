@@ -127,8 +127,8 @@ public class ShortReadMapping {
 		//calculated listOfAvailableChar(2)
 		createListOfAvailableChar(setsOfAvailableChar);
 		calculateCumFreq();
-		createCumFreqArray();
-		createProbForEachBase();
+		createCumFreqArray(); //Use counts to create prob
+//		createProbForEachBase(); // likelihood -> prob
 		//TODO removed these cause old unit test to fail
 
 	}
@@ -141,43 +141,45 @@ public class ShortReadMapping {
 			double[] probBases = new double[4];
 			int sum = 	srpCountArray[i]['A'] + srpCountArray[i]['C'] + 
 					srpCountArray[i]['G'] + srpCountArray[i]['T'] ;
-					System.out.println(sum);
-			probBases[0] = ArithmeticUtils.binomialCoefficientLog(sum, srpCountArray[i]['A'])+
-					srpCountArray[i]['A']*LOG_ERROR_RATE+(sum-srpCountArray[i]['A'])*LOG_ONE_MINUS_ERROR_RATE;
 			
-			probBases[1]  = ArithmeticUtils.binomialCoefficientLog(sum, srpCountArray[i]['C'])+
-					srpCountArray[i]['C']*LOG_ERROR_RATE+(sum-srpCountArray[i]['C'])*LOG_ONE_MINUS_ERROR_RATE;
-					
-			probBases[2] = ArithmeticUtils.binomialCoefficientLog(sum, srpCountArray[i]['G'])+
-					srpCountArray[i]['G']*LOG_ERROR_RATE+(sum-srpCountArray[i]['G'])*LOG_ONE_MINUS_ERROR_RATE;
-					
-			probBases[3] = ArithmeticUtils.binomialCoefficientLog(sum, srpCountArray[i]['T'])+
-					srpCountArray[i]['T']*LOG_ERROR_RATE+(sum-srpCountArray[i]['T'])*LOG_ONE_MINUS_ERROR_RATE;
+			probBases[0] = //ArithmeticUtils.binomialCoefficientLog(sum, srpCountArray[i]['A'])+
+					srpCountArray[i]['A']*LOG_ONE_MINUS_ERROR_RATE+(sum-srpCountArray[i]['A'])*LOG_ERROR_RATE;
 			
+			probBases[1]  = //ArithmeticUtils.binomialCoefficientLog(sum, srpCountArray[i]['C'])+
+					srpCountArray[i]['C']*LOG_ONE_MINUS_ERROR_RATE+(sum-srpCountArray[i]['C'])*LOG_ERROR_RATE;
+					
+			probBases[2] = //ArithmeticUtils.binomialCoefficientLog(sum, srpCountArray[i]['G'])+
+					srpCountArray[i]['G']*LOG_ONE_MINUS_ERROR_RATE+(sum-srpCountArray[i]['G'])*LOG_ERROR_RATE;
+					
+			probBases[3] = //ArithmeticUtils.binomialCoefficientLog(sum, srpCountArray[i]['T'])+
+					srpCountArray[i]['T']*LOG_ONE_MINUS_ERROR_RATE+(sum-srpCountArray[i]['T'])*LOG_ERROR_RATE;
+
+//			System.out.println(srpCountArray[i]['A'] +"\t"+ srpCountArray[i]['C'] +"\t"+ srpCountArray[i]['G'] +"\t"+ srpCountArray[i]['T']);
+//			System.out.println(Arrays.toString(probBases));
 			double sumProb = 0;
 			for (int j = 0; j < probBases.length; j++) {
 				probBases[j] = Math.exp(probBases[j]);
 				sumProb += probBases[j];
 			}
+//			System.out.println(sumProb);
+//			System.out.println(Arrays.toString(probBases));
 			for (int j = 0; j < probBases.length; j++) {
 				probBases[j] /= sumProb;
-				
 			}
+//			System.out.println(Arrays.toString(probBases));
 			srpCumFreqArray[i][0] = probBases[0];
 			for (int j = 1; j < probBases.length; j++) {
 				srpCumFreqArray[i][j] = probBases[j];
 				srpCumFreqArray[i][j] = srpCumFreqArray[i][j] + srpCumFreqArray[i][j-1];
 			}
 			if(srpCumFreqArray[i][3]!= 1){
-				System.out.println(srpCountArray[i]['A'] +"\t"+ srpCountArray[i]['C'] +"\t"+ 
-						srpCountArray[i]['G'] +"\t"+ srpCountArray[i]['T']);
-				System.out.println(Arrays.toString(probBases));
-				System.out.println(Arrays.toString(srpCumFreqArray[i]));
 				srpCumFreqArray[i][3] = 1;
 				
 			}
-			
-//			
+//			System.out.println(srpCountArray[i]['A'] +"\t"+ srpCountArray[i]['C'] +"\t"+ srpCountArray[i]['G'] +"\t"+ srpCountArray[i]['T']);
+//			System.out.println(Arrays.toString(probBases));
+//			System.out.println("srpCumFreqArray: "+Arrays.toString(srpCumFreqArray[i]));
+//			System.out.println();
 		}
 //		System.exit(12);
 		
@@ -228,7 +230,8 @@ public class ShortReadMapping {
 					srpCumFreqArray[i][j] /= sum;  
 				}
 			}
-			System.out.println(Arrays.toString(srpCumFreqArray[i]));
+			System.out.println("srpCumFreqArrayV1: "+
+					Arrays.toString(srpCumFreqArray[i]));
 
 		}
 		

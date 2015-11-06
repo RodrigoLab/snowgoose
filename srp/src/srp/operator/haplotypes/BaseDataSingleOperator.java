@@ -37,32 +37,31 @@ public class BaseDataSingleOperator extends AbstractSingleOperator {
 		ArrayList<int[]> listOfAvailableChar2 = haplotypeModel.getListOfAvailableChar2();
 		
 
+		int siteIndex = getNextSiteIndex();
 		
-//	
-		int siteIndex;
-		char newChar = '-';
-//		siteIndex = getNextSiteIndex();
-		boolean notFound = true;
-		do{
-			siteIndex = getNextSiteIndex();
-//			int oldState = haplotype.getState(siteIndex);
-			int[] chars = listOfAvailableChar2.get(  siteIndex );
-			int size = chars.length;
-			
-			if(size > 1){
-				newChar = (char) chars[ MathUtils.nextInt(size) ];
-//				if(newChar != DNA_CHARS[oldState]){
-					notFound = false;
-//				}
-			}
-//		else{
-//			newChar = DNA_CHARS[ MathUtils.nextInt(4) ];
-//		}
-		
-		
-//		char newChar = getNextDiffBase(oldState);
-//		char newChar = 'A';
-		} while(notFound);
+//		char newChar = '-';
+////		siteIndex = getNextSiteIndex();
+//		boolean notFound = true;
+//		do{
+//			siteIndex = getNextSiteIndex();
+////			int oldState = haplotype.getState(siteIndex);
+//			int[] chars = listOfAvailableChar2.get(  siteIndex );
+//			int size = chars.length;
+//			
+//			if(size > 1){
+//				newChar = (char) chars[ MathUtils.nextInt(size) ];
+////				if(newChar != DNA_CHARS[oldState]){
+//					notFound = false;
+////				}
+//			}
+////		else{
+////			newChar = DNA_CHARS[ MathUtils.nextInt(4) ];
+////		}
+//		
+//		
+////		char newChar = getNextDiffBase(oldState);
+////		char newChar = 'A';
+//		} while(notFound);
 		
 //		newChar = getNextBase();
 //		if(MathUtils.nextDouble()< 0.5){
@@ -71,7 +70,7 @@ public class BaseDataSingleOperator extends AbstractSingleOperator {
 		
 //		haplotypeModel.getGetMapToSrpAt(siteIndex);
 //		newChar = (char) srpMap.nextBaseAt(siteIndex);
-		newChar = srpMap.nextBaseFreqAt(siteIndex);
+		char newChar = srpMap.nextBaseFreqAt(siteIndex);
 //		System.out.println(newChar);
 		haplotype.setCharAt(siteIndex, newChar);
 		haplotypeModel.setOperationRecord(OP, hapIndex, siteIndex);

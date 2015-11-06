@@ -217,7 +217,7 @@ public class MainMCMCHaplotype {
 		MCMCSetupHelperHaplotype.defalutOperators(schedule, haplotypeModel, freqs, popSize, kappa);
 		
 		total = 0;
-		System.out.println("Operators:");
+		System.out.println("All Operators:");
 		for (int i = 0; i < schedule.getOperatorCount(); i++) {
 			MCMCOperator op= schedule.getOperator(i);
 			System.out.println(op.getOperatorName() +"\t"+ op.getWeight());
