@@ -33,6 +33,13 @@ public class BasesDataMultiOperator extends AbstractMultiOperator {
 
 		for (int i : siteIndexs) {
 			
+//			boolean isFix;
+//			do {
+//				i= getNextSiteIndex();
+//				isFix = srpMap.isFixSite(i);
+////				System.out.println("DO: "+siteIndex +"\t"+ isFix);
+//			} while (isFix);
+			
 //			SpectraParameter spectra = spectrum.getSpectra(siteIndexs[i]);
 //			swapFrequency(spectra);
 //			int oldState = haplotype.getState(i);

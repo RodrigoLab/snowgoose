@@ -28,6 +28,7 @@ example mapToSrp[i].size
 
 every position ~ 100ish reads.
  */
+
 @Deprecated
 public class AlignmentMapping {
 
@@ -68,7 +69,7 @@ public class AlignmentMapping {
 		}
 
 	}
-
+	@Deprecated
 	public AlignmentMapping(Alignment srpAlignment){
 		
 		init( srpAlignment.getSiteCount() );

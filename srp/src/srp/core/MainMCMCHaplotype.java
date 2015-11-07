@@ -13,8 +13,15 @@ import srp.evolution.haplotypes.HaplotypeModel;
 import srp.evolution.shortreads.ShortReadMapping;
 import srp.likelihood.AbstractShortReadsLikelihood;
 import srp.likelihood.haplotypes.ShortReadsHaplotypeLikelihood;
+import dr.app.pathogen.TemporalRooting;
 import dr.evolution.alignment.Alignment;
+import dr.evolution.alignment.Patterns;
+import dr.evolution.distance.DistanceMatrix;
+import dr.evolution.distance.F84DistanceMatrix;
+import dr.evolution.tree.NeighborJoiningTree;
+import dr.evolution.tree.SimpleTree;
 import dr.evolution.tree.Tree;
+import dr.evolution.tree.UPGMATree;
 import dr.evolution.util.TaxonList;
 import dr.evolution.util.Units;
 import dr.evomodel.branchratemodel.StrictClockBranchRates;
@@ -94,15 +101,15 @@ public class MainMCMCHaplotype {
 //			dataDir += "H10_"+runIndex+"/";
 			dataDir += "H10_"+runIndex+"/";
 			//TODO: local control
-			totalSamples = 500	;
-			logInterval  = 10000 ;
+			totalSamples = 100	;
+			logInterval  = 5000 ;
 			
 			randomTree = true;
 			randomHaplotype = true;
 			
 //			randomTree = false;
 //			randomHaplotype = false;
-			
+//			inputReadSuffix = "ART_errFree";
 			inputReadSuffix = "ART";
 			noOfTrueHaplotype = 10;
 			noOfRecoveredHaplotype=10;
@@ -114,7 +121,7 @@ public class MainMCMCHaplotype {
 		String trueHaplotypeFile = hapRunIndex +"_FullHaplotype.fasta";
 //		shortReadFile = trueHaplotypeFile;//TODO Remove later. Full test on this later
 		
-		String prefix = dataDir+"_Result_"+hapRunIndex;
+		String prefix = dataDir+"Result_"+hapRunIndex;
 		String logTracerName = prefix+".log";
 		String logTreeName = prefix+".trees";
 		String logHaplotypeName = prefix+".haplotype";
@@ -143,7 +150,7 @@ public class MainMCMCHaplotype {
 		}
 		else{
 //			String partialHaplotypeName = prefix+".haplotypepartial";
-			String partialHaplotypeName ="H10_0_FullHaplotype.fasta";
+			String partialHaplotypeName = hapRunIndex+"_FullHaplotype.fasta";
 //			Alignment trueAlignment = dataImporter.importAlignment(trueHaplotypeFile);
 			Alignment trueAlignment = dataImporter.importAlignment(partialHaplotypeName);
 			haplotypeModel = new HaplotypeModel(trueAlignment);
@@ -163,13 +170,17 @@ public class MainMCMCHaplotype {
 //		TreeModel treeModel = MCMCSetupHelperHaplotype.setupRandomTreeModel(popModel, haplotypeModel, Units.Type.YEARS);
 		TreeModel treeModel;
 		if(randomTree){
-			treeModel = MCMCSetupHelperHaplotype.setupRandomTreeModel(popModel, haplotypeModel, Units.Type.YEARS);
+//			treeModel = MCMCSetupHelperHaplotype.setupRandomTreeModel(popModel, haplotypeModel, Units.Type.YEARS);
+			
+            DistanceMatrix distances = new F84DistanceMatrix(haplotypeModel);
+            Tree tree = new UPGMATree(distances);
+            treeModel = new TreeModel(tree);			
 		}
 		else{
 			
 //			String partialTreeName = prefix+".treespartial";
 //			String partialTreeName = prefix+".trees";
-			String partialTreeName = "H10_0_FullTree.tree";
+			String partialTreeName = hapRunIndex+"_FullTree.tree";
 			System.out.println("load tree: "+ partialTreeName);
 			Tree partialPhylogeny = dataImporter.importTree(partialTreeName);
 			treeModel = new TreeModel(TreeModel.TREE_MODEL, partialPhylogeny, false);
@@ -202,28 +213,28 @@ public class MainMCMCHaplotype {
 		rootHeight.setId("rootHeight");
 		// Operators
 		OperatorSchedule schedule = new SimpleOperatorSchedule();
-		if(randomTree){
+//		if(randomTree){
 			MCMCSetupHelperHaplotype.defalutTreeOperators(schedule, treeModel);
-		}
+//		}
 //		MCMCSetupHelperHaplotype.defalutTreeOperators(schedule, treeModel);
 		
-		double total = 0;
+		double totalTree = 0;
 		for (int i = 0; i < schedule.getOperatorCount(); i++) {
 			MCMCOperator op= schedule.getOperator(i);
-			total += op.getWeight() ;
+			totalTree += op.getWeight() ;
 		}
-		System.out.println("total Tree Weight: "+total);
+		System.out.println("total Tree Weight: "+totalTree);
 		
 		MCMCSetupHelperHaplotype.defalutOperators(schedule, haplotypeModel, freqs, popSize, kappa);
 		
-		total = 0;
+		double total = 0;
 		System.out.println("All Operators:");
 		for (int i = 0; i < schedule.getOperatorCount(); i++) {
 			MCMCOperator op= schedule.getOperator(i);
 			System.out.println(op.getOperatorName() +"\t"+ op.getWeight());
 			total += op.getWeight() ;
 		}
-		System.out.println("total non-Tree Weight: "+total);
+		System.out.println("total non-Tree Weight: "+ (total-totalTree));
 		
 
 		// MCLogger
@@ -258,10 +269,12 @@ public class MainMCMCHaplotype {
 				treeFormatter, logInterval, true, true, true, null, null);
 
 		// log Haplotype
+		
 		Alignment trueAlignment = dataImporter.importAlignment(trueHaplotypeFile);
 		HaplotypeModel trueHaplotypeModel = new HaplotypeModel(trueAlignment);
 		ShortReadsHaplotypeLikelihood trueSrp = new ShortReadsHaplotypeLikelihood(trueHaplotypeModel, srpMap);
-		System.out.println(trueSrp.getLogLikelihood());
+		System.out.println("True haplotype likelihood: "+trueSrp.getLogLikelihood());
+
 //		AlignmentMapping alignmentMapping = new AlignmentMapping(shortReads);
 //		ShortReadsHaplotypeLikelihood trueSrp = new ShortReadsHaplotypeLikelihood(HaplotypeModel.factory(shortReads, trueAlignment), srpMap);
 //		System.err.println("\'trueShortReadLikelihood\': "+trueSrp.getLogLikelihood());

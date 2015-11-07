@@ -37,7 +37,18 @@ public class BaseDataSingleOperator extends AbstractSingleOperator {
 		ArrayList<int[]> listOfAvailableChar2 = haplotypeModel.getListOfAvailableChar2();
 		
 
-		int siteIndex = getNextSiteIndex();
+		int siteIndex;// = getNextSiteIndex();
+		boolean isFix;// = false;
+//		System.out.println(siteIndex +"\t"+ isFix);
+		do {
+			siteIndex = getNextSiteIndex();
+//			isFix = srpMap.isFixSite(siteIndex);
+			isFix = srpMap.isLowVarianceSite(siteIndex);
+//			System.out.println("DO: "+siteIndex +"\t"+ isFix);
+		} while (isFix);
+//		System.out.println(siteIndex +"\t"+ isFix);
+		
+//		System.out.println();
 		
 //		char newChar = '-';
 ////		siteIndex = getNextSiteIndex();
@@ -71,6 +82,8 @@ public class BaseDataSingleOperator extends AbstractSingleOperator {
 //		haplotypeModel.getGetMapToSrpAt(siteIndex);
 //		newChar = (char) srpMap.nextBaseAt(siteIndex);
 		char newChar = srpMap.nextBaseFreqAt(siteIndex);
+		
+		
 //		System.out.println(newChar);
 		haplotype.setCharAt(siteIndex, newChar);
 		haplotypeModel.setOperationRecord(OP, hapIndex, siteIndex);
@@ -83,15 +96,7 @@ public class BaseDataSingleOperator extends AbstractSingleOperator {
 
 		return 0.0;
 	}
-	static String cheat[] = new String[]{
-		"AGTTAAGAGGCACAACTTTGGTGGATGTCAGTTGAGGTTGCTACTACACAAAAAGTACATACCTTACGGAACGTTCTCAATCACTGTGAGACGTTTGCCATGGTACACTCTGCGTCCACT",
-		"AGTTAAGAGGCACAACTTTGGTGGATGTCAGTTGAGGTTGCTACTACACAAAAAGTACATACCTTACGGCACGTTCTCAATCACTGTGAGACGTTTGCCATGGTACACTCTGCGTCCACT",
-		"AGTTAAGAGGCACAACTTTGGTGGATGTCAGTTGAGGTTGCTACTACACAAAAAGTACATACCTTACGGAACGTTCTCAATCACTGTGAGACGTTTGCCATGGTACACTCTGCGTCCACT",
-		"AGCTAAGAGACACAACTATGGTGGATGTCAGTCAAGCCTGCAACTACATAGAAAGTGAATAAGTTACTGAATGCTCTCATTCACTGAGAGACGTTTACCATAATATACTAGGCGTCGACG",
-		"AGCTAAGAGACACAACTATGGTGGATGTCAGTCAAGCCTGCAACTACATAGAAAGTGAATAAGCTACTGAATGCTCTCATTCACTGAGAGACGTTTACCATAATATACTAGGCGTCGACG",
-		"AGCTAAGAGACACAACTATGGTGGATGTCAGTCAAGCCTGCAACTACATAGAAAGTGAATAAGTTACTGAATGCTCTCATTCACTGAGAGACGTTTACCATAATATACTTGGCGTCGACG",
-		"AGCTAAGAGACACAACTATGGTGGATGTCAGTCAAGCCTCCTACTACATAGAAAGTGAATAAGTTACTGAATGCTCTCATTCACTGAGAGACGTTTGCCTTAATAGACTTGGCGTCGACG",
-	};
+
 
 	@Override
 	public String getOperatorName() {
