@@ -16,7 +16,10 @@ public class BasesDataMultiOperator extends AbstractMultiOperator {
 	
 	public BasesDataMultiOperator(HaplotypeModel haplotypeModel, int length, CoercionMode mode) {
 		super(haplotypeModel, length, mode);
-		
+	}
+	
+	public BasesDataMultiOperator(HaplotypeModel haplotypeModel, double pct, CoercionMode mode) {
+		super(haplotypeModel, (int) (haplotypeModel.getHaplotypeLength()*pct), mode);
 	}
 
 

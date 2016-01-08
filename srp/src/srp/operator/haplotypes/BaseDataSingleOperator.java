@@ -9,6 +9,7 @@ import srp.dr.evolution.datatype.ShortReads;
 import srp.evolution.OperationType;
 import srp.evolution.haplotypes.Haplotype;
 import srp.evolution.haplotypes.HaplotypeModel;
+import srp.evolution.shortreads.SiteType;
 import dr.inference.operators.OperatorFailedException;
 import dr.math.MathUtils;
 
@@ -36,53 +37,82 @@ public class BaseDataSingleOperator extends AbstractSingleOperator {
 		
 		ArrayList<int[]> listOfAvailableChar2 = haplotypeModel.getListOfAvailableChar2();
 		
-
+// isLowVarianceSite
+		
+		
 		int siteIndex;// = getNextSiteIndex();
 		boolean isFix;// = false;
 //		System.out.println(siteIndex +"\t"+ isFix);
-		do {
-			siteIndex = getNextSiteIndex();
-//			isFix = srpMap.isFixSite(siteIndex);
-			isFix = srpMap.isLowVarianceSite(siteIndex);
-//			System.out.println("DO: "+siteIndex +"\t"+ isFix);
-		} while (isFix);
-//		System.out.println(siteIndex +"\t"+ isFix);
+		char newChar = 0;
 		
-//		System.out.println();
-		
-//		char newChar = '-';
-////		siteIndex = getNextSiteIndex();
-//		boolean notFound = true;
-//		do{
-//			siteIndex = getNextSiteIndex();
-////			int oldState = haplotype.getState(siteIndex);
-//			int[] chars = listOfAvailableChar2.get(  siteIndex );
-//			int size = chars.length;
-//			
-//			if(size > 1){
-//				newChar = (char) chars[ MathUtils.nextInt(size) ];
-////				if(newChar != DNA_CHARS[oldState]){
-//					notFound = false;
-////				}
-//			}
-////		else{
-////			newChar = DNA_CHARS[ MathUtils.nextInt(4) ];
-////		}
-//		
-//		
-////		char newChar = getNextDiffBase(oldState);
-////		char newChar = 'A';
-//		} while(notFound);
-		
-//		newChar = getNextBase();
-//		if(MathUtils.nextDouble()< 0.5){
-//			newChar = cheat[hapIndex].charAt(siteIndex);
+//		if(MathUtils.nextDouble()< 0){
+//			do {
+//				siteIndex = getNextSiteIndex();
+//	//			isFix = srpMap.isFixSite(siteIndex);
+//				isFix = srpMap.isLowVarianceSite(siteIndex);
+//	//			System.out.println("DO: "+siteIndex +"\t"+ isFix);
+//			} while (isFix);
+////			System.out.println(siteIndex +"\t"+ isFix);
+//			newChar = srpMap.nextBaseFreqAt(siteIndex);
 //		}
+//		else{
+//			do {
+//				siteIndex = getNextSiteIndex();
+//	//			isFix = srpMap.isFixSite(siteIndex);
+//				isFix = srpMap.isFixSite(siteIndex);
+//	//			System.out.println("DO: "+siteIndex +"\t"+ isFix);
+//			} while (!isFix);
+//			
+//			int oldState = haplotype.getState(siteIndex);
+//			newChar = getNextDiffBase(oldState);
+//		}
+//		siteIndex = getNextSiteIndex();
+//		int oldState = haplotype.getState(siteIndex);
+//		newChar = getNextBase();
+//		newChar = getNextDiffBase(oldState);
+//		newChar = srpMap.nextBaseFreqAt(siteIndex);
 		
-//		haplotypeModel.getGetMapToSrpAt(siteIndex);
-//		newChar = (char) srpMap.nextBaseAt(siteIndex);
-		char newChar = srpMap.nextBaseFreqAt(siteIndex);
+		SiteType siteType;
+//		do {
+//			siteIndex = getNextSiteIndex();
+////			isFix = srpMap.isFixSite(siteIndex);
+//			siteType = srpMap.getSiteType(siteIndex);
+////			System.out.println("DO: "+siteIndex +"\t"+ isFix);
+//		} while (siteType == SiteType.FIXED);
+
 		
+//		switch (siteType) {
+//		case LOW_VAR:
+//			int oldState = haplotype.getState(siteIndex);
+////			newChar = getNextDiffBase(oldState);		
+//			newChar = srpMap.nextBaseFreqAt(siteIndex);
+//			break;
+//		case HIGH_VAR:
+//			newChar = srpMap.nextBaseFreqAt(siteIndex);
+//			break;
+//		default:
+//			System.exit(-1);
+//			break;
+//		}
+	
+		if(MathUtils.nextDouble()< 0.25){
+			do {
+				siteIndex = getNextSiteIndex();
+				siteType = srpMap.getSiteType(siteIndex);
+				newChar = srpMap.nextBaseFreqAt(siteIndex);
+//				int oldState = haplotype.getState(siteIndex);
+//				newChar = getNextDiffBase(oldState);
+			} while (siteType != SiteType.HIGH_VAR);
+		}
+		else{
+//			do {
+				siteIndex = getNextSiteIndex();
+				siteType = srpMap.getSiteType(siteIndex);
+				int oldState = haplotype.getState(siteIndex);
+				newChar = getNextDiffBase(oldState);
+//				newChar = getNextBase();
+//			} while (siteType == SiteType.HIGH_VAR);	
+		}
 		
 //		System.out.println(newChar);
 		haplotype.setCharAt(siteIndex, newChar);

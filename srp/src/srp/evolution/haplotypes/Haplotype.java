@@ -165,14 +165,19 @@ public class Haplotype extends Sequence {
      */
     @Override
 	public void setSequenceString(String sequence) {
-    	if(sequence.length() != haplotypeLength){
+		setSequenceString(sequence.toCharArray());
+    }
+    
+    public void setSequenceString(char[] sequenceArray) {
+    	if(sequenceArray.length != haplotypeLength){
 			throw new IllegalArgumentException("Invalid sequence length: "
-					+ sequence.length()
+					+ sequenceArray.length
 					+ ". Haplotype length must be equal to " + haplotypeLength);
 		}
     	else{
-    		System.arraycopy(sequence.toCharArray(), 0, haplotype, 0, haplotypeLength);
+			System.arraycopy(sequenceArray, 0, haplotype, 0, haplotypeLength);
     	}
+    	
     }
 
     /**

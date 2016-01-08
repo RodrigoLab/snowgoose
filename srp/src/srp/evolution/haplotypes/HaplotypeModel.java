@@ -76,18 +76,23 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 //			
 //		}
 //	}
-	
+	//TODO: What is a good starting point?
 	public HaplotypeModel(int noOfRecoveredHaplotype, ShortReadMapping srpMap) {
 			this(noOfRecoveredHaplotype, srpMap.getLength());
+			this.srpMap = srpMap;
 			for (int i = 0; i < sequenceCount; i++) {
+				char[] randHap = this.srpMap.getSemiRandHaplotype2();
+//				char[] randHap = this.srpMap.getRandHaplotype();
+				System.out.println(String.valueOf(randHap));
 				Haplotype haplotype = getHaplotype(i);
-				char[] randHap = srpMap.getSemiRandHaplotype();
-				for (int s = 0; s < sequenceLength; s++) {
-					haplotype.setCharAt(s, randHap[s]);
-				}
+//				for (int s = 0; s < sequenceLength; s++) {
+//					haplotype.setCharAt(s, randHap[s]);
+//				}
+				haplotype.setSequenceString(randHap);
+				setHaplotype(i, haplotype);
 				
 			}
-			this.srpMap = srpMap;
+			
 	//		storeEverything();
 		}
 

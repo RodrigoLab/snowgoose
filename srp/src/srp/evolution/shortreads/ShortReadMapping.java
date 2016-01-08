@@ -27,22 +27,6 @@ import dr.math.MathUtils;
 //import java.util.BitSet;
 
 
-/*
-
-example mapToSrp[i].size
-49	49	53	53	53	54	55	56	57	60	61	61	61	61	61	61	61	62	62	62	63	63	63	63	63	63	64	64	64	64	64	64	66	66	67	67	68	68	69	70	70	70	71	74	74	75	75	76	76	76	77	78	79	79	80	81	81	81	83	83	83	84	85	87	87	88	88	89	89	89	90	91	92	92	92	92	92	93	93	93	95	95	95	96	96	96	97	97	98	98	98	101	102	103	103	105	105	105	105	105	106	107	108	108	108	108	109	110	110	111	112	112	113	113	113	114	115	115	115	115	
-116	116	116	116	116	116	116	116	117	117	117	117	117	117	117	117	118	119	119	119	120	120	120	122	123	124	124	126	126	126	127	127	128	127	127	127	128	127	126	126	126	127	127	127	127	127	127	128	127	126	127	127	127	127	128	128	128	128	128	129	130	131	129	128	130	130	131	130	130	131	132	134	135	135	133	133	133	134	135	136	136	135	134	134	134	133	132	131	131	132	130	130	130	132	131	130	130	130	130	128	128	129	128	127	130	130	130	130	129	131	132	132	132	133	132	132	134	135	134	134	
-133	132	133	133	133	132	130	130	131	131	131	131	132	133	133	133	133	133	134	133	132	134	133	133	132	131	133	134	134	135	136	136	135	136	138	138	139	139	140	140	141	140	141	141	141	140	141	141	141	139	139	141	144	143	143	143	143	144	144	144	142	142	141	140	140	142	142	142	142	142	142	142	143	143	143	143	144	144	145	144	145	145	145	145	143	143	142	145	145	146	144	144	143	141	141	141	141	140	140	141	140	140	140	142	141	142	141	141	141	141	142	143	143	143	143	143	142	141	140	140	
-141	142	140	140	140	140	140	140	139	139	138	140	140	140	141	141	141	142	144	145	144	143	143	143	144	144	145	146	145	143	143	143	144	145	145	145	144	145	148	148	148	147	146	145	144	144	144	144	146	149	151	151	149	150	150	153	152	152	152	154	154	154	154	156	157	156	156	158	158	159	158	156	155	156	157	156	156	156	155	154	154	154	153	152	153	151	152	154	153	153	154	154	154	153	152	151	153	153	151	150	151	151	153	155	155	153	154	153	152	151	151	151	151	150	150	149	151	152	152	152	
-153	150	149	148	148	147	147	146	148	149	150	149	148	147	147	147	146	145	144	144	145	145	146	146	146	146	146	147	147	146	146	147	147	148	148	149	149	149	149	149	146	147	148	147	147	146	146	146	149	149	148	148	148	148	149	150	151	153	151	152	152	153	153	154	154	153	153	153	151	151	151	151	149	150	148	149	148	148	149	150	150	149	149	147	147	147	147	146	145	145	144	144	144	145	145	145	145	143	142	144	146	147	148	149	149	150	150	150	149	148	147	147	147	147	147	147	146	145	146	147	
-147	146	148	150	150	150	150	150	150	150	150	151	151	151	151	152	151	152	153	153	154	153	152	153	154	155	155	155	156	155	154	155	155	154	154	156	155	154	153	153	154	154	155	156	156	156	157	157	155	155	155	154	154	154	153	154	153	154	155	156	154	156	154	149	149	149	148	148	149	149	148	146	147	147	148	148	148	147	147	146	144	143	143	140	140	141	141	140	139	140	142	141	141	141	141	140	140	140	140	141	141	141	141	141	141	141	142	142	143	144	144	145	145	144	145	142	143	141	142	141	
-141	141	142	142	142	143	145	147	146	146	146	147	144	145	145	140	140	139	139	138	138	138	139	138	138	138	139	140	138	138	140	143	143	146	146	146	145	145	145	145	144	144	145	146	145	145	145	144	144	144	144	144	147	147	148	145	143	141	142	142	142	143	143	143	144	143	143	143	142	143	142	142	140	139	138	138	139	139	139	139	140	140	140	139	139	137	137	137	137	136	135	137	136	138	139	139	140	138	139	139	140	140	140	139	139	140	140	141	140	140	140	140	141	141	140	139	140	140	141	141	
-140	140	140	141	141	141	141	142	142	140	139	140	140	141	141	141	141	140	139	138	138	138	137	140	141	140	140	140	140	138	137	137	136	136	139	139	136	138	137	136	135	136	136	136	135	136	136	137	137	137	139	139	140	140	142	142	142	142	142	142	143	143	141	141	141	140	141	140	139	139	139	139	140	140	141	142	142	142	143	145	144	144	143	143	142	144	145	144	145	146	145	146	146	146	145	143	143	142	144	142	141	142	142	141	141	141	142	142	143	144	146	147	146	145	142	142	142	143	142	142	
-143	144	145	145	146	145	145	144	144	143	145	145	141	143	143	143	144	145	145	146	146	147	145	144	145	145	145	144	144	145	145	144	143	144	144	143	145	146	145	143	143	143	143	143	142	142	140	140	141	141	142	142	140	141	143	143	143	145	146	144	142	142	141	140	140	140	140	141	142	142	142	141	138	138	139	139	138	138	138	137	137	137	137	137	137	137	137	137	136	136	134	133	132	132	129	129	128	127	127	125	125	124	124	123	123	121	121	119	119	119	118	117	116	116	116	115	115	114	114	114	
-113	113	113	112	112	112	112	110	110	109	109	106	104	102	102	102	99	98	98	98	98	98	97	96	96	96	96	96	94	94	94	93	90	90	90	88	88	88	88	88	88	88	87	86	86	85	84	83	83	83	83	83	83	82	81	81	80	79	79	79	77	77	77	76	75	73	73	72	72	72	72	72	72	70	69	69	68	65	65	64	64	63	63	63	62	62	62	62	61	61	61	59	59	59	59	59	59	59	58	57	54	54	54	51	50	50	50	48	46	46	45	43	43	42	41	41	40	36	23	remove taxa_0	0
-
-every position ~ 100ish reads.
- */
 public class ShortReadMapping {
 	
 	private static final int GAP = '-';
@@ -55,7 +39,7 @@ public class ShortReadMapping {
 
 	
 	
-	private static final double MIN_PERCENTAGE = 0.1; 
+	private static final double MIN_PERCENTAGE = 1;//0.1; 
 	private static final int MIN_READ_COUNT = 2;
 	private static final boolean IS_MIN_PROPORTION = true;
 	private static final double LOW_VARIANCE_THRESHOLD = 0.05;
@@ -89,6 +73,8 @@ public class ShortReadMapping {
 
 	private boolean[] isFixedSite;
 	private boolean[] isLowVarianceSite;
+	private int lvs;
+	private SiteType[] siteTypesArray;
 	
 	private void init(int l) {
 		fullHaplotypeLength = l;
@@ -140,6 +126,7 @@ public class ShortReadMapping {
 		createCumFreqArray(); //Use counts to create prob
 //		createProbForEachBase(); // likelihood -> prob, mdm
 		//TODO removed these cause old unit test to fail
+		System.out.println(lvs);
 
 	}
 	private void createProbForEachBase(){
@@ -220,12 +207,13 @@ public class ShortReadMapping {
 //		DirichletMultinomialDistribution dmd = new DirichletMultinomialDistribution();
 		isFixedSite = new boolean[srpCumFreqArray.length];
 		isLowVarianceSite = new boolean[srpCumFreqArray.length];
+		siteTypesArray = new SiteType[srpCumFreqArray.length];
 		
 		for (int i = 0; i < srpCumFreqArray.length; i++) {
 			srpCumFreqArray[i]  = new double[] {
 					srpCountArray[i]['A'], srpCountArray[i]['C'], 
 					srpCountArray[i]['G'], srpCountArray[i]['T'] };
-			
+//			System.out.println(Arrays.toString(srpCumFreqArray[i]));
 			if(IS_MIN_PROPORTION){
 				
 				int numMinCount = 0;
@@ -238,34 +226,54 @@ public class ShortReadMapping {
 				}
 
 				
-				double zeroModifier = MIN_PERCENTAGE *sum / (100-numMinCount*MIN_PERCENTAGE );
+				double minModifier = MIN_PERCENTAGE *sum / (100-numMinCount*MIN_PERCENTAGE );
 				
 				if(numMinCount == 3){
 					isFixedSite[i] = true;
-					zeroModifier = 0;
+					siteTypesArray[i] = SiteType.FIXED;
+//					minModifier = 0;
 				}
 //				System.out.println(isFixedSite[i]);
-				
-				sum += (zeroModifier* numMinCount);
+//				sum += (zeroModifier* numMinCount);
 				sum = 0;
 				for (int j = 0; j < srpCumFreqArray[i].length; j++) {
 					if( srpCumFreqArray[i][j] <= MIN_READ_COUNT  ){
-						srpCumFreqArray[i][j] = zeroModifier;
+						srpCumFreqArray[i][j] = minModifier;
 					}
 					sum += srpCumFreqArray[i][j];
 				}
 				
 				int lowVarianceCount = 0;
-				for (int j = 0; j < srpCumFreqArray[i].length; j++) {
-					srpCumFreqArray[i][j] /= sum;
-					if (srpCumFreqArray[i][j] < LOW_VARIANCE_THRESHOLD){
-						lowVarianceCount++;
+				if(sum == 0){
+					Arrays.fill(srpCumFreqArray[i],0.25);
+				}
+				else{
+					for (int j = 0; j < srpCumFreqArray[i].length; j++) {
+						srpCumFreqArray[i][j] /= sum;
+						if (srpCumFreqArray[i][j] < LOW_VARIANCE_THRESHOLD){
+							lowVarianceCount++;
+						}
 					}
 				}
 				if (lowVarianceCount > 2 ){
 					isLowVarianceSite[i] = true;
+					siteTypesArray[i] = SiteType.LOW_VAR;
+//					System.out.println(">2: "+ lowVarianceCount +"\t"+ Arrays.toString(srpCumFreqArray[i]));
+					lvs++;
 				}
-
+				if (lowVarianceCount < 2 ){
+					siteTypesArray[i] = SiteType.HIGH_VAR;
+//					System.out.println("<2: "+ lowVarianceCount +"\t"+ Arrays.toString(srpCumFreqArray[i]));
+				}
+				if (lowVarianceCount == 2 ){
+					siteTypesArray[i] = SiteType.HIGH_VAR;
+//					System.out.println("=2: "+ lowVarianceCount +"\t"+ Arrays.toString(srpCumFreqArray[i]));
+				}
+				if(numMinCount == 3){
+					isFixedSite[i] = true;
+					siteTypesArray[i] = SiteType.FIXED;
+				}
+				
 //				int[] counts =  new int[] {srpCountArray[i]['A'], srpCountArray[i]['C'], srpCountArray[i]['G'], srpCountArray[i]['T'] };
 //				System.out.println(Arrays.toString(counts));
 //				System.out.println("srpCumFreqArrayV1: "+Arrays.toString(srpCumFreqArray[i]));
@@ -276,6 +284,7 @@ public class ShortReadMapping {
 					srpCumFreqArray[i][j] = srpCumFreqArray[i][j] + srpCumFreqArray[i][j-1];
 				}
 //				srpCumFreqArray[i][3]=1;
+//				System.out.println("srpCumFreqArrayV1: "+Arrays.toString(srpCumFreqArray[i]));
 			}
 			else{
 				
@@ -599,6 +608,16 @@ public class ShortReadMapping {
 //		
 //		return newChar;
 	}
+	
+	public char[] getRandHaplotype() {
+		
+		char[] randChar = new char[fullHaplotypeLength];
+		for (int i = 0; i < randChar.length; i++) {
+			randChar[i] = (char) nextBaseEqualFreq();
+		}
+		return randChar;
+	}
+	
 	public char[] getSemiRandHaplotype2() {
 		
 		char[] randChar = new char[fullHaplotypeLength];
@@ -607,6 +626,7 @@ public class ShortReadMapping {
 		}
 		return randChar;
 	}
+	
 	public char[] getSemiRandHaplotype() {
 		
 //		System.out.println("SemiRandHap");
@@ -633,7 +653,6 @@ public class ShortReadMapping {
 		for (int s = 1; s < randChar.length; s++) {
 			int count = 0;
 			if(MathUtils.nextDouble() < switchSrpProb){
-					
 					srpList = mapToSrpArray[s];
 					if(srpList.length!=0){
 						srpIndex = srpList[MathUtils.nextInt(srpList.length)];
@@ -711,7 +730,7 @@ public class ShortReadMapping {
 //			int srpIndex = mapToSrp[pos].get(MathUtils.nextInt(size));
 //			newChar = getShortReadCharAt(srpIndex, pos);
 //		}
-//		
+//		System.out.println(siteTypesArray[pos] +"\t"+ Arrays.toString(srpCumFreqArray[pos]));
 
 		double d = MathUtils.nextDouble();
 		for (int i = 0; i < 3; i++) {
@@ -724,12 +743,22 @@ public class ShortReadMapping {
 	}
 
 	public boolean isFixSite(int siteIndex) {
+//		if(isFixedSite[siteIndex]){
+//			System.out.println("isFixed: "+Arrays.toString(srpCumFreqArray[siteIndex]));
+//		}
 		return isFixedSite[siteIndex];
 	}
 
 	public boolean isLowVarianceSite(int siteIndex) {
-
+//		if(isLowVarianceSite[siteIndex]){
+//			System.out.println("isLowV: "+Arrays.toString(srpCumFreqArray[siteIndex]));
+//		}
 		return isLowVarianceSite[siteIndex];
+	}
+
+	public SiteType getSiteType(int siteIndex) {
+//		System.out.println(siteTypesArray[siteIndex] +"\t"+ Arrays.toString(srpCumFreqArray[siteIndex]));
+		return siteTypesArray[siteIndex];
 	}
 	
 //
@@ -830,20 +859,20 @@ public class ShortReadMapping {
 //		return posChar;
 //	}
 //	
-//	public int nextBaseEqualFreq(){
-//		return nextDNAFromCumFreq(EQUAL_FREQ);
-//	}
+	public int nextBaseEqualFreq(){
+		return nextDNAFromCumFreq(EQUAL_FREQ);
+	}
 //	
-//	private static int nextDNAFromCumFreq(double[] cumFreq){
-//		
-//		double d = MathUtils.nextDouble();
-//		for (int i = 0; i < cumFreq.length; i++) {
-//			if (d <= cumFreq[i]) {
-//				return DATA_TYPE.getChar(i); //TODO: test
-//			}
-//		}
-//		return GAP;
-//	}
+	private static int nextDNAFromCumFreq(double[] cumFreq){
+		
+		double d = MathUtils.nextDouble();
+		for (int i = 0; i < cumFreq.length; i++) {
+			if (d <= cumFreq[i]) {
+				return DATA_TYPE.getChar(i); //TODO: test
+			}
+		}
+		return GAP;
+	}
 //	
 
 	

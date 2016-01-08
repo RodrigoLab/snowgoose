@@ -106,8 +106,7 @@ public abstract class AbstractShortReadsLikelihood extends
 		mapToSrpArray = srpMap.getMapToSrpArray();
 		allSrpState2D = srpMap.getSrpState2DArray();
 		allSrpChar2D = srpMap.getSrpChar2DArray();
-		allSrpLengthInteger = srpMap.getAllSrpLengthInteger();
-				
+		allSrpLengthInteger = srpMap.getAllSrpLengthInteger();			
 		
 		
 	}

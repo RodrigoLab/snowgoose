@@ -16,6 +16,7 @@ import srp.likelihood.haplotypes.ShortReadsHaplotypeLikelihood;
 import dr.app.pathogen.TemporalRooting;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.Patterns;
+import dr.evolution.datatype.Nucleotides;
 import dr.evolution.distance.DistanceMatrix;
 import dr.evolution.distance.F84DistanceMatrix;
 import dr.evolution.tree.NeighborJoiningTree;
@@ -27,10 +28,14 @@ import dr.evolution.util.Units;
 import dr.evomodel.branchratemodel.StrictClockBranchRates;
 import dr.evomodel.coalescent.CoalescentLikelihood;
 import dr.evomodel.coalescent.ConstantPopulationModel;
+import dr.evomodel.sitemodel.GammaSiteModel;
+import dr.evomodel.substmodel.FrequencyModel;
+import dr.evomodel.substmodel.HKY;
 import dr.evomodel.tree.TreeLogger;
 import dr.evomodel.tree.TreeModel;
 import dr.evomodel.treelikelihood.TreeLikelihood;
 import dr.evomodelxml.coalescent.ConstantPopulationModelParser;
+import dr.evomodelxml.substmodel.HKYParser;
 import dr.inference.loggers.MCLogger;
 import dr.inference.loggers.TabDelimitedFormatter;
 import dr.inference.mcmc.MCMC;
@@ -48,7 +53,7 @@ public class MainMCMCHaplotype {
 	public static void main(String[] args) throws Exception {
 /*
  * 
- * isntead 7x7 dist matirx, build 14x14, try dist tree and MDS
+ * isntead nxn dist matirx, build 2nx2n, try dist tree and MDS
  */
 //		String dataDir = "/home/sw167/workspaceSrp/snowgoose/srp/unittest/testData/";
 //		int runIndex = 51;
@@ -99,10 +104,11 @@ public class MainMCMCHaplotype {
 			dataDir = "/home/steven/workspaceSrp/snowgoose/srp/unittest/testData/";
 			runIndex = 0;
 //			dataDir += "H10_"+runIndex+"/";
-			dataDir += "H10_"+runIndex+"/";
+			dataDir += "H5_"+runIndex+"/";
+//			dataDir += "H5_001/";
 			//TODO: local control
 			totalSamples = 100	;
-			logInterval  = 5000 ;
+			logInterval  = 1000 ;
 			
 			randomTree = true;
 			randomHaplotype = true;
@@ -111,8 +117,8 @@ public class MainMCMCHaplotype {
 //			randomHaplotype = false;
 //			inputReadSuffix = "ART_errFree";
 			inputReadSuffix = "ART";
-			noOfTrueHaplotype = 10;
-			noOfRecoveredHaplotype=10;
+			noOfTrueHaplotype = 5;
+			noOfRecoveredHaplotype=5;
 		}
 		
 		String hapRunIndex = "H"+noOfTrueHaplotype+"_"+runIndex;
@@ -126,7 +132,6 @@ public class MainMCMCHaplotype {
 		String logTreeName = prefix+".trees";
 		String logHaplotypeName = prefix+".haplotype";
 		String operatorAnalysisFile = prefix+"_operatorAnalysisFile.txt";
-		
 		
 		System.out.println("Input reads file: "+shortReadFile);
 		DataImporter dataImporter = new DataImporter(dataDir);
@@ -177,7 +182,6 @@ public class MainMCMCHaplotype {
             treeModel = new TreeModel(tree);			
 		}
 		else{
-			
 //			String partialTreeName = prefix+".treespartial";
 //			String partialTreeName = prefix+".trees";
 			String partialTreeName = hapRunIndex+"_FullTree.tree";
@@ -213,20 +217,16 @@ public class MainMCMCHaplotype {
 		rootHeight.setId("rootHeight");
 		// Operators
 		OperatorSchedule schedule = new SimpleOperatorSchedule();
-//		if(randomTree){
-			MCMCSetupHelperHaplotype.defalutTreeOperators(schedule, treeModel);
-//		}
-//		MCMCSetupHelperHaplotype.defalutTreeOperators(schedule, treeModel);
-		
+
+		MCMCSetupHelperHaplotype.defalutTreeOperators(schedule, treeModel);
 		double totalTree = 0;
 		for (int i = 0; i < schedule.getOperatorCount(); i++) {
 			MCMCOperator op= schedule.getOperator(i);
 			totalTree += op.getWeight() ;
 		}
-		System.out.println("total Tree Weight: "+totalTree);
+		
 		
 		MCMCSetupHelperHaplotype.defalutOperators(schedule, haplotypeModel, freqs, popSize, kappa);
-		
 		double total = 0;
 		System.out.println("All Operators:");
 		for (int i = 0; i < schedule.getOperatorCount(); i++) {
@@ -234,6 +234,7 @@ public class MainMCMCHaplotype {
 			System.out.println(op.getOperatorName() +"\t"+ op.getWeight());
 			total += op.getWeight() ;
 		}
+		System.out.println("\n===========\ntotal Tree Weight: "+totalTree);
 		System.out.println("total non-Tree Weight: "+ (total-totalTree));
 		
 
@@ -300,18 +301,19 @@ public class MainMCMCHaplotype {
 		mcmc.init(options, posterior, schedule, loggers);
 		mcmc.run();
 
-		
-		System.out.println(mcmc.getTimer().toString());
-		System.out.println(srpLikelihood.globalCounter);
-		System.out.println(srpLikelihood.globalCounter2);
-		System.out.println("True srp Likelihood: "+trueSrp.getLogLikelihood());
-		srpLikelihood.makeDirty();
-		System.out.println(srpLikelihood.getLogLikelihood());
-//		treeModel
-		TreeLikelihood reCalTreeLikelihood = new TreeLikelihood(
-				haplotypeModel, treeModel, treeLikelihood.getSiteModel(), treeLikelihood.getBranchRateModel(), null,
-				false, false, true, false, false);
-		System.out.println("Tree treeLikelihood: "+reCalTreeLikelihood.getLogLikelihood());
+		{		
+			System.out.println(mcmc.getTimer().toString());
+			System.out.println("True haplotype Likelihood: "+trueSrp.getLogLikelihood());
+			srpLikelihood.makeDirty();
+			System.out.println("MCMC haplotype likelihood: "+srpLikelihood.getLogLikelihood());
+			
+			//		treeModel
+			TreeLikelihood reCalTreeLikelihood = new TreeLikelihood(
+					haplotypeModel, treeModel, treeLikelihood.getSiteModel(), treeLikelihood.getBranchRateModel(), null,
+					false, false, true, false, false);
+			System.out.println("Tree treeLikelihood: "+reCalTreeLikelihood.getLogLikelihood());
+
+		}
 	
 	}
 
