@@ -107,8 +107,8 @@ public class MainMCMCHaplotype {
 			dataDir += "H5_"+runIndex+"/";
 //			dataDir += "H5_001/";
 			//TODO: local control
-			totalSamples = 100	;
-			logInterval  = 1000 ;
+			totalSamples = 10000	;
+			logInterval  = 10000 ;
 			
 			randomTree = true;
 			randomHaplotype = true;

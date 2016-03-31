@@ -5,6 +5,8 @@ import java.util.Arrays;
 
 import javax.swing.plaf.synth.SynthSeparatorUI;
 
+import org.omg.CORBA.DATA_CONVERSION;
+
 import srp.dr.evolution.datatype.ShortReads;
 import srp.evolution.OperationType;
 import srp.evolution.haplotypes.Haplotype;
@@ -44,6 +46,7 @@ public class BaseDataSingleOperator extends AbstractSingleOperator {
 		boolean isFix;// = false;
 //		System.out.println(siteIndex +"\t"+ isFix);
 		char newChar = 0;
+		double logq = 0;
 		
 //		if(MathUtils.nextDouble()< 0){
 //			do {
@@ -95,25 +98,47 @@ public class BaseDataSingleOperator extends AbstractSingleOperator {
 //			break;
 //		}
 	
-		if(MathUtils.nextDouble()< 0.25){
+		if(MathUtils.nextDouble()< 0.50){
 			do {
 				siteIndex = getNextSiteIndex();
 				siteType = srpMap.getSiteType(siteIndex);
+				
 				newChar = srpMap.nextBaseFreqAt(siteIndex);
+				char oldChar = haplotype.getChar(siteIndex);
+				double oldCharProb = srpMap.getFreqAtSiteChar(siteIndex, oldChar);
+				double newCHarProb = srpMap.getFreqAtSiteChar(siteIndex, newChar);
+				logq = Math.log(newCHarProb/oldCharProb);
+//				System.out.println(siteType +"\t"+ oldChar +"\t"+ newChar +"\t"+ logq +"\t"+ 
+//						Arrays.toString(srpMap.getFreqAtSite(siteIndex))	);
 //				int oldState = haplotype.getState(siteIndex);
 //				newChar = getNextDiffBase(oldState);
 			} while (siteType != SiteType.HIGH_VAR);
 		}
+		
 		else{
 //			do {
 				siteIndex = getNextSiteIndex();
 				siteType = srpMap.getSiteType(siteIndex);
 				int oldState = haplotype.getState(siteIndex);
 				newChar = getNextDiffBase(oldState);
+				
+//				double[] charProb = srpMap.getFreqAtSite(siteIndex);
+//				int newStat = DATATYPE.getState(newChar);
+//				double probOldToNew = 0;
+//				double sum = 0;
+//				for (int i = 0; i < charProb.length; i++) {
+//					if(i != oldState){
+//						sum += charProb[i];
+//					}
+//				}
+				
+				
+				
 //				newChar = getNextBase();
 //			} while (siteType == SiteType.HIGH_VAR);	
 		}
-		
+//		System.out.println(siteType +"\t"+ newChar +"\t"+ logq +"\t"+ 
+//				Arrays.toString(srpMap.getFreqAtSite(siteIndex))	);
 //		System.out.println(newChar);
 		haplotype.setCharAt(siteIndex, newChar);
 		haplotypeModel.setOperationRecord(OP, hapIndex, siteIndex);

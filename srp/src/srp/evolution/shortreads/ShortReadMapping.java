@@ -68,6 +68,7 @@ public class ShortReadMapping {
 	private Integer[] allSrpLengthInteger;
 	
 	private double[][] srpCumFreqArray;
+	private double[][] srpFreqArray;
 	private int[][] srpCountArray;
 	
 
@@ -107,6 +108,7 @@ public class ShortReadMapping {
         int[][] frequencies = new int[fullHaplotypeLength][DATA_TYPE.getAmbiguousStateCount()];
 
         srpCountArray = new int[fullHaplotypeLength]['T'+1];
+        srpFreqArray = new double[fullHaplotypeLength][4];
         srpCumFreqArray = new double[fullHaplotypeLength][4];
         
 		for (int i = 0; i < srpAlignment.getSequenceCount(); i++) {
@@ -129,6 +131,7 @@ public class ShortReadMapping {
 		System.out.println(lvs);
 
 	}
+	@Deprecated
 	private void createProbForEachBase(){
 		DirichletMultinomialDistribution dmd = new DirichletMultinomialDistribution();
 		
@@ -137,29 +140,22 @@ public class ShortReadMapping {
 //			srpCumFreqArray[i]['A'], srpCumFreqArray[i]['C'], 
 //			srpCumFreqArray[i]['G'], srpCumFreqArray[i]['T'] 
 			double[] probBases = new double[4];
+			
 			int sum = 	srpCountArray[i]['A'] + srpCountArray[i]['C'] + 
 					srpCountArray[i]['G'] + srpCountArray[i]['T'] ;
 			
-			probBases[0] = ArithmeticUtils.binomialCoefficientLog(sum, srpCountArray[i]['A'])+
-					srpCountArray[i]['A']*LOG_ONE_MINUS_ERROR_RATE+(sum-srpCountArray[i]['A'])*LOG_ERROR_RATE;
-			
-			probBases[1]  = ArithmeticUtils.binomialCoefficientLog(sum, srpCountArray[i]['C'])+
-					srpCountArray[i]['C']*LOG_ONE_MINUS_ERROR_RATE+(sum-srpCountArray[i]['C'])*LOG_ERROR_RATE;
-					
-			probBases[2] = ArithmeticUtils.binomialCoefficientLog(sum, srpCountArray[i]['G'])+
-					srpCountArray[i]['G']*LOG_ONE_MINUS_ERROR_RATE+(sum-srpCountArray[i]['G'])*LOG_ERROR_RATE;
-					
-			probBases[3] = ArithmeticUtils.binomialCoefficientLog(sum, srpCountArray[i]['T'])+
-					srpCountArray[i]['T']*LOG_ONE_MINUS_ERROR_RATE+(sum-srpCountArray[i]['T'])*LOG_ERROR_RATE;
-
+			for (int c = 0; c < DNA_CHARS.length; c++) {
+				int count = srpCountArray[i][DNA_CHARS[c]];
+				probBases[c] = ArithmeticUtils.binomialCoefficientLog(sum, count)+
+						count*LOG_ONE_MINUS_ERROR_RATE+(sum-count)*LOG_ERROR_RATE;
+			}
 //			System.out.println(srpCountArray[i]['A'] +"\t"+ srpCountArray[i]['C'] +"\t"+ srpCountArray[i]['G'] +"\t"+ srpCountArray[i]['T']);
 			System.out.println(Arrays.toString(probBases));
 			
 			int[] counts =  new int[] {
 					srpCountArray[i]['A'], srpCountArray[i]['C'], 
 					srpCountArray[i]['G'], srpCountArray[i]['T'] };
-//			counts =  new int[] {
-//					0,50,49,51};
+
 
 			double[] result = dmd.FourDirichletMultinomialLogProbability(counts);
 //			double max = StatUtils.max(result);
@@ -177,9 +173,11 @@ public class ShortReadMapping {
 //			
 			for (int j = 0; j < probBases.length; j++) {
 				probBases[j] /= sumProb;
+				srpFreqArray[i][j] = probBases[j];
 			}
 //			System.out.println(Arrays.toString(probBases));
 			srpCumFreqArray[i][0] = probBases[0];
+
 			for (int j = 1; j < probBases.length; j++) {
 				srpCumFreqArray[i][j] = probBases[j] + srpCumFreqArray[i][j-1];
 			}
@@ -250,6 +248,7 @@ public class ShortReadMapping {
 				else{
 					for (int j = 0; j < srpCumFreqArray[i].length; j++) {
 						srpCumFreqArray[i][j] /= sum;
+						srpFreqArray[i][j] = srpCumFreqArray[i][j];
 						if (srpCumFreqArray[i][j] < LOW_VARIANCE_THRESHOLD){
 							lowVarianceCount++;
 						}
@@ -266,6 +265,8 @@ public class ShortReadMapping {
 //					System.out.println("<2: "+ lowVarianceCount +"\t"+ Arrays.toString(srpCumFreqArray[i]));
 				}
 				if (lowVarianceCount == 2 ){
+//					isLowVarianceSite[i] = true;
+//					siteTypesArray[i] = SiteType.LOW_VAR;
 					siteTypesArray[i] = SiteType.HIGH_VAR;
 //					System.out.println("=2: "+ lowVarianceCount +"\t"+ Arrays.toString(srpCumFreqArray[i]));
 				}
@@ -310,7 +311,17 @@ public class ShortReadMapping {
 //		System.out.println("isXXSite:" + count1 +"\t"+ count2);
 	
 	}
-
+	public double getFreqAtSiteChar(int site, char c) {
+		
+		int state = DATA_TYPE.getState(c);
+		return srpFreqArray[site][state];
+		
+	}
+	public double[] getFreqAtSite(int site) {
+		
+		return srpFreqArray[site];
+		
+	}
 	private void createBitSetArray() {
 		bitSetArray = new BitSet[mapToSrp.length];
 		bitVectorArray = new BitVector[mapToSrp.length];

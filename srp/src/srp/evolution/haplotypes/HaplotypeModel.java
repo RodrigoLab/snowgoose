@@ -82,12 +82,14 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 			this.srpMap = srpMap;
 			for (int i = 0; i < sequenceCount; i++) {
 				char[] randHap = this.srpMap.getSemiRandHaplotype2();
+//				char[] randHap = this.srpMap.getSemiRandHaplotype();
 //				char[] randHap = this.srpMap.getRandHaplotype();
-				System.out.println(String.valueOf(randHap));
+//				System.out.println(String.valueOf(randHap));
 				Haplotype haplotype = getHaplotype(i);
 //				for (int s = 0; s < sequenceLength; s++) {
 //					haplotype.setCharAt(s, randHap[s]);
 //				}
+				System.out.println(randHap);
 				haplotype.setSequenceString(randHap);
 				setHaplotype(i, haplotype);
 				
