@@ -11,7 +11,7 @@ import dr.math.MathUtils;
 
 public abstract class AbstractHaplotypeOperator extends AbstractCoercableOperator {
 
-	public static final DataType DATATYPE = Nucleotides.INSTANCE;
+	public static final DataType DATA_TYPE = Nucleotides.INSTANCE;
 	public static final char[] DNA_CHARS = {'A','C','G','T'};
 	public static final int DIMENSION = DNA_CHARS.length;
 	

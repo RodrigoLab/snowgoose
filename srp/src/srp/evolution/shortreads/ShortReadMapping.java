@@ -17,6 +17,7 @@ import cern.colt.bitvector.BitVector;
 
 import com.google.common.primitives.Ints;
 import com.sun.org.apache.bcel.internal.generic.DNEG;
+import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
 
 import dr.evolution.alignment.Alignment;
 import dr.evolution.datatype.DataType;
@@ -76,6 +77,11 @@ public class ShortReadMapping {
 	private boolean[] isLowVarianceSite;
 	private int lvs;
 	private SiteType[] siteTypesArray;
+	private ArrayList<Integer> listLowVarSite;
+	private ArrayList<Integer> listHighVarSite;
+	private Integer[] highVarSiteArrayTemp;
+	public int[] highVarSiteArray;
+	public int[] lowVarSiteArray;
 	
 	private void init(int l) {
 		fullHaplotypeLength = l;
@@ -197,6 +203,7 @@ public class ShortReadMapping {
 		System.exit(12);
 		
 	}
+	
 	private void createCumFreqArray() {
 
 //		String[] srpArray = getSrpArray();
@@ -206,7 +213,8 @@ public class ShortReadMapping {
 		isFixedSite = new boolean[srpCumFreqArray.length];
 		isLowVarianceSite = new boolean[srpCumFreqArray.length];
 		siteTypesArray = new SiteType[srpCumFreqArray.length];
-		
+		listLowVarSite = new ArrayList<Integer>();
+		listHighVarSite = new ArrayList<Integer>();
 		for (int i = 0; i < srpCumFreqArray.length; i++) {
 			srpCumFreqArray[i]  = new double[] {
 					srpCountArray[i]['A'], srpCountArray[i]['C'], 
@@ -254,20 +262,23 @@ public class ShortReadMapping {
 						}
 					}
 				}
-				if (lowVarianceCount > 2 ){
+				if (lowVarianceCount > 2 ){ // LLLH,
 					isLowVarianceSite[i] = true;
 					siteTypesArray[i] = SiteType.LOW_VAR;
 //					System.out.println(">2: "+ lowVarianceCount +"\t"+ Arrays.toString(srpCumFreqArray[i]));
 					lvs++;
+					listLowVarSite.add(i);
 				}
-				if (lowVarianceCount < 2 ){
+				if (lowVarianceCount < 2 ){ // H H H L, HHHH
 					siteTypesArray[i] = SiteType.HIGH_VAR;
+					listHighVarSite.add(i);
 //					System.out.println("<2: "+ lowVarianceCount +"\t"+ Arrays.toString(srpCumFreqArray[i]));
 				}
-				if (lowVarianceCount == 2 ){
+				if (lowVarianceCount == 2 ){ // H H L L
 //					isLowVarianceSite[i] = true;
 //					siteTypesArray[i] = SiteType.LOW_VAR;
 					siteTypesArray[i] = SiteType.HIGH_VAR;
+					listHighVarSite.add(i);
 //					System.out.println("=2: "+ lowVarianceCount +"\t"+ Arrays.toString(srpCumFreqArray[i]));
 				}
 				if(numMinCount == 3){
@@ -309,7 +320,11 @@ public class ShortReadMapping {
 //			if(isLowVarianceSite[j]) count2++;
 //		}
 //		System.out.println("isXXSite:" + count1 +"\t"+ count2);
-	
+//		highVarSiteArray = new int[listHighVarSite.size()];
+//		highVarSiteArrayTemp = new Integer[listHighVarSite.size()];
+//		listHighVarSite.toArray(highVarSiteArrayTemp);
+		highVarSiteArray = Ints.toArray(listHighVarSite);
+		lowVarSiteArray = Ints.toArray(listLowVarSite);
 	}
 	public double getFreqAtSiteChar(int site, char c) {
 		
@@ -744,8 +759,9 @@ public class ShortReadMapping {
 //		System.out.println(siteTypesArray[pos] +"\t"+ Arrays.toString(srpCumFreqArray[pos]));
 
 		double d = MathUtils.nextDouble();
+		double[] freq = srpCumFreqArray[pos];
 		for (int i = 0; i < 3; i++) {
-			if (d <= srpCumFreqArray[pos][i]) {
+			if (d <= freq[i]) {
 				return DNA_CHARS[i];
 			}
 		}
@@ -885,6 +901,13 @@ public class ShortReadMapping {
 		return GAP;
 	}
 //	
+
+	public double calculateLogqOldNewChar(int site, char oldChar, char newChar) {
+		double probOldGivenNew = getFreqAtSiteChar(site, oldChar);
+		double probNewGivenOld = getFreqAtSiteChar(site, newChar);
+		double logq = Math.log(probNewGivenOld/probOldGivenNew);
+		return logq;
+	}
 
 	
 }

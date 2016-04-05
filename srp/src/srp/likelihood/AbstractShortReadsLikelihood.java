@@ -197,7 +197,7 @@ public abstract class AbstractShortReadsLikelihood extends
 			allSrpPos.addAll(mapToSrp);
 		}
 	}
-
+	
 	protected void recalculateBitSet(int[] siteIndexs) {
 		bitSet.clear();
 //		BitSet bitSet = new BitSet(srpCount);

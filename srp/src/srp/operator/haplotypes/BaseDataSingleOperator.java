@@ -29,6 +29,7 @@ public class BaseDataSingleOperator extends AbstractSingleOperator {
 
 	static int site;
 	static int hap;
+	
 	@Override
 	public double doOperation() throws OperatorFailedException {
 
@@ -105,9 +106,7 @@ public class BaseDataSingleOperator extends AbstractSingleOperator {
 				
 				newChar = srpMap.nextBaseFreqAt(siteIndex);
 				char oldChar = haplotype.getChar(siteIndex);
-				double oldCharProb = srpMap.getFreqAtSiteChar(siteIndex, oldChar);
-				double newCHarProb = srpMap.getFreqAtSiteChar(siteIndex, newChar);
-				logq = Math.log(newCHarProb/oldCharProb);
+				logq = srpMap.calculateLogqOldNewChar(siteIndex, oldChar, newChar);
 //				System.out.println(siteType +"\t"+ oldChar +"\t"+ newChar +"\t"+ logq +"\t"+ 
 //						Arrays.toString(srpMap.getFreqAtSite(siteIndex))	);
 //				int oldState = haplotype.getState(siteIndex);
@@ -149,7 +148,7 @@ public class BaseDataSingleOperator extends AbstractSingleOperator {
 		
 		haplotypeModel.endAlignmentModelOperation();
 
-		return 0.0;
+		return logq;
 	}
 
 

@@ -36,6 +36,10 @@ public class HaplotypeSwapSectionOperator extends HaplotypeRecombinationOperator
 				CoercionMode.COERCION_OFF);
 	}
 
+	public HaplotypeSwapSectionOperator(HaplotypeModel haplotypeModel, CoercionMode mode) {
+		super(haplotypeModel, (int) (haplotypeModel.getHaplotypeLength() * 0.01),
+				mode);
+	}
 
 	
 	public HaplotypeSwapSectionOperator(HaplotypeModel haplotypeModel, int length, CoercionMode mode) {

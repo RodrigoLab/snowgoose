@@ -20,6 +20,8 @@ import srp.operator.haplotypes.HaplotypeSwapSectionOperator;
 import srp.operator.haplotypes.NonUniqueBasesMultiOperator;
 import srp.operator.haplotypes.NonUniqueBasesTransitionOperator;
 import srp.operator.haplotypes.NonUniqueBasesTransversionOperator;
+import dr.evolution.alignment.Alignment;
+import dr.evolution.alignment.SitePatterns;
 import dr.evolution.datatype.Nucleotides;
 import dr.evomodel.branchratemodel.StrictClockBranchRates;
 import dr.evomodel.operators.ExchangeOperator;
@@ -29,6 +31,7 @@ import dr.evomodel.sitemodel.GammaSiteModel;
 import dr.evomodel.substmodel.FrequencyModel;
 import dr.evomodel.substmodel.HKY;
 import dr.evomodel.tree.TreeModel;
+import dr.evomodel.treelikelihood.TreeLikelihood;
 import dr.evomodelxml.sitemodel.GammaSiteModelParser;
 import dr.evomodelxml.substmodel.HKYParser;
 import dr.evomodelxml.treelikelihood.TreeLikelihoodParser;
@@ -86,10 +89,12 @@ public class MCMCSetupHelperHaplotype extends MCMCSetupHelper {
 		parameterList.put("freqs", freqs);
 		parameterList.put("treeLikelihood", treeLikelihood);
 		parameterList.put("branchRateModel", branchRateModel);
+		parameterList.put("rateParameter", rateParameter);
 		
 		return parameterList;
 	}
 
+	@Deprecated
 	public static TreeLikelihoodExt setupTreeLikelihood(Parameter kappa,
 			Parameter freqs, HaplotypeModel haplotypeModel,
 			TreeModel treeModel, StrictClockBranchRates branchRateModel) {
@@ -120,6 +125,54 @@ public class MCMCSetupHelperHaplotype extends MCMCSetupHelper {
 		
 	
 		return treeLikelihood;
+	}
+
+
+	public static HashMap<String, Object> beastDefaultsetupTreeLikelihoodHaplotypeModel(TreeModel treeModel,
+			Alignment trueAlignment) {
+		
+		
+		// clock model
+		Parameter rateParameter = new Parameter.Default(StrictClockBranchRates.RATE, 1e-5, 0, 1);
+		StrictClockBranchRates branchRateModel = new StrictClockBranchRates(rateParameter);
+	
+		Parameter freqs = new Parameter.Default("frequency", new double[]{0.25, 0.25, 0.25, 0.25});
+		Parameter kappa = new Parameter.Default(HKYParser.KAPPA, 1.0, 0, 100.0);
+
+		// Sub model
+		FrequencyModel f = new FrequencyModel(Nucleotides.INSTANCE, freqs);
+		HKY hky = new HKY(kappa, f);
+
+		// siteModel
+		GammaSiteModel siteModel = new GammaSiteModel(hky);
+		Parameter mu = new Parameter.Default(
+				GammaSiteModelParser.MUTATION_RATE, 1, 0, Double.POSITIVE_INFINITY);
+		siteModel.setMutationRateParameter(mu);
+
+		// Simulate halotypes
+//		if(errorRate>0){
+//			haplotypeModel.simulateSequence(errorRate, siteModel, hky, treeModel, srpMap);
+//		}
+		
+		SitePatterns patterns = new SitePatterns(trueAlignment, null, 0, -1, 1, true);
+		// treeLikelihood
+		TreeLikelihood treeLikelihood = new TreeLikelihood(
+				patterns, treeModel, siteModel, branchRateModel, null,
+				false, false, true, false, false);
+		treeLikelihood.setId(TreeLikelihoodParser.TREE_LIKELIHOOD);
+		
+		// treeLikelihood
+//		TreeLikelihoodExt treeLikelihood = MCMCSetupHelper.setupTreeLikelihood(kappa, freqs,
+//				haplotypeModel, treeModel, branchRateModel);
+//	
+		HashMap<String, Object> parameterList = new HashMap<String, Object>();
+		parameterList.put("kappa", kappa);
+		parameterList.put("freqs", freqs);
+		parameterList.put("treeLikelihood", treeLikelihood);
+		parameterList.put("branchRateModel", branchRateModel);
+		parameterList.put("rateParameter", rateParameter);
+		
+		return parameterList;
 	}
 
 	public static List<MCMCOperator> defalutTreeOperators(
@@ -189,28 +242,43 @@ public class MCMCSetupHelperHaplotype extends MCMCSetupHelper {
 //			ArrayList<MCMCOperator> OperatorList = new ArrayList<MCMCOperator>();
 
 		operator = new BaseDataSingleOperator(haplotypeModel);
-		operator.setWeight(opLarge);
-		schedule.addOperator(operator);
-		
-		operator = new BasesDataMultiOperator(haplotypeModel, 6,
-				CoercionMode.COERCION_ON);
 		operator.setWeight(opMed);
-		// schedule.addOperator(operator);
-
-		operator = new BasesDataMultiOperator(haplotypeModel, 0.01,
-				CoercionMode.COERCION_OFF);
-		operator.setWeight(opLarge);
 		schedule.addOperator(operator);
 		
+//		operator = new BasesDataMultiOperator(haplotypeModel, 6,
+//				CoercionMode.COERCION_ON);
+//		operator.setWeight(opMed);
+//		 schedule.addOperator(operator);
+
+//		operator = new BasesDataMultiOperator(haplotypeModel, 0.01, CoercionMode.COERCION_ON);
+//		operator.setWeight(opLarge);
+//		schedule.addOperator(operator);
+		
+		operator = new BasesDataMultiOperator(haplotypeModel, 0.01, CoercionMode.COERCION_ON,1) ;
+		operator.setWeight(opMed);
+		schedule.addOperator(operator);
+		
+		operator = new BasesDataMultiOperator(haplotypeModel, 0.01, CoercionMode.COERCION_ON,2);
+		operator.setWeight(opSmall);
+		schedule.addOperator(operator);
+		
+		operator = new BasesDataMultiOperator(haplotypeModel, 0.01, CoercionMode.COERCION_ON,3);
+		operator.setWeight(opMed);
+		schedule.addOperator(operator);
 		
 //		operator = new BaseSingleOperator(haplotypeModel);
 //		operator.setWeight(opHuge);
 ////		schedule.addOperator(operator);
 //
+
+		operator = new BasesConsecutiveOperator(haplotypeModel, 20, CoercionMode.COERCION_ON);
+		operator.setWeight(opMed);
+//		schedule.addOperator(operator);
+
 //		operator = new BasesMultiOperator(haplotypeModel, 6, CoercionMode.COERCION_OFF);
-//		operator.setWeight(opLarge/6.0);
-////		schedule.addOperator(operator);
-//		
+//		operator.setWeight(opMed);
+//		schedule.addOperator(operator);
+		
 //		operator = new BasesMultiOperator(haplotypeModel, 1, CoercionMode.COERCION_OFF);
 //		operator.setWeight(opHuge);
 ////		schedule.addOperator(operator);
@@ -271,13 +339,13 @@ public class MCMCSetupHelperHaplotype extends MCMCSetupHelper {
 //		schedule.addOperator(operator);
 		
 		operator = new HaplotypeSwapSectionOperator(haplotypeModel,
-				(int) (haplotypeModel.getHaplotypeLength() * 0.05),
+				(int) (haplotypeModel.getHaplotypeLength() * 0.1),
 				CoercionMode.COERCION_OFF);
 		operator.setWeight(opMed);
 //		schedule.addOperator(operator);
 		
-		operator = new HaplotypeSwapSectionOperator(haplotypeModel);
-		operator.setWeight(opMed);
+		operator = new HaplotypeSwapSectionOperator(haplotypeModel, CoercionMode.COERCION_ON);
+		operator.setWeight(opLarge);
 		schedule.addOperator(operator);
 		
 //		operator = new HaplotypeSwapSectionOperator(haplotypeModel, 60, CoercionMode.COERCION_OFF);
@@ -289,8 +357,8 @@ public class MCMCSetupHelperHaplotype extends MCMCSetupHelper {
 //		schedule.addOperator(operator);
 		
 		
-		operator = new HaplotypeReplaceSectionOperator(haplotypeModel, 12, CoercionMode.COERCION_ON);
-		operator.setWeight(opMed);
+//		operator = new HaplotypeReplaceSectionOperator(haplotypeModel, 12, CoercionMode.COERCION_ON);
+//		operator.setWeight(opMed);
 //		schedule.addOperator(operator);
 		
 //		operator = new HaplotypeReplaceSectionOperator(haplotypeModel, 600, CoercionMode.COERCION_OFF);
@@ -302,6 +370,16 @@ public class MCMCSetupHelperHaplotype extends MCMCSetupHelper {
 //		operator = new ColumnOperator(haplotypeModel, 7, CoercionMode.COERCION_OFF);
 //		operator.setWeight(opLarge);
 //		schedule.addOperator(operator);
+		
+		return null;
+	}
+
+
+	public static ArrayList<MCMCOperator> basicOperators(OperatorSchedule schedule,
+					Parameter... parameters) {
+
+		MCMCOperator operator;
+
 		boolean addOtherOps = true;
 		if(addOtherOps){
 		for (Parameter parameter : parameters) {
@@ -330,6 +408,5 @@ public class MCMCSetupHelperHaplotype extends MCMCSetupHelper {
 		}
 		return null;
 	}
-
 
 }

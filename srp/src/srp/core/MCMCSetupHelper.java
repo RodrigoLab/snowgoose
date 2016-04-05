@@ -133,6 +133,50 @@ public class MCMCSetupHelper {
 		
 	}
 
+	public static HashMap<String, Likelihood> setupCompoundLikelihood(Parameter popSize, Parameter kappa,
+			Likelihood coalescent, Likelihood treeLikelihood) {
+	
+		// CompoundLikelihood
+		HashMap<String, Likelihood> compoundLikelihoods = new HashMap<String, Likelihood>(4);
+	
+		List<Likelihood> likelihoods = new ArrayList<Likelihood>();
+	
+		// Prior
+		OneOnXPrior oneOnX = new OneOnXPrior();
+		oneOnX.addData(popSize);
+	
+		DistributionLikelihood logNormalLikelihood = new DistributionLikelihood(
+				new LogNormalDistribution(1.0, 1.25), 0); // meanInRealSpace="false"
+		logNormalLikelihood.addData(kappa);
+	
+		likelihoods.add(oneOnX);
+		likelihoods.add(logNormalLikelihood);
+		likelihoods.add(coalescent);
+		Likelihood prior = new CompoundLikelihood(0, likelihoods);
+		prior.setId(CompoundLikelihoodParser.PRIOR);
+		compoundLikelihoods.put(CompoundLikelihoodParser.PRIOR, prior);
+	
+		// Likelihood
+		likelihoods.clear();
+		likelihoods.add(treeLikelihood);
+		Likelihood likelihood = new CompoundLikelihood(-1, likelihoods);
+		likelihood.setId(CompoundLikelihoodParser.LIKELIHOOD);
+		compoundLikelihoods.put(CompoundLikelihoodParser.LIKELIHOOD, likelihood);
+	
+		
+		// Posterior
+		likelihoods.clear();
+		likelihoods.add(prior);
+		likelihoods.add(likelihood);
+		
+		Likelihood posterior = new CompoundLikelihood(0, likelihoods);
+		posterior.setId(CompoundLikelihoodParser.POSTERIOR);
+		compoundLikelihoods.put(CompoundLikelihoodParser.POSTERIOR, posterior);
+	
+		return compoundLikelihoods;
+		
+	}
+	
 	public static MCLogger addToLogger(MCLogger mcLogger, Loggable... loggableParameter) {
 		for (Loggable loggable : loggableParameter) {
 			mcLogger.add(loggable);
