@@ -30,6 +30,7 @@ import srp.operator.spectrum.RecombinationSpectrumOperator;
 import srp.operator.spectrum.RecombineSectionSpectrumOperator;
 import srp.operator.spectrum.SwapMultiSpectrumOperator;
 import srp.operator.spectrum.SwapSingleSpectrumOperator;
+import test.TestUtils;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.SimpleAlignment;
 import dr.inference.markovchain.MarkovChain;
@@ -72,7 +73,8 @@ public class ShortReadsSpectrumLikelihoodTest {
 
 //		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/snowgoose/srp/unittest/", "HaplotypeModelTest_10_srp.fasta");
 //		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/snowgoose/srp/unittest/", "H4_srp.fasta");
-		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/snowgoose/srp/unittest/", "SpectrumTest_50srp_200bp.fasta");
+		String dataDir = TestUtils.getUnittestDir();
+		Alignment alignment = DataImporter.importShortReads(dataDir, "SpectrumTest_50srp_200bp.fasta");
 		srpMap = new ShortReadMapping(alignment);
 		spectrumModel = new SpectrumAlignmentModel(alignment.getSiteCount(),  4);
 	}

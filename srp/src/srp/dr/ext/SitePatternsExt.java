@@ -3,6 +3,7 @@ package srp.dr.ext;
 import java.util.Arrays;
 
 import srp.evolution.OperationRecord;
+import srp.evolution.haplotypes.Haplotype;
 import srp.evolution.haplotypes.HaplotypeModel;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.SiteList;
@@ -75,34 +76,51 @@ public class SitePatternsExt extends SitePatterns {
 
 		OperationRecord record = haplotypeModel.getOperationRecord();
 		int hapIndex = record.getSpectrumIndex();
-		int[] siteIndex = record.getAllSiteIndexs();
-		int[] pattern;
+//		int[] pattern;
+		int state;
+		Haplotype haplotype;
+		
 		switch (record.getOperation()) {
 		case SINGLE:
-		case COLUMN:
+			haplotype = haplotypeModel.getHaplotype(hapIndex);
 			int site = record.getSingleIndex();
-			pattern = haplotypeModel.getSitePattern(site);
-			patterns[site] = pattern;
+			state = haplotype.getState(site);
+			patterns[site][hapIndex] = state;
 
 			break;
 		case MULTI:
+			haplotype = haplotypeModel.getHaplotype(hapIndex);
+			int[] siteIndex = record.getAllSiteIndexs();
 			for (int s : siteIndex) {
-				pattern = haplotypeModel.getSitePattern(s);
-				patterns[s] = pattern;
+				state = haplotype.getState(s);
+				patterns[s][hapIndex] = state;
 			}
 			break;
-//		case COLUMN:
-//
-//			break;
+		case COLUMN:
+			site = record.getSingleIndex();
+			for ( hapIndex = 0; hapIndex < haplotypeModel.getHaplotypeCount(); hapIndex++) {
+				haplotype = haplotypeModel.getHaplotype(hapIndex);
+				state = haplotype.getState(site);
+				patterns[site][hapIndex] = state;
+			}
+			break;
 		case RECOMBINATION:
 			int[] twoPositions = record.getRecombinationPositionIndex();
+			int[] twoHapIndex = record.getRecombinationSpectrumIndex();
+			haplotype = haplotypeModel.getHaplotype(twoHapIndex[0]);
+			Haplotype haplotype1 = haplotypeModel.getHaplotype(twoHapIndex[1]);
 			for (int s = twoPositions[0]; s < twoPositions[1]; s++) {
-				pattern = haplotypeModel.getSitePattern(s);
-				patterns[s] = pattern;
+				state = haplotype.getState(s);
+				patterns[s][twoHapIndex[0]] = state;
+				state = haplotype1.getState(s);
+				patterns[s][twoHapIndex[1]] = state;
 			}
 			
 			break;
-
+		case FULL:
+//			System.out.println("Update sitepatternExt FULL");
+			updateAlignment(haplotypeModel, 0);
+			break;
 		default:
 			throw new IllegalArgumentException("Invalid operation type "
 					+ record.getOperation());
@@ -399,6 +417,28 @@ public class SitePatternsExt extends SitePatterns {
 	private boolean prune;
 	private int pruningThreshold;
 
+	public void restoreState(HaplotypeModel haplotypeModel) {
+		updateAlignment(haplotypeModel);
+//		OperationRecord record = haplotypeModel.getOperationRecord();
+//		int hapIndex = record.getSpectrumIndex();
+//		int[] siteIndex = record.getAllSiteIndexs();
+//		int[] pattern;
+//		switch (record.getOperation()) {
+//		case SINGLE:
+//		case COLUMN:
+//			int site = record.getSingleIndex();
+//			pattern = haplotypeModel.getStoredSitePattern(site);
+//			patterns[site] = pattern;
+//
+//			break;
+//		
+//		}
+	}
 //	SitePatterns patterns2 = new SitePatterns(alignment, null, 0, -1, 1, true);
+
+	public void storeState() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

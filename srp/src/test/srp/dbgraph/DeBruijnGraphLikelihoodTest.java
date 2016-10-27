@@ -4,12 +4,15 @@ import static org.junit.Assert.*;
 
 import java.util.Arrays;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.math3.stat.StatUtils;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import com.google.common.primitives.Ints;
 
 import srp.dbgraph.CompatibleSets;
 import srp.dbgraph.DeBruijnGraph;
@@ -94,6 +97,42 @@ public class DeBruijnGraphLikelihoodTest {
 	
 	
 	@Test
+	public void testComputeDHashTable() throws Exception {
+
+		DeBruijnImporter dbi = new DeBruijnImporter(dataDir);
+		DeBruijnGraph dbg = dbi.importDeBruijnGraph("N10_cond.graph");
+		CompatibleSets cSets = dbi.importCompatibleSet("N10_comp.txt");
+		
+		DeBruijnGraphLikelihood dbgLikelihood = new DeBruijnGraphLikelihood(dbg, cSets);
+		double[][] expecteds = new double[15][15];
+		
+		PathSet subPaths = new PathSet(false);
+		Path path = new Path("1:1 2:9 3:10 4:13"); 
+		subPaths.addPath(path);
+		expecteds[1][9]++;
+		expecteds[9][10]++;
+		expecteds[13][10]++;
+		double[][] computeDHashTable = dbgLikelihood.computeDHashTable(subPaths);
+		for (int i = 0; i < computeDHashTable.length; i++) {
+			System.out.println(Arrays.toString(computeDHashTable[i]));
+			assertArrayEquals(expecteds[i], computeDHashTable[i], 0);
+		}
+		
+		path = new Path("1:3 2:9 3:10 4:12 5:11 6:13"); 
+		subPaths.addPath(path);
+		
+		expecteds[3][11]++;
+		expecteds[9][10]++;
+		expecteds[11][12]++;
+		expecteds[12][13]++;
+		expecteds[13][10]++;
+		computeDHashTable = dbgLikelihood.computeDHashTable(subPaths);
+		for (int i = 0; i < computeDHashTable.length; i++) {
+			System.out.println(Arrays.toString(computeDHashTable[i]));
+			assertArrayEquals(expecteds[i], computeDHashTable[i], 0);
+		}
+	}
+	@Test
 	public void testLikelihood() throws Exception {
 		
 		DeBruijnImporter dbi = new DeBruijnImporter(dataDir);
@@ -111,7 +150,8 @@ public class DeBruijnGraphLikelihoodTest {
 //		double ln = dbgLikelihood.calculateLikelihood(allPaths);
 //		System.out.println(ln);
 		
-		
+		double expected;
+		double ln;
 		int[] nodeList = new int[]{63,26,119,30,27,25,28,75,14,92,24,31,78,121,22,106,13,23,29,6,3,36,51,34,37,62};
 		PathSet subPaths = new PathSet(false);
 		for (int i : nodeList) {
@@ -119,12 +159,36 @@ public class DeBruijnGraphLikelihoodTest {
 //			System.out.println(i +"\t"+ path.getNodeList());
 			subPaths.addPath(path);
 		}
-		double ln = dbgLikelihood.calculateLikelihood(subPaths);
-		System.out.println(ln);
+//		System.out.println(subPaths.);
+//		63 26 119 30 27 25 28 75 14 92 24 31 78 121 22 106 13 23 29 6 3 36 51 34 37 62 -728496975.229625
+//		63 7 119 30 27 25 75 14 92 24 31 91 78 121 22 106 13 23 29 6 3 36 51 34 37 62 -731239363.747458
+//		63 26 119 30 27 25 28 75 24 22 106 13 29 6 36 37 -727686676.708421
+//		63 119 30 27 25 75 24 22 106 13 29 6 36 37 -725722248.160968
+//		expected = -728496975.229625;
+//		ln = dbgLikelihood.calculateLikelihood(subPaths);
+//		System.out.println(ln);
+//		assertEquals(expected, ln, 1e-8);
 		
+		
+		nodeList = new int[]{63,119,30,27,25,75,24,22,106,13,29,6,36,37};
+//		Arrays.sort(nodeList);
+//		ArrayUtils.reverse(nodeList);
+		subPaths = new PathSet(false);
+		for (int i : nodeList) {
+			Path path = allPaths.getPath(i);
+//			System.out.println(path.getNodeCount());
+			subPaths.addPath(path);
+		}
+		
+		expected = -726374315.319293;
+		ln = dbgLikelihood.calculateLikelihood(subPaths);
+		System.out.println(ln);
+		assertEquals(expected, ln, 1e-6);
+		
+			
 		double[][] computeDHashTable = dbgLikelihood.computeDHashTable(subPaths);
 		for (int i = 0; i < computeDHashTable.length; i++) {
-//			System.out.println(Arrays.toString(computeDHashTable[i]));
+			System.out.println(Arrays.toString(computeDHashTable[i]));
 //			double sum = StatUtils.sum(computeDHashTable[i]);
 //			System.out.println(i +"\t"+ sum);
 		}

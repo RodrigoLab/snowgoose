@@ -13,6 +13,7 @@ import srp.evolution.spectrum.AbstractSpectrumAlignmentModel;
 import srp.evolution.spectrum.SpectraParameter;
 import srp.evolution.spectrum.SpectrumAlignmentUtils;
 import srp.evolution.spectrum.SpectrumAlignmentUtils.Dist;
+import test.TestUtils;
 import dr.evolution.alignment.Alignment;
 
 public class SpectrumAlignmentUtilsTest {
@@ -60,9 +61,9 @@ public class SpectrumAlignmentUtilsTest {
 	@Test
 	public void testDist() throws Exception {
 
-		String dataDir;
+//		String dataDir;
 
-		dataDir = "/home/sw167/workspaceSrp/snowgoose/srp/unittest/";
+		String dataDir = TestUtils.getUnittestDir();
 		String trueHaplotypeFile = "spectrumDist_true.fasta";
 //		>hap_0	GTGCA
 //		>hap_1	ATGTA

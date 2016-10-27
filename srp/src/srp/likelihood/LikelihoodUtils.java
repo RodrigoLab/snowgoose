@@ -1,4 +1,4 @@
-package srp.likelihood.haplotypes;
+package srp.likelihood;
 
 import srp.evolution.haplotypes.Haplotype;
 

@@ -23,7 +23,6 @@ public abstract class AbstractMultiOperator extends AbstractHaplotypeOperator {
 	
 	public AbstractMultiOperator(HaplotypeModel haplotypeModel, int basesCount, CoercionMode mode) {
 		super(haplotypeModel, mode);
-		
 		this.basesCount = basesCount;
 		
 //		allPosChars = new int[2][haplotypeLength];
@@ -124,8 +123,8 @@ public abstract class AbstractMultiOperator extends AbstractHaplotypeOperator {
 
 
 	private void checkParameterIsValid() {
-		if (basesCount > haplotypeLength){
-			basesCount = haplotypeLength;
+		if (basesCount >= haplotypeLength){
+			basesCount = haplotypeLength-1;
 		}
 	}
 

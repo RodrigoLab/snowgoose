@@ -23,7 +23,7 @@ public abstract class AbstractAlignmentModel extends AbstractModel implements Ta
 	
 	public static final DataType DATA_TYPE = ShortReads.INSTANCE;
 	public static final char GAP = DataType.GAP_CHARACTER;
-	public static final String TAXON_PREFIX = "taxa_";
+	public static final String TAXON_PREFIX = "hap_";
 	
 	protected boolean isEdit;
 	protected DataType dataType;

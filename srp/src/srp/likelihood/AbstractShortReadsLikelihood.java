@@ -1,5 +1,7 @@
 package srp.likelihood;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashSet;
@@ -27,7 +29,7 @@ public abstract class AbstractShortReadsLikelihood extends
 	public static final double LOG_ERROR_RATE = Math.log(ERROR_RATE);
 	public static final double LOG_NOT_ERROR_RATE = Math.log(NOT_ERROR_RATE);
 	public static final double LOG_ONE_MINUS_ERROR_RATE = Math.log(1-ERROR_RATE);
-	public static final double C = 1e-300;
+	public static final double C = 1e-100;
 	public static final double LOG_C = Math.log(C);
 
 	public static final DataType DATA_TYPE = ShortReads.INSTANCE;
@@ -69,8 +71,9 @@ public abstract class AbstractShortReadsLikelihood extends
 
 	protected int[][] mapToSrpArray;	
 	
-	protected int[][] allSrpState2D;
+	@Deprecated protected int[][] allSrpState2D; //For ShortReadSpecturmLikelihood Only
 	protected char[][] allSrpChar2D;
+	protected Integer[] allSrpLengthInteger;
 //	protected String[] srpArray;
 
 	public AbstractShortReadsLikelihood(String name, ShortReadMapping srpMap) {
@@ -103,7 +106,7 @@ public abstract class AbstractShortReadsLikelihood extends
 		mapToSrpArray = srpMap.getMapToSrpArray();
 		allSrpState2D = srpMap.getSrpState2DArray();
 		allSrpChar2D = srpMap.getSrpChar2DArray();
-				
+		allSrpLengthInteger = srpMap.getAllSrpLengthInteger();			
 		
 		
 	}
@@ -120,7 +123,6 @@ public abstract class AbstractShortReadsLikelihood extends
 		}
 		switch (operation) {
 		case NONE:
-//			logLikelihood = calculateSrpLikelihoodFull();
 			logLikelihood = calculateSrpLikelihoodFull();
 			break;
 		case FULL:
@@ -128,13 +130,18 @@ public abstract class AbstractShortReadsLikelihood extends
 			break;
 		case SINGLE:
 			logLikelihood = calculateSrpLikelihoodSingle();
+//			logLikelihood = calculateSrpLikelihoodFull();
 			break;
 		case COLUMN:
 			logLikelihood = calculateSrpLikelihoodColumn();
 			break;
+//		case MULTI:
+//			throw new IllegalArgumentException("Deal with multi later, not going to use it now\n");
+			
 		case MULTI:
 			logLikelihood = calculateSrpLikelihoodMulti();
 			break;
+			
 		case SWAP_SUBCOLUMN:
 			logLikelihood = calculateSrpLikelihoodSubColumn();
 			break;
@@ -144,6 +151,7 @@ public abstract class AbstractShortReadsLikelihood extends
 		// case MASTER:
 		// logLikelihood = calculateSrpLikelihoodFullMaster()
 		// break;
+			
 		default:
 			throw new IllegalArgumentException("Unknown operation type: "
 					+ operation);
@@ -189,7 +197,7 @@ public abstract class AbstractShortReadsLikelihood extends
 			allSrpPos.addAll(mapToSrp);
 		}
 	}
-
+	
 	protected void recalculateBitSet(int[] siteIndexs) {
 		bitSet.clear();
 //		BitSet bitSet = new BitSet(srpCount);

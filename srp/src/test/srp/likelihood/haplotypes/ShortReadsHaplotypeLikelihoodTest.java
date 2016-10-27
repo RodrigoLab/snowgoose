@@ -25,6 +25,7 @@ import srp.operator.haplotypes.BasesMultiOperator;
 import srp.operator.haplotypes.ColumnOperator;
 import srp.operator.haplotypes.HaplotypeRecombinationOperator;
 import srp.operator.haplotypes.HaplotypeSwapSectionOperator;
+import test.TestUtils;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.SimpleAlignment;
 import dr.inference.markovchain.MarkovChain;
@@ -59,7 +60,7 @@ public class ShortReadsHaplotypeLikelihoodTest {
 	public void setUp() throws Exception {
 
 
-		String dataDir = "/home/sw167/workspaceSrp/snowgoose/srp/unittest/";
+		String dataDir = TestUtils.getUnittestDir();
 	
 		String trueAlignmentFile = "H4_haplotypes.phyml";
 
@@ -207,10 +208,11 @@ public class ShortReadsHaplotypeLikelihoodTest {
 		double logLikelihood = srL.getLogLikelihood();
 
 		
-		double expected = -9.1933572982095146386;
+		double expected = -6.4817467758693254609;
+
 //		E = 0.0107; NE = 1-E 
-//		#log(sum(dbinom(c(0,6),8,E))) + log(sum(dbinom(c(3,2),6,E)))
-//		log(  E^0*NE^8 + E^6*NE^2    ) + log( E^3*NE^3 + E^2*NE^4     )
+//		#log(sum(dbinom(c(0,6),8,E))) + log(sum(dbinom(c(3,2),6,E))) /-6.4817467758693254609
+//		log(  E^0*NE^8 + E^6*NE^2    ) + log( E^3*NE^3 + E^2*NE^4     )//-9.1933572982095146386;
 
 
 		assertEquals(expected, logLikelihood, 1e-10);
@@ -243,10 +245,10 @@ public class ShortReadsHaplotypeLikelihoodTest {
 		double logLikelihood = srL.getLogLikelihood();
 
 		
-		double expected = -9.1933572982095146386;
+		double expected = -6.4817467758693254609;
 //		E = 0.0107; NE = 1-E 
 //		#log(sum(dbinom(c(0,6),8,E))) + log(sum(dbinom(c(3,2),6,E)))
-//		log(  E^0*NE^8 + E^6*NE^2    ) + log( E^3*NE^3 + E^2*NE^4     )
+//		log(  E^0*NE^8 + E^6*NE^2    ) + log( E^3*NE^3 + E^2*NE^4     ) = -9.1933572982095146386;
 
 		assertEquals(expected, logLikelihood, 1e-10);
 
@@ -302,7 +304,7 @@ public class ShortReadsHaplotypeLikelihoodTest {
 
 
 	@Test
-	public void testCalculateLikelihoodFixedSpectrum() {
+	public void testCalculateLikelihoodFixedHaplotype() {
 		String[] seqs = new String[]{
 				".AA",
 				".AC",
@@ -315,16 +317,24 @@ public class ShortReadsHaplotypeLikelihoodTest {
 		seqs = new String[]{"AAA"};
 		SimpleAlignment alignment = AlignmentUtils.createAlignment(seqs);
 		
-		HaplotypeModel spectrumModel = new HaplotypeModel(alignment);
-		ShortReadsHaplotypeLikelihood likelihood = new ShortReadsHaplotypeLikelihood(spectrumModel, srpMap);
+		HaplotypeModel haplotypeModel = new HaplotypeModel(alignment);
+		ShortReadsHaplotypeLikelihood likelihood = new ShortReadsHaplotypeLikelihood(haplotypeModel, srpMap);
 
 		double[] eachLikelihood = likelihood.unittestMethodGetEachLikelihood();
 //		System.out.println(Arrays.toString(eachLikelihood));
+//		double[] expecteds = new double[]{ 
+//				0+Math.log(1*NOT_ERROR+0*ERROR)*2,
+//				0+Math.log(1*NOT_ERROR+0*ERROR)*1+Math.log(0*NOT_ERROR+1*ERROR)*1,
+//				0+Math.log(1*NOT_ERROR+0*ERROR)*0+Math.log(0*NOT_ERROR+1*ERROR)*2
+//			};
+		
+//		E = 0.0107; NE = 1-E 
+//		#log(sum(dbinom(c(0),2,E)));log(sum(dbinom(c(1),2,E)));log(sum(dbinom(c(2),2,E)))
 		double[] expecteds = new double[]{ 
-				0+Math.log(1*NOT_ERROR+0*ERROR)*2,
-				0+Math.log(1*NOT_ERROR+0*ERROR)*1+Math.log(0*NOT_ERROR+1*ERROR)*1,
-				0+Math.log(1*NOT_ERROR+0*ERROR)*0+Math.log(0*NOT_ERROR+1*ERROR)*2
-			};
+			-0.021515313305920335391,
+			-3.8551220136072918976,
+			-9.0750230750285538761
+		};
 		assertArrayEquals(expecteds, eachLikelihood, 1e-8);
 	}
 
@@ -357,13 +367,13 @@ public class ShortReadsHaplotypeLikelihoodTest {
 		
 		boolean DEBUG = true;
 
-		int ite = (int) 1e4;
+		int ite = (int) 1e5;
 		
 		ShortReadsHaplotypeLikelihood likelihood = new ShortReadsHaplotypeLikelihood(haplotypeModel, srpMap);
 		double logLikelihoodOperator = 0;
 		double logLikelihoodFull;
 		double logLikelihoodMaster;
-
+		likelihood.makeDirty();
 		for (int i = 0; i < ite; i++) {
 //			System.out.println("==== ite: "+i);
 			likelihood.storeModelState();
@@ -376,27 +386,32 @@ public class ShortReadsHaplotypeLikelihoodTest {
             
             try{
             	mcmcOperator.operate();
-            	
             }
 			catch (OperatorFailedException e) {
                 operatorSucceeded = false;
 			}
-            
-            OperationType expectedSpectrumOperation = ((AbstractHaplotypeOperator) mcmcOperator).getOperationType();
-			
+	        	
 			if(operatorSucceeded){
+			    OperationType expectedSpectrumOperation = ((AbstractHaplotypeOperator) mcmcOperator).getOperationType();
 				logLikelihoodOperator = likelihood.getLogLikelihood();
 				assertEquals(expectedSpectrumOperation, likelihood.getOperation());
-				
-				HaplotypeModel haplotypeModelFull = HaplotypeModel.duplicateHaplotypeModel(haplotypeModel);
-				ShortReadsHaplotypeLikelihood likelihoodFull = new ShortReadsHaplotypeLikelihood(haplotypeModelFull, srpMap);
-				logLikelihoodFull = likelihoodFull.getLogLikelihood();
-//				logLikelihoodMaster = likelihood.calculateSrpLikelihoodFullMaster();
-				assertEquals(OperationType.NONE, likelihoodFull.getOperation());
-				assertEquals(logLikelihoodFull, logLikelihoodOperator, THRESHOLD*100);
+	            if(i<1000){
+					HaplotypeModel haplotypeModelFull = HaplotypeModel.duplicateHaplotypeModel(haplotypeModel);
+					ShortReadsHaplotypeLikelihood likelihoodFull = new ShortReadsHaplotypeLikelihood(haplotypeModelFull, srpMap);
+					logLikelihoodFull = likelihoodFull.getLogLikelihood();
+					assertEquals(OperationType.NONE, likelihoodFull.getOperation());
+					
+					logLikelihoodMaster = likelihood.calculateSrpLikelihoodFullMaster();
+					assertEquals("expMaster:"+logLikelihoodMaster, logLikelihoodFull, logLikelihoodOperator, THRESHOLD);
+					
+					
+					assertEquals(logLikelihoodMaster, logLikelihoodFull, THRESHOLD);
+					assertEquals(logLikelihoodMaster, logLikelihoodOperator, THRESHOLD);
+	            }
 				double rand = MathUtils.nextDouble();
 				accept = rand>0.5;
 			}
+
 			if(accept){
 				mcmcOperator.accept(0);
 				likelihood.acceptModelState();
@@ -415,6 +430,7 @@ public class ShortReadsHaplotypeLikelihoodTest {
 		HaplotypeModel haplotypeModelFull = HaplotypeModel.duplicateHaplotypeModel(haplotypeModel);
 		ShortReadsHaplotypeLikelihood likelihoodFull = new ShortReadsHaplotypeLikelihood(haplotypeModelFull, srpMap);
 		logLikelihoodFull = likelihoodFull.getLogLikelihood();
+		
 		assertEquals(logLikelihoodFull, logLikelihoodOperator, THRESHOLD);
 	}
 
@@ -445,7 +461,7 @@ public class ShortReadsHaplotypeLikelihoodTest {
 		
 		op = new HaplotypeRecombinationOperator(haplotypeModel, 0);
 		schedule.addOperator(op);
-		op.setWeight(1);
+		op.setWeight(0.1);
 		
 		op = new HaplotypeSwapSectionOperator(haplotypeModel, 10, null);
 		schedule.addOperator(op);
@@ -468,7 +484,7 @@ public class ShortReadsHaplotypeLikelihoodTest {
 
 
 	@Test
-	public void testFullvsColumnStoreRestore() throws Exception {
+	public void testFullvsColumn() throws Exception {
 
 		OperatorSchedule schedule = new SimpleOperatorSchedule();
 		MCMCOperator op; 
@@ -477,6 +493,28 @@ public class ShortReadsHaplotypeLikelihoodTest {
 //		op = new DeltaExchangeColumnSpectrumOperator(
 //				haplotypeModel, 0.1, null);
 		schedule.addOperator(op);
+		
+		assertLikelihoodOperator(haplotypeModel, schedule);
+
+	}
+	
+	@Test
+	public void testFullvsEverything() throws Exception {
+
+		OperatorSchedule schedule = new SimpleOperatorSchedule();
+		MCMCOperator op; 
+
+		op = new BaseSingleOperator(haplotypeModel);
+		schedule.addOperator(op);
+
+		op = new BasesMultiOperator(haplotypeModel, 5, null);
+		schedule.addOperator(op);
+		
+		op = new HaplotypeSwapSectionOperator(haplotypeModel, 10, null);
+		schedule.addOperator(op);
+//		
+//		op = new ColumnOperator(haplotypeModel, haplotypeModel.getHaplotypeCount(), null);
+//		schedule.addOperator(op);
 		
 		assertLikelihoodOperator(haplotypeModel, schedule);
 

@@ -6,6 +6,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 import srp.evolution.haplotypes.old.OldHaplotype;
 import test.srp.evolution.haplotypes.old.OldHaplotypeModelTest;
+import test.srp.evolution.haplotypes.old.OldHaplotypeTest;
 
 @RunWith(Suite.class)
 @SuiteClasses({ 
@@ -13,11 +14,13 @@ import test.srp.evolution.haplotypes.old.OldHaplotypeModelTest;
  
 	AlignmentUtilsTest.class,
 
+	HaplotypeModelTest.class,
+	HaplotypeTest.class,
 	SPSDistTest.class, 
 //	ShortReadTest.class
 	
 	OldHaplotypeModelTest.class,
-	OldHaplotype.class,
+	OldHaplotypeTest.class,
 	})
 public class AAllTestsHaplotypes {
 

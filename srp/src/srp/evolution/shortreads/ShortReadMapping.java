@@ -6,40 +6,44 @@ import java.util.BitSet;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.math3.stat.StatUtils;
+import org.apache.commons.math3.util.ArithmeticUtils;
+
+import srp.operator.haplotypes.AbstractHaplotypeOperator;
+import srp.distributions.DirichletMultinomialDistribution;
+import srp.likelihood.AbstractShortReadsLikelihood;
 import cern.colt.bitvector.BitVector;
 
 import com.google.common.primitives.Ints;
+import com.sun.org.apache.bcel.internal.generic.DNEG;
+import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
 
 import dr.evolution.alignment.Alignment;
 import dr.evolution.datatype.DataType;
 import dr.evolution.datatype.Nucleotides;
 import dr.evolution.sequence.Sequence;
 import dr.evolution.util.Taxon;
+import dr.math.MathUtils;
 //import java.util.BitSet;
 
 
-/*
-
-example mapToSrp[i].size
-49	49	53	53	53	54	55	56	57	60	61	61	61	61	61	61	61	62	62	62	63	63	63	63	63	63	64	64	64	64	64	64	66	66	67	67	68	68	69	70	70	70	71	74	74	75	75	76	76	76	77	78	79	79	80	81	81	81	83	83	83	84	85	87	87	88	88	89	89	89	90	91	92	92	92	92	92	93	93	93	95	95	95	96	96	96	97	97	98	98	98	101	102	103	103	105	105	105	105	105	106	107	108	108	108	108	109	110	110	111	112	112	113	113	113	114	115	115	115	115	
-116	116	116	116	116	116	116	116	117	117	117	117	117	117	117	117	118	119	119	119	120	120	120	122	123	124	124	126	126	126	127	127	128	127	127	127	128	127	126	126	126	127	127	127	127	127	127	128	127	126	127	127	127	127	128	128	128	128	128	129	130	131	129	128	130	130	131	130	130	131	132	134	135	135	133	133	133	134	135	136	136	135	134	134	134	133	132	131	131	132	130	130	130	132	131	130	130	130	130	128	128	129	128	127	130	130	130	130	129	131	132	132	132	133	132	132	134	135	134	134	
-133	132	133	133	133	132	130	130	131	131	131	131	132	133	133	133	133	133	134	133	132	134	133	133	132	131	133	134	134	135	136	136	135	136	138	138	139	139	140	140	141	140	141	141	141	140	141	141	141	139	139	141	144	143	143	143	143	144	144	144	142	142	141	140	140	142	142	142	142	142	142	142	143	143	143	143	144	144	145	144	145	145	145	145	143	143	142	145	145	146	144	144	143	141	141	141	141	140	140	141	140	140	140	142	141	142	141	141	141	141	142	143	143	143	143	143	142	141	140	140	
-141	142	140	140	140	140	140	140	139	139	138	140	140	140	141	141	141	142	144	145	144	143	143	143	144	144	145	146	145	143	143	143	144	145	145	145	144	145	148	148	148	147	146	145	144	144	144	144	146	149	151	151	149	150	150	153	152	152	152	154	154	154	154	156	157	156	156	158	158	159	158	156	155	156	157	156	156	156	155	154	154	154	153	152	153	151	152	154	153	153	154	154	154	153	152	151	153	153	151	150	151	151	153	155	155	153	154	153	152	151	151	151	151	150	150	149	151	152	152	152	
-153	150	149	148	148	147	147	146	148	149	150	149	148	147	147	147	146	145	144	144	145	145	146	146	146	146	146	147	147	146	146	147	147	148	148	149	149	149	149	149	146	147	148	147	147	146	146	146	149	149	148	148	148	148	149	150	151	153	151	152	152	153	153	154	154	153	153	153	151	151	151	151	149	150	148	149	148	148	149	150	150	149	149	147	147	147	147	146	145	145	144	144	144	145	145	145	145	143	142	144	146	147	148	149	149	150	150	150	149	148	147	147	147	147	147	147	146	145	146	147	
-147	146	148	150	150	150	150	150	150	150	150	151	151	151	151	152	151	152	153	153	154	153	152	153	154	155	155	155	156	155	154	155	155	154	154	156	155	154	153	153	154	154	155	156	156	156	157	157	155	155	155	154	154	154	153	154	153	154	155	156	154	156	154	149	149	149	148	148	149	149	148	146	147	147	148	148	148	147	147	146	144	143	143	140	140	141	141	140	139	140	142	141	141	141	141	140	140	140	140	141	141	141	141	141	141	141	142	142	143	144	144	145	145	144	145	142	143	141	142	141	
-141	141	142	142	142	143	145	147	146	146	146	147	144	145	145	140	140	139	139	138	138	138	139	138	138	138	139	140	138	138	140	143	143	146	146	146	145	145	145	145	144	144	145	146	145	145	145	144	144	144	144	144	147	147	148	145	143	141	142	142	142	143	143	143	144	143	143	143	142	143	142	142	140	139	138	138	139	139	139	139	140	140	140	139	139	137	137	137	137	136	135	137	136	138	139	139	140	138	139	139	140	140	140	139	139	140	140	141	140	140	140	140	141	141	140	139	140	140	141	141	
-140	140	140	141	141	141	141	142	142	140	139	140	140	141	141	141	141	140	139	138	138	138	137	140	141	140	140	140	140	138	137	137	136	136	139	139	136	138	137	136	135	136	136	136	135	136	136	137	137	137	139	139	140	140	142	142	142	142	142	142	143	143	141	141	141	140	141	140	139	139	139	139	140	140	141	142	142	142	143	145	144	144	143	143	142	144	145	144	145	146	145	146	146	146	145	143	143	142	144	142	141	142	142	141	141	141	142	142	143	144	146	147	146	145	142	142	142	143	142	142	
-143	144	145	145	146	145	145	144	144	143	145	145	141	143	143	143	144	145	145	146	146	147	145	144	145	145	145	144	144	145	145	144	143	144	144	143	145	146	145	143	143	143	143	143	142	142	140	140	141	141	142	142	140	141	143	143	143	145	146	144	142	142	141	140	140	140	140	141	142	142	142	141	138	138	139	139	138	138	138	137	137	137	137	137	137	137	137	137	136	136	134	133	132	132	129	129	128	127	127	125	125	124	124	123	123	121	121	119	119	119	118	117	116	116	116	115	115	114	114	114	
-113	113	113	112	112	112	112	110	110	109	109	106	104	102	102	102	99	98	98	98	98	98	97	96	96	96	96	96	94	94	94	93	90	90	90	88	88	88	88	88	88	88	87	86	86	85	84	83	83	83	83	83	83	82	81	81	80	79	79	79	77	77	77	76	75	73	73	72	72	72	72	72	72	70	69	69	68	65	65	64	64	63	63	63	62	62	62	62	61	61	61	59	59	59	59	59	59	59	58	57	54	54	54	51	50	50	50	48	46	46	45	43	43	42	41	41	40	36	23	remove taxa_0	0
-
-every position ~ 100ish reads.
- */
 public class ShortReadMapping {
-
+	
 	private static final int GAP = '-';
 	private static final DataType DATA_TYPE = Nucleotides.INSTANCE;
-
 	private static final double[] EQUAL_FREQ = new double[]{0.25, 0.5, 0.75, 1};
+	
+	public static final char[] DNA_CHARS = AbstractHaplotypeOperator.DNA_CHARS;
+	public static final double LOG_ERROR_RATE = AbstractShortReadsLikelihood.LOG_ERROR_RATE;
+	public static final double LOG_ONE_MINUS_ERROR_RATE = AbstractShortReadsLikelihood.LOG_ONE_MINUS_ERROR_RATE;
+
+	
+	
+	private static final double MIN_PERCENTAGE = 1;//0.1; 
+	private static final int MIN_READ_COUNT = 2;
+	private static final boolean IS_MIN_PROPORTION = true;
+	private static final double LOW_VARIANCE_THRESHOLD = 0.05;
 	
 	private ArrayList<Integer>[] mapToSrp; // each [] = position, each ArrayList map to which read
 	
@@ -61,6 +65,23 @@ public class ShortReadMapping {
 	private BitSet[] bitSetArray;
 	private BitVector[] bitVectorArray;
 	private int[] srpLength;
+	private char[][] srpChar2D;
+	private Integer[] allSrpLengthInteger;
+	
+	private double[][] srpCumFreqArray;
+	private double[][] srpFreqArray;
+	private int[][] srpCountArray;
+	
+
+	private boolean[] isFixedSite;
+	private boolean[] isLowVarianceSite;
+	private int lvs;
+	private SiteType[] siteTypesArray;
+	private ArrayList<Integer> listLowVarSite;
+	private ArrayList<Integer> listHighVarSite;
+	private Integer[] highVarSiteArrayTemp;
+	public int[] highVarSiteArray;
+	public int[] lowVarSiteArray;
 	
 	private void init(int l) {
 		fullHaplotypeLength = l;
@@ -92,7 +113,10 @@ public class ShortReadMapping {
 		
         int[][] frequencies = new int[fullHaplotypeLength][DATA_TYPE.getAmbiguousStateCount()];
 
-
+        srpCountArray = new int[fullHaplotypeLength]['T'+1];
+        srpFreqArray = new double[fullHaplotypeLength][4];
+        srpCumFreqArray = new double[fullHaplotypeLength][4];
+        
 		for (int i = 0; i < srpAlignment.getSequenceCount(); i++) {
 			Sequence s = srpAlignment.getSequence(i);
 			addSequence(s, setsOfAvailableChar, frequencies);
@@ -103,13 +127,216 @@ public class ShortReadMapping {
 		createSrpArray();
 		createMapToSrpArray();
 		createBitSetArray();
+		createSrpChar2DArray();
 		//calculated listOfAvailableChar(2)
-		calculateListOfAvailableChar(setsOfAvailableChar);
+		createListOfAvailableChar(setsOfAvailableChar);
 		calculateCumFreq();
+		createCumFreqArray(); //Use counts to create prob
+//		createProbForEachBase(); // likelihood -> prob, mdm
 		//TODO removed these cause old unit test to fail
+		System.out.println(lvs);
 
 	}
+	@Deprecated
+	private void createProbForEachBase(){
+		DirichletMultinomialDistribution dmd = new DirichletMultinomialDistribution();
+		
+		for (int i = 0; i < srpCumFreqArray.length; i++) {
+			
+//			srpCumFreqArray[i]['A'], srpCumFreqArray[i]['C'], 
+//			srpCumFreqArray[i]['G'], srpCumFreqArray[i]['T'] 
+			double[] probBases = new double[4];
+			
+			int sum = 	srpCountArray[i]['A'] + srpCountArray[i]['C'] + 
+					srpCountArray[i]['G'] + srpCountArray[i]['T'] ;
+			
+			for (int c = 0; c < DNA_CHARS.length; c++) {
+				int count = srpCountArray[i][DNA_CHARS[c]];
+				probBases[c] = ArithmeticUtils.binomialCoefficientLog(sum, count)+
+						count*LOG_ONE_MINUS_ERROR_RATE+(sum-count)*LOG_ERROR_RATE;
+			}
+//			System.out.println(srpCountArray[i]['A'] +"\t"+ srpCountArray[i]['C'] +"\t"+ srpCountArray[i]['G'] +"\t"+ srpCountArray[i]['T']);
+			System.out.println(Arrays.toString(probBases));
+			
+			int[] counts =  new int[] {
+					srpCountArray[i]['A'], srpCountArray[i]['C'], 
+					srpCountArray[i]['G'], srpCountArray[i]['T'] };
+
+
+			double[] result = dmd.FourDirichletMultinomialLogProbability(counts);
+//			double max = StatUtils.max(result);
+//			for (int j = 0; j < result.length; j++) {
+//				probBases[j] = result[j] - max;
+//			}
+			probBases = result;
+			System.out.println(Arrays.toString(probBases));
+			double sumProb = 0;
+			for (int j = 0; j < probBases.length; j++) {
+				probBases[j] = Math.exp(probBases[j]);
+				sumProb += probBases[j];
+			}
+//			System.out.println(sumProb);
+//			
+			for (int j = 0; j < probBases.length; j++) {
+				probBases[j] /= sumProb;
+				srpFreqArray[i][j] = probBases[j];
+			}
+//			System.out.println(Arrays.toString(probBases));
+			srpCumFreqArray[i][0] = probBases[0];
+
+			for (int j = 1; j < probBases.length; j++) {
+				srpCumFreqArray[i][j] = probBases[j] + srpCumFreqArray[i][j-1];
+			}
+			if(srpCumFreqArray[i][3]!= 1){
+				srpCumFreqArray[i][3] = 1;
+				
+			}
+			
+			System.out.println(Arrays.toString(result));
+			System.out.println(srpCountArray[i]['A'] +"\t"+ srpCountArray[i]['C'] +"\t"+ srpCountArray[i]['G'] +"\t"+ srpCountArray[i]['T']);
+			System.out.println(Arrays.toString(probBases));
+//			System.out.println("srpCumFreqArray: "+Arrays.toString(srpCumFreqArray[i]));
+			System.out.println();
+		}
+
+		
+		System.exit(12);
+		
+	}
 	
+	private void createCumFreqArray() {
+
+//		String[] srpArray = getSrpArray();
+//		srpCumFreqArray = new double[fullHaplotypeLength][4];
+//		for
+//		DirichletMultinomialDistribution dmd = new DirichletMultinomialDistribution();
+		isFixedSite = new boolean[srpCumFreqArray.length];
+		isLowVarianceSite = new boolean[srpCumFreqArray.length];
+		siteTypesArray = new SiteType[srpCumFreqArray.length];
+		listLowVarSite = new ArrayList<Integer>();
+		listHighVarSite = new ArrayList<Integer>();
+		for (int i = 0; i < srpCumFreqArray.length; i++) {
+			srpCumFreqArray[i]  = new double[] {
+					srpCountArray[i]['A'], srpCountArray[i]['C'], 
+					srpCountArray[i]['G'], srpCountArray[i]['T'] };
+//			System.out.println(Arrays.toString(srpCumFreqArray[i]));
+			if(IS_MIN_PROPORTION){
+				
+				int numMinCount = 0;
+				double sum = 0;
+				for (int j = 0; j < srpCumFreqArray[i].length; j++) {
+					sum += srpCumFreqArray[i][j];
+					if( srpCumFreqArray[i][j] <= MIN_READ_COUNT ){
+						numMinCount++;
+					}
+				}
+
+				
+				double minModifier = MIN_PERCENTAGE *sum / (100-numMinCount*MIN_PERCENTAGE );
+				
+				if(numMinCount == 3){
+					isFixedSite[i] = true;
+					siteTypesArray[i] = SiteType.FIXED;
+//					minModifier = 0;
+				}
+//				System.out.println(isFixedSite[i]);
+//				sum += (zeroModifier* numMinCount);
+				sum = 0;
+				for (int j = 0; j < srpCumFreqArray[i].length; j++) {
+					if( srpCumFreqArray[i][j] <= MIN_READ_COUNT  ){
+						srpCumFreqArray[i][j] = minModifier;
+					}
+					sum += srpCumFreqArray[i][j];
+				}
+				
+				int lowVarianceCount = 0;
+				if(sum == 0){
+					Arrays.fill(srpCumFreqArray[i],0.25);
+				}
+				else{
+					for (int j = 0; j < srpCumFreqArray[i].length; j++) {
+						srpCumFreqArray[i][j] /= sum;
+						srpFreqArray[i][j] = srpCumFreqArray[i][j];
+						if (srpCumFreqArray[i][j] < LOW_VARIANCE_THRESHOLD){
+							lowVarianceCount++;
+						}
+					}
+				}
+				if (lowVarianceCount > 2 ){ // LLLH,
+					isLowVarianceSite[i] = true;
+					siteTypesArray[i] = SiteType.LOW_VAR;
+//					System.out.println(">2: "+ lowVarianceCount +"\t"+ Arrays.toString(srpCumFreqArray[i]));
+					lvs++;
+					listLowVarSite.add(i);
+				}
+				if (lowVarianceCount < 2 ){ // H H H L, HHHH
+					siteTypesArray[i] = SiteType.HIGH_VAR;
+					listHighVarSite.add(i);
+//					System.out.println("<2: "+ lowVarianceCount +"\t"+ Arrays.toString(srpCumFreqArray[i]));
+				}
+				if (lowVarianceCount == 2 ){ // H H L L
+//					isLowVarianceSite[i] = true;
+//					siteTypesArray[i] = SiteType.LOW_VAR;
+					siteTypesArray[i] = SiteType.HIGH_VAR;
+					listHighVarSite.add(i);
+//					System.out.println("=2: "+ lowVarianceCount +"\t"+ Arrays.toString(srpCumFreqArray[i]));
+				}
+				if(numMinCount == 3){
+					isFixedSite[i] = true;
+					siteTypesArray[i] = SiteType.FIXED;
+				}
+				
+//				int[] counts =  new int[] {srpCountArray[i]['A'], srpCountArray[i]['C'], srpCountArray[i]['G'], srpCountArray[i]['T'] };
+//				System.out.println(Arrays.toString(counts));
+//				System.out.println("srpCumFreqArrayV1: "+Arrays.toString(srpCumFreqArray[i]));
+//				System.out.println(isLowVarianceSite[i] +"\t"+ lowVarianceCount);
+//				System.out.println();
+//				
+				for (int j = 1; j < srpCumFreqArray[i].length; j++) {
+					srpCumFreqArray[i][j] = srpCumFreqArray[i][j] + srpCumFreqArray[i][j-1];
+				}
+//				srpCumFreqArray[i][3]=1;
+//				System.out.println("srpCumFreqArrayV1: "+Arrays.toString(srpCumFreqArray[i]));
+			}
+			else{
+				
+				for (int j = 1; j < srpCumFreqArray[i].length; j++) {
+					srpCumFreqArray[i][j] = srpCumFreqArray[i][j] + srpCumFreqArray[i][j-1];
+				}
+				double sum = srpCumFreqArray[i][3];
+				
+				for (int j = 0; j < srpCumFreqArray[i].length; j++) {
+					srpCumFreqArray[i][j] /= sum;  
+				}
+			}
+//			int[] counts =  new int[] {srpCountArray[i]['A'], srpCountArray[i]['C'], srpCountArray[i]['G'], srpCountArray[i]['T'] };
+//System.out.println(Arrays.toString(counts));
+//			System.out.println("srpCumFreqArrayV1: "+Arrays.toString(srpCumFreqArray[i]));
+		}
+//		int count1 = 0;
+//		int count2 = 0;
+//		for (int j = 0; j < isFixedSite.length; j++) {
+//			if(isFixedSite[j]) count1++;
+//			if(isLowVarianceSite[j]) count2++;
+//		}
+//		System.out.println("isXXSite:" + count1 +"\t"+ count2);
+//		highVarSiteArray = new int[listHighVarSite.size()];
+//		highVarSiteArrayTemp = new Integer[listHighVarSite.size()];
+//		listHighVarSite.toArray(highVarSiteArrayTemp);
+		highVarSiteArray = Ints.toArray(listHighVarSite);
+		lowVarSiteArray = Ints.toArray(listLowVarSite);
+	}
+	public double getFreqAtSiteChar(int site, char c) {
+		
+		int state = DATA_TYPE.getState(c);
+		return srpFreqArray[site][state];
+		
+	}
+	public double[] getFreqAtSite(int site) {
+		
+		return srpFreqArray[site];
+		
+	}
 	private void createBitSetArray() {
 		bitSetArray = new BitSet[mapToSrp.length];
 		bitVectorArray = new BitVector[mapToSrp.length];
@@ -147,21 +374,27 @@ public class ShortReadMapping {
 	}
 
 	public char[][] getSrpChar2DArray() {
-			String[] srpArray = getSrpArray();
-			char[][] srpChar2D = new char[srpArray.length][fullHaplotypeLength];
-		
-			for (int i = 0; i < srpArray.length; i++) {
-				String srp = srpArray[i];
-				for (int j = 0; j < fullHaplotypeLength; j++) {
-	//				allSrpState2D[i][j] = getStateAtK(srp, j);
-					srpChar2D[i][j] = srp.charAt(j);
-				}
+		return srpChar2D;
+	}
+	
+	private void createSrpChar2DArray(){
+	
+		String[] srpArray = getSrpArray();
+		srpChar2D = new char[srpArray.length][fullHaplotypeLength];
+	
+		for (int i = 0; i < srpArray.length; i++) {
+			String srp = srpArray[i];
+			for (int j = 0; j < fullHaplotypeLength; j++) {
+//				allSrpState2D[i][j] = getStateAtK(srp, j);
+				srpChar2D[i][j] = srp.charAt(j);
 			}
-			
-			
-		
-			return srpChar2D;
 		}
+		
+	}
+
+	public Integer[] getAllSrpLengthInteger() {
+		return allSrpLengthInteger;
+	}
 
 	public int[][] getMapToSrpArray(){
 		return mapToSrpArray;
@@ -174,11 +407,14 @@ public class ShortReadMapping {
 	private void createSrpArray() {
 		srpArray = new String[srpCount];
 		srpLength = new int[srpCount];
+		allSrpLengthInteger = new Integer[srpCount];
 		for (int i = 0; i < srpArray.length; i++) {
 			ShortRead shortRead = shortReads.get(i);
 			srpArray[i] = shortRead.getFullSrp();
 			srpLength[i] = shortRead.getLength();
+			allSrpLengthInteger[i] = (Integer) shortRead.getLength();
 		}
+		
 		
 	}
 	private void createMapToSrpArray(){
@@ -189,6 +425,7 @@ public class ShortReadMapping {
 //			temp = arrayList.toArray(new double[arrayList.size()]);
 			arrayList.toArray(temp);
 			mapToSrpArray[i] = Ints.toArray(arrayList);
+			
 			String s1 = arrayList.toString();
 			String s2 = Arrays.toString(mapToSrpArray[i]);
 			if(!s1.equals(s2)){
@@ -215,8 +452,8 @@ public class ShortReadMapping {
 		
 	}
 
-	@Deprecated
-	private void calculateListOfAvailableChar(HashSet<Character>[] setsOfAvailableChar) {
+//	@Deprecated
+	private void createListOfAvailableChar(HashSet<Character>[] setsOfAvailableChar) {
 		for (int i = 0; i < fullHaplotypeLength; i++) {
 			listOfAvailableChar[i] = new ArrayList<Character>(setsOfAvailableChar[i]);
 
@@ -282,6 +519,7 @@ public class ShortReadMapping {
 					setsOfAvailableChar[j].add(c);
 					frequencies[j][state] += 1;
 					cumFreq[c]++;
+					srpCountArray[j][c]++;
 				}
 			}
 			srpCount++;
@@ -358,19 +596,198 @@ public class ShortReadMapping {
 	public String getSrpName(int i) {
 		return shortReads.get(i).getName();
 	}
+	public ArrayList<int[]> getListOfAvailableChar2(){
+		return listOfAvailableChar2;
+	}
+	
+	public char getBaseAt(int s) {
+//		posChar[0] = MathUtils.nextInt(haplotypeLength);
+		int[] chars = listOfAvailableChar2.get(  s );
+		int size = chars.length;
+//		System.out.println(posChar[0] +"\t"+ Arrays.toString(chars) +"\t"+ size +"\t"+ posChar[1]);
+		char newChar;
+//		if(size < 2){
+//			return '-';
+//		}
+		
+		if (size != 0) {
+			
+			newChar = (char) chars[ MathUtils.nextInt(size) ];
+//			System.out.println(newChar +"\t"+ size +"\t"+ Arrays.toString(chars));
+//			newChar= DNA_CHARS[ chars[ MathUtils.nextInt(size) ] ];
+		}
+		else{
+			newChar = DNA_CHARS[ MathUtils.nextInt(4) ];
+		}
+		
+		return newChar;
+//		int[] srpList = mapToSrpArray[s];
+////		System.out.println(s +"\t"+ Arrays.toString(srpList));
+//		int state = 999;
+//		char newChar;
+//		do{
+//			int srpIndex = srpList[MathUtils.nextInt(srpList.length)];
+//			newChar = srpChar2D[srpIndex][s];
+//			state = Nucleotides.INSTANCE.getState(newChar);
+//			System.out.println(s +"\t"+ newChar +"\t"+ state);
+//		}while(state>3);
+//		
+//		return newChar;
+	}
+	
+	public char[] getRandHaplotype() {
+		
+		char[] randChar = new char[fullHaplotypeLength];
+		for (int i = 0; i < randChar.length; i++) {
+			randChar[i] = (char) nextBaseEqualFreq();
+		}
+		return randChar;
+	}
+	
+	public char[] getSemiRandHaplotype2() {
+		
+		char[] randChar = new char[fullHaplotypeLength];
+		for (int i = 0; i < randChar.length; i++) {
+			randChar[i] = nextBaseFreqAt(i);
+		}
+		return randChar;
+	}
+	
+	public char[] getSemiRandHaplotype() {
+		
+//		System.out.println("SemiRandHap");
+		double switchSrpProb = 0.1;
+		char[] randChar = new char[fullHaplotypeLength];
+		
+		int[] srpList = mapToSrpArray[0];
+		
+
+		int state = 999;
+		char newChar ='-';
+		int srpIndex = 0;
+		
+		if(srpList.length==0){
+			newChar = 'A';//FIXME: later, only accept ACGT no N at moment
+		}
+		else{
+			srpIndex = srpList[MathUtils.nextInt(srpList.length)];
+			newChar = srpChar2D[srpIndex][0];
+		}
+		randChar[0] = newChar;
+		
+		//FIXME: not very smart loop, just get things working
+		for (int s = 1; s < randChar.length; s++) {
+			int count = 0;
+			if(MathUtils.nextDouble() < switchSrpProb){
+					srpList = mapToSrpArray[s];
+					if(srpList.length!=0){
+						srpIndex = srpList[MathUtils.nextInt(srpList.length)];
+					}
+//					state = 999;
+//					System.out.println(s +"\tnewSrp Prob: "+ srpIndex);
+			}
+			
+			do{
+				if(state>3){
+					if(count==10){
+						newChar = 'A';
+					}
+					else{
+						srpList = mapToSrpArray[s];
+						if(srpList.length==0){
+							newChar = 'A';//FIX later, only accept ACGT no N at moment
+						}
+						else{
+							srpIndex = srpList[MathUtils.nextInt(srpList.length)];
+							newChar = srpChar2D[srpIndex][s];
+							count++;
+						}
+					}
+//					System.out.println(s +"\tnewSrp: "+ srpIndex);
+				}
+				else{
+					newChar = srpChar2D[srpIndex][s];
+				}
+				state = Nucleotides.INSTANCE.getState(newChar);
+				
+			}
+			while(state>3);
+			randChar[s] = newChar;
+			
+		}
+		
+		return randChar;
+	}
+
+	public void summary() {
+//		System.out.println(toString());
+		System.out.println(Arrays.toString(cumFreq));
+//		System.out.println(Arrays.toString(consensus));
+//		System.out.println(Arrays.toString(srpArray));
+//		System.out.println(Arrays.toString(mapToSrpArray[0]));
+		System.out.println(Arrays.toString(srpChar2D[0]));
+		Integer[] x = new Integer[100];
+		ArrayList<Character> aa = listOfAvailableChar[100];
+		for (Character character : aa) {
+			System.out.println(character);
+		}
+//		System.out.println(Arrays.toString(x));
+		
+		int[] aa2 = listOfAvailableChar2.get(100);
+		System.out.println(Arrays.toString(aa2));
+		
+	}
 
 //
-//	protected int nextBaseAt(int pos){
+	public int nextBaseAt(int pos){
+		int newChar = GAP;
+		int size = mapToSrp[pos].size();
+		if (size != 0) {
+			int srpIndex = mapToSrp[pos].get(MathUtils.nextInt(size));
+			newChar = getShortReadCharAt(srpIndex, pos);
+		}
+		
+		return newChar;
+	}
+	public char nextBaseFreqAt(int pos){
 //		int newChar = GAP;
 //		int size = mapToSrp[pos].size();
 //		if (size != 0) {
 //			int srpIndex = mapToSrp[pos].get(MathUtils.nextInt(size));
 //			newChar = getShortReadCharAt(srpIndex, pos);
 //		}
-//		
-//		return newChar;
-//	}
+//		System.out.println(siteTypesArray[pos] +"\t"+ Arrays.toString(srpCumFreqArray[pos]));
 
+		double d = MathUtils.nextDouble();
+		double[] freq = srpCumFreqArray[pos];
+		for (int i = 0; i < 3; i++) {
+			if (d <= freq[i]) {
+				return DNA_CHARS[i];
+			}
+		}
+		return DNA_CHARS[3];
+
+	}
+
+	public boolean isFixSite(int siteIndex) {
+//		if(isFixedSite[siteIndex]){
+//			System.out.println("isFixed: "+Arrays.toString(srpCumFreqArray[siteIndex]));
+//		}
+		return isFixedSite[siteIndex];
+	}
+
+	public boolean isLowVarianceSite(int siteIndex) {
+//		if(isLowVarianceSite[siteIndex]){
+//			System.out.println("isLowV: "+Arrays.toString(srpCumFreqArray[siteIndex]));
+//		}
+		return isLowVarianceSite[siteIndex];
+	}
+
+	public SiteType getSiteType(int siteIndex) {
+//		System.out.println(siteTypesArray[siteIndex] +"\t"+ Arrays.toString(srpCumFreqArray[siteIndex]));
+		return siteTypesArray[siteIndex];
+	}
+	
 //
 //	public int[] getNextBase() {
 //
@@ -469,21 +886,28 @@ public class ShortReadMapping {
 //		return posChar;
 //	}
 //	
-//	public int nextBaseEqualFreq(){
-//		return nextDNAFromCumFreq(EQUAL_FREQ);
-//	}
+	public int nextBaseEqualFreq(){
+		return nextDNAFromCumFreq(EQUAL_FREQ);
+	}
 //	
-//	private static int nextDNAFromCumFreq(double[] cumFreq){
-//		
-//		double d = MathUtils.nextDouble();
-//		for (int i = 0; i < cumFreq.length; i++) {
-//			if (d <= cumFreq[i]) {
-//				return DATA_TYPE.getChar(i); //TODO: test
-//			}
-//		}
-//		return GAP;
-//	}
+	private static int nextDNAFromCumFreq(double[] cumFreq){
+		
+		double d = MathUtils.nextDouble();
+		for (int i = 0; i < cumFreq.length; i++) {
+			if (d <= cumFreq[i]) {
+				return DATA_TYPE.getChar(i); //TODO: test
+			}
+		}
+		return GAP;
+	}
 //	
+
+	public double calculateLogqOldNewChar(int site, char oldChar, char newChar) {
+		double probOldGivenNew = getFreqAtSiteChar(site, oldChar);
+		double probNewGivenOld = getFreqAtSiteChar(site, newChar);
+		double logq = Math.log(probNewGivenOld/probOldGivenNew);
+		return logq;
+	}
 
 	
 }

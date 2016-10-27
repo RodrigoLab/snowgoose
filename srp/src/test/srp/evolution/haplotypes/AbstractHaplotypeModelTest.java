@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -33,6 +32,7 @@ import srp.dr.evolution.datatype.ShortReads;
 import srp.evolution.haplotypes.old.OldHaplotype;
 import srp.evolution.haplotypes.old.OldHaplotypeModel;
 import srp.evolution.shortreads.AlignmentMapping;
+import test.TestUtils;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.alignment.SimpleAlignment;
 import dr.evolution.datatype.Nucleotides;
@@ -58,7 +58,7 @@ public class AbstractHaplotypeModelTest {
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 
-		String dir = System.getProperty("user.dir")+File.separatorChar+"unittest"+File.separator;
+		String dir = TestUtils.getUnittestDir();
 		srpAlignment = DataImporter.importShortReads(dir, "HaplotypeModelTest_10_srp.fasta");
 		aMap = new AlignmentMapping(srpAlignment);
 		
@@ -93,7 +93,6 @@ public class AbstractHaplotypeModelTest {
 		charToState.put('*', 17);
 		charToState.put('.', 17);
 	}
-
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
 	}

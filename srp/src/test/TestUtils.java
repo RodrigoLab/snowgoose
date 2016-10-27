@@ -1,6 +1,10 @@
 package test;
 
 import static org.junit.Assert.assertTrue;
+
+import java.io.File;
+import java.nio.file.Files;
+
 import dr.inference.markovchain.MarkovChain;
 
 public class TestUtils {
@@ -23,4 +27,13 @@ public class TestUtils {
         assertTrue("Expected " + name + " is " + value + " but got " + mean + " +/- 2*" + stderr,
                 upper > mean && lower < mean);
     }
+	
+
+
+	public static String getUnittestDir() {
+		
+		String dir = System.getProperty("user.dir")+File.separatorChar+"srp"+File.separatorChar+"unittest"+File.separator;
+		return dir;
+	}
+
 }

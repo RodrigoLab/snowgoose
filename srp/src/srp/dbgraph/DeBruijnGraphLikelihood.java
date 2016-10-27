@@ -19,7 +19,7 @@ public class DeBruijnGraphLikelihood {
 	private int nodeCount;
 	private int[] pairedNode;
 	
-	HashMap<Character, Character> DNAComplement; 
+	char[] DNAComplement; 
 	
 	public DeBruijnGraphLikelihood(DeBruijnGraph dbGraph, CompatibleSets compSets) {
 		this.dbGraph = dbGraph;
@@ -33,6 +33,7 @@ public class DeBruijnGraphLikelihood {
 		dbGraph.preprocess();
 		compSets.preprocess();
 		this.nodeCount = dbGraph.getSize();
+
 		
 		ArrayList<Integer> allLength = dbGraph.getAllLength();
 		pairedNode = new int[nodeCount];
@@ -40,27 +41,28 @@ public class DeBruijnGraphLikelihood {
 		totalCount = 0;
 		for (CompatibleNode k1CNode : compSets) {
 			int k1 = k1CNode.getNodeIndex();
-			int k1LengthMinusDepth = allLength.get(k1) - k1CNode.getNodeDepth();
+//			int k1LengthMinusDepth = allLength.get(k1) - k1CNode.getNodeDepth();
 			int[] cNodeList = k1CNode.getCNodeArray();
 			for (int k2 : cNodeList) {
 				if(k1 != k2){
 					totalCount += k1CNode.getCNodeCount(k2);
-					length_diff[k1][k2] = k1CNode.getCNodeDepth(k2) + allLength.get(k2) + k1LengthMinusDepth;
+					length_diff[k1][k2] = k1CNode.getCNodeDepth(k2) + allLength.get(k2) - k1CNode.getNodeDepth();;
 				}
 			}
 				
 		}
+		System.out.println("total count: "+totalCount);
+		DNAComplement = new char['Z'];
 
-		DNAComplement = new HashMap<>();
-
-		DNAComplement.put('A', 'T');
-		DNAComplement.put('T', 'A');
-		DNAComplement.put('C', 'G');
-		DNAComplement.put('G', 'C');
+		DNAComplement['A'] = 'T';
+		DNAComplement['T'] = 'A';
+		DNAComplement['C'] = 'G';
+		DNAComplement['G'] = 'C';
 		
-
-
 		pairComplementNodes();
+
+
+		
 		
 	}
 
@@ -116,7 +118,7 @@ public class DeBruijnGraphLikelihood {
 		int l = string.length();
 		char[] revString = new char[l];
 		for (int i = 0; i < l; i++) {
-			revString[l-i-1] = (char) DNAComplement.get( string.charAt(i) );
+			revString[l-i-1] = DNAComplement[string.charAt(i)];
 		}
 		
 		return String.valueOf(revString);
@@ -146,6 +148,7 @@ public class DeBruijnGraphLikelihood {
 ////		my($llik) = 0; my($min) = 0; my($max) = -9**9	**9; 
 		double min = 0;
 		int pathCount = pathSet.getPathCount();
+		System.out.println("path count: "+pathCount);
 		double Scale = pathCount*1200;
 //		
 //		HashMap<Integer, Integer> allLength = dbGraph.getAllLength();
@@ -168,7 +171,7 @@ public class DeBruijnGraphLikelihood {
 			int[] cNodeList = k1CNode.getCNodeArray();
 
 			for (int k2 : cNodeList) {
-			
+//				System.out.println(visited[k1][k2]);
 				if(d_hashTable[k1][k2]>0){
 					
 					if(!visited[k1][k2]){
@@ -178,13 +181,47 @@ public class DeBruijnGraphLikelihood {
 						double temp2 = 1 - temp0;
 						double val = temp1*Math.log(temp2) + cNodeCount * Math.log(temp0);
 						likelihood += val;
-						System.out.println(k1 +"\t"+ k2 +"\t"+ temp0 +"\t"+ temp1 +"\t"+ temp2 +"\t"+ val);
+//						$temp0 = $d_hashtable{$k1}{$k2}/($Scale-$length_diff{$k1}{$k2});
+//						$temp1 = $total_count - $compatible_set{$k1}{$k2};
+//						$temp2 = 1 - ($d_hashtable{$k1}{$k2}/($Scale-$length_diff{$k1}{$k2}));
+//						$val = $temp1*log($temp2) + $compatible_set{$k1}{$k2} * log($temp0);
+
+						System.out.println(k1 + "\t" + k2 + "\t"
+								+ pairedNode[k2] + "\t" + pairedNode[k1] + "\t"
+								+ cNodeCount + "\t" + temp0 + "\t" + temp1
+								+ "\t" + temp2 + "\t" + val);
 						visited[k1][k2] = true;
 						visited[pairedNode[k2]][pairedNode[k1]] = true;
+//						System.out.println(k1 +"\t"+ k2 +"\t"+ pairedNode[k2]+"\t"+ pairedNode[k1]);
+//						visited[pairedNode[k1]][pairedNode[k2]] = true;
+					}
+					else{
+//						System.out.println("skip revcom\t"+k1 +"\t"+ k2 +"\t"+  pairedNode[k2]+"\t"+ pairedNode[k1]);
+						int cNodeCount = k1CNode.getCNodeCount(k2);
+						double temp0 = d_hashTable[k1][k2]/(Scale-length_diff[k1][k2]);
+						double temp1 = totalCount - cNodeCount;
+						double temp2 = 1 - temp0;
+						double val = temp1*Math.log(temp2) + cNodeCount * Math.log(temp0);
+						
+						CompatibleNode compatibleNode = compSets.getCompatibleNode(pairedNode[k2]);
+						int cNodeCount2 = compatibleNode.getCNodeCount(pairedNode[k1]);
+						double temp02 = d_hashTable[pairedNode[k2]][pairedNode[k1]]/(Scale-length_diff[pairedNode[k2]][pairedNode[k1]]);
+						double temp12 = totalCount - cNodeCount2;
+						double temp22 = 1 - temp02;
+						double val2 = temp12*Math.log(temp22) + cNodeCount2 * Math.log(temp02);
+						if(val!=val2){
+							System.out.println("skip revcom\t"+k1 +"\t"+ k2 +"\t"+  pairedNode[k2]+"\t"+ pairedNode[k1]);
+							System.out.println(d_hashTable[pairedNode[k2]][pairedNode[k1]] +"\t"+ d_hashTable[k1][k2] +"\t"+ (Scale-length_diff[k1][k2]) +"\t"+ (Scale-length_diff[pairedNode[k2]][pairedNode[k1]]));
+							System.out.println((temp0==temp02)+"\t"+ temp0 +"\t"+ temp02);
+							System.out.println((temp1==temp12)+"\t"+ temp1 +"\t"+ temp12);
+							System.out.println((temp2==temp22)+"\t"+ temp2 +"\t"+ temp22);
+							System.out.println((val==val2)+"\t"+ val +"\t"+ val2);
+						}
 						
 					}
 				}else				{
-					likelihood += min;
+//					System.out.println(k1 +"\t"+ k2);
+//					return 0;
 				}
 			}
 		}
@@ -276,9 +313,10 @@ public class DeBruijnGraphLikelihood {
 			//path contains series of node??
 			HashSet<Integer> tempSet = new HashSet<>();
 			ArrayList<Integer> nodeList = path.getNodeList();
-			
+			System.out.println("dHashTable on node:"+i +"\t"+ nodeList.size());
 			for (Integer k1 : nodeList) {
 				tempSet.add(k1);
+//				System.out.println(k1);
 				//TODO: redo this part, need create PATH class
 //				my(%temp_set) = ();
 //				for $k(@one_path) 
@@ -286,18 +324,20 @@ public class DeBruijnGraphLikelihood {
 //					$temp_set{$k} = 1;
 //				}
 			}
-			System.out.println(tempSet);
+//			System.out.println(tempSet);
 			for (Integer k1 : nodeList) {
 				CompatibleNode compatibleSet = compSets.getCompatibleNode(k1);	
 //				int nodeIndex = compatibleSet.getNode();
 				int[] cNodeList = compatibleSet.getCNodeArray();
-//				System.out.println(Arrays.toString(cNodeList));
+				System.out.println(k1 +"\t"+ Arrays.toString(cNodeList));
+//				System.out.println(compatibleSet.getNodeIndex() +"\t"+ compatibleSet.getNodeDepth());
 				for (int nodeIndex : cNodeList) {
-	
+//					System.out.println(k1 +"\t"+ nodeIndex);
 				
-					if (tempSet.contains(nodeIndex)){
-//						System.out.println(k1 +"\t"+ nodeIndex);
+					if (tempSet.contains(nodeIndex) & (k1!=nodeIndex)){
+						System.out.println("add\t"+k1 +"\t"+ nodeIndex);
 						d_hashTable[k1][nodeIndex]++;
+//						d_hashTable[pairedNode[nodeIndex]][pairedNode[k1]]++;
 					}
 				}
 			}

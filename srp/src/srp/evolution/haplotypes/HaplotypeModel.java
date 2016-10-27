@@ -1,6 +1,7 @@
 package srp.evolution.haplotypes;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import jebl.evolution.sequences.Sequence;
@@ -8,6 +9,7 @@ import srp.dr.ext.SeqGenExt;
 import srp.dr.ext.TreeLikelihoodExt;
 import srp.evolution.OperationType;
 import srp.evolution.shortreads.AlignmentMapping;
+import srp.evolution.shortreads.ShortReadMapping;
 import srp.evolution.spectrum.SpectrumAlignmentModel;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.datatype.Nucleotides;
@@ -28,6 +30,8 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 	private static final int STATE_COUTN = DATA_TYPE.getStateCount();
 
 	private static final boolean DEBUG = false;
+
+	private ShortReadMapping srpMap;
 //	private boolean DEBUG = true;
 
 	private void initHaplotypes() {
@@ -47,18 +51,64 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 	public HaplotypeModel(int hapCount, int hapLength) {
 		super(MODEL_NAME, hapCount, hapLength);
 		initHaplotypes();
+//		storeEverything();
 	}
 	
 	public HaplotypeModel(Alignment trueAlignment) {
 		this(trueAlignment.getSequenceCount(), trueAlignment.getSiteCount());
 
-		for (int i = 0; i < trueAlignment.getSequenceCount(); i++) {
+		for (int i = 0; i < sequenceCount; i++) {
 			Haplotype haplotype = new Haplotype(trueAlignment.getSequence(i));
 			setHaplotype(i, haplotype);
 		}
+//		storeEverything();
 	}
 	
 	
+//	public HaplotypeModel(int noOfRecoveredHaplotype, ShortReadMapping srpMap) {
+//		this(noOfRecoveredHaplotype, srpMap.getLength());
+//		for (int i = 0; i < sequenceCount; i++) {
+//			Haplotype haplotype = getHaplotype(i);
+//			for (int s = 0; s < sequenceLength; s++) {
+//				char newChar = srpMap.getBaseAt(s);
+//				haplotype.setCharAt(s, newChar);
+//			}
+//			
+//		}
+//	}
+	//TODO: What is a good starting point?
+	public HaplotypeModel(int noOfRecoveredHaplotype, ShortReadMapping srpMap) {
+			this(noOfRecoveredHaplotype, srpMap.getLength());
+			this.srpMap = srpMap;
+			for (int i = 0; i < sequenceCount; i++) {
+				char[] randHap = this.srpMap.getSemiRandHaplotype2();
+//				char[] randHap = this.srpMap.getSemiRandHaplotype();
+//				char[] randHap = this.srpMap.getRandHaplotype();
+//				System.out.println(String.valueOf(randHap));
+				Haplotype haplotype = getHaplotype(i);
+//				for (int s = 0; s < sequenceLength; s++) {
+//					haplotype.setCharAt(s, randHap[s]);
+//				}
+				System.out.println(randHap);
+				haplotype.setSequenceString(randHap);
+				setHaplotype(i, haplotype);
+				
+			}
+			
+	//		storeEverything();
+		}
+
+	public  ArrayList<Integer> getGetMapToSrpAt(int pos){
+		return srpMap.getMapToSrp(pos);
+	}
+	
+	public ArrayList<int[]> getListOfAvailableChar2(){
+		return srpMap.getListOfAvailableChar2();
+	}
+	public char getNextBaseFromSrpMap(int s){
+		char baseAt = srpMap.getBaseAt(s);
+		return baseAt;
+	}
 	public int calculateSPS(){//TODO test this
 		return SPSDist.calculeteSPS(this, this);
 	}
@@ -67,6 +117,7 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 		return getHaplotype(i).getSequenceString();
 	}
 
+	
 	public int[] getStoredSitePattern(int siteIndex){
 
 		int n = getHaplotypeCount();
@@ -84,6 +135,7 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 
 	}
 	
+	@Deprecated
 	public int getStoredSitePattern(int hapIndex, int site) {
 		Haplotype hap = getHaplotype(hapIndex);
 		int state = hap.getStoredState(site);
@@ -117,40 +169,43 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
     
 		
 	}
-
+	protected void storeEverything(){
+		for (int i = 0; i < getHaplotypeCount(); i++) {
+			Haplotype haplotype = getHaplotype(i);
+			haplotype.storeState();
+		}
+		
+	}
 	@Override
 	protected void storeState() {
 
 		OperationType operation = operationRecord.getOperation();
-		int spectrumIndex;
+		int haplotypeIndex;
 		int siteIndex;
 		int[] siteIndexs;
 		Haplotype haplotype;
 		if (DEBUG) {
-			System.out.println("StoreState in SpectrumAlignment:\t"+ operation);
+			System.out.println("StoreState in HaplotypeModel:\t"+ operation);
 		}
 		switch (operation) {
 		case NONE:
-			
+//			System.out.println("Init HaplotypeModel StoreState()");//FIXME: maybe not the best default option
 			break;
 		case FULL:
-			for (int i = 0; i < getHaplotypeCount(); i++) {
-				haplotype = getHaplotype(i);
-				haplotype.storeState();
-			}
+			storeEverything();
 			break;
 
 		case SINGLE:
-			spectrumIndex = operationRecord.getSpectrumIndex();
+			haplotypeIndex = operationRecord.getSpectrumIndex();
 			siteIndex = operationRecord.getSingleIndex();
-			haplotype = getHaplotype(spectrumIndex);
+			haplotype = getHaplotype(haplotypeIndex);
 			haplotype.storeState(siteIndex);
 			break;
 
 		case MULTI:
-			spectrumIndex = operationRecord.getSpectrumIndex();
+			haplotypeIndex = operationRecord.getSpectrumIndex();
 			siteIndexs = operationRecord.getAllSiteIndexs();
-			haplotype = getHaplotype(spectrumIndex);
+			haplotype = getHaplotype(haplotypeIndex);
 			for (int s: siteIndexs){
 				haplotype.storeState(s);
 			}
@@ -191,9 +246,8 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 		Haplotype haplotype;
 		int[] siteIndexs;
 		if (DEBUG) {
-			System.out.println("RestoreState in SpectrumAlignment:\t" + operation);
+			System.out.println("RestoreState in HaplotypeModel:\t" + operation);
 		}
-//		System.out.println("zzzzRestore HaplotypeModel: "+operation);
 		switch (operation) {
 		
 		case NONE:
@@ -208,6 +262,7 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 		case SINGLE:
 			hapIndex = operationRecord.getSpectrumIndex();
 			siteIndex = operationRecord.getSingleIndex();
+//			System.out.println(hapIndex +"\t"+ siteIndex);
 			haplotype = getHaplotype(hapIndex);
 			haplotype.restoreState(siteIndex);
 			break;
@@ -290,7 +345,7 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 	}
 
 	public void simulateSequence(double errorRate, SiteModel siteModel, SubstitutionModel substitutionModel,
-			TreeModel treeModel) {
+			TreeModel treeModel, ShortReadMapping srpMap) {
 
         double substitutionRate = errorRate/(getHaplotypeCount()*getHaplotypeLength()) ;
         System.err.println(substitutionRate);
@@ -298,7 +353,7 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 //        SiteModel siteModel = treeLikelihood.getSiteModel();
 //        SubstitutionModel substitutionModel = siteModel.getSubstitutionModel();
         
-        int[] initialSequence = aMap.getConsensusSequenceState();
+        int[] initialSequence = srpMap.getConsensusSequenceState();
         StringBuffer buffer = new StringBuffer();
         for (int i = 0; i < initialSequence.length; i++) {
             buffer.append(Nucleotides.INSTANCE.getChar(    initialSequence[i] ));
@@ -337,6 +392,7 @@ public class HaplotypeModel extends AbstractHaplotypeModel  {
 		return haplotypeModel;
 
 	}	
+	
 //XXX not used after this
 	public double getLogqFrequency(int oldChar, int newChar){
 		return storedLogqMatrix[NUCLEOTIDE_STATES[oldChar]][NUCLEOTIDE_STATES[newChar]];
@@ -435,6 +491,17 @@ System.out.println((time2 - time1) + "\t");
 	private double[][] storedLogqMatrix = new double[4][4];
 
 	@Deprecated AlignmentMapping aMap;
+	
+	@Deprecated
+	public void addShortReadMap(ShortReadMapping srpMap) {
+		this.srpMap = srpMap;
+		
+	}
+
+	public ShortReadMapping getShortReadMapping() {
+		
+		return srpMap;
+	}
 
 
 	

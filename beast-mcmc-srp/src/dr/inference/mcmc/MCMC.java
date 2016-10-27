@@ -378,7 +378,7 @@ public class MCMC implements Identifiable, Spawnable {
 
     private String formattedTimePerOpString(MCMCOperator op) {
         final double time = op.getMeanEvaluationTime();
-        return formatter.formatToFieldWidth(formatter.formatDecimal(time, 2), 8) + " ";
+        return formatter.formatToFieldWidth(formatter.formatDecimal(time, 4), 8) + " ";
     }
 
     private String formattedProbString(MCMCOperator op) {

@@ -3,6 +3,7 @@ package srp.evolution.haplotypes;
 import java.util.Arrays;
 
 import dr.evolution.alignment.Alignment;
+import dr.util.NumberFormatter;
 
 public class SPSDist {
 
@@ -26,6 +27,25 @@ public class SPSDist {
 		return sps;
 		
 	}
+//	return formatter.formatToFieldWidth(formatter.formatDecimal(acceptanceProb, 6), 11) + " ";//TODO SW Change
+	protected static NumberFormatter formatter = new NumberFormatter(8);
+	
+	public static String calculeteSPSArrayStringFormat(Alignment h1, Alignment h2){
+		int[][] sps = calculeteSPSArray(h1,h2);
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < sps.length; i++) {
+			for (int j = 0; j < sps[i].length; j++) {
+				
+			sb.append( formatter.formatToFieldWidth(""+sps[i][j], 4) )
+				.append(" ");
+			
+//			sb.append(Arrays.toString(sps[i])).append("\n");
+			}
+			sb.append("\n");
+		}
+		return sb.toString();
+	}
+
 	public static String calculeteSPSArrayString(Alignment h1, Alignment h2){
 		int[][] sps = calculeteSPSArray(h1,h2);
 		StringBuilder sb = new StringBuilder();

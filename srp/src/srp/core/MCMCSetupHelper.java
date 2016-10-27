@@ -33,8 +33,20 @@ import dr.inferencexml.model.CompoundLikelihoodParser;
 import dr.math.distributions.LogNormalDistribution;
 
 public class MCMCSetupHelper {
+	
 
-	public static MCMCOptions setMCMCOptions(int logInterval, int totalSamples) {
+	protected static final double opTiny = 0.1;
+	protected static final double opSmall = 3; //BEAST Tree Default
+	protected static final double opMed = 15; //BEAST Tree Default
+	protected static final double opLarge = 30; //BEAST Tree Default
+	protected static final double opHuge = 60;
+	protected static final double opSpectrum =120;//150 works for beta and related, might be a bit too high?
+
+	public static MCMCOptions setMCMCOptions(int logInterval, int totalSamples){ 
+		return setMCMCOptions(logInterval, totalSamples, 1000, 1);
+	}
+
+	public static MCMCOptions setMCMCOptions(int logInterval, int totalSamples, long fullEvaluationCount, int minOperatorCountForFullEvaluation) {
 	//		MCMCOptions options = new MCMCOptions();
 	//		options.setChainLength(logInterval * totalSamples);
 	//		options.setUseCoercion(false); // autoOptimize = true
@@ -43,10 +55,13 @@ public class MCMCSetupHelper {
 	//		options.setFullEvaluationCount((int) (logInterval*0.01));
 		
 		int coercionDelay = logInterval * totalSamples /100;
-		long fullEvaluationCount = 0; //TODO Change fullEvaCount
-		MCMCOptions options = new MCMCOptions(logInterval * totalSamples, fullEvaluationCount,
-				0, MarkovChain.EVALUATION_TEST_THRESHOLD, false, coercionDelay, 1.0);
-			//		MCMCOptions(long chainLength, 
+//		long fullEvaluationCount = 0; //TODO Change fullEvaCount >100
+//		int minOperatorCountForFullEvaluation = 0;//TODO Change to >1
+		MCMCOptions options = new MCMCOptions(logInterval * totalSamples,
+				fullEvaluationCount, minOperatorCountForFullEvaluation,
+				MarkovChain.EVALUATION_TEST_THRESHOLD, false, coercionDelay,
+				1.0);
+	//		MCMCOptions(long chainLength, 
 	//				long fullEvaluationCount, //2000
 	//				int minOperatorCountForFullEvaluation, //1 
 	//				double evaluationTestThreshold, 
@@ -100,8 +115,7 @@ public class MCMCSetupHelper {
 	
 		// ShortReadLikelihood
 		likelihoods.clear();
-	
-//		likelihoods.add(srpLikelihood);
+		likelihoods.add(srpLikelihood);
 		Likelihood shortReadlikelihood = new CompoundLikelihood(-1, likelihoods);
 		shortReadlikelihood.setId(AbstractShortReadsLikelihood.SHORT_READ_LIKELIHOOD);
 		compoundLikelihoods.put(AbstractShortReadsLikelihood.SHORT_READ_LIKELIHOOD, shortReadlikelihood);
@@ -110,7 +124,7 @@ public class MCMCSetupHelper {
 		likelihoods.clear();
 		likelihoods.add(prior);
 		likelihoods.add(likelihood);
-//		likelihoods.add(srpLikelihood);
+		likelihoods.add(srpLikelihood);
 		Likelihood posterior = new CompoundLikelihood(0, likelihoods);
 		posterior.setId(CompoundLikelihoodParser.POSTERIOR);
 		compoundLikelihoods.put(CompoundLikelihoodParser.POSTERIOR, posterior);
@@ -119,6 +133,50 @@ public class MCMCSetupHelper {
 		
 	}
 
+	public static HashMap<String, Likelihood> setupCompoundLikelihood(Parameter popSize, Parameter kappa,
+			Likelihood coalescent, Likelihood treeLikelihood) {
+	
+		// CompoundLikelihood
+		HashMap<String, Likelihood> compoundLikelihoods = new HashMap<String, Likelihood>(4);
+	
+		List<Likelihood> likelihoods = new ArrayList<Likelihood>();
+	
+		// Prior
+		OneOnXPrior oneOnX = new OneOnXPrior();
+		oneOnX.addData(popSize);
+	
+		DistributionLikelihood logNormalLikelihood = new DistributionLikelihood(
+				new LogNormalDistribution(1.0, 1.25), 0); // meanInRealSpace="false"
+		logNormalLikelihood.addData(kappa);
+	
+		likelihoods.add(oneOnX);
+		likelihoods.add(logNormalLikelihood);
+		likelihoods.add(coalescent);
+		Likelihood prior = new CompoundLikelihood(0, likelihoods);
+		prior.setId(CompoundLikelihoodParser.PRIOR);
+		compoundLikelihoods.put(CompoundLikelihoodParser.PRIOR, prior);
+	
+		// Likelihood
+		likelihoods.clear();
+		likelihoods.add(treeLikelihood);
+		Likelihood likelihood = new CompoundLikelihood(-1, likelihoods);
+		likelihood.setId(CompoundLikelihoodParser.LIKELIHOOD);
+		compoundLikelihoods.put(CompoundLikelihoodParser.LIKELIHOOD, likelihood);
+	
+		
+		// Posterior
+		likelihoods.clear();
+		likelihoods.add(prior);
+		likelihoods.add(likelihood);
+		
+		Likelihood posterior = new CompoundLikelihood(0, likelihoods);
+		posterior.setId(CompoundLikelihoodParser.POSTERIOR);
+		compoundLikelihoods.put(CompoundLikelihoodParser.POSTERIOR, posterior);
+	
+		return compoundLikelihoods;
+		
+	}
+	
 	public static MCLogger addToLogger(MCLogger mcLogger, Loggable... loggableParameter) {
 		for (Loggable loggable : loggableParameter) {
 			mcLogger.add(loggable);
@@ -130,8 +188,8 @@ public class MCMCSetupHelper {
 	public static SiteModel setupSiteModel(){
 		
 		// clock model
-		Parameter rateParameter = new Parameter.Default(StrictClockBranchRates.RATE, 1e-5, 0, 1);
-		StrictClockBranchRates branchRateModel = new StrictClockBranchRates(rateParameter);
+//		Parameter rateParameter = new Parameter.Default(StrictClockBranchRates.RATE, 1e-5, 0, 1);
+//		StrictClockBranchRates branchRateModel = new StrictClockBranchRates(rateParameter);
 	
 		Parameter freqs = new Parameter.Default("frequency", new double[]{0.25, 0.25, 0.25, 0.25});
 		Parameter kappa = new Parameter.Default(HKYParser.KAPPA, 1.0, 0, 100.0);

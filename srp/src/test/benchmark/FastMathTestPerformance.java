@@ -95,6 +95,7 @@ public class FastMathTestPerformance {
         long time = System.nanoTime();
         for (int i = 0; i < RUNS; i++)
             x += StrictMath.log(Math.PI + i/* 1.0 + i/1e9 */);
+//        	x += StrictMath.log(  i/1e50 );
         long strictMath = System.nanoTime() - time;
  
         System.gc();
@@ -102,6 +103,7 @@ public class FastMathTestPerformance {
         time = System.nanoTime();
         for (int i = 0; i < RUNS; i++)
             y += FastMath.log(Math.PI + i/* 1.0 + i/1e9 */);
+//        	y += FastMath.log(  i/1e50 );
         long fastTime = System.nanoTime() - time;
  
         System.gc();
@@ -109,6 +111,7 @@ public class FastMathTestPerformance {
         time = System.nanoTime();
         for (int i = 0; i < RUNS; i++)
             z += Math.log(Math.PI + i/* 1.0 + i/1e9 */);
+//        	z += Math.log(  ((double)i)/1e50 );
         long mathTime = System.nanoTime() - time;
  
         report("log", x + y + z, strictMath, fastTime, mathTime);

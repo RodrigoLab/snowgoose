@@ -70,7 +70,9 @@ public class CompatibleSets implements Iterable<CompatibleNode>  {
 		nodeCount = allSets.size();
 		allCNodesArray = new CompatibleNode[nodeCount];
 		for (int i = 0; i < allCNodesArray.length; i++) {
-			allCNodesArray[i] = allSets.get(i);
+			CompatibleNode compatibleNode = allSets.get(i);
+			int arrayIndex = compatibleNode.getNodeIndex();
+			allCNodesArray[arrayIndex] =compatibleNode;  
 		}
 		
 	}

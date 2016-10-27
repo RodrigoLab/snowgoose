@@ -26,6 +26,7 @@ import srp.evolution.shortreads.ShortReadMapping;
 //import srp.evolution.shortreads.AlignmentMapping;
 import srp.operator.haplotypes.BaseSingleOperator;
 import srp.operator.haplotypes.BasesMultiOperator;
+import test.TestUtils;
 import dr.evolution.alignment.Alignment;
 import dr.evolution.util.Taxon;
 import dr.inference.operators.MCMCOperator;
@@ -53,7 +54,7 @@ public class HaplotypeModelTest {
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 
-		String dir = System.getProperty("user.dir")+File.separatorChar+"unittest"+File.separator;
+		String dir = TestUtils.getUnittestDir();
 		srpAlignment = DataImporter.importShortReads(dir, "HaplotypeModelTest_10_srp.fasta");
 		aMap = new ShortReadMapping(srpAlignment);
 		
@@ -201,7 +202,7 @@ public class HaplotypeModelTest {
 				"AAAACCCCCGGGGGTTTTA"};
 		Alignment alignment = AlignmentUtils.createAlignment(seqs);
 		HaplotypeModel haplotype = new HaplotypeModel(alignment);
-		int expected = 4;
+		int expected = 4*2;
 		assertEquals(expected, haplotype.calculateSPS());
 
 		seqs = new String[]{
@@ -211,7 +212,7 @@ public class HaplotypeModelTest {
 		};
 		alignment = AlignmentUtils.createAlignment(seqs);
 		haplotype = new HaplotypeModel( alignment);
-		expected = 4+4+8;
+		expected = 2*(4+4+8);
 		assertEquals(expected, haplotype.calculateSPS());
 		
 
@@ -232,7 +233,7 @@ public class HaplotypeModelTest {
 		};
 		alignment = AlignmentUtils.createAlignment(seqs);
 		haplotype = new HaplotypeModel(alignment);
-		expected = 3+3+3+3+2+2+2;
+		expected = 2*(3+3+3+3+2+2+2);
 		assertEquals(expected, haplotype.calculateSPS());
 	
 	}

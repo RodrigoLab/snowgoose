@@ -73,15 +73,15 @@ public class MainMCMCSpectrumFull {
 		}
 		
 		else{	
-			dataDir = "/home/sw167/workspaceSrp/snowgoose/srp/unittest/testData/";
-			runIndex = 51;
+			dataDir = "/home/steven/workspaceSrp/snowgoose/srp/unittest/testData/";
+			runIndex = 54;
 			dataDir += "H7_"+runIndex+"/";
 			
 			totalSamples = 100	;
-			logInterval = 100000 ;
+			logInterval = 100 ;
 			
 			randomTree = true;
-//			randomTree = false;
+			randomTree = false;
 			
 			randomSpectrum = true;
 			randomSpectrumType = SpectraType.DOMINANT;
@@ -121,8 +121,8 @@ public class MainMCMCSpectrumFull {
 		String operatorAnalysisFile = prefix+"_operatorAnalysisFile.txt";
 		
 		String partialSpectrumName = hapRunIndex+".haplotypepartial";
-		String partialTreeName = "FullTree_"+hapRunIndex+".treespartial";
-//		String partialTreeName = hapRunIndex + "_Srp.tree";
+//		String partialTreeName = "FullTree_"+hapRunIndex+".treespartial";
+		String partialTreeName = hapRunIndex + "_Srp.tree";
 		
 		DataImporter dataImporter = new DataImporter(dataDir);
 
@@ -197,7 +197,9 @@ public class MainMCMCSpectrumFull {
 		OperatorSchedule schedule = new SimpleOperatorSchedule();
 //		ArrayList<MCMCOperator> defalutOperatorsList = 
 		MCMCSetupHelperSpectrum.defalutSpectrumCatOperators(schedule, spectrumModel, freqs, popSize, kappa);
-		MCMCSetupHelperSpectrum.defalutTreeOperators(schedule, treeModel);
+//		if(randomTree){
+			MCMCSetupHelperSpectrum.defalutTreeOperators(schedule, treeModel);
+//		}
 		
 		
 //		MCMCOperator operator;
@@ -258,8 +260,7 @@ public class MainMCMCSpectrumFull {
 		
 		mcmc.init(options, posterior, schedule, loggers);
 		mcmc.run();
-		System.out.println(mcmc.getTimer().toString());
-
+		
 		
 	}
 

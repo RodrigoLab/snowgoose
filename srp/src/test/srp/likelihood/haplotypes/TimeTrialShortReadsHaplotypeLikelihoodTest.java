@@ -58,7 +58,7 @@ public class TimeTrialShortReadsHaplotypeLikelihoodTest {
 	@Before
 	public void setUp() throws Exception {
 
-		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/snowgoose/srp/unittest/", "H10_srpGap.fasta");
+		Alignment alignment = DataImporter.importShortReads("/home/steven/workspaceSrp/snowgoose/srp/unittest/", "H10_srpGap.fasta");
 		ShortReadMapping srpMap = new ShortReadMapping(alignment);
 			
 //		int spectrumLength = srpMap.getLength();
@@ -69,8 +69,14 @@ public class TimeTrialShortReadsHaplotypeLikelihoodTest {
 ////		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/snowgoose/srp/unittest/", "H4_srp.fasta");
 //		Alignment alignment = DataImporter.importShortReads("/home/sw167/workspaceSrp/snowgoose/srp/unittest/", "SpectrumTest_50srp_200bp.fasta");
 //		srpMap = new ShortReadMapping(alignment);
-		haplotypeModel = new HaplotypeModel(6, srpMap.getLength());
+		haplotypeModel = new HaplotypeModel(6, srpMap);
 		likelihood = new ShortReadsHaplotypeLikelihood(haplotypeModel, srpMap);
+		
+		for (int t = 0; t < 1; t++) {
+			likelihood.makeDirty();
+			System.out.println(likelihood.getLogLikelihood());
+		}
+		
 	}
 
 	@After
@@ -107,7 +113,7 @@ public class TimeTrialShortReadsHaplotypeLikelihoodTest {
 	
 	@Test
 	public void testTimeTrialSingle() throws Exception {
-		double ite = 5e4;
+		double ite = 1e5;
 		int noRun = 10;
 		
 		AbstractHaplotypeOperator op = new BaseSingleOperator(haplotypeModel);
